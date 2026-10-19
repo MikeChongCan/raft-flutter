@@ -22,6 +22,7 @@ class WorkspaceChannelHeader extends StatelessWidget {
     required this.onSettings,
     this.onBack,
     this.backKey,
+    this.workingAgents = const [],
     this.launch = managementLaunch,
   });
   final Key headerKey;
@@ -31,6 +32,7 @@ class WorkspaceChannelHeader extends StatelessWidget {
   final VoidCallback onSearch, onSettings;
   final VoidCallback? onBack;
   final Key? backKey;
+  final List<RaftWorkingAgent> workingAgents;
 
   /// Opens a description link outside the app.
   final Future<void> Function(String url) launch;
@@ -53,6 +55,7 @@ class WorkspaceChannelHeader extends StatelessWidget {
     name: channel.name,
     description: channel.description,
     kind: channel.type,
+    workingAgents: workingAgents,
     onBack: onBack,
     backKey: backKey,
     backLabel: backLabel,

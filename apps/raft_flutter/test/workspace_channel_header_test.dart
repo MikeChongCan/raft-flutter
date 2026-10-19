@@ -13,6 +13,7 @@ void main() {
     WidgetTester t,
     Map<String, dynamic> row, {
     Future<void> Function(String url)? launch,
+    List<RaftWorkingAgent> working = const [],
   }) async {
     final (w, _) = (await t.runAsync(() => fixture('owner')))!;
     addTearDown(w.dispose);
@@ -31,6 +32,7 @@ void main() {
                 backLabel: 'Back',
                 onSearch: () {},
                 onSettings: () {},
+                workingAgents: working,
                 launch:
                     launch ??
                     (url) async {
@@ -84,5 +86,32 @@ void main() {
       find.byKey(const ValueKey('channel-activity-muted-badge')),
       findsOneWidget,
     );
+  });
+  testWidgets('working faces retain muted badge and description link', (
+    t,
+  ) async {
+    try {
+      final opened = await mount(
+        t,
+        row(muted: true, description: 'https://x.test'),
+        working: const [
+          RaftWorkingAgent(
+            id: 'a1',
+            name: 'Cody',
+            text: 'Working',
+            avatar: SizedBox(width: 20, height: 20),
+          ),
+        ],
+      );
+      expect(find.byType(RaftWorkingFaces), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey('channel-activity-muted-badge')),
+        findsOneWidget,
+      );
+      await t.tapOnText(find.textRange.ofSubstring('https://x.test'));
+      expect(opened, ['https://x.test']);
+    } finally {
+      await t.pumpWidget(const SizedBox());
+    }
   });
 }

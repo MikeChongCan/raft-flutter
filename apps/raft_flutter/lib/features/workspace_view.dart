@@ -33,7 +33,7 @@ import '../data/rail_side_preference.dart';
 import '../data/sidebar_disclosure.dart';
 import 'message_reference_directory.dart';
 import 'chat_agent_presentation.dart';
-import 'live_agent_activity_bar.dart';
+import 'working_agents.dart';
 import 'chat_view.dart';
 import 'mobile_route_gate.dart';
 import 'rail_gesture_exclusion.dart';
@@ -227,7 +227,8 @@ class _WorkspaceViewState extends State<WorkspaceView>
   /// not apply the page that is now on screen.
   bool get skipCoveredPage {
     if (!widget.mobileRoutePage || !mounted) return false;
-    final pageRoute = context.findAncestorStateOfType<_MobileWorkspaceRouteState>();
+    final pageRoute = context
+        .findAncestorStateOfType<_MobileWorkspaceRouteState>();
     return pageRoute != null && !pageRoute.active;
   }
 
@@ -237,7 +238,8 @@ class _WorkspaceViewState extends State<WorkspaceView>
   _MobileNavigationSelection get mobileNavigationSelection =>
       _mobileNavigationSelection ??= _MobileNavigationSelection(this);
 
-  _WorkspaceViewState? get mobileHost => widget.mobileHost as _WorkspaceViewState?;
+  _WorkspaceViewState? get mobileHost =>
+      widget.mobileHost as _WorkspaceViewState?;
   TaskSurfaceSeed? taskSeed;
   void openTaskSurface(
     Map<String, dynamic> row,
@@ -383,7 +385,9 @@ class _WorkspaceViewState extends State<WorkspaceView>
         ? null
         : w.navigation.translateForLayout(compact: compact);
     if (crossed) {
-      w.navigation.markLayoutCrossing(translated: translation != null && compact);
+      w.navigation.markLayoutCrossing(
+        translated: translation != null && compact,
+      );
     }
     if (translation == null && !crossed) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -611,20 +615,13 @@ class _WorkspaceViewState extends State<WorkspaceView>
   late MessageReferenceDirectory activityDirectory;
   late ChatAgentPresentation liveActivities;
 
-  /// The shell rebuilds only when the live activity bar appears or leaves
-  /// (the mobile home inset); the bar itself follows every activity change.
-  final liveActivityShown = ValueNotifier(false);
-  void syncLiveActivityShown() {
-    final latest = liveActivities.latest;
-    liveActivityShown.value =
-        latest != null && liveActivities.agent(latest.agentId) != null;
-  }
-
   /// Sidebar agent rows and DM peers render identity fields only; agent
   /// presence patches never rebuild the shell.
   late WorkspaceEntitySelection shellIdentities;
-  WorkspaceEntitySelection bindShellIdentities() =>
-      WorkspaceEntitySelection(w.services.entityDirectory, (d) => d.authorRevision);
+  WorkspaceEntitySelection bindShellIdentities() => WorkspaceEntitySelection(
+    w.services.entityDirectory,
+    (d) => d.authorRevision,
+  );
   void syncPresentation() {
     if (skipCoveredPage) return;
     unawaited(
@@ -636,10 +633,13 @@ class _WorkspaceViewState extends State<WorkspaceView>
     );
   }
 
-  Widget liveActivityBar() => NativeLiveAgentActivityBar(
+  /// The working-agents summary (faces and count, opening Working now). It
+  /// listens to the activity itself, so the shell never rebuilds for it.
+  Widget workingSummary() => NativeWorkingAgentsSummary(
     activities: liveActivities,
     presentation: presentation,
     origin: w.client.origin,
+    onOpenAgent: (id) => w.openProfile(RaftProfileKind.agent, id),
   );
   bool get wide => !RaftAdaptiveWorkspace.compactOf(context);
 
@@ -697,7 +697,8 @@ class _WorkspaceViewState extends State<WorkspaceView>
     HardwareKeyboard.instance.addHandler(globalShortcut);
     w.addListener(syncMobileAppBadge);
     syncMobileAppBadge();
-    activityUnread = w.services.activityUnread..addListener(activityUnreadChanged);
+    activityUnread = w.services.activityUnread
+      ..addListener(activityUnreadChanged);
     serverUnread = mobileHost?.serverUnread ?? SourceServerUnreadStore(w);
     serverUnread.addListener(serverUnreadChanged);
     serverMenu.addListener(serverMenuChanged);
@@ -711,8 +712,6 @@ class _WorkspaceViewState extends State<WorkspaceView>
     liveActivities =
         mobileHost?.liveActivities ??
         ChatAgentPresentation(w, activityDirectory);
-    liveActivities.addListener(syncLiveActivityShown);
-    syncLiveActivityShown();
     shellIdentities = bindShellIdentities();
     w.addListener(syncChannelSearch);
     w.addListener(syncPresentation);
@@ -783,7 +782,14 @@ class _WorkspaceViewState extends State<WorkspaceView>
       try {
         final result = await w.client.post(
           '/feature-flags/evaluate',
-          data: featureFlagEvaluateBody(keys: ['slack_bridge_v0', 'provider_connections_v0', 'server_labs_ui_v0'], serverId: w.server!.id),
+          data: featureFlagEvaluateBody(
+            keys: [
+              'slack_bridge_v0',
+              'provider_connections_v0',
+              'server_labs_ui_v0',
+            ],
+            serverId: w.server!.id,
+          ),
         );
         if (!mounted || request != bridgeRequest) return;
         final rows = result is Map
@@ -830,7 +836,8 @@ class _WorkspaceViewState extends State<WorkspaceView>
       w.addListener(syncMobileAppBadge);
       syncMobileAppBadge();
       activityUnread.removeListener(activityUnreadChanged);
-      activityUnread = w.services.activityUnread..addListener(activityUnreadChanged);
+      activityUnread = w.services.activityUnread
+        ..addListener(activityUnreadChanged);
       serverMenu.close();
       if (mobileHost == null) {
         oldWidget.controller.resumes.removeListener(appResumed);
@@ -860,9 +867,7 @@ class _WorkspaceViewState extends State<WorkspaceView>
       activityFlag.dispose();
       activityFlag = DesktopActivityFlag(w)..addListener(activityFlagChanged);
       activityDirectory = MessageReferenceDirectory(w);
-      liveActivities = ChatAgentPresentation(w, activityDirectory)
-        ..addListener(syncLiveActivityShown);
-      syncLiveActivityShown();
+      liveActivities = ChatAgentPresentation(w, activityDirectory);
       shellIdentities.dispose();
       shellIdentities = bindShellIdentities();
       w.addListener(syncPresentation);
@@ -1000,9 +1005,7 @@ class _WorkspaceViewState extends State<WorkspaceView>
     searchFocusRequests.dispose();
     quickSwitcher.dispose();
     sidebarDisclosure.dispose();
-    liveActivities.removeListener(syncLiveActivityShown);
     if (mobileHost == null) liveActivities.dispose();
-    liveActivityShown.dispose();
     shellIdentities.dispose();
     if (mobileHost == null) activityDirectory.dispose();
     activityFlag.removeListener(activityFlagChanged);
@@ -1340,7 +1343,6 @@ class _WorkspaceViewState extends State<WorkspaceView>
       presentation,
       mobileTabbar,
       railSideStore,
-      liveActivityShown,
       shellIdentities,
       sidebarDisclosure,
     ]),
@@ -1354,7 +1356,8 @@ class _WorkspaceViewState extends State<WorkspaceView>
               MobileRouteGate.staleChannel(pageRoute.widget.location, w))) {
         return pageRoute.content!;
       }
-      if (pageRoute != null && !pageRoute.active) return const SizedBox.shrink();
+      if (pageRoute != null && !pageRoute.active)
+        return const SizedBox.shrink();
       final buildStarted = RouteFrameDiagnostics.enabled
           ? RouteFrameDiagnostics.now()
           : 0;
@@ -1431,14 +1434,11 @@ class _WorkspaceViewState extends State<WorkspaceView>
           controller: w,
           onSwitchServer: showWorkspaceSwitcher,
           child: phoneChatDirect
-              ? MobileChatDirectRead(
-                  channel: true,
-                  thread: false,
-                  child: panel,
-                )
+              ? MobileChatDirectRead(channel: true, thread: false, child: panel)
               : panel,
         );
       }
+
       // Mobile home keeps the sidebar mounted while the lists load and shows
       // SidebarRowsSkeleton rows (Sidebar.tsx channelsLoading), not a spinner.
       Widget content = w.loading && w.server == null
@@ -1482,6 +1482,7 @@ class _WorkspaceViewState extends State<WorkspaceView>
           ? DesktopDirectoryView(
               key: ValueKey('directory-$mobileAuthority'),
               controller: w,
+              activities: liveActivities,
               mobileRoot: !wide,
               selected: desktopNavigation.target,
               onSelected: selectDesktopDirectoryTarget,
@@ -1492,10 +1493,11 @@ class _WorkspaceViewState extends State<WorkspaceView>
                 ? DesktopDirectoryView(
                     key: ValueKey('directory-$mobileAuthority-$route'),
                     controller: w,
+                    activities: liveActivities,
                     computers: route == 'computers',
                     selected: desktopNavigation.target,
                     onSelected: selectDesktopDirectoryTarget,
-              onOpenDm: messageDesktopProfile,
+                    onOpenDm: messageDesktopProfile,
                   )
                 : FleetView(
                     key: ValueKey('fleet-${w.server!.id}:$route'),
@@ -1546,118 +1548,118 @@ class _WorkspaceViewState extends State<WorkspaceView>
                 MediaQuery.sizeOf(context).width,
               ),
               buildList: (owner) => ResourceView(
-              key: ValueKey(
-                '${owner.server?.id}:$route:${route == 'search' ? '$searchEntryRevision:$channelSearchSeed:$channelSearchAuthority' : (wide ? 'wide' : 'narrow')}',
+                key: ValueKey(
+                  '${owner.server?.id}:$route:${route == 'search' ? '$searchEntryRevision:$channelSearchSeed:$channelSearchAuthority' : (wide ? 'wide' : 'narrow')}',
+                ),
+                controller: owner,
+                section: route,
+                // Phone tasks open on the outer workspace. That controller is
+                // the direct list's owner. Desktop has no outer host, so this
+                // page's controller is the owner.
+                onTask: (row, reload) {
+                  final host = mobileHost;
+                  if (host != null) {
+                    host.openTaskSurface(row, reload);
+                    return;
+                  }
+                  openTaskSurface(row, reload);
+                },
+                mobileRoot: !wide && rootTab == 'activity',
+                activitySidebarEnabled:
+                    route == 'activity' && activityFlag.enabled,
+                compactActivitySidebar:
+                    route == 'activity' &&
+                    wide &&
+                    activityFlag.masterDetail(MediaQuery.sizeOf(context).width),
+                onActivityWindowAccepted: route == 'activity'
+                    ? (window, {firstPage = false}) {
+                        if (!identical(attentionOwner, activityUnread)) return;
+                        if (window == null) {
+                          attentionOwner.deny(
+                            scope: attentionScope,
+                            authorityEpoch: attentionEpoch,
+                          );
+                        } else {
+                          attentionOwner.acceptWindow(
+                            window,
+                            scope: attentionScope,
+                            authorityEpoch: attentionEpoch,
+                            firstPage: firstPage,
+                          );
+                        }
+                      }
+                    : null,
+                initialQuery:
+                    route == 'search' &&
+                        restoreSavedSearchRevision != searchEntryRevision
+                    ? location.query('q')
+                    : null,
+                searchMemory: quickSwitcher.searchMemory,
+                searchFocusRequests: route == 'search'
+                    ? searchFocusRequests
+                    : null,
+                restoreSearchState:
+                    searchEntryRevision == 0 ||
+                    restoreSavedSearchRevision == searchEntryRevision,
+                initialSearchDeferUntilQuery:
+                    route == 'search' && channelSearchSeed != null,
+                initialSearchChannelId: route == 'search'
+                    ? channelSearchSeed
+                    : null,
+                onBack: dismissPanel,
+                // Search and activity are not direct. [owner] is this page's
+                // controller, and these openers use that same controller.
+                onSearchEntity: wide ? openDesktopEntity : null,
+                onSearchMessage: openSearchMessage,
+                onSearchQueryCommitted: route == 'search'
+                    ? (query) {
+                        if (!mounted ||
+                            navigationScope != mobileAuthority ||
+                            !owner.canVisitSection('search')) {
+                          return;
+                        }
+                        if (owner.navigation.replaceSearchQuery(query)) {
+                          owner.notifyListeners();
+                        }
+                      }
+                    : null,
+                activitySelectedTarget:
+                    route == 'activity' &&
+                        wide &&
+                        activityFlag.masterDetail(
+                          MediaQuery.sizeOf(context).width,
+                        )
+                    ? desktopNavigation.target
+                    : null,
+                onActivityCanonical:
+                    wide &&
+                        activityFlag.masterDetail(
+                          MediaQuery.sizeOf(context).width,
+                        )
+                    ? (row) => openCanonicalActivity(row)
+                    : null,
+                onActivityItem: (row) =>
+                    wide &&
+                        activityFlag.masterDetail(
+                          MediaQuery.sizeOf(context).width,
+                        )
+                    ? openDesktopActivity(row)
+                    : openCanonicalActivity(row, single: true),
+                onMessage: (channelId, messageId) async {
+                  scaffold.currentState?.closeDrawer();
+                  if (wide &&
+                      (route == 'search' ||
+                          route == 'activity' &&
+                              activityFlag.masterDetail(
+                                MediaQuery.sizeOf(context).width,
+                              ))) {
+                    await openDesktopConversation(channelId, messageId);
+                  } else {
+                    desktopNavigation.clear();
+                    await owner.jumpToMessage(channelId, messageId);
+                  }
+                },
               ),
-              controller: owner,
-              section: route,
-              // Phone tasks open on the outer workspace. That controller is
-              // the direct list's owner. Desktop has no outer host, so this
-              // page's controller is the owner.
-              onTask: (row, reload) {
-                final host = mobileHost;
-                if (host != null) {
-                  host.openTaskSurface(row, reload);
-                  return;
-                }
-                openTaskSurface(row, reload);
-              },
-              mobileRoot: !wide && rootTab == 'activity',
-              activitySidebarEnabled:
-                  route == 'activity' && activityFlag.enabled,
-              compactActivitySidebar:
-                  route == 'activity' &&
-                  wide &&
-                  activityFlag.masterDetail(MediaQuery.sizeOf(context).width),
-              onActivityWindowAccepted: route == 'activity'
-                  ? (window, {firstPage = false}) {
-                      if (!identical(attentionOwner, activityUnread)) return;
-                      if (window == null) {
-                        attentionOwner.deny(
-                          scope: attentionScope,
-                          authorityEpoch: attentionEpoch,
-                        );
-                      } else {
-                        attentionOwner.acceptWindow(
-                          window,
-                          scope: attentionScope,
-                          authorityEpoch: attentionEpoch,
-                          firstPage: firstPage,
-                        );
-                      }
-                    }
-                  : null,
-              initialQuery:
-                  route == 'search' &&
-                      restoreSavedSearchRevision != searchEntryRevision
-                  ? location.query('q')
-                  : null,
-              searchMemory: quickSwitcher.searchMemory,
-              searchFocusRequests: route == 'search'
-                  ? searchFocusRequests
-                  : null,
-              restoreSearchState:
-                  searchEntryRevision == 0 ||
-                  restoreSavedSearchRevision == searchEntryRevision,
-              initialSearchDeferUntilQuery:
-                  route == 'search' && channelSearchSeed != null,
-              initialSearchChannelId: route == 'search'
-                  ? channelSearchSeed
-                  : null,
-              onBack: dismissPanel,
-              // Search and activity are not direct. [owner] is this page's
-              // controller, and these openers use that same controller.
-              onSearchEntity: wide ? openDesktopEntity : null,
-              onSearchMessage: openSearchMessage,
-              onSearchQueryCommitted: route == 'search'
-                  ? (query) {
-                      if (!mounted ||
-                          navigationScope != mobileAuthority ||
-                          !owner.canVisitSection('search')) {
-                        return;
-                      }
-                      if (owner.navigation.replaceSearchQuery(query)) {
-                        owner.notifyListeners();
-                      }
-                    }
-                  : null,
-              activitySelectedTarget:
-                  route == 'activity' &&
-                      wide &&
-                      activityFlag.masterDetail(
-                        MediaQuery.sizeOf(context).width,
-                      )
-                  ? desktopNavigation.target
-                  : null,
-              onActivityCanonical:
-                  wide &&
-                      activityFlag.masterDetail(
-                        MediaQuery.sizeOf(context).width,
-                      )
-                  ? (row) => openCanonicalActivity(row)
-                  : null,
-              onActivityItem: (row) =>
-                  wide &&
-                      activityFlag.masterDetail(
-                        MediaQuery.sizeOf(context).width,
-                      )
-                  ? openDesktopActivity(row)
-                  : openCanonicalActivity(row, single: true),
-              onMessage: (channelId, messageId) async {
-                scaffold.currentState?.closeDrawer();
-                if (wide &&
-                    (route == 'search' ||
-                        route == 'activity' &&
-                            activityFlag.masterDetail(
-                              MediaQuery.sizeOf(context).width,
-                            ))) {
-                  await openDesktopConversation(channelId, messageId);
-                } else {
-                  desktopNavigation.clear();
-                  await owner.jumpToMessage(channelId, messageId);
-                }
-              },
-            ),
             );
       if (['members', 'agents', 'computers'].contains(route)) {
         final detail = desktopContentDetail();
@@ -1755,259 +1757,236 @@ class _WorkspaceViewState extends State<WorkspaceView>
             // No drawer: phones reach the sidebar through the Home tab (as Web
             // does). A drawer here would open from a left-edge swipe, racing
             // Android's back gesture, with nothing in the app opening it.
-            body: dismissInScaffold(onLegacyEscape, RaftSystemBarSurface(
-              statusBarFallback: t.canvas,
-              child: SafeArea(
-                bottom: false,
-                // The rail paints under its own side's system inset.
-                left: !railShown || railOnRight,
-                right: !railShown || !railOnRight,
-                child: Column(
-                  children: [
-                    if (!wide && rootTab == 'computers' && !thread)
+            body: dismissInScaffold(
+              onLegacyEscape,
+              RaftSystemBarSurface(
+                statusBarFallback: t.canvas,
+                child: SafeArea(
+                  bottom: false,
+                  // The rail paints under its own side's system inset.
+                  left: !railShown || railOnRight,
+                  right: !railShown || !railOnRight,
+                  child: Column(
+                    children: [
+                      if (!wide && rootTab == 'computers' && !thread)
                       // With the rail the header sits beside it, in the content.
                       ...[
-                        if (!railShown) RaftMobileRootHeader(title: 'Computers'),
-                      ]
-                    else if (!wide &&
-                        location.route != RaftRoute.computer &&
-                        // A profile overlay brings its own header.
-                        location.profile == null &&
-                        (thread ||
-                            ![
-                              'home',
-                              'tasks',
-                              'saved',
-                              'activity',
-                              'search',
-                              'members',
-                              'settings',
-                            ].contains(route)))
-                      if (thread || !unresolvedChannelRoute)
-                        mobilePageHeader(title, thread),
-                    RaftToastPortal(controller: rowToast),
-                    Expanded(
-                      child: ProfileOutsideTapDismiss(
-                        controller: w,
-                        panelKey: profilePanelKeyFor(w),
-                        // Wide layouts only: a phone / folded profile is a page.
-                        enabled: wide,
-                        onDismiss: w.closeProfile,
-                        child: RaftAdaptiveWorkspace(
-                          key: ValueKey('adaptive-workspace-$authority'),
-                          // Focus mode may hide the channel only beside its own
-                          // thread on a chat route (Web canToggleChannel).
-                          focusScope:
-                              thread &&
-                                  (route == 'chat' || route == 'home') &&
-                                  (w.messageDomain.threadParentChannelId ==
-                                          null ||
-                                      w.channel?.id ==
-                                          w.messageDomain
-                                              .threadParentChannelId)
-                              ? w.channel?.id
-                              : null,
-                          onPresentationChanged: (main, thread) =>
-                              w.setConversationPresentation(
-                                this,
-                                main: main,
-                                thread: thread,
-                              ),
-                          sidebarWidth: sidebarWidth,
-                          trailingExtent: legacyDockWidth,
-                          threadWidth: threadWidth,
-                          onPanelWidthsChanged: savePanels,
-                          sidebarResizeLabel: tr('Resize sidebar'),
-                          threadResizeLabel: tr('Resize thread'),
-                          profileWidth: profilePanelWidth.value,
-                          onProfileWidthChanged: profilePanelWidth.save,
-                          profileResizeLabel: tr('Resize profile'),
-                          sidebarVisible: DesktopNavigationPolicy.forSection(
-                            route,
-                          ).usesConversationSidebar,
-                          // Phones mount neither; only desktop widths consume them.
-                          sidebar: wide
-                              ? SidebarFinderLayer(
-                                  host: quickSwitcher,
-                                  child: sidebar(),
-                                )
-                              : const SizedBox.shrink(),
-                          navigationOnRight: navigationOnRight,
-                          rail: wide
-                              ? RailGestureExclusion(
-                                  itemArea: railItemArea,
-                                  // A rail on the right edge is kept clear of
-                                  // the back swipe, as the phone rail is.
-                                  enabled: navigationOnRight,
-                                  child: workspaceRail(),
-                                )
-                              : const SizedBox.shrink(),
-                          mobileNavigationFloating: !t.brutal,
-                          mobileNavigationClearance: raftTabBarClearance(
-                            liveActivity: liveActivityVisible,
-                          ),
-                          mobileRail: railShown
-                              ? RailGestureExclusion(
-                                  itemArea: railItemArea,
-                                  // Back swipes start at both window edges;
-                                  // a rail on the right is kept clear of them.
-                                  enabled: railOnRight,
-                                  child: workspaceRail(),
-                                )
-                              : null,
-                          mobileNavigation: railNavigation
-                              // Only the live activity strip docks in the
-                              // content region next to the rail.
-                              ? railShown && liveActivityVisible
-                                    ? Padding(
-                                        padding: EdgeInsets.only(
-                                          bottom: raftSystemBottomInset(
-                                            context,
-                                          ),
-                                        ),
-                                        child: liveActivityBar(),
-                                      )
-                                    : null
-                              : w.navigation.mobileRootTabOf(location) ==
-                                        null ||
-                                    w.server == null
-                              ? null
-                              : Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    liveActivityBar(),
-                                    mobileNavigation(),
-                                  ],
+                        if (!railShown)
+                          RaftMobileRootHeader(title: 'Computers'),
+                      ] else if (!wide &&
+                          location.route != RaftRoute.computer &&
+                          // A profile overlay brings its own header.
+                          location.profile == null &&
+                          (thread ||
+                              ![
+                                'home',
+                                'tasks',
+                                'saved',
+                                'activity',
+                                'search',
+                                'members',
+                                'settings',
+                              ].contains(route)))
+                        if (thread || !unresolvedChannelRoute)
+                          mobilePageHeader(title, thread),
+                      RaftToastPortal(controller: rowToast),
+                      Expanded(
+                        child: ProfileOutsideTapDismiss(
+                          controller: w,
+                          panelKey: profilePanelKeyFor(w),
+                          // Wide layouts only: a phone / folded profile is a page.
+                          enabled: wide,
+                          onDismiss: w.closeProfile,
+                          child: RaftAdaptiveWorkspace(
+                            key: ValueKey('adaptive-workspace-$authority'),
+                            // Focus mode may hide the channel only beside its own
+                            // thread on a chat route (Web canToggleChannel).
+                            focusScope:
+                                thread &&
+                                    (route == 'chat' || route == 'home') &&
+                                    (w.messageDomain.threadParentChannelId ==
+                                            null ||
+                                        w.channel?.id ==
+                                            w
+                                                .messageDomain
+                                                .threadParentChannelId)
+                                ? w.channel?.id
+                                : null,
+                            onPresentationChanged: (main, thread) =>
+                                w.setConversationPresentation(
+                                  this,
+                                  main: main,
+                                  thread: thread,
                                 ),
-                          content: Column(
-                            children: [
-                                        // The Computers root header sits in the
-                                        // content region beside the rail.
-                                        if (railShown &&
-                                            rootTab == 'computers' &&
-                                            !thread)
-                                          RaftMobileRootHeader(
-                                            title: 'Computers',
-                                          ),
-                                        // Settings composes its own sidebar and
-                                        // content headers in the shared top row.
-                                        if (wide &&
-                                            !unresolvedChannelRoute &&
-                                            ![
-                                              'settings',
-                                              'home',
-                                              'tasks',
-                                              'saved',
-                                              'activity',
-                                              'search',
-                                              'members',
-                                              'computers',
-                                            ].contains(route))
-                                          route == 'chat' &&
-                                                  w.channel != null &&
-                                                  [
-                                                    'channel',
-                                                    'private',
-                                                    'joint',
-                                                  ].contains(w.channel!.type)
-                                              ? channelHeader()
-                                              : route == 'chat' &&
-                                                    w.channel?.type == 'dm'
-                                              ? dmHeader()
-                                              : RaftPageHeader(
-                                                  title: route == 'home'
-                                                      ? (w.channel?.name ??
-                                                            title)
-                                                      : title,
-                                                  height: raftPageHeaderHeight(
-                                                    context,
-                                                  ),
-                                                  icon: RaftIcon(
-                                                    sectionGlyph(route),
-                                                  ),
-                                                  subtitle: route == 'chat'
-                                                      ? w.channel?.string(
-                                                          'description',
-                                                        )
-                                                      : null,
-                                                  actions: [
-                                                    RaftTooltip(
-                                                      message: w.connected
-                                                          ? tr('Connected')
-                                                          : tr('Reconnecting'),
-                                                      child: Icon(
-                                                        Icons.circle,
-                                                        size: 8,
-                                                        color: w.connected
-                                                            ? t.colors['success']
-                                                            : t.muted,
-                                                      ),
-                                                    ),
-                                                    if (route == 'chat' &&
-                                                        w.channel != null)
-                                                      RaftIconButton(
-                                                        tooltip:
-                                                            'Channel settings',
-                                                        onPressed: () =>
-                                                            channelSettings(),
-                                                        glyph: RaftGlyph
-                                                            .slidersHorizontal,
-                                                      ),
-                                                    RaftIconButton(
-                                                      tooltip: 'Refresh',
-                                                      onPressed: () =>
-                                                          w.channel == null
-                                                          ? w.bootstrap()
-                                                          : w.selectChannel(
-                                                              w.channel!,
-                                                            ),
-                                                      glyph:
-                                                          RaftGlyph.refreshCw,
-                                                    ),
-                                                  ],
-                                                ),
+                            sidebarWidth: sidebarWidth,
+                            trailingExtent: legacyDockWidth,
+                            threadWidth: threadWidth,
+                            onPanelWidthsChanged: savePanels,
+                            sidebarResizeLabel: tr('Resize sidebar'),
+                            threadResizeLabel: tr('Resize thread'),
+                            profileWidth: profilePanelWidth.value,
+                            onProfileWidthChanged: profilePanelWidth.save,
+                            profileResizeLabel: tr('Resize profile'),
+                            sidebarVisible: DesktopNavigationPolicy.forSection(
+                              route,
+                            ).usesConversationSidebar,
+                            // Phones mount neither; only desktop widths consume them.
+                            sidebar: wide
+                                ? SidebarFinderLayer(
+                                    host: quickSwitcher,
+                                    child: sidebar(),
+                                  )
+                                : const SizedBox.shrink(),
+                            navigationOnRight: navigationOnRight,
+                            rail: wide
+                                ? RailGestureExclusion(
+                                    itemArea: railItemArea,
+                                    // A rail on the right edge is kept clear of
+                                    // the back swipe, as the phone rail is.
+                                    enabled: navigationOnRight,
+                                    child: workspaceRail(),
+                                  )
+                                : const SizedBox.shrink(),
+                            mobileNavigationFloating: !t.brutal,
+                            mobileNavigationClearance: raftTabBarClearance(),
+                            mobileRail: railShown
+                                ? RailGestureExclusion(
+                                    itemArea: railItemArea,
+                                    // Back swipes start at both window edges;
+                                    // a rail on the right is kept clear of them.
+                                    enabled: railOnRight,
+                                    child: workspaceRail(),
+                                  )
+                                : null,
+                            // Nothing is attached above the tab bar. With the
+                            // side rail there is no bottom navigation at all.
+                            mobileNavigation: railNavigation
+                                ? null
+                                : w.navigation.mobileRootTabOf(location) ==
+                                          null ||
+                                      w.server == null
+                                ? null
+                                : mobileNavigation(),
+                            content: Column(
+                              children: [
+                                // The Computers root header sits in the
+                                // content region beside the rail.
+                                if (railShown &&
+                                    rootTab == 'computers' &&
+                                    !thread)
+                                  RaftMobileRootHeader(title: 'Computers'),
+                                // Settings composes its own sidebar and
+                                // content headers in the shared top row.
+                                if (wide &&
+                                    !unresolvedChannelRoute &&
+                                    ![
+                                      'settings',
+                                      'home',
+                                      'tasks',
+                                      'saved',
+                                      'activity',
+                                      'search',
+                                      'members',
+                                      'computers',
+                                    ].contains(route))
+                                  route == 'chat' &&
+                                          w.channel != null &&
+                                          [
+                                            'channel',
+                                            'private',
+                                            'joint',
+                                          ].contains(w.channel!.type)
+                                      ? channelHeader()
+                                      : route == 'chat' &&
+                                            w.channel?.type == 'dm'
+                                      ? dmHeader()
+                                      : RaftPageHeader(
+                                          title: route == 'home'
+                                              ? (w.channel?.name ?? title)
+                                              : title,
+                                          height: raftPageHeaderHeight(context),
+                                          icon: RaftIcon(sectionGlyph(route)),
+                                          subtitle: route == 'chat'
+                                              ? w.channel?.string('description')
+                                              : null,
+                                          actions: [
+                                            RaftTooltip(
+                                              message: w.connected
+                                                  ? tr('Connected')
+                                                  : tr('Reconnecting'),
+                                              child: Icon(
+                                                Icons.circle,
+                                                size: 8,
+                                                color: w.connected
+                                                    ? t.colors['success']
+                                                    : t.muted,
+                                              ),
+                                            ),
+                                            if (route == 'chat' &&
+                                                w.channel != null)
+                                              RaftIconButton(
+                                                tooltip: 'Channel settings',
+                                                onPressed: () =>
+                                                    channelSettings(),
+                                                glyph:
+                                                    RaftGlyph.slidersHorizontal,
+                                              ),
+                                            RaftIconButton(
+                                              tooltip: 'Refresh',
+                                              onPressed: () => w.channel == null
+                                                  ? w.bootstrap()
+                                                  : w.selectChannel(w.channel!),
+                                              glyph: RaftGlyph.refreshCw,
+                                            ),
+                                          ],
+                                        ),
+                                Expanded(
+                                  child: KeyedSubtree(
+                                    key: const ValueKey('classic-editor'),
+                                    child: content,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            thread: thread
+                                ? RaftConversationSurface(
+                                    role: RaftConversationSurfaceRole
+                                        .threadTimeline,
+                                    child: Column(
+                                      children: [
+                                        if (wide) sourceThreadHeader(),
                                         Expanded(
-                                          child: KeyedSubtree(
-                                            key: const ValueKey('classic-editor'),
-                                            child: content,
+                                          child: ServerSetupGate(
+                                            controller: w,
+                                            onSwitchServer:
+                                                showWorkspaceSwitcher,
+                                            child: phoneChatDirect
+                                                ? MobileChatDirectRead(
+                                                    channel: false,
+                                                    thread: true,
+                                                    child: _phoneThreadChat(),
+                                                  )
+                                                : _phoneThreadChat(),
                                           ),
                                         ),
                                       ],
                                     ),
-                          thread: thread
-                              ? RaftConversationSurface(
-                                  role: RaftConversationSurfaceRole
-                                      .threadTimeline,
-                                  child: Column(
-                                    children: [
-                                      if (wide) sourceThreadHeader(),
-                                      Expanded(
-                                        child: ServerSetupGate(
-                                          controller: w,
-                                          onSwitchServer: showWorkspaceSwitcher,
-                                          child: phoneChatDirect
-                                              ? MobileChatDirectRead(
-                                                  channel: false,
-                                                  thread: true,
-                                                  child: _phoneThreadChat(),
-                                                )
-                                              : _phoneThreadChat(),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                )
-                              : null,
-                          profile: sidePanels.profile
-                              ? profileSidePanel(location.profile!, page: !wide)
-                              : null,
+                                  )
+                                : null,
+                            profile: sidePanels.profile
+                                ? profileSidePanel(
+                                    location.profile!,
+                                    page: !wide,
+                                  )
+                                : null,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            )),
+            ),
           ),
         ),
       );
@@ -2024,9 +2003,8 @@ class _WorkspaceViewState extends State<WorkspaceView>
                     t,
                     MediaQuery.sizeOf(context).height,
                   ) +
-                  (DesktopNavigationPolicy.forSection(
-                        route,
-                      ).usesConversationSidebar
+                  (DesktopNavigationPolicy.forSection(route)
+                          .usesConversationSidebar
                       ? sidebarWidth
                       : 0)
             : 0,
@@ -2095,7 +2073,8 @@ class _WorkspaceViewState extends State<WorkspaceView>
   Widget sourceThreadHeader({bool mobile = false, VoidCallback? onClose}) {
     final unresolved =
         w.threadChannelId == null &&
-        (w.messageDomain.threadResolutionLoading || w.messageDomain.threadResolutionError != null);
+        (w.messageDomain.threadResolutionLoading ||
+            w.messageDomain.threadResolutionError != null);
     // The menu needs only the thread identity, never the loaded parent row,
     // so the header's actions are present at its first frame.
     final parentId = w.messageDomain.threadParentMessageId,
@@ -2106,55 +2085,63 @@ class _WorkspaceViewState extends State<WorkspaceView>
       listenable: w.services.threadFollowers,
       builder: (context, _) => RetainWhileCovered(
         builder: (context) => RaftThreadHeader(
-        key: Key(
-          mobile ? 'workspace-mobile-detail-header' : 'workspace-thread-header',
-        ),
-        presentation: RaftThreadPresentation.side,
-        threadLabel: tr('Thread'),
-        jumpLabel: tr('Jump to beginning'),
-        backLabel: threadSelection.active ? 'Exit selection' : 'Close thread',
-        closeLabel: threadSelection.active ? 'Exit selection' : 'Close thread',
-        backKey: mobile
-            ? const Key('mobile-detail-back')
-            : const Key('thread-back'),
-        closeKey: const Key('thread-close'),
-        parentLabel: unresolved || sourceChannel == null
-            ? null
-            : '${sourceChannel.type == 'dm' ? '@' : '#'}${sourceChannel.name}',
-        interactiveTitle: !unresolved,
-        onBack: onClose ?? (mobile ? dismissPanel : closeThreadPanel),
-        onClose: onClose ?? (mobile ? dismissPanel : closeThreadPanel),
-        onJumpToStart: unresolved ? null : threadViewport.jumpToBeginning,
-        followers: threadId == null || unresolved
-            ? null
-            : ThreadAgentFollowersView(
-                key: ValueKey('thread-followers-$threadId'),
+          key: Key(
+            mobile
+                ? 'workspace-mobile-detail-header'
+                : 'workspace-thread-header',
+          ),
+          presentation: RaftThreadPresentation.side,
+          threadLabel: tr('Thread'),
+          jumpLabel: tr('Jump to beginning'),
+          backLabel: threadSelection.active ? 'Exit selection' : 'Close thread',
+          closeLabel: threadSelection.active
+              ? 'Exit selection'
+              : 'Close thread',
+          backKey: mobile
+              ? const Key('mobile-detail-back')
+              : const Key('thread-back'),
+          closeKey: const Key('thread-close'),
+          parentLabel: unresolved || sourceChannel == null
+              ? null
+              : '${sourceChannel.type == 'dm' ? '@' : '#'}${sourceChannel.name}',
+          interactiveTitle: !unresolved,
+          onBack: onClose ?? (mobile ? dismissPanel : closeThreadPanel),
+          onClose: onClose ?? (mobile ? dismissPanel : closeThreadPanel),
+          onJumpToStart: unresolved ? null : threadViewport.jumpToBeginning,
+          followers: threadId == null || unresolved
+              ? null
+              : ThreadAgentFollowersView(
+                  key: ValueKey('thread-followers-$threadId'),
+                  controller: w,
+                  threadChannelId: threadId,
+                  onOpenAgent: (id) => w.openProfile(RaftProfileKind.agent, id),
+                ),
+          followersVisible:
+              threadId != null &&
+              !unresolved &&
+              w.services.threadFollowers.visible(threadId),
+          actions: [
+            if (!unresolved && parentId != null && parentChannelId != null)
+              ThreadActions(
+                key: ValueKey('thread-menu-$parentId'),
                 controller: w,
-                threadChannelId: threadId,
-                onOpenAgent: (id) => w.openProfile(RaftProfileKind.agent, id),
+                parentMessageId: parentId,
+                menuMode: true,
+                // Web ThreadPanel openThreadSearch: the in-thread search bar.
+                onSearch: w.threadSearch.open,
+                onViewChannel: () {
+                  w.closeThread(navigate: false);
+                  // Web openThreadParentMessageRoute: desktop pushes, phone
+                  // replaces the thread entry.
+                  w.jumpToMessage(
+                    parentChannelId,
+                    parentId,
+                    replaceEntry: !wide,
+                  );
+                },
               ),
-        followersVisible:
-            threadId != null &&
-            !unresolved &&
-            w.services.threadFollowers.visible(threadId),
-        actions: [
-          if (!unresolved && parentId != null && parentChannelId != null)
-            ThreadActions(
-              key: ValueKey('thread-menu-$parentId'),
-              controller: w,
-              parentMessageId: parentId,
-              menuMode: true,
-              // Web ThreadPanel openThreadSearch: the in-thread search bar.
-              onSearch: w.threadSearch.open,
-              onViewChannel: () {
-                w.closeThread(navigate: false);
-                // Web openThreadParentMessageRoute: desktop pushes, phone
-                // replaces the thread entry.
-                w.jumpToMessage(parentChannelId, parentId, replaceEntry: !wide);
-              },
-            ),
-        ],
-      ),
+          ],
+        ),
       ),
     );
   }
@@ -2618,9 +2605,10 @@ class _WorkspaceViewState extends State<WorkspaceView>
     // `onBack=closeSlot` with `backButtonVisibility="always"`: Back at every
     // width. A directory / route detail keeps Back below `md` only (the phone
     // page), and nothing beside the list on wide layouts.
-    final slot = const {'search', 'activity'}.contains(
-      desktopNavigation.masterRoute,
-    );
+    final slot = const {
+      'search',
+      'activity',
+    }.contains(desktopNavigation.masterRoute);
     if (target.kind == DesktopContentKind.human) {
       return MemberProfileView(
         key: key,
@@ -2793,9 +2781,7 @@ class _WorkspaceViewState extends State<WorkspaceView>
         w.location.route == RaftRoute.settings ? 'settings' : w.section,
       ).railMode,
       onSelected: (id) => wide
-          ? (id == 'search'
-                ? openSearchFromRail()
-                : select(id, fromRail: true))
+          ? (id == 'search' ? openSearchFromRail() : select(id, fromRail: true))
           : selectRailDestination(id),
       workspaceName: w.server?.name ?? 'Raft',
       workspaceTooltip: tr('Switch workspace'),
@@ -2860,8 +2846,7 @@ class _WorkspaceViewState extends State<WorkspaceView>
       key: const Key('rail-settings'),
       label: tr('Settings'),
       selected: w.location.route == RaftRoute.settings,
-      onPressed: () =>
-          wide
+      onPressed: () => wide
           ? select('settings', fromRail: true)
           : selectRailDestination('settings'),
       glyph: RaftGlyph.settings,
@@ -2886,6 +2871,7 @@ class _WorkspaceViewState extends State<WorkspaceView>
       ),
       headerActions: mobile
           ? [
+              RaftWideHeaderAction(child: workingSummary()),
               SystemNotificationBell(
                 key: const Key('mobile-home-notifications'),
                 controller: w,
@@ -3191,17 +3177,24 @@ class _WorkspaceViewState extends State<WorkspaceView>
     );
   }
 
-  Widget channelHeader({bool mobile = false}) => WorkspaceChannelHeader(
-    headerKey: Key(
-      mobile ? 'workspace-mobile-detail-header' : 'workspace-channel-header',
-    ),
+  Widget channelHeader({bool mobile = false}) => NativeChannelWorkingAgents(
     controller: w,
-    channel: w.channel!,
-    onBack: mobile ? dismissPanel : null,
-    backKey: mobile ? const Key('mobile-detail-back') : null,
-    backLabel: mainSelection.active ? tr('Exit selection') : tr('Back'),
-    onSearch: searchThisChannel,
-    onSettings: channelSettings,
+    channelId: w.channel!.id,
+    activities: liveActivities,
+    presentation: presentation,
+    builder: (context, working) => WorkspaceChannelHeader(
+      headerKey: Key(
+        mobile ? 'workspace-mobile-detail-header' : 'workspace-channel-header',
+      ),
+      controller: w,
+      channel: w.channel!,
+      onBack: mobile ? dismissPanel : null,
+      backKey: mobile ? const Key('mobile-detail-back') : null,
+      backLabel: mainSelection.active ? tr('Exit selection') : tr('Back'),
+      onSearch: searchThisChannel,
+      onSettings: channelSettings,
+      workingAgents: working,
+    ),
   );
 
   /// ChatPanel's DM header: identity from the DM record (first frame), the
@@ -3443,7 +3436,9 @@ class _WorkspaceViewState extends State<WorkspaceView>
   /// dot when one of its rows has unread messages and is not Activity-muted.
   bool groupHasUnread(Iterable<SidebarEntry> entries) => entries.any((e) {
     final c = e.channel;
-    return c != null && !c.flag('activityMuted') && (w.conversationReads.unread[c.id] ?? 0) > 0;
+    return c != null &&
+        !c.flag('activityMuted') &&
+        (w.conversationReads.unread[c.id] ?? 0) > 0;
   });
 
   Widget? groupAttention(SidebarGroup group, Iterable<SidebarEntry> entries) =>
@@ -3471,8 +3466,9 @@ class _WorkspaceViewState extends State<WorkspaceView>
       emptyLabel: switch (group.id) {
         'system:pinned' => tr('Drag channels or DMs here to pin'),
         'system:joint' => tr('No joint channels yet'),
-        'system:channels' =>
-          tr(joinedOnly ? 'No joined channels' : 'No channels yet'),
+        'system:channels' => tr(
+          joinedOnly ? 'No joined channels' : 'No channels yet',
+        ),
         _ => '',
       },
       onExpandedChanged: (expanded) =>
@@ -3562,9 +3558,8 @@ class _WorkspaceViewState extends State<WorkspaceView>
     final agent = peer.agent, name = peer.name;
     final description = custom || (pinned && agent) ? '' : peer.description;
     final source = peer.avatar;
-    final threads = SidebarThreadUnread.of(
-      w,
-    ).forChannel(c.id, joined: c.joined);
+    final threads = SidebarThreadUnread.of(w)
+        .forChannel(c.id, joined: c.joined);
     return RaftNavItem(
       key: ValueKey('sidebar-channel-${c.id}'),
       leading: c.type == 'dm'
@@ -3583,6 +3578,10 @@ class _WorkspaceViewState extends State<WorkspaceView>
       contextMenuOnLongPress: !reorderable,
       description: c.type == 'dm' && description.isNotEmpty
           ? description
+          : null,
+      // What a working agent is doing takes the place of its runtime.
+      activityText: agent && c.string('peerId').isNotEmpty
+          ? liveActivities.rowText(c.string('peerId'))
           : null,
       label: c.type == 'dm' ? name : c.name,
       glyph: c.type == 'dm'
@@ -3618,14 +3617,6 @@ class _WorkspaceViewState extends State<WorkspaceView>
     );
   }
 
-  /// The live-activity strip above the mobile tab bar (Web 116 px clearance).
-  bool get liveActivityVisible {
-    final latest = liveActivities.latest;
-    return presentation.value.liveActivity &&
-        latest != null &&
-        liveActivities.agent(latest.agentId) != null;
-  }
-
   Widget sidebar({bool mobileHome = false}) {
     final edgeToEdgeHome =
         mobileHome &&
@@ -3655,10 +3646,14 @@ class _WorkspaceViewState extends State<WorkspaceView>
                 onServer: showWorkspaceSwitcher,
                 onBilling: () => select('billing'),
                 serverSwitcher: workspaceServerMenu(mobile: true),
+                workingSummary: RaftWideHeaderAction(child: workingSummary()),
               )
             else
+              // The desktop has no top bar here, so the working summary sits
+              // at the end of the Chat heading.
               RaftChatSidebarHeading(
                 label: tr('Chat'),
+                trailing: workingSummary(),
               ),
             if (!mobileHome) const SidebarConversationFinderBox(),
             Expanded(
@@ -3686,7 +3681,6 @@ class _WorkspaceViewState extends State<WorkspaceView>
                       SliverPadding(
                         padding: recipe.contentInset(
                           headerInFlow: true,
-                          liveActivity: mobileHome && liveActivityVisible,
                           bottomBar: !railNavigation,
                           bottomInset: edgeToEdgeHome
                               ? raftSystemBottomInset(context)
@@ -3699,9 +3693,8 @@ class _WorkspaceViewState extends State<WorkspaceView>
                                 child: RaftNavItem(
                                   key: const Key('nav-search'),
                                   role: RaftNavItemRole.search,
-                                  viewportHeight: MediaQuery.sizeOf(
-                                    context,
-                                  ).height,
+                                  viewportHeight: MediaQuery.sizeOf(context)
+                                      .height,
                                   label: tr('Search'),
                                   glyph: RaftGlyph.search,
                                   selected: w.section == 'search',
@@ -3715,9 +3708,8 @@ class _WorkspaceViewState extends State<WorkspaceView>
                                 child: RaftNavItem(
                                   key: const Key('nav-activity'),
                                   role: RaftNavItemRole.activity,
-                                  viewportHeight: MediaQuery.sizeOf(
-                                    context,
-                                  ).height,
+                                  viewportHeight: MediaQuery.sizeOf(context)
+                                      .height,
                                   label: tr('Activity'),
                                   glyph: RaftGlyph.activity,
                                   selected: w.section == 'activity',
@@ -3750,7 +3742,6 @@ class _WorkspaceViewState extends State<WorkspaceView>
                 ),
               ),
             ),
-            if (!mobileHome) liveActivityBar(),
           ],
         ),
       ),

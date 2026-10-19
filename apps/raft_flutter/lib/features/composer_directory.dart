@@ -218,6 +218,11 @@ List<Map<String, dynamic>> cachedChannelRosterExternals(
         ?.externals ??
     const [];
 
+/// Notifies when a channel roster is read, replaced or dropped, for surfaces
+/// that derive from [cachedChannelRoster] (the channel header's working line).
+Listenable channelRosterChanges(WorkspaceController w) =>
+    _sharedComposerData[w.services.entityDirectory] ??= _ComposerShared();
+
 /// Accepted channel-scoped provider members. Never uses the server directory.
 List<Map<String, dynamic>> cachedExternalMembers(
   WorkspaceController w,

@@ -8,6 +8,8 @@ import '../data/workspace_entity_directory.dart';
 import 'desktop_navigation_policy.dart';
 import 'add_computer_dialog.dart';
 import 'agent_avatar_projection.dart';
+import 'agent_metadata_catalog.dart' show sourceAgentActivities;
+import 'chat_agent_presentation.dart';
 import 'computer_detail_view.dart'
     show computerAvailableVersion, computerDiskLow, computerRowStatus;
 import 'fleet_views.dart' show showFleetRegistration;
@@ -24,11 +26,15 @@ class DesktopDirectoryView extends StatefulWidget {
     required this.controller,
     required this.onSelected,
     this.onOpenDm,
+    this.activities,
     this.computers = false,
     this.mobileRoot = false,
     this.selected,
   });
   final WorkspaceController controller;
+
+  /// What each working agent is doing, shown in place of its description.
+  final ChatAgentPresentation? activities;
   final bool computers, mobileRoot;
   final DesktopContentTarget? selected;
   final ValueChanged<DesktopContentTarget> onSelected;
@@ -259,6 +265,7 @@ class _DesktopDirectoryViewState extends State<DesktopDirectoryView> {
       tag: kind == DesktopContentKind.human && value['role'] == 'guest'
           ? RaftSidebarTag(raftText(context, 'Guest'))
           : null,
+      activityText: agent ? widget.activities?.rowText(id) : null,
       description:
           kind != DesktopContentKind.computer &&
               '${value['description'] ?? ''}'.isNotEmpty
