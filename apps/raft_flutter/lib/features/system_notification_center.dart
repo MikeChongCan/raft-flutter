@@ -438,7 +438,7 @@ class _SystemNotificationBellState extends State<SystemNotificationBell>
               n.destination == SystemNoticeDestination.billing
                   ? 'Upgrade'
                   : n.destination == SystemNoticeDestination.feedback
-                  ? 'View feedback'
+                  ? 'View Feedback'
                   : 'View',
             ),
             primary: true,

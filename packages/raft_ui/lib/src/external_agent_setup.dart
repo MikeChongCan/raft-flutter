@@ -1,7 +1,7 @@
 // Presentation of the Web external agent setup block on the agent profile
 // (packages/web/src/components/agent/AgentDetailPanel.tsx "External setup",
 // ExternalAgentToken.tsx, ExternalSetupTabSegmentedControl.tsx): the setup
-// state badge, the token manager and the Hermes / Claude Code / Other agents
+// state badge, the token manager and the Hermes / Claude Code / Other Agents
 // setup steps. The app owns the status read, the credential requests and the
 // commands; values and callbacks come in here.
 // Tailwind classes written in the JSX are resolved in comments.
@@ -204,7 +204,7 @@ class RaftExternalAgentToken extends StatelessWidget {
             alignment: Alignment.centerLeft,
             child: _smOutline(
               context,
-              state.pending ? 'Generating token…' : 'Generate Login Token',
+              state.pending ? 'Generating Token…' : 'Generate Login Token',
               busy ? null : actions.onGenerate,
               key: const ValueKey('external-token-generate'),
             ),
@@ -397,10 +397,10 @@ class RaftExternalSetupSection extends StatelessWidget {
   final RaftExternalSetupTab tab;
   final ValueChanged<RaftExternalSetupTab> onTab;
 
-  /// Steps of the Hermes / Claude Code tab; null for Other agents.
+  /// Steps of the Hermes / Claude Code tab; null for Other Agents.
   final List<RaftExternalSetupStep>? steps;
 
-  /// The Other agents instruction text.
+  /// The Other Agents instruction text.
   final String otherInstruction;
   final String? copiedTarget;
 
@@ -491,7 +491,7 @@ class RaftExternalSetupSection extends StatelessWidget {
                     items: const [
                       (RaftExternalSetupTab.hermes, null, 'Hermes'),
                       (RaftExternalSetupTab.claudeCode, null, 'Claude Code'),
-                      (RaftExternalSetupTab.otherAgents, null, 'Other agents'),
+                      (RaftExternalSetupTab.otherAgents, null, 'Other Agents'),
                     ],
                     onChanged: onTab,
                   ),
@@ -512,7 +512,7 @@ class RaftExternalSetupSection extends StatelessWidget {
                           tab == RaftExternalSetupTab.otherAgents)
                         _smOutline(
                           context,
-                          copiedTarget == 'setup' ? 'Copied' : 'Copy setup',
+                          copiedTarget == 'setup' ? 'Copied' : 'Copy Setup',
                           () => onCopy(otherInstruction, 'setup'),
                           key: const ValueKey('external-setup-copy'),
                         ),
@@ -584,7 +584,7 @@ class RaftExternalSetupSection extends StatelessWidget {
                         context,
                         copiedTarget == '$tabName-step-${i + 1}'
                             ? 'Copied'
-                            : 'Copy step',
+                            : 'Copy Step',
                         () => onCopy(step.command, '$tabName-step-${i + 1}'),
                         key: ValueKey('external-step-copy-${i + 1}'),
                       ),

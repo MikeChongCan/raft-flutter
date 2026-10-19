@@ -19,6 +19,7 @@ class RaftSystemMessageRecipe {
   const RaftSystemMessageRecipe(this.tokens, {this.inGroup = false});
   final RaftTokens tokens;
   final bool inGroup;
+  // ignore: raft_lints/off_grid_spacing -- Web SystemMessage pt-[3px].
   EdgeInsets get padding => EdgeInsets.fromLTRB(8, inGroup ? (4) : 3, 8, 0);
   Color get clockColor =>
       (tokens.dark ? tokens.strong : Colors.black).withValues(alpha: .4);

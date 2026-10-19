@@ -113,13 +113,13 @@ class _AgentMigrationStartDialogState extends State<AgentMigrationStartDialog> {
         : (_picked ? _hostedPick : null);
     final source = widget.sourceName ?? raftText(context, 'Unknown computer');
     return RaftFormDialog(
-      title: widget.hostedAvailable ? 'Move agent' : 'Move to another Computer',
+      title: widget.hostedAvailable ? 'Move Agent' : 'Move to Another Computer',
       fields: const [],
       submitLabel: failure?.recoveryOpenComputers == true
           ? 'Try Again'
           : cloud
-          ? 'Move to the cloud'
-          : 'Move to another Computer',
+          ? 'Move to the Cloud'
+          : 'Move to Another Computer',
       busyLabel: 'Starting migration…',
       submitEnabled:
           (cloud || target.isNotEmpty) &&
@@ -265,7 +265,7 @@ class _StartFailureView extends StatelessWidget {
               label: raftText(
                 context,
                 computerId != null
-                    ? 'Open computer settings'
+                    ? 'Open Computer Settings'
                     : 'Open Computers',
               ),
               glyph: RaftGlyph.externalLink,

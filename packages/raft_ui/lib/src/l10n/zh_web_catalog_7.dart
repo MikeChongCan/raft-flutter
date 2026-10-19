@@ -15,7 +15,7 @@ const Map<String, String> zhCatalogWeb7 = <String, String>{
   "The transfer did not finish. Try again.": "传输未完成，请重试。",
   "Sort": "排序",
   "Sort Activity": "排序动态",
-  "Sort by newest": "按最新排序",
+  "Sort by Newest": "按最新排序",
   "Sort sidebar conversations": "对侧栏会话排序",
   "Source": "来源",
   "Stack trace": "错误堆栈",
@@ -44,7 +44,7 @@ const Map<String, String> zhCatalogWeb7 = <String, String>{
   "Stop": "停止",
   "Stop Agent": "停止 Agent",
   "Stop Agents": "停止 Agent",
-  "Stop all agents in this channel": "停止此频道中的所有 Agent",
+  "Stop All Agents in This Channel": "停止此频道中的所有 Agent",
   "Stop and restart the agent process. Keeps the runtime session and workspace files.":
       "停止并重新启动 agent 进程，保留运行时会话和工作区文件。",
   "Stop and restart the selected agents. Runtime sessions and workspace files are preserved.":
@@ -78,7 +78,7 @@ const Map<String, String> zhCatalogWeb7 = <String, String>{
   "Switch model and reset session": "切换模型并重置会话",
   "Switch or Create Server": "切换或创建服务器",
   "Switch runtime config": "切换运行时配置",
-  "Switch server": "切换服务器",
+  "Switch Server": "切换服务器",
   "Syncing changes": "正在同步修改",
   "System": "系统",
   "System Channels": "系统频道",
@@ -91,9 +91,9 @@ const Map<String, String> zhCatalogWeb7 = <String, String>{
   "Target computer": "目标计算机",
   "Task view": "任务视图",
   "Tasks": "任务",
-  "Technical details": "技术详情",
-  "Test and refresh tools": "测试并刷新工具",
-  "Test connection": "测试连接",
+  "Technical Details": "技术详情",
+  "Test and Refresh Tools": "测试并刷新工具",
+  "Test Connection": "测试连接",
   "Test failed": "测试失败",
   "Test message": "测试消息",
   "Test model": "测试模型",
@@ -242,8 +242,7 @@ const Map<String, String> zhCatalogWeb7 = <String, String>{
       "目标计算机未能在截止时间前完成工作区安装。请确认目标计算机正在运行且有足够空闲磁盘空间，然后重试。",
   "The target computer does not have enough free disk space to stage and install this migration. Free disk space and try again.":
       "目标计算机没有足够的空闲磁盘空间来暂存并安装本次迁移。请释放磁盘空间后重试。",
-  "The target computer found a previously completed copy of this workspace and stopped before replacing it. Confirm which copy is current; move or back up the old copy, then try again. Raft will not delete it automatically.":
-      "目标计算机发现了这个工作区之前已完成的副本，因此在替换它之前停止了。请确认哪个副本是当前版本，将旧副本移走或备份后重试。Raft 不会自动删除它。",
+  "The target computer found a previously completed copy of this workspace and stopped before replacing it. Confirm which copy is current; move or back up the old copy, then try again. Raft will not delete it automatically.": "目标计算机发现了这个工作区之前已完成的副本，因此在替换它之前停止了。请确认哪个副本是当前版本，将旧副本移走或备份后重试。Raft 不会自动删除它。",
   "The target computer is offline. Start Raft Computer on it and try again.":
       "目标计算机已离线。请在它上面启动 Raft Computer 后重试。",
   "The test request failed. Check the model, credential, and provider access.":
@@ -327,8 +326,7 @@ const Map<String, String> zhCatalogWeb7 = <String, String>{
       "此 Agent 使用已弃用的运行时。它可以继续运行，但新 Agent 无法选择此运行时。",
   "This also opts this server out of automatic installation. It stays uninstalled until an owner or admin explicitly installs it again.":
       "这也会让此服务器退出自动安装。除非所有者或管理员再次明确安装，否则它会保持卸载状态。",
-  "This app cannot: send chat as you · speak as the agent · read your messages · take actions for you. It can only deliver event/notification payloads to the single agent you select.":
-      "此应用不能：以你的身份发消息 · 以该 Agent 的身份发言 · 读取你的消息 · 代你执行操作。它只能向你选定的那一个 Agent 投递事件/通知负载。",
+  "This app cannot: send chat as you · speak as the agent · read your messages · take actions for you. It can only deliver event/notification payloads to the single agent you select.": "此应用不能：以你的身份发消息 · 以该 Agent 的身份发言 · 读取你的消息 · 代你执行操作。它只能向你选定的那一个 Agent 投递事件/通知负载。",
   "This app is not registered for any Raft Server you can access.":
       "该 App 未在你可访问的任何 Raft Server 上注册。",
   "This app is published in the Marketplace. Offline approval preserves the source Server’s installation and access, but removes installations and access on other Servers.":
@@ -443,7 +441,7 @@ const Map<String, String> zhCatalogWeb7 = <String, String>{
   "This will permanently delete all workspace files including MEMORY.md and notes/. This cannot be undone.":
       "这会永久删除包括 MEMORY.md 和 notes/ 在内的所有工作区文件。此操作无法撤销。",
   "Thread": "消息列",
-  "Thread actions": "消息列操作",
+  "Thread Actions": "消息列操作",
   "Thread discussion": "消息列讨论",
   "Thread has an unsent draft": "消息列有未发送的草稿",
   "Thread is no longer in Activity": "该消息列已不在动态中",
@@ -488,10 +486,10 @@ const Map<String, String> zhCatalogWeb7 = <String, String>{
   "Try a different combination or clear the current selection.":
       "换一个筛选组合，或清除当前选择。",
   "Try a different filter set.": "试试其他筛选组合。",
-  "Try again": "重试",
+
   "Try another channel or clear the channel filter.": "请选择其他频道或清除频道筛选。",
   "Try different keywords or a shorter phrase.": "试试其他关键词或更短的短语。",
-  "Try migration again": "重试迁移",
+  "Try Migration Again": "重试迁移",
   "Turn on Server Labs access first.": "需先开启服务器 Labs 访问权限",
   "Turn on message translation for this server. When this is off, members' language and display preferences will not translate messages here.":
       "为此服务器开启消息翻译。关闭时，成员的语言和显示偏好不会在此翻译消息。",

@@ -564,7 +564,7 @@ class _ChannelSettingsState extends State<ChannelSettings> {
           ? editMetadata
           : null,
       onMembers: widget.page ? widget.onMembers : null,
-      title: dm ? 'Conversation settings' : 'Settings',
+      title: dm ? 'Conversation Settings' : 'Settings',
       onClose: widget.onClose ?? () => Navigator.of(context).maybePop(),
       // Only a true cold load (no flags for this server yet) waits; otherwise
       // the panel opens final, reserving rows whose values are in flight.
@@ -1423,7 +1423,7 @@ class _ChannelSettingsState extends State<ChannelSettings> {
         RaftOverflowAction(
           id: 'channel-overflow-stop-agents',
           label: 'Stop All Agents',
-          semanticLabel: 'Stop all agents in this channel',
+          semanticLabel: 'Stop All Agents in This Channel',
           glyph: RaftGlyph.circleStop,
           onPressed: stopAgents,
         ),

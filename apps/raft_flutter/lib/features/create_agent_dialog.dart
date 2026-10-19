@@ -780,7 +780,7 @@ class _CreateAgentDialogState extends State<CreateAgentDialog> {
               'planName': '${billing?['displayName'] ?? 'Free'}',
             },
           ),
-          action: 'Upgrade for more',
+          action: 'Upgrade for More',
           // Web: onClose(); nav.toSettings("billing").
           onAction: () {
             if (busy) return;
@@ -895,7 +895,7 @@ class _CreateAgentDialogState extends State<CreateAgentDialog> {
                 glyphSize: 12,
                 size: RaftButtonRecipeSize.iconXs,
                 variant: RaftButtonRecipeVariant.ghost,
-                tooltip: 'Rescan runtimes on this computer',
+                tooltip: 'Rescan Runtimes on This Computer',
                 onPressed: busy || runtimesRescanning ? null : rescanRuntimes,
               )
             : null,

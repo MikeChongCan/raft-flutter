@@ -281,7 +281,7 @@ void main() {
     await tester.pumpAndSettle();
     final body = client.calls.where((c) => c.$1 == 'PATCH').single.$3 as Map;
     expect((body['runtimeConfig'] as Map)['mode'], {'kind': 'fast'});
-    expect(find.text('Edit runtime config'), findsNothing);
+    expect(find.text('Edit Runtime Config'), findsNothing);
     // The profile behind the closed modal now reads the saved mode.
     expect(
       find.descendant(of: _modeRow(), matching: find.text('Fast mode')),
@@ -293,13 +293,13 @@ void main() {
     tester,
   ) async {
     await _open(tester);
-    expect(find.text('Edit runtime config'), findsOneWidget);
+    expect(find.text('Edit Runtime Config'), findsOneWidget);
     expect(find.textContaining('Runtime', findRichText: true), findsWidgets);
     expect(find.text('Codex CLI'), findsWidgets);
     expect(find.text('GPT-5 Codex'), findsWidgets);
     expect(find.text('Medium'), findsWidgets);
     expect(find.text('Fast mode'), findsWidgets);
-    expect(find.text('Save runtime config'), findsOneWidget);
+    expect(find.text('Save Runtime Config'), findsOneWidget);
     // Detection failed: the retry line and the suggestion note.
     expect(
       find.textContaining(
@@ -441,7 +441,7 @@ void main() {
       expect(config['model'], {'kind': 'preset', 'id': 'gpt-5-codex'});
       expect(config['version'], runtimeConfigVersion);
       // Saved: the modal is gone.
-      expect(find.text('Edit runtime config'), findsNothing);
+      expect(find.text('Edit Runtime Config'), findsNothing);
     },
   );
 
@@ -455,7 +455,7 @@ void main() {
     await _choose(tester, 'runtime-editor-reasoning', 'Low');
     await tester.tap(_k('runtime-editor-save'));
     await tester.pumpAndSettle();
-    expect(find.text('Edit runtime config'), findsNothing);
+    expect(find.text('Edit Runtime Config'), findsNothing);
     expect(find.text('Restart to apply runtime config'), findsOneWidget);
     expect(
       find.text('Apply Reasoning and restart this agent now?'),
@@ -546,7 +546,7 @@ void main() {
     await tester.tap(_k('runtime-editor-save'));
     await tester.pumpAndSettle();
     expect(find.text('Rejected'), findsOneWidget);
-    expect(find.text('Edit runtime config'), findsOneWidget);
+    expect(find.text('Edit Runtime Config'), findsOneWidget);
     expect(client.calls.where((c) => c.$1 == 'PATCH'), hasLength(1));
   });
 
@@ -725,11 +725,11 @@ void main() {
     final (_, client) = await _open(tester);
     await tester.tap(find.text('Cancel'));
     await tester.pumpAndSettle();
-    expect(find.text('Edit runtime config'), findsNothing);
+    expect(find.text('Edit Runtime Config'), findsNothing);
     expect(client.calls.where((c) => c.$1 == 'PATCH'), isEmpty);
   });
 
-  group('Move to another Computer', () {
+  group('Move to Another Computer', () {
     Future<_Client> profile(
       WidgetTester tester, {
       required bool flag,
@@ -770,7 +770,7 @@ void main() {
     bool moveEnabled(WidgetTester tester) =>
         tester
             .widget<RaftButton>(
-              find.widgetWithText(RaftButton, 'Move to another Computer'),
+              find.widgetWithText(RaftButton, 'Move to Another Computer'),
             )
             .onPressed !=
         null;
@@ -791,10 +791,13 @@ void main() {
       expect(find.text('Transferring workspace to m2.'), findsOneWidget);
       // Web: the progress block owns the only action (Cancel) while it runs.
       expect(
-        find.widgetWithText(RaftButton, 'Move to another Computer'),
+        find.widgetWithText(RaftButton, 'Move to Another Computer'),
         findsNothing,
       );
-      expect(find.widgetWithText(RaftButton, 'Cancel'), findsOneWidget);
+      expect(
+        find.widgetWithText(RaftButton, 'Cancel Migration'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('no migration shows nothing and keeps Move enabled', (
@@ -819,7 +822,7 @@ void main() {
         findsOneWidget,
       );
       expect(
-        find.widgetWithText(RaftButton, 'Try migration again'),
+        find.widgetWithText(RaftButton, 'Try Migration Again'),
         findsOneWidget,
       );
     });
@@ -862,9 +865,9 @@ void main() {
       tester,
     ) async {
       await profile(tester, flag: false);
-      expect(find.text('AGENT MIGRATION', skipOffstage: false), findsNothing);
+      expect(find.text('Agent migration', skipOffstage: false), findsNothing);
       await profile(tester, flag: true);
-      expect(find.text('AGENT MIGRATION', skipOffstage: false), findsOneWidget);
+      expect(find.text('Agent migration', skipOffstage: false), findsOneWidget);
     });
   });
 }

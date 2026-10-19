@@ -194,10 +194,10 @@ void main() {
 
   setUp(() => transport = _Transport());
 
-  final entry = find.widgetWithText(RaftButton, 'Move agent');
+  final entry = find.widgetWithText(RaftButton, 'Move Agent');
   final dialogSubmit = find.descendant(
     of: find.byType(RaftFormDialog),
-    matching: find.widgetWithText(RaftButton, 'Move to the cloud'),
+    matching: find.widgetWithText(RaftButton, 'Move to the Cloud'),
   );
   final target = find.byKey(const ValueKey('migration-target-computer'));
 
@@ -208,7 +208,7 @@ void main() {
       await mount(tester);
       expect(entry, findsOneWidget);
       expect(
-        find.widgetWithText(RaftButton, 'Move to another Computer'),
+        find.widgetWithText(RaftButton, 'Move to Another Computer'),
         findsNothing,
       );
     });
@@ -220,7 +220,7 @@ void main() {
       await mount(tester);
       expect(entry, findsNothing);
       expect(
-        find.widgetWithText(RaftButton, 'Move to another Computer'),
+        find.widgetWithText(RaftButton, 'Move to Another Computer'),
         findsOneWidget,
       );
       expect(
@@ -246,7 +246,7 @@ void main() {
       await mount(tester);
       expect(entry, findsNothing);
       expect(
-        find.widgetWithText(RaftButton, 'Move to another Computer'),
+        find.widgetWithText(RaftButton, 'Move to Another Computer'),
         findsOneWidget,
       );
     });
@@ -257,7 +257,7 @@ void main() {
         await mount(tester);
         await tester.tap(entry);
         await tester.pumpAndSettle();
-        expect(find.text('Move agent'), findsWidgets);
+        expect(find.text('Move Agent'), findsWidgets);
         await tester.tap(target);
         await tester.pumpAndSettle();
         await tester.tap(
@@ -355,7 +355,7 @@ void main() {
       await tester.tap(
         find.descendant(
           of: find.byType(RaftFormDialog),
-          matching: find.widgetWithText(RaftButton, 'Move to another Computer'),
+          matching: find.widgetWithText(RaftButton, 'Move to Another Computer'),
         ),
       );
       await tester.pumpAndSettle();
@@ -531,9 +531,9 @@ void main() {
       expect(find.text('Moved to the cloud'), findsOneWidget);
       expect(find.text('The agent now runs in the cloud.'), findsOneWidget);
       // No way to start another move from a cloud agent.
-      expect(find.widgetWithText(RaftButton, 'Move agent'), findsNothing);
+      expect(find.widgetWithText(RaftButton, 'Move Agent'), findsNothing);
       expect(
-        find.widgetWithText(RaftButton, 'Move to another Computer'),
+        find.widgetWithText(RaftButton, 'Move to Another Computer'),
         findsNothing,
       );
       expect(

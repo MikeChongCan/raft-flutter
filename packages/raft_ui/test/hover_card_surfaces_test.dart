@@ -448,7 +448,7 @@ void main() {
         .widget<Opacity>(
           find
               .ancestor(
-                of: find.byTooltip('Copy code'),
+                of: find.byTooltip('Copy Code'),
                 matching: find.byType(Opacity),
               )
               .first,
@@ -478,7 +478,7 @@ void main() {
         );
         await tester.pump();
         expect(copyOpacity(tester), .55);
-        await mouse.moveTo(tester.getCenter(find.byTooltip('Copy code')));
+        await mouse.moveTo(tester.getCenter(find.byTooltip('Copy Code')));
         await tester.pump();
         expect(copyOpacity(tester), 1);
         await finish(tester, mouse);

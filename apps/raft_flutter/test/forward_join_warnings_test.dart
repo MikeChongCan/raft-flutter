@@ -202,7 +202,7 @@ void main() {
     expect(find.text('Join #pub1 before forwarding.'), findsNothing);
     expect(notJoined, findsNothing);
     expect(_send(t).onPressed, isNotNull);
-    expect(_send(t).tooltip, 'Send forward');
+    expect(_send(t).tooltip, 'Send Forward');
     await t.tap(find.byKey(const Key('composer-submit')));
     await _settle(t);
     // The join happened once, at the banner; sending only forwards.

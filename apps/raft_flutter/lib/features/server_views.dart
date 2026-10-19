@@ -317,7 +317,7 @@ class _ServerSettingsViewState extends State<ServerSettingsView> {
             ),
             onUpload: canEdit ? uploadAvatar : null,
             busy: avatarSaving,
-            uploadLabel: 'Upload image',
+            uploadLabel: 'Upload Image',
             busyLabel: 'Uploading avatar',
           ),
           title: server.name,
@@ -615,7 +615,7 @@ class _MembersViewState extends State<MembersView> {
           title: 'Members',
           actions: [
             RaftIconButton(
-              tooltip: 'Refresh members',
+              tooltip: 'Refresh Members',
               onPressed: load,
               glyph: RaftGlyph.refreshCw,
             ),
@@ -637,7 +637,7 @@ class _MembersViewState extends State<MembersView> {
                           ),
                         ),
                         RaftTooltip(
-                          message: raftText(context, 'Refresh members'),
+                          message: raftText(context, 'Refresh Members'),
                           child: IconButton(
                             onPressed: load,
                             icon: const Icon(Icons.refresh),
@@ -658,7 +658,7 @@ class _MembersViewState extends State<MembersView> {
                       trailing:
                           w.can('changeMemberRoles') || w.can('removeMembers')
                           ? RaftTooltip(
-                              message: raftText(context, 'Member actions'),
+                              message: raftText(context, 'Member Actions'),
                               child: PopupMenuButton<String>(
                                 onSelected: (role) => change(member, role),
                                 itemBuilder: (_) => [

@@ -716,7 +716,7 @@ class _AgentRuntimeEditorState extends State<AgentRuntimeEditor> {
         ),
         RaftAgentDialogButton(
           key: const ValueKey('runtime-editor-save'),
-          label: tr('Save runtime config'),
+          label: tr('Save Runtime Config'),
           primary: true,
           size: RaftButtonRecipeSize.md,
           onPressed: disabled && !(v2Active && !v2Ready) ? null : submit,
@@ -728,7 +728,7 @@ class _AgentRuntimeEditorState extends State<AgentRuntimeEditor> {
       surfaceKey: const ValueKey('agent-runtime-editor-surface'),
       bare: true,
       plainCard: true,
-      title: 'Edit runtime config',
+      title: 'Edit Runtime Config',
       onClose: saving ? null : () => widget.onClose(),
       footerGap: raftAgentSectionGap,
       footer: footer,
@@ -853,7 +853,7 @@ class _AgentRuntimeEditorState extends State<AgentRuntimeEditor> {
             ? RaftIconButton(
                 key: const ValueKey('runtime-editor-rescan'),
                 glyph: RaftGlyph.refreshCw,
-                tooltip: tr('Rescan models from this Computer'),
+                tooltip: tr('Rescan Models from This Computer'),
                 visualSize: 20,
                 minimumTargetSize: 20,
                 glyphSize: 12,

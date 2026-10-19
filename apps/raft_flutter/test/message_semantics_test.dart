@@ -190,7 +190,7 @@ void main() {
       'Add Reaction',
       'Save Message',
       'Copy Markdown',
-      'Message actions',
+      'Message Actions',
     ]);
 
     _perform(t, row, 'Copy Markdown');
@@ -282,7 +282,7 @@ void main() {
     expect(row.label, isNot(contains('Hidden tail sentence')));
     var below = _descendants(row);
     expect(below.where((n) => n.label == 'a tail link'), isEmpty);
-    final toggle = below.singleWhere((n) => n.label == 'Show more');
+    final toggle = below.singleWhere((n) => n.label == 'Show More');
 
     _owner(t).performAction(toggle.id, SemanticsAction.tap);
     await t.pumpAndSettle();

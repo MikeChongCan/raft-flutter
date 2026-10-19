@@ -461,7 +461,7 @@ class _IntegrationsState extends ManagementState<IntegrationsView> {
                 ),
                 'developer': developer,
               }),
-              closeLabel: tr('Close app detail'),
+              closeLabel: tr('Close App Detail'),
               onClose: close,
               error: modalError,
               sections: [
@@ -558,7 +558,7 @@ class _IntegrationsState extends ManagementState<IntegrationsView> {
                       action: RaftConnectedAppButton(
                         label: saving
                             ? tr('Uninstalling…')
-                            : tr('Uninstall from this server'),
+                            : tr('Uninstall from This Server'),
                         variant: RaftButtonRecipeVariant.danger,
                         onPressed: saving
                             ? null
@@ -582,7 +582,7 @@ class _IntegrationsState extends ManagementState<IntegrationsView> {
                     key: const ValueKey('connected-app-install'),
                     label: saving
                         ? tr('Installing…')
-                        : tr('Install to this server'),
+                        : tr('Install to This Server'),
                     variant: RaftButtonRecipeVariant.accent,
                     onPressed: saving ? null : install,
                   ),
@@ -626,7 +626,7 @@ class _IntegrationsState extends ManagementState<IntegrationsView> {
             initials: integrationInitials(app.name),
             logoUrl: app.logoUrl,
             byline: app.developer,
-            closeLabel: tr('Close installed app details'),
+            closeLabel: tr('Close Installed App Details'),
             onClose: close,
             sections: [
               if (hasAppSetup(app.source))
@@ -1153,7 +1153,7 @@ class _InstalledAppPermissionsState extends State<_InstalledAppPermissions> {
             ],
             action: widget.canManage
                 ? RaftSettingsRecipeButton(
-                    label: saving ? tr('Approving...') : tr('Approve update'),
+                    label: saving ? tr('Approving...') : tr('Approve Update'),
                     variant: RaftButtonRecipeVariant.accent,
                     size: RaftButtonRecipeSize.sm,
                     onPressed: saving ? null : approve,

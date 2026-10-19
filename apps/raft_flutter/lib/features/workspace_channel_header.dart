@@ -61,8 +61,8 @@ class WorkspaceChannelHeader extends StatelessWidget {
     backLabel: backLabel,
     onSearch: onSearch,
     onSettings: onSettings,
-    searchLabel: raftText(context, 'Search this channel'),
-    settingsLabel: raftText(context, 'Channel details and settings'),
+    searchLabel: raftText(context, 'Search This Channel'),
+    settingsLabel: raftText(context, 'Channel Details and Settings'),
     archivedLabel: channel.archived ? raftText(context, 'Archived') : null,
     mutedLabel: channel.flag('activityMuted')
         ? raftText(

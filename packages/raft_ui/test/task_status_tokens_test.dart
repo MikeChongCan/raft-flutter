@@ -98,15 +98,13 @@ void main() {
           findsOneWidget,
         );
         final decoration = _pillOf(tester, badge);
-        expect(decoration.color, t.colors[t.brutal ? token : '$token-soft']);
+        expect(decoration.color, t.colors['$token-soft']);
         final side = (decoration.border! as Border).top;
         expect(
           side.color,
-          t.brutal
-              ? Colors.black
-              : t.colors['$token-strong']!.withValues(
-                  alpha: t.colors['$token-strong']!.a * .35,
-                ),
+          t.colors['$token-strong']!.withValues(
+            alpha: t.colors['$token-strong']!.a * .35,
+          ),
         );
       });
 
@@ -135,10 +133,7 @@ void main() {
         );
         final t = _tokens(tester);
         final token = RaftMessageTaskChipRecipe.tokenOf(status);
-        expect(
-          _pillOf(tester, badge).color,
-          t.colors[t.brutal ? token : '$token-soft'],
-        );
+        expect(_pillOf(tester, badge).color, t.colors['$token-soft']);
       });
     }
 
@@ -185,8 +180,7 @@ void main() {
       expect(markers, hasLength(5));
       // Brutal fills the dot with the status token; elegant draws a hollow dot
       // ringed in it. Both read the same token.
-      Color paint(BoxDecoration d) =>
-          t.brutal ? d.color! : (d.border! as Border).top.color;
+      Color paint(BoxDecoration d) => (d.border! as Border).top.color;
       expect(paint(markers[0]), token(RaftMessageTaskStatus.todo));
       // A closed event is `closed` (it used to be the neutral marker), a
       // reopened one `in_progress`.
@@ -194,10 +188,7 @@ void main() {
       expect(paint(markers[2]), token(RaftMessageTaskStatus.inProgress));
       expect(paint(markers[3]), token(RaftMessageTaskStatus.done));
       // No status in the event: the neutral marker.
-      expect(
-        paint(markers[4]),
-        t.colors[t.brutal ? 'layer-panel' : 'foreground-hint'],
-      );
+      expect(paint(markers[4]), t.colors['foreground-hint']);
       // The from/to pair of a status change is two status badges.
       final badges = find.descendant(
         of: find.byKey(const ValueKey('timeline')),

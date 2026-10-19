@@ -1031,7 +1031,7 @@ class _PublicServerViewState extends State<PublicServerView> {
           channelContext: raftFormat(context, '— #{name}', {
             'name': channel?['name'],
           }),
-          closeLabel: tr('Close thread'),
+          closeLabel: tr('Close Thread'),
           onClose: closeThread,
           showClose: wide || RaftInteraction.of(context).pointer,
           parent: row(parent, parent: true),
@@ -1232,7 +1232,7 @@ class _PublicServerViewState extends State<PublicServerView> {
       header: RaftServerSwitcher(
         controller: menu,
         workspaceName: name,
-        label: tr('Switch workspace'),
+        label: tr('Switch Server'),
         workspaceAvatarUrl: raftPublicAvatarUrl(
           widget.client.origin,
           server?['avatarUrl'] as String?,

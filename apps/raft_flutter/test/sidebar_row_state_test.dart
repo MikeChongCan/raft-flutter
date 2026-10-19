@@ -137,7 +137,7 @@ void main() {
         buttons: kSecondaryMouseButton,
       );
       await t.pumpAndSettle();
-      await t.tap(find.text('Show joined channels only'));
+      await t.tap(find.text('Show Joined Channels Only'));
       await t.pumpAndSettle();
       expect(find.text('Outside'), findsNothing);
       expect(find.text('Inside'), findsOneWidget);
@@ -161,7 +161,7 @@ void main() {
         buttons: kSecondaryMouseButton,
       );
       await t.pumpAndSettle();
-      await t.tap(find.text('Show joined channels only'));
+      await t.tap(find.text('Show Joined Channels Only'));
       await t.pumpAndSettle();
       expect(find.text('Outside'), findsNothing);
       expect(find.text('No joined channels'), findsOneWidget);

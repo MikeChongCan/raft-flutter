@@ -500,7 +500,7 @@ void registerCloseViewerTests(TestPart part) {
       return SurfaceProbe(
         isOpen: () => w.location.route == RaftRoute.agent,
         back: find.byTooltip('Back'),
-        x: find.byTooltip('Close profile'),
+        x: find.byTooltip('Close Profile'),
       );
     },
     'image-lightbox-timeline': (t, size) async {
@@ -516,10 +516,10 @@ void registerCloseViewerTests(TestPart part) {
       final phone = closePlatform(size) == TargetPlatform.android;
       return SurfaceProbe(
         isOpen: lightboxOpen,
-        x: find.byTooltip('Close preview'),
+        x: find.byTooltip('Close Preview'),
         back: phone
             ? find.bySemanticsLabel('Back')
-            : find.byTooltip('Close preview'),
+            : find.byTooltip('Close Preview'),
         scrim: emptyStage(size),
       );
     },
@@ -537,7 +537,7 @@ void registerCloseViewerTests(TestPart part) {
       await settleImage(t); // display-size decode is real async work
       return SurfaceProbe(
         isOpen: lightboxOpen,
-        x: find.byTooltip('Close preview'),
+        x: find.byTooltip('Close Preview'),
         scrim: emptyStage(size),
       );
     },
@@ -632,7 +632,7 @@ void registerCloseViewerTests(TestPart part) {
       await settleImage(t); // display-size decode is real async work
       return SurfaceProbe(
         isOpen: lightboxOpen,
-        x: find.byTooltip('Close preview'),
+        x: find.byTooltip('Close Preview'),
         scrim: emptyStage(size),
       );
     },
@@ -647,8 +647,8 @@ void registerCloseViewerTests(TestPart part) {
       return SurfaceProbe(
         isOpen: () =>
             find.byType(RaftAttachmentPreviewShell).evaluate().isNotEmpty,
-        x: find.byTooltip('Close preview'),
-        back: find.byTooltip('Close preview'),
+        x: find.byTooltip('Close Preview'),
+        back: find.byTooltip('Close Preview'),
       );
     },
     'attachment-html-preview': (t, size) async {
@@ -662,8 +662,8 @@ void registerCloseViewerTests(TestPart part) {
       return SurfaceProbe(
         isOpen: () =>
             find.byType(RaftAttachmentPreviewShell).evaluate().isNotEmpty,
-        x: find.byTooltip('Close preview'),
-        back: find.byTooltip('Close preview'),
+        x: find.byTooltip('Close Preview'),
+        back: find.byTooltip('Close Preview'),
       );
     },
     'attachment-comments-aside': (t, size) async {
@@ -701,12 +701,12 @@ void registerCloseViewerTests(TestPart part) {
         ),
       );
       await t.pumpAndSettle();
-      await t.tap(find.byTooltip('Expand diagram'));
+      await t.tap(find.byTooltip('Expand Diagram'));
       await t.pumpAndSettle();
       return SurfaceProbe(
         isOpen: () =>
             find.byKey(const Key('mermaid-fullscreen')).evaluate().isNotEmpty,
-        x: find.byTooltip('Close fullscreen'),
+        x: find.byTooltip('Close Fullscreen'),
         scrim: Offset(4, size.height / 2),
       );
     },
@@ -749,7 +749,7 @@ void registerCloseViewerTests(TestPart part) {
       await frames(t, 20);
       return SurfaceProbe(
         isOpen: () => find.byType(MessageImageReview).evaluate().isNotEmpty,
-        x: find.byTooltip('Close preview'),
+        x: find.byTooltip('Close Preview'),
         scrim: const Offset(4, 4),
       );
     },
@@ -827,7 +827,7 @@ void registerCloseViewerTests(TestPart part) {
     );
     unawaited(navigator.push(top));
     await frames(t, 20);
-    await t.tap(find.byTooltip('Close preview'), warnIfMissed: false);
+    await t.tap(find.byTooltip('Close Preview'), warnIfMissed: false);
     await frames(t, 20);
     expect(probe.isOpen(), isTrue, reason: 'X reached through the dialog');
     navigator.removeRoute(top);

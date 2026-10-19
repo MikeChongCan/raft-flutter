@@ -124,10 +124,10 @@ void main() {
     opened = [];
   });
 
-  final migrate = find.widgetWithText(RaftButton, 'Move to another Computer');
+  final migrate = find.widgetWithText(RaftButton, 'Move to Another Computer');
   final dialogMigrate = find.descendant(
     of: find.byType(RaftFormDialog),
-    matching: find.widgetWithText(RaftButton, 'Move to another Computer'),
+    matching: find.widgetWithText(RaftButton, 'Move to Another Computer'),
   );
   final target = find.byKey(const ValueKey('migration-target-computer'));
 
@@ -174,7 +174,7 @@ void main() {
     expect(
       find.descendant(
         of: find.byType(RaftFormDialog),
-        matching: find.text('Move to another Computer'),
+        matching: find.text('Move to Another Computer'),
       ),
       findsNWidgets(2),
       reason: 'the dialog title and its confirm button',
@@ -238,7 +238,7 @@ void main() {
     await tester.pump(const Duration(milliseconds: 50));
     expect(find.text('Starting migration…'), findsOneWidget);
     expect(
-      find.text('Move to another Computer'),
+      find.text('Move to Another Computer'),
       findsNWidgets(2),
       reason: 'the section action and the dialog title',
     );
@@ -270,13 +270,13 @@ void main() {
     await tester.tap(dialogMigrate);
     await tester.pumpAndSettle();
     expect(transport.posted, ['c3']);
-    await tester.tap(find.text('Open computer settings'));
+    await tester.tap(find.text('Open Computer Settings'));
     await tester.pumpAndSettle();
     expect(opened.map((u) => u.toString()), [
       'https://example.invalid/s/acme/computer/c3',
     ]);
     expect(find.byType(RaftFormDialog), findsOneWidget);
-    expect(find.text('Open computer settings'), findsOneWidget);
+    expect(find.text('Open Computer Settings'), findsOneWidget);
     expect(
       find.descendant(of: target, matching: find.text('Sleepy')),
       findsOneWidget,
@@ -316,7 +316,7 @@ void main() {
       findsOneWidget,
     );
     expect(
-      find.widgetWithText(RaftButton, 'Try migration again'),
+      find.widgetWithText(RaftButton, 'Try Migration Again'),
       findsOneWidget,
     );
     semantics.dispose();

@@ -2562,8 +2562,8 @@ class _ResourceViewState extends State<ResourceView> {
                     message: raftText(
                       context,
                       taskLayout == 'board'
-                          ? 'Show task list'
-                          : 'Show task board',
+                          ? 'Show Task List'
+                          : 'Show Task Board',
                     ),
                     child: IconButton(
                       icon: RaftIcon(
@@ -2591,7 +2591,7 @@ class _ResourceViewState extends State<ResourceView> {
                   ),
                 if (widget.section == 'activity')
                   RaftTooltip(
-                    message: raftText(context, 'Activity actions'),
+                    message: raftText(context, 'Activity Actions'),
                     child: PopupMenuButton<String>(
                       onSelected: (action) {
                         if (!accepts(scope)) return;
@@ -2613,11 +2613,11 @@ class _ResourceViewState extends State<ResourceView> {
                         ),
                         PopupMenuItem(
                           value: 'done',
-                          child: Text(raftText(context, 'Done conversations')),
+                          child: Text(raftText(context, 'Done Conversations')),
                         ),
                         PopupMenuItem(
                           value: 'unfollowed',
-                          child: Text(raftText(context, 'Unfollowed threads')),
+                          child: Text(raftText(context, 'Unfollowed Threads')),
                         ),
                       ],
                     ),
@@ -2812,8 +2812,8 @@ class _ResourceViewState extends State<ResourceView> {
                     label: raftFormat(
                       context,
                       listUpdates.count == 1
-                          ? '{count} new update'
-                          : '{count} new updates',
+                          ? '{count} New Update'
+                          : '{count} New Updates',
                       {'count': listUpdates.count},
                     ),
                     onPressed: revealListUpdates,
@@ -3114,7 +3114,7 @@ class _ResourceViewState extends State<ResourceView> {
                 ? raftText(context, 'Search channels, DMs, messages…')
                 : '${raftText(context, 'Search channels, DMs, messages…')}   '
                       '${globalSearchShortcutLabel()}',
-            clearLabel: raftText(context, 'Clear search'),
+            clearLabel: raftText(context, 'Clear Search'),
             showEscape: !mobile,
             onClear: () {
               query.clear();
@@ -3646,7 +3646,7 @@ class _ResourceViewState extends State<ResourceView> {
           ],
           if (extraFilters)
             RaftTooltip(
-              message: raftText(context, 'Activity actions'),
+              message: raftText(context, 'Activity Actions'),
               child: PopupMenuButton<String>(
                 onSelected: (value) {
                   if (accepts(scope)) {
@@ -3657,11 +3657,11 @@ class _ResourceViewState extends State<ResourceView> {
                 itemBuilder: (_) => [
                   PopupMenuItem(
                     value: 'done',
-                    child: Text(raftText(context, 'Done conversations')),
+                    child: Text(raftText(context, 'Done Conversations')),
                   ),
                   PopupMenuItem(
                     value: 'unfollowed',
-                    child: Text(raftText(context, 'Unfollowed threads')),
+                    child: Text(raftText(context, 'Unfollowed Threads')),
                   ),
                 ],
               ),
@@ -4018,7 +4018,7 @@ class _ResourceViewState extends State<ResourceView> {
           ),
           const SizedBox(width: 12),
           RaftSavedToggle(
-            label: 'Remove saved message',
+            label: 'Remove Saved Message',
             onPressed: () => removeSaved(row, scope),
           ),
         ],
@@ -4472,7 +4472,7 @@ class _ResourceViewState extends State<ResourceView> {
   Widget advancedFilters() {
     final scope = authority;
     final channelOptions = <String, String>{
-      '': 'All channels',
+      '': 'All Channels',
       for (final c in [...w.channels, ...w.dms])
         c.id: '${c.type == 'dm' ? '@' : '#'}${c.name}',
     };
@@ -4522,8 +4522,8 @@ class _ResourceViewState extends State<ResourceView> {
               ),
             ),
           filterMenu(
-            'Filter by channel',
-            channelOptions[advanced.channelId] ?? 'All channels',
+            'Filter by Channel',
+            channelOptions[advanced.channelId] ?? 'All Channels',
             channelOptions,
             (id) {
               advanced.channelId = id.isEmpty ? null : id;
@@ -4532,10 +4532,10 @@ class _ResourceViewState extends State<ResourceView> {
           ),
           if (widget.section == 'search') ...[
             filterMenu(
-              'Filter by sender',
-              advanced.sender?.label ?? 'All senders',
+              'Filter by Sender',
+              advanced.sender?.label ?? 'All Senders',
               {
-                '': 'All senders',
+                '': 'All Senders',
                 for (final sender in options.values)
                   sender.key:
                       '${sender.label} · ${sender.type == 'user' ? raftText(context, 'Human') : raftText(context, 'Agent')}',
@@ -4547,7 +4547,7 @@ class _ResourceViewState extends State<ResourceView> {
               labelIsContent: advanced.sender != null,
             ),
             for (final entry in const {
-              'mentioned': 'Mentions me',
+              'mentioned': 'Mentions Me',
               'humans': 'Humans',
               'agents': 'Agents',
             }.entries)
@@ -4561,19 +4561,19 @@ class _ResourceViewState extends State<ResourceView> {
                 },
               ),
             filterMenu(
-              'Search date range',
+              'Search Date Range',
               // ignore: raft_lints/avoid_render_index_assertion -- timeRange is validated against the four known values when restored (search_memory.dart) and only set from the dropdown.
               const {
-                'any': 'Any time',
+                'any': 'Any Time',
                 'today': 'Today',
-                '7d': 'Last 7 days',
-                '30d': 'Last 30 days',
+                '7d': 'Last 7 Days',
+                '30d': 'Last 30 Days',
               }[advanced.timeRange]!,
               const {
-                'any': 'Any time',
+                'any': 'Any Time',
                 'today': 'Today',
-                '7d': 'Last 7 days',
-                '30d': 'Last 30 days',
+                '7d': 'Last 7 Days',
+                '30d': 'Last 30 Days',
               },
               (value) {
                 advanced.timeRange = value;
@@ -4581,7 +4581,7 @@ class _ResourceViewState extends State<ResourceView> {
               },
             ),
             filterMenu(
-              'Sort search results',
+              'Sort Search Results',
               advanced.searchSort == 'recent' ? 'Recent' : 'Relevant',
               const {'relevance': 'Relevant', 'recent': 'Recent'},
               (value) {
@@ -4591,9 +4591,9 @@ class _ResourceViewState extends State<ResourceView> {
             ),
           ] else ...[
             filterMenu(
-              'Sort conversations',
-              advanced.direction == 'asc' ? 'Oldest first' : 'Newest first',
-              const {'desc': 'Newest first', 'asc': 'Oldest first'},
+              'Sort Conversations',
+              advanced.direction == 'asc' ? 'Oldest First' : 'Newest First',
+              const {'desc': 'Newest First', 'asc': 'Oldest First'},
               (value) {
                 advanced.direction = value;
                 load();
@@ -4601,7 +4601,7 @@ class _ResourceViewState extends State<ResourceView> {
             ),
             if (widget.section == 'activity')
               FilterChip(
-                label: Text(raftText(context, 'Group by channel')),
+                label: Text(raftText(context, 'Group by Channel')),
                 selected: advanced.groupByChannel,
                 onSelected: (value) {
                   if (accepts(scope)) {
@@ -5003,8 +5003,8 @@ class _ResourceViewState extends State<ResourceView> {
                               'user:${self.id}': raftText(
                                 context,
                                 field == 'Creator'
-                                    ? 'Created by me'
-                                    : 'Assigned to me',
+                                    ? 'Created by Me'
+                                    : 'Assigned to Me',
                               ),
                             if (field == 'Assignee')
                               'unassigned': raftTextZh(
@@ -5069,13 +5069,13 @@ class _ResourceViewState extends State<ResourceView> {
                   RaftSegmentedOption(
                     value: 'board',
                     label: 'Board',
-                    tooltip: 'Show task board',
+                    tooltip: 'Show Task Board',
                     glyph: RaftGlyph.columns3,
                   ),
                   RaftSegmentedOption(
                     value: 'list',
                     label: 'List',
-                    tooltip: 'Show task list',
+                    tooltip: 'Show Task List',
                     glyph: RaftGlyph.layoutList,
                   ),
                 ],

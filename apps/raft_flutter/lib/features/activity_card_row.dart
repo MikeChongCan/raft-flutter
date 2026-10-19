@@ -139,8 +139,8 @@ class ActivityCardRow extends StatelessWidget {
                   visualSize: 28,
                   minimumTargetSize: 28,
                   tooltip: filter == 'done'
-                      ? 'Restore conversation'
-                      : 'Mark conversation done',
+                      ? 'Restore Conversation'
+                      : 'Mark Conversation Done',
                   onPressed: () =>
                       host.action(filter == 'done' ? 'undone' : 'done'),
                 ),

@@ -155,7 +155,7 @@ void main() {
             } else if (back == 'system') {
               await t.binding.handlePopRoute();
             } else {
-              await t.tap(find.byTooltip('Close preview'));
+              await t.tap(find.byTooltip('Close Preview'));
             }
             await t.pumpAndSettle();
             expect(previewSurface, findsNothing);
@@ -268,7 +268,7 @@ void main() {
             await t.tap(
               image && touch
                   ? find.bySemanticsLabel('Back')
-                  : find.byTooltip('Close preview'),
+                  : find.byTooltip('Close Preview'),
             );
             await t.pumpAndSettle();
             expect(previewSurface, findsNothing);
@@ -400,7 +400,7 @@ void _narrowDesktopTests() {
         if (back == 'system') {
           await t.binding.handlePopRoute();
         } else {
-          await t.tap(find.byTooltip('Close preview'));
+          await t.tap(find.byTooltip('Close Preview'));
         }
         await t.pumpAndSettle();
         expect(previewSurface, findsNothing);

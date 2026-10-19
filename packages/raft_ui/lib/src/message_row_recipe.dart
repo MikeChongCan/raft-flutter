@@ -144,14 +144,18 @@ class RaftMessageRowRecipe {
   /// max-md:pb-1.5`, compact `py-1.5`, `data-[followed-by=compact]:pb-0.5`,
   /// `data-[followed-by=group]:pb-1.5`, `data-follows-system:pt-[12px]`.
   EdgeInsets get padding => EdgeInsets.fromLTRB(
+    // ignore: raft_lints/off_grid_spacing -- Web messageItem px-[7px].
     7,
     followsSystem
         ? 12
         : continuation
         ? 6
         : mobile
+        // ignore: raft_lints/off_grid_spacing -- Web messageItem max-md:pt-[13px].
         ? 13
+        // ignore: raft_lints/off_grid_spacing -- Web messageItem pt-[17px].
         : 17,
+    // ignore: raft_lints/off_grid_spacing -- Web messageItem px-[7px].
     7,
     switch (followedBy) {
       RaftMessageFollowedBy.compact => 2,

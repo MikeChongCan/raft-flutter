@@ -483,7 +483,7 @@ class _TechnicalDetailsState extends State<_TechnicalDetails> {
                   ),
                   const SizedBox(width: RaftSpace.x1),
                   Text(
-                    raftText(context, 'Technical details'),
+                    raftText(context, 'Technical Details'),
                     style: _bold(t, widget.style),
                   ),
                 ],

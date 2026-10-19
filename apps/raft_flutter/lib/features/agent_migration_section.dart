@@ -224,7 +224,7 @@ class _AgentMigrationSectionState
     );
   }
 
-  /// Web AgentMigrationDialog "Open computer settings" / "Open Computers":
+  /// Web AgentMigrationDialog "Open Computer Settings" / "Open Computers":
   /// recovery happens on the Computers page, opened in the browser so the
   /// dialog (and the chosen target) stays put for the retry.
   Future<void> _openComputers(String? computerId) async {
@@ -582,10 +582,10 @@ class _AgentMigrationSectionState
               label: raftText(
                 context,
                 canRetry
-                    ? 'Try migration again'
+                    ? 'Try Migration Again'
                     : _hosted.migrationAvailable
-                    ? 'Move agent'
-                    : 'Move to another Computer',
+                    ? 'Move Agent'
+                    : 'Move to Another Computer',
               ),
               tone: RaftButtonRecipeVariant.outline,
               size: RaftButtonRecipeSize.sm,

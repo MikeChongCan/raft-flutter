@@ -120,7 +120,7 @@ void main() {
     await t.pump();
     // The chip in the composer's accessory row.
     // The chip in the composer's accessory row (the cards have chips too).
-    expect(find.byTooltip('Remove anchor'), findsOneWidget);
+    expect(find.byTooltip('Remove Anchor'), findsOneWidget);
     expect(find.text('L2'), findsOneWidget);
     await t.enterText(find.byType(EditableText).last, 'Check this');
     await t.pump();
@@ -136,7 +136,7 @@ void main() {
     // Sent: the anchor is spent, so the next comment carries none.
     expect(session.pendingAnchor, isNull);
     await t.pump();
-    expect(find.byTooltip('Remove anchor'), findsNothing);
+    expect(find.byTooltip('Remove Anchor'), findsNothing);
   });
 
   testWidgets('Remove anchor drops it from the session and the next comment', (
@@ -153,10 +153,10 @@ void main() {
       findsNothing,
     ); // label uses "Row {start}–{end}"
     expect(find.text('Row 3–5'), findsOneWidget);
-    await t.tap(find.byTooltip('Remove anchor'));
+    await t.tap(find.byTooltip('Remove Anchor'));
     await t.pump();
     expect(session.pendingAnchor, isNull);
-    expect(find.byTooltip('Remove anchor'), findsNothing);
+    expect(find.byTooltip('Remove Anchor'), findsNothing);
     final send = t.widget<RaftComposer>(find.byType(RaftComposer)).onSend;
     await send('plain');
     expect(client.writes.single.data.containsKey('anchor'), isFalse);

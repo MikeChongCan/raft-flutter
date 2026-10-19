@@ -186,8 +186,8 @@ class RaftChannelHeader extends StatelessWidget {
     this.onSearch,
     this.onSettings,
     this.backLabel = 'Back',
-    this.searchLabel = 'Search this channel',
-    this.settingsLabel = 'Channel settings',
+    this.searchLabel = 'Search This Channel',
+    this.settingsLabel = 'Channel Settings',
     this.archivedLabel,
     this.mutedLabel,
     this.onOpenLink,
@@ -540,8 +540,8 @@ class RaftDmHeader extends StatelessWidget {
     this.avatarButtonKey,
     this.avatarSemanticLabel,
     this.backLabel = 'Back',
-    this.searchLabel = 'Search this channel',
-    this.settingsLabel = 'Channel settings',
+    this.searchLabel = 'Search This Channel',
+    this.settingsLabel = 'Channel Settings',
     this.mutedLabel = 'Activity muted',
   });
 

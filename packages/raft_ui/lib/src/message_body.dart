@@ -1515,7 +1515,7 @@ class _MermaidToolbar extends StatelessWidget {
         final controls = <Widget>[
           control(
             RaftGlyph.image,
-            'Show diagram',
+            'Show Diagram',
             () => onSource(false),
             label: 'Diagram',
             selected: !showSource,
@@ -1523,7 +1523,7 @@ class _MermaidToolbar extends StatelessWidget {
           SizedBox(width: toolbarRecipe.gap),
           control(
             RaftGlyph.code2,
-            'Show source',
+            'Show Source',
             () => onSource(true),
             label: 'Code',
             selected: showSource,
@@ -1532,32 +1532,32 @@ class _MermaidToolbar extends StatelessWidget {
           if (!showSource && desktop) ...[
             control(
               RaftGlyph.zoomOut,
-              'Zoom Mermaid diagram out',
+              'Zoom Mermaid Diagram Out',
               valid ? () => onZoom(1 / 1.2) : null,
             ),
             SizedBox(width: toolbarRecipe.gap),
             control(
               RaftGlyph.zoomIn,
-              'Zoom Mermaid diagram in',
+              'Zoom Mermaid Diagram In',
               valid ? () => onZoom(1.2) : null,
             ),
             SizedBox(width: toolbarRecipe.gap),
           ],
           control(
             copied ? RaftGlyph.check : RaftGlyph.copy,
-            copied ? 'Copied' : 'Copy code',
+            copied ? 'Copied' : 'Copy Code',
             onCopy,
           ),
           SizedBox(width: toolbarRecipe.gap),
           RaftTooltip(
-            message: raftText(context, 'Download Mermaid diagram'),
+            message: raftText(context, 'Download Mermaid Diagram'),
             child: PopupMenuButton<String>(
               enabled: onExport != null,
               onSelected: onExport,
               itemBuilder: (_) => [
                 const PopupMenuItem(
                   value: 'mmd',
-                  child: Text('Download source'),
+                  child: Text('Download Source'),
                 ),
                 PopupMenuItem(
                   value: 'png',
@@ -1574,7 +1574,7 @@ class _MermaidToolbar extends StatelessWidget {
               child: IgnorePointer(
                 child: control(
                   RaftGlyph.download,
-                  'Download Mermaid diagram',
+                  'Download Mermaid Diagram',
                   onExport == null ? null : () {},
                   ownTooltip: false,
                 ),
@@ -1585,7 +1585,7 @@ class _MermaidToolbar extends StatelessWidget {
             SizedBox(width: toolbarRecipe.gap),
             control(
               RaftGlyph.maximize2,
-              'Expand diagram',
+              'Expand Diagram',
               valid ? onExpand : null,
             ),
           ],
@@ -2113,7 +2113,7 @@ class _RaftCodeBlockState extends State<RaftCodeBlock> {
                               : 0,
                           child: RaftIconButton(
                             glyph: copied ? RaftGlyph.check : RaftGlyph.copy,
-                            tooltip: copied ? 'Copied' : 'Copy code',
+                            tooltip: copied ? 'Copied' : 'Copy Code',
                             onPressed: widget.code.isEmpty ? null : copy,
                             visualSize: RaftMetrics.buttonXs,
                             minimumTargetSize: RaftInteraction.of(context).touch
@@ -2151,7 +2151,7 @@ class _RaftCodeBlockState extends State<RaftCodeBlock> {
           : null,
       liveRegion: error != null || copied,
       onTap: canCopy ? copy : null,
-      onTapHint: canCopy ? raftText(context, 'Copy code') : null,
+      onTapHint: canCopy ? raftText(context, 'Copy Code') : null,
       excludeSemantics: true,
       child: block,
     );

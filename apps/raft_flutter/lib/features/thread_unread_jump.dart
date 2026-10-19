@@ -134,7 +134,7 @@ measureTimelineRows(Element scope) {
   return (placements: placements, visible: [for (final v in visible) v.id]);
 }
 
-/// The timeline's bottom controls: "Back to bottom" and, in a channel with
+/// The timeline's bottom controls: "Back to Bottom" and, in a channel with
 /// unread followed threads (`thread_unread_badge_v0`), the one jump pill.
 /// - threads below the viewport: "Next unread thread (N)" beside "Back to
 ///   bottom" goes to the nearest one below;
@@ -166,7 +166,7 @@ class ChatBottomControls extends StatefulWidget {
   final Listenable scroll;
 
   /// New messages behind the viewport: "N new messages" (a thread panel's
-  /// shorter copy, ThreadPanel.tsx:2619) in place of "Back to bottom".
+  /// shorter copy, ThreadPanel.tsx:2619) in place of "Back to Bottom".
   final int bottomCount;
   final VoidCallback onBottom;
 
@@ -351,10 +351,10 @@ class _ChatBottomControlsState extends State<ChatBottomControls> {
             label: widget.bottomCount > 0
                 ? raftFormat(
                     context,
-                    widget.thread ? '{count} new' : '{count} new messages',
+                    widget.thread ? '{count} New' : '{count} New Messages',
                     {'count': widget.bottomCount},
                   )
-                : raftText(context, 'Back to bottom'),
+                : raftText(context, 'Back to Bottom'),
             onPressed: widget.onBottom,
           )
         : null;

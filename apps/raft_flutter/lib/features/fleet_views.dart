@@ -507,7 +507,7 @@ class _FleetViewState extends State<FleetView> {
             child: TextButton.icon(
               onPressed: managed,
               icon: const RaftIcon(RaftGlyph.bot, size: 14),
-              label: Text(raftText(context, 'Create managed agent')),
+              label: Text(raftText(context, 'Create Managed Agent')),
             ),
           ),
         ),
@@ -1063,7 +1063,7 @@ class _FleetDetailState extends State<FleetDetail> {
       () => allowed(cap),
       form: true,
       (_) => RaftFormDialog(
-        title: widget.computers ? 'Edit computer' : 'Edit agent',
+        title: widget.computers ? 'Edit Computer' : 'Edit Agent',
         fields: [
           RaftFormField(
             widget.computers ? 'name' : 'displayName',

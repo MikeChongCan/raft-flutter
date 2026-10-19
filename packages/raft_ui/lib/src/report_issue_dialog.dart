@@ -662,7 +662,7 @@ class _RaftReportIssueDialogState extends State<RaftReportIssueDialog> {
               if (ticket != null && widget.onViewTicket != null)
                 RaftRecipeButton(
                   key: const ValueKey('report-issue-view-ticket'),
-                  label: tr('View ticket'),
+                  label: tr('View Ticket'),
                   variant: RaftButtonRecipeVariant.outline,
                   size: RaftButtonRecipeSize.sm,
                   padding: const EdgeInsets.symmetric(
@@ -756,7 +756,7 @@ class _RaftReportIssueDialogState extends State<RaftReportIssueDialog> {
             children: [
               RaftRecipeButton(
                 key: const ValueKey('report-issue-copy-reference'),
-                label: tr(referenceCopied ? 'Copied' : 'Copy report reference'),
+                label: tr(referenceCopied ? 'Copied' : 'Copy Report Reference'),
                 variant: RaftButtonRecipeVariant.outline,
                 size: RaftButtonRecipeSize.sm,
                 padding: const EdgeInsets.symmetric(
@@ -768,7 +768,7 @@ class _RaftReportIssueDialogState extends State<RaftReportIssueDialog> {
               ),
               RaftRecipeButton(
                 key: const ValueKey('report-issue-retry-ticket'),
-                label: tr(ticketRetrying ? 'Retrying…' : 'Retry ticket'),
+                label: tr(ticketRetrying ? 'Retrying…' : 'Retry Ticket'),
                 variant: RaftButtonRecipeVariant.outline,
                 size: RaftButtonRecipeSize.sm,
                 padding: const EdgeInsets.symmetric(

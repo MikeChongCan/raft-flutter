@@ -199,7 +199,7 @@ class RaftChannelMembersModal extends StatelessWidget {
               variant: RaftButtonRecipeVariant.outline,
               size: RaftButtonRecipeSize.sm,
               padding: const EdgeInsets.all(4),
-              tooltip: raftText(context, 'Back to members'),
+              tooltip: raftText(context, 'Back to Members'),
               onPressed: onBack,
             ),
             const SizedBox(width: 8),
@@ -236,7 +236,7 @@ class RaftChannelMembersModal extends StatelessWidget {
           ],
           RaftCloseButton(
             onPressed: onClose,
-            tooltip: 'Close channel settings',
+            tooltip: 'Close Channel Settings',
           ),
         ],
       ),
@@ -517,7 +517,7 @@ class RaftChannelMembersModal extends StatelessWidget {
         key: const ValueKey('add-member-confirm'),
         label: adding
             ? 'Adding…'
-            : raftFormat(context, 'Add selected ({count})', {
+            : raftFormat(context, 'Add Selected ({count})', {
                 'count': chips.length,
               }),
         glyph: RaftGlyph.plus,
@@ -942,7 +942,7 @@ class _MembersPageState extends State<_MembersPage> {
         glyphSize: 16,
         variant: RaftButtonRecipeVariant.outline,
         size: RaftButtonRecipeSize.iconSm,
-        tooltip: raftText(context, m.addView ? 'Back to members' : 'Back'),
+        tooltip: raftText(context, m.addView ? 'Back to Members' : 'Back'),
         onPressed: m.addView ? m.onBack : m.onClose,
       ),
     );

@@ -660,7 +660,7 @@ class _SourceFeedbackProjectionViewState
       headerAction: store.canWrite
           ? RaftFeedbackHeaderButton(
               key: const ValueKey('feedback-new'),
-              label: 'New feedback',
+              label: 'New Feedback',
               onPressed: store.startNew,
             )
           : RaftIconButton(
@@ -775,7 +775,7 @@ class _SourceFeedbackProjectionViewState
             label: sending
                 ? 'Submitting…'
                 : failed
-                ? 'Retry upload'
+                ? 'Retry Upload'
                 : 'Submit',
             variant: RaftButtonRecipeVariant.accent,
             size: RaftButtonRecipeSize.sm,
@@ -886,7 +886,7 @@ class _SourceFeedbackProjectionViewState
                   glyphSize: 14,
                   tooltip: raftText(
                     context,
-                    sending ? 'Sending…' : 'Send reply',
+                    sending ? 'Sending…' : 'Send Reply',
                   ),
                   variant: RaftButtonRecipeVariant.accent,
                   size: RaftButtonRecipeSize.iconSm,

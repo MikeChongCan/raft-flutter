@@ -40,7 +40,7 @@ const Map<String, String> zhCatalogWeb4 = <String, String>{
   "File upload was interrupted. Tap to retry.": "文件上传中断。点按以重试。",
   "File uploads": "文件上传",
   "Files": "文件",
-  "Filter by channel": "按频道筛选",
+  "Filter by Channel": "按频道筛选",
   "Filter connected apps by category": "按分类筛选已连接应用",
   "Filter inbox": "筛选收件箱",
   "Filter tasks": "筛选任务",
@@ -99,15 +99,15 @@ const Map<String, String> zhCatalogWeb4 = <String, String>{
   "Generate a fresh connect command to continue.": "生成新的连接命令以继续。",
   "Generate a token for this agent, then use it with Raft CLI login or pass it as the credential to the Raft SDK.":
       "为此 Agent 生成 token，然后用于 Raft CLI 登录，或作为 credential 传给 Raft SDK。",
-  "Generate image": "生成图片",
+  "Generate Image": "生成图片",
   "Generate Login Token": "生成登录 token",
-  "Generating token…": "正在生成 token…",
+  "Generating Token…": "正在生成 token…",
   "Generating…": "生成中…",
   "Get notified when they finish or need you.": "完成或需要你时接收通知。",
   "Get the Raft App": "获取 Raft App",
   "Get the Raft mobile app.": "获取 Raft 手机 App。",
   "Get the desktop beta": "获取桌面端 Beta",
-  "Get the iOS beta": "获取 iOS 测试版",
+  "Get the iOS Beta": "获取 iOS 测试版",
   "GitHub": "GitHub",
   "GitHub connection": "GitHub 连接",
   "GitHub is connected to the agent.": "GitHub 已连接到此 Agent。",
@@ -115,12 +115,11 @@ const Map<String, String> zhCatalogWeb4 = <String, String>{
   "Go back": "后退",
   "Go forward": "前进",
   "Go to Raft": "前往 Raft",
-  "Go to my server": "前往我的服务器",
+  "Go to My Server": "前往我的服务器",
   "Google": "Google",
   "Got it": "知道了",
   "Grace Period Expired": "宽限期已结束",
   "Grandfathered unlimited access.": "保留的无限制访问权限。",
-  "Grant access": "授予访问权限",
   "Grant an app access": "授权应用访问",
   "Granted automatically to the app": "应用请求时自动授权",
   "Granted by a person": "由人授权",
@@ -129,7 +128,7 @@ const Map<String, String> zhCatalogWeb4 = <String, String>{
   "Graph": "关系图",
   "Greater reasoning depth for complex problems": "针对复杂问题提供更深入的推理",
   "Greeting": "问候语",
-  "Grid view": "网格视图",
+  "Grid View": "网格视图",
   "Grok CLI is not signed in. Run grok login on this computer, then retry.":
       "Grok CLI 未登录。请在此计算机上运行 grok login，然后重试。",
   "Guest": "访客",
@@ -162,16 +161,16 @@ const Map<String, String> zhCatalogWeb4 = <String, String>{
   "Hidden for now — turn on anytime in": "已暂时隐藏——可随时在",
   "Hide #all": "隐藏 #all",
   "Hide #all channel": "隐藏 #all 频道",
-  "Hide Recovery guide": "隐藏恢复指南",
+  "Hide Recovery Guide": "隐藏恢复指南",
   "Hide all dev overlays until reload": "隐藏所有开发浮层，刷新后恢复",
   "Hide comments": "隐藏评论",
-  "Hide credential": "隐藏凭据",
-  "Hide empty sections": "隐藏空的分区",
+  "Hide Credential": "隐藏凭据",
+  "Hide Empty Sections": "隐藏空的分区",
   "Hide empty sidebar sections": "隐藏空的侧栏分区",
   "Hide human directory and counts from members": "对成员隐藏人类名录和数量",
-  "Hide install and setup commands": "隐藏安装和设置命令",
-  "Hide manual entry": "隐藏手动输入",
-  "Hide notification reminder for this session": "本会话隐藏通知提醒",
+  "Hide Install and Setup Commands": "隐藏安装和设置命令",
+  "Hide Manual Entry": "隐藏手动输入",
+  "Hide Notification Reminder for This Session": "本会话隐藏通知提醒",
   "Hide sidebar sections while they have nothing in them (empty Pinned, Joint Channels, Direct Messages). On by default in the desktop app.":
       "当侧栏某个分区没有内容时（置顶、联合频道、私信为空），整块隐藏不显示。桌面端默认开启。",
   "High": "High",
@@ -187,7 +186,7 @@ const Map<String, String> zhCatalogWeb4 = <String, String>{
   "How did you hear about Raft?": "你是怎么了解到 Raft 的？",
   "How often do you want to be billed?": "你希望按什么周期付费？",
   "How to connect a computer": "如何连接一台计算机",
-  "How to invite the app": "如何邀请应用",
+  "How to Invite the App": "如何邀请应用",
   "How to register an App?": "如何注册一个 App？",
   "How your name appears in messages. Change this anytime.":
       "你在消息中显示的名字，随时可以修改。",
@@ -252,7 +251,7 @@ const Map<String, String> zhCatalogWeb4 = <String, String>{
   "Install target": "安装目标",
   "Install the Raft Computer CLI on this macOS or Linux computer, then connect it to this server.":
       "在这台 macOS 或 Linux 计算机上安装 Raft Computer CLI，然后将它连接到此服务器。",
-  "Install to this server": "安装到此服务器",
+  "Install to This Server": "安装到此服务器",
   "Installation ID": "安装 ID",
   "Installation on this server": "此服务器上的安装",
   "Installation status could not be loaded. Reload this page to try again.":
@@ -295,22 +294,16 @@ const Map<String, String> zhCatalogWeb4 = <String, String>{
   "Join #{channel}": "加入 #{channel}",
   "This action runs on {server}. Switch to {server} to run it.":
       "这个操作会在 {server} 上执行，请切换到 {server} 后再执行。",
-  "Runs on {server}":
-      "将在 {server} 上执行",
-  "Create private channel <n>#{name}</n>":
-      "创建私密频道 <n>#{name}</n>",
-  "Create public channel <n>#{name}</n>":
-      "创建公开频道 <n>#{name}</n>",
-  "Create Agent <n>@{name}</n>":
-      "创建 Agent <n>@{name}</n>",
+  "Runs on {server}": "将在 {server} 上执行",
+  "Create private channel <n>#{name}</n>": "创建私密频道 <n>#{name}</n>",
+  "Create public channel <n>#{name}</n>": "创建公开频道 <n>#{name}</n>",
+  "Create Agent <n>@{name}</n>": "创建 Agent <n>@{name}</n>",
   "Approve <n>{client}</n> for <n>@{agent}</n>":
       "批准 <n>{client}</n> 用于 <n>@{agent}</n>",
   "Install <n>{client}</n> for <n>@{agent}</n>":
       "为 <n>@{agent}</n> 安装 <n>{client}</n>",
-  "Register app <n>{name}</n>":
-      "注册应用 <n>{name}</n>",
-  "Update app <n>{clientKey}</n>":
-      "更新应用 <n>{clientKey}</n>",
+  "Register app <n>{name}</n>": "注册应用 <n>{name}</n>",
+  "Update app <n>{clientKey}</n>": "更新应用 <n>{clientKey}</n>",
   "Recover <n>{clientKey}</n> for <n>@{agent}</n>":
       "恢复 <n>{clientKey}</n> 给 <n>@{agent}</n>",
   "@{agent}": "@{agent}",
@@ -343,6 +336,7 @@ const Map<String, String> zhCatalogWeb4 = <String, String>{
   "Joining follows the parent channel. Guest access remains read-only.":
       "加入会关注父频道；访客权限仍为只读。",
   "Joining server…": "正在加入服务器…",
+  "Joining Server…": "正在加入服务器…",
   "Joining…": "正在加入…",
   "Joint": "联合",
   "Joint Channel": "联合频道",
@@ -352,8 +346,8 @@ const Map<String, String> zhCatalogWeb4 = <String, String>{
       "联合频道的目标可能会把这份转发快照暴露给本服务器之外的人。",
   "Joint channel names are shared across servers": "联合频道的名称在各服务器间共享",
   "Joint channels": "联合频道",
-  "Jump to location": "跳转到位置",
-  "Jump to original message": "跳转到原消息",
+  "Jump to Location": "跳转到位置",
+  "Jump to Original Message": "跳转到原消息",
   "KEY": "KEY",
   "Keep Claude Code running so it can receive Raft work.":
       "保持 Claude Code 运行，以便它接收 Raft 工作。",
@@ -386,7 +380,7 @@ const Map<String, String> zhCatalogWeb4 = <String, String>{
   "Last used": "最近使用",
   "Launch this runtime with higher speed at a higher cost per token.":
       "以更高的单 token 成本换取更快速度启动此运行时。",
-  "Learn more": "了解更多",
+  "Learn More": "了解更多",
   "Leave": "离开",
   "Leave Channel": "离开频道",
   "Leave Server": "离开服务器",
@@ -414,14 +408,14 @@ const Map<String, String> zhCatalogWeb4 = <String, String>{
       "列出频道、成员和 Agent（slock server info）。",
   "List tasks on a channel's board (slock task list).":
       "列出频道任务看板上的任务（slock task list）。",
-  "List view": "列表视图",
+  "List View": "列表视图",
   "Listing details": "应用信息",
   "Live agent activity": "实时 Agent 动态",
   "Load More": "加载更多",
   "Load enabled Pi extensions installed on the computer running this agent. Applying changes restarts a running agent.":
       "加载运行此 agent 的计算机上已安装并启用的 Pi 扩展。应用修改会重启运行中的 agent。",
   "Load local Pi extensions": "加载本机 Pi 扩展",
-  "Load older messages": "加载更早的消息",
+  "Load Older Messages": "加载更早的消息",
   "Loading": "加载中",
   "Loading App Notifications...": "正在加载 App 通知…",
   "Loading MCP servers…": "正在加载 MCP 服务器…",
@@ -464,8 +458,7 @@ const Map<String, String> zhCatalogWeb4 = <String, String>{
   "Login with": "登录方式",
   "Login with Raft": "使用 Raft 登录",
   "Login with Raft access": "Raft 登录授权",
-  "Login with Raft lets humans and agents use apps with their Raft accounts. Humans use this page with their human Raft account. Agents can request app access through Raft with their agent Raft account when they need to work with the app.":
-      "Login with Raft 让 human 和 Agent 可以使用各自的 Raft 账户访问应用。Human 使用此页面并配合其 human Raft 账户。Agent 在需要处理该应用时，可通过 Raft 使用其 Agent Raft 账户申请应用访问权限。",
+  "Login with Raft lets humans and agents use apps with their Raft accounts. Humans use this page with their human Raft account. Agents can request app access through Raft with their agent Raft account when they need to work with the app.": "Login with Raft 让 human 和 Agent 可以使用各自的 Raft 账户访问应用。Human 使用此页面并配合其 human Raft 账户。Agent 在需要处理该应用时，可通过 Raft 使用其 Agent Raft 账户申请应用访问权限。",
   "Logo": "Logo",
   "Low": "Low",
   "Low disk": "磁盘不足",
@@ -480,13 +473,13 @@ const Map<String, String> zhCatalogWeb4 = <String, String>{
   "Computer runner log tail (your own computer only)": "计算机运行日志尾部（仅你自己的计算机）",
   "Make Private": "设为私密",
   "Make Public": "设为公开",
-  "Make admin": "设为管理员",
+  "Make Admin": "设为管理员",
   "Make this server public": "将此服务器设为公开",
   "Make this server public?": "将此服务器设为公开？",
   "Making public…": "正在设为公开…",
   "Manage Plan": "管理套餐",
   "Manage Seats": "管理席位",
-  "Manage channel mappings": "管理频道映射",
+  "Manage Channel Mappings": "管理频道映射",
   "Manage connections between Raft and external messaging services.":
       "管理 Raft 与外部即时通讯服务之间的连接。",
   "Manage preview": "管理预览",
@@ -506,8 +499,7 @@ const Map<String, String> zhCatalogWeb4 = <String, String>{
   "Markdown preview": "Markdown 预览",
   "Marketplace": "市场",
   "Marketplace lifecycle": "市场生命周期",
-  "Marketplace offline review is pending. The app stays listed and installable until App Admin approves removal. Approval preserves the source Server’s installation and access, but removes them on other Servers.":
-      "市场下架审核进行中。在应用管理员批准移除之前，应用会保持在列表中且可安装。批准后保留来源 Server 的安装和访问权限，撤销其他 Server 的安装和访问权限。",
+  "Marketplace offline review is pending. The app stays listed and installable until App Admin approves removal. Approval preserves the source Server’s installation and access, but removes them on other Servers.": "市场下架审核进行中。在应用管理员批准移除之前，应用会保持在列表中且可安装。批准后保留来源 Server 的安装和访问权限，撤销其他 Server 的安装和访问权限。",
   "Marketplace publish request": "市场发布申请",
   "Marketplace review is pending. You can edit this app while it waits, or delete it to withdraw the request.":
       "市场审核进行中。等待期间你仍可编辑此应用，也可以删除它以撤回申请。",

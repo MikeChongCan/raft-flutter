@@ -321,7 +321,7 @@ extension _SidebarContextMenus on _WorkspaceViewState {
   }) => showRaftSidebarSectionDialog(
     context,
     cardKey: const ValueKey('sidebar-section-dialog'),
-    title: edit == null ? 'New section' : 'Edit section',
+    title: edit == null ? 'New Section' : 'Edit Section',
     submitLabel: edit == null ? 'Create Section' : 'Save',
     initialName: '${edit?['name'] ?? ''}',
     initialEmoji: '${edit?['emoji'] ?? ''}',
@@ -411,7 +411,7 @@ extension _SidebarContextMenus on _WorkspaceViewState {
         ),
       const RaftSidebarMenuDivider(),
       RaftSidebarMenuItem(
-        label: tr('New section…'),
+        label: tr('New Section…'),
         glyph: RaftGlyph.folderPlus,
         onPressed: () {
           close();
@@ -420,7 +420,7 @@ extension _SidebarContextMenus on _WorkspaceViewState {
       ),
       if (placement != null)
         RaftSidebarMenuItem(
-          label: tr('Remove from section'),
+          label: tr('Remove from Section'),
           glyph: RaftGlyph.x,
           onPressed: () {
             close();
@@ -434,7 +434,7 @@ extension _SidebarContextMenus on _WorkspaceViewState {
 
   RaftSidebarMenuItem _moveItem() => RaftSidebarMenuItem(
     itemKey: const ValueKey('sidebar-menu-move-to-section'),
-    label: tr('Move to section'),
+    label: tr('Move to Section'),
     glyph: RaftGlyph.folderInput,
     submenu: true,
   );
@@ -630,7 +630,7 @@ extension _SidebarContextMenus on _WorkspaceViewState {
         RaftSidebarMenuHeading(tr('Display')),
         if (group.id == 'system:channels')
           RaftSidebarMenuItem(
-            label: tr('Show joined channels only'),
+            label: tr('Show Joined Channels Only'),
             checked: sidebarDisclosure.joinedChannelsOnly,
             onPressed: () {
               close();
@@ -641,7 +641,7 @@ extension _SidebarContextMenus on _WorkspaceViewState {
             },
           ),
         RaftSidebarMenuItem(
-          label: tr('Hide empty sections'),
+          label: tr('Hide Empty Sections'),
           checked: presentation.value.hideEmptySections,
           onPressed: () {
             close();
@@ -664,7 +664,7 @@ extension _SidebarContextMenus on _WorkspaceViewState {
           ),
         RaftSidebarMenuItem(
           itemKey: const ValueKey('sidebar-menu-new-section'),
-          label: tr('New section…'),
+          label: tr('New Section…'),
           glyph: RaftGlyph.folderPlus,
           onPressed: () {
             close();
@@ -685,7 +685,7 @@ extension _SidebarContextMenus on _WorkspaceViewState {
         ],
       ],
       width: 256,
-      label: 'Section options',
+      label: 'Section Options',
     );
   }
 
@@ -705,7 +705,7 @@ extension _SidebarContextMenus on _WorkspaceViewState {
         const RaftSidebarMenuDivider(),
       RaftSidebarMenuItem(
         itemKey: const ValueKey('sidebar-menu-new-section'),
-        label: tr('New section…'),
+        label: tr('New Section…'),
         glyph: RaftGlyph.folderPlus,
         onPressed: () {
           close();
@@ -714,6 +714,6 @@ extension _SidebarContextMenus on _WorkspaceViewState {
       ),
     ],
     width: 256,
-    label: 'Sidebar options',
+    label: 'Sidebar Options',
   );
 }

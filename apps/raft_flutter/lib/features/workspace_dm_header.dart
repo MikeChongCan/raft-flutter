@@ -84,7 +84,7 @@ class WorkspaceDmHeader extends StatelessWidget {
       backKey: backKey,
       backLabel: raftText(
         context,
-        selectionActive() ? 'Exit selection' : 'Back',
+        selectionActive() ? 'Exit Selection' : 'Back',
       ),
       onSearch: onSearch,
       onSettings: onSettings,
@@ -97,8 +97,8 @@ class WorkspaceDmHeader extends StatelessWidget {
                 peerId,
               );
             },
-      searchLabel: raftText(context, 'Search this channel'),
-      settingsLabel: raftText(context, 'Channel details and settings'),
+      searchLabel: raftText(context, 'Search This Channel'),
+      settingsLabel: raftText(context, 'Channel Details and Settings'),
     );
     final cloud = profile;
     // A cloud Cindy that could not start says so under her header.

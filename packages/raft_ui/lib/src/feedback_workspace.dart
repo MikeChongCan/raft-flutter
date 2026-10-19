@@ -429,13 +429,13 @@ class _RaftFeedbackComposerState extends State<RaftFeedbackComposer> {
                   RaftComposerAction(
                     key: const ValueKey('feedback-attach-image'),
                     glyph: RaftGlyph.imagePlus,
-                    tooltip: 'Attach image',
+                    tooltip: 'Attach Image',
                     onPressed: attachmentsFull ? null : widget.onAttachImage,
                   ),
                   RaftComposerAction(
                     key: const ValueKey('feedback-attach-file'),
                     glyph: RaftGlyph.paperclip,
-                    tooltip: 'Attach file',
+                    tooltip: 'Attach File',
                     onPressed: attachmentsFull ? null : widget.onAttachFile,
                   ),
                   if (widget.newFeedback)
@@ -669,7 +669,7 @@ class RaftFeedbackErrorBanner extends StatelessWidget {
     action: onRetry == null
         ? null
         : RaftRecipeButton(
-            label: 'Try again',
+            label: 'Try Again',
             variant: RaftButtonRecipeVariant.outline,
             size: RaftButtonRecipeSize.sm,
             onPressed: onRetry,
@@ -703,7 +703,7 @@ class RaftFeedbackNewForm extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          RaftFeedbackViewHeader(title: 'New feedback', onBack: onBack),
+          RaftFeedbackViewHeader(title: 'New Feedback', onBack: onBack),
           Expanded(
             child: SingleChildScrollView(
               padding: raftScrollPadding(
@@ -1092,7 +1092,7 @@ class RaftFeedbackConversation extends StatelessWidget {
           Align(
             alignment: Alignment.centerLeft,
             child: RaftRecipeButton(
-              label: loadingMore ? 'Loading replies…' : 'Load more replies',
+              label: loadingMore ? 'Loading Replies…' : 'Load More Replies',
               variant: RaftButtonRecipeVariant.outline,
               disabled: loadingMore,
               onPressed: onLoadMore,
@@ -1334,11 +1334,11 @@ class _RaftFeedbackCloseSplitState extends State<RaftFeedbackCloseSplit> {
       children: [
         part(
           key: ValueKey('feedback-close-main${widget.keySuffix}'),
-          label: raftText(context, 'Close ticket'),
+          label: raftText(context, 'Close Ticket'),
           main: true,
           onTap: () => widget.onChoose(widget.defaultReason),
           child: Text(
-            raftText(context, 'Close ticket'),
+            raftText(context, 'Close Ticket'),
             maxLines: 1,
             softWrap: false,
             style: text,
@@ -1346,7 +1346,7 @@ class _RaftFeedbackCloseSplitState extends State<RaftFeedbackCloseSplit> {
         ),
         part(
           key: ValueKey('feedback-close-caret${widget.keySuffix}'),
-          label: raftText(context, 'Choose a close reason'),
+          label: raftText(context, 'Choose a Close Reason'),
           main: false,
           onTap: _openMenu,
           child: RaftIcon(RaftGlyph.chevronDown, size: 10, color: fg),
@@ -1659,10 +1659,10 @@ class RaftFeedbackCloseDialog extends StatelessWidget {
                   ),
                   RaftButton(
                     key: const ValueKey('feedback-close-confirm'),
-                    label: 'Close ticket',
+                    label: 'Close Ticket',
                     semanticLabel: raftText(
                       context,
-                      busy ? 'Closing…' : 'Close ticket',
+                      busy ? 'Closing…' : 'Close Ticket',
                     ),
                     tone: RaftButtonRecipeVariant.accent,
                     size: RaftButtonRecipeSize.sm,

@@ -506,9 +506,9 @@ class _BillingState extends ManagementState<BillingView> {
               : tr('Updating...')
         : cancelScheduled
         ? noSeatChange
-              ? tr('Reactivate subscription')
-              : tr('Reactivate and update seats')
-        : tr('Review seat update');
+              ? tr('Reactivate Subscription')
+              : tr('Reactivate and Update Seats')
+        : tr('Review Seat Update');
     final capacityLabel = manageSeatMode
         ? seatDelta > 0
               ? tr('Adds {seats}', {'seats': seatLabel(added)})
@@ -940,7 +940,7 @@ class _BillingState extends ManagementState<BillingView> {
                 actionKey: const ValueKey('billing-portal'),
                 label: pending == _BillingAction.portal
                     ? tr('Opening...')
-                    : tr('Billing portal'),
+                    : tr('Billing Portal'),
                 tooltip: disabledReason ?? tr('Open Stripe billing portal.'),
                 onPressed: locked ? null : portal,
               ),
@@ -957,7 +957,7 @@ class _BillingState extends ManagementState<BillingView> {
           : null,
       compare: RaftBillingAction(
         actionKey: const ValueKey('billing-compare-plans'),
-        label: tr('See all features and compare plans'),
+        label: tr('See All Features and Compare Plans'),
         onPressed: () => _launch(Uri.parse(RaftBillingPlans.comparePlansUrl)),
       ),
       afterPlan:

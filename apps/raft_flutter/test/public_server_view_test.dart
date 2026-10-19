@@ -488,7 +488,7 @@ void _loadOlderTests() {
     );
     expect(timeline(t).extentAfter, greaterThan(200));
     expect(olderRequests(), 0);
-    expect(find.text('Load older messages'), findsNothing);
+    expect(find.text('Load Older Messages'), findsNothing);
     expect(find.text('Row 50', skipOffstage: false), findsNothing);
   });
 

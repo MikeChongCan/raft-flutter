@@ -58,7 +58,7 @@ class SessionRecoveryView extends StatelessWidget {
         description: tr(explanation),
         gapBeforeButton: 4,
         buttonKey: const Key('session-recovery-retry'),
-        buttonLabel: tr(network ? 'Allow local network access' : 'Try again'),
+        buttonLabel: tr(network ? 'Allow local network access' : 'Try Again'),
         // The system prompt (or, once it stops asking, the app's settings),
         // then the same retry the resume path runs.
         onButton: busy

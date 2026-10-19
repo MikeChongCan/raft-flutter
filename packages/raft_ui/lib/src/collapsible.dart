@@ -110,7 +110,7 @@ class _RaftCollapsibleState extends State<RaftCollapsible> {
 
   @override
   Widget build(BuildContext context) {
-    final label = raftText(context, expanded ? 'Collapse' : 'Show more');
+    final label = raftText(context, expanded ? 'Collapse' : 'Show More');
     if (toggleLabel != label) {
       toggleLabel = label;
       toggleWidget = Padding(

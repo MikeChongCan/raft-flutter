@@ -224,11 +224,11 @@ Widget _host(
 
 final _migrateButton = find.widgetWithText(
   RaftButton,
-  'Move to another Computer',
+  'Move to Another Computer',
 );
 final _dialogMigrate = find.descendant(
   of: find.byType(RaftFormDialog),
-  matching: find.widgetWithText(RaftButton, 'Move to another Computer'),
+  matching: find.widgetWithText(RaftButton, 'Move to Another Computer'),
 );
 
 void main() {
@@ -242,7 +242,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text("Can't load migration status"), findsOneWidget);
     expect(_migrateButton, findsOneWidget);
-    expect(find.text('Assign computer'), findsNothing);
+    expect(find.text('Assign Computer'), findsNothing);
   });
   Future<(_MigrationTransport, WorkspaceController)> mount(
     WidgetTester tester, {
@@ -566,13 +566,13 @@ void main() {
         );
         // Technical details are collapsed until opened.
         expect(find.textContaining('MIGRATION_LEASE_EXPIRED'), findsNothing);
-        await tester.tap(find.text('Technical details'));
+        await tester.tap(find.text('Technical Details'));
         await tester.pump();
         expect(find.textContaining('MIGRATION_LEASE_EXPIRED'), findsOneWidget);
         // The reference shows on a failure, with a copy action.
         expect(find.text('Migration ID'), findsOneWidget);
         expect(find.text('fixture-ref'), findsOneWidget);
-        expect(find.text('Try migration again'), findsOneWidget);
+        expect(find.text('Try Migration Again'), findsOneWidget);
         expect(find.text('Cancel Migration'), findsNothing);
       },
     );
@@ -626,7 +626,7 @@ void main() {
       );
       expect(find.text('Migration ID'), findsNothing);
       expect(find.text('Cancel Migration'), findsNothing);
-      expect(find.text('Move to another Computer'), findsNothing);
+      expect(find.text('Move to Another Computer'), findsNothing);
     });
 
     testWidgets('cancellation attention shows the title, code and reference', (
@@ -642,7 +642,7 @@ void main() {
       );
       expect(find.text('Migration to Target needs attention'), findsOneWidget);
       expect(find.text("Cancellation couldn't finish"), findsOneWidget);
-      await tester.tap(find.text('Technical details'));
+      await tester.tap(find.text('Technical Details'));
       await tester.pump();
       expect(find.textContaining('CLEANUP_TIMEOUT'), findsOneWidget);
       expect(find.text('Migration ID'), findsOneWidget);
@@ -659,7 +659,7 @@ void main() {
         findsOneWidget,
       );
       expect(find.text('Migration ID'), findsNothing);
-      expect(find.text('Move to another Computer'), findsOneWidget);
+      expect(find.text('Move to Another Computer'), findsOneWidget);
     });
 
     testWidgets('the panel uses the Web zh-cn copy', (tester) async {
@@ -859,7 +859,7 @@ void main() {
         find.textContaining('Source does not support Codex CLI.'),
         findsOneWidget,
       );
-      expect(find.text('Open computer settings'), findsOneWidget);
+      expect(find.text('Open Computer Settings'), findsOneWidget);
       // The submit action now reads Try again.
       expect(find.widgetWithText(RaftButton, 'Try Again'), findsOneWidget);
       expect(_dialogMigrate, findsNothing);
@@ -906,10 +906,10 @@ void main() {
       tester,
     ) async {
       await mount(tester);
-      expect(find.text('Move to another Computer'), findsNothing);
+      expect(find.text('Move to Another Computer'), findsNothing);
       await tester.pumpWidget(const SizedBox());
       await mount(tester, state: 'failed');
-      expect(find.text('Try migration again'), findsOneWidget);
+      expect(find.text('Try Migration Again'), findsOneWidget);
     });
 
     testWidgets('a status read failure is a banner and keeps Move', (
@@ -924,7 +924,7 @@ void main() {
         findsOneWidget,
       );
       expect(find.textContaining('Boom internal detail'), findsNothing);
-      expect(find.text('Move to another Computer'), findsOneWidget);
+      expect(find.text('Move to Another Computer'), findsOneWidget);
     });
   });
 }

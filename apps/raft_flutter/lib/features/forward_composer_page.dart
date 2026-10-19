@@ -505,14 +505,14 @@ class _ForwardComposerPageState extends State<ForwardComposerPage> {
     hasJointDestination: hasJointDestination,
   );
 
-  /// The Send button's tooltip: Web `submitDisabledReason`, else "Send forward".
+  /// The Send button's tooltip: Web `submitDisabledReason`, else "Send Forward".
   String submitTooltip() =>
       forwardSubmitDisabledReason(
         context,
         hasSelection: selected.isNotEmpty,
         joinReady: joinTargets.isEmpty,
       ) ??
-      raftText(context, 'Send forward');
+      raftText(context, 'Send Forward');
 
   /// ForwardComposerDesktop.tsx: the two-pane dialog card.
   Widget desktopDialog() {
@@ -524,7 +524,7 @@ class _ForwardComposerPageState extends State<ForwardComposerPage> {
         'source': sourceLabel,
       }),
       close: RaftCloseButton(
-        tooltip: 'Close forward composer',
+        tooltip: 'Close Forward Composer',
         onPressed: locked ? null : () => Navigator.of(context).pop(false),
       ),
       search: RaftForwardDesktopSearch(
@@ -597,7 +597,7 @@ class _ForwardComposerPageState extends State<ForwardComposerPage> {
                 )
               : RaftForwardIconAction(
                   glyph: RaftGlyph.arrowLeft,
-                  tooltip: raftText(context, 'Close forward target selection'),
+                  tooltip: raftText(context, 'Close Forward Target Selection'),
                   onPressed: locked
                       ? null
                       : () => Navigator.of(context).pop(false),
@@ -614,7 +614,7 @@ class _ForwardComposerPageState extends State<ForwardComposerPage> {
                       : () => setState(() => preview = true),
                 )
               : RaftForwardTextAction(
-                  label: raftText(context, 'Select multiple'),
+                  label: raftText(context, 'Select Multiple'),
                   onPressed: () {
                     searchFocus.unfocus();
                     setState(() {
@@ -767,7 +767,7 @@ class _ForwardComposerPageState extends State<ForwardComposerPage> {
         RaftForwardPageHeader(
           leading: RaftForwardIconAction(
             glyph: RaftGlyph.arrowLeft,
-            tooltip: raftText(context, 'Back to destinations'),
+            tooltip: raftText(context, 'Back to Destinations'),
             onPressed: locked ? null : () => setState(() => preview = false),
           ),
           title: raftText(context, 'Add a note'),
