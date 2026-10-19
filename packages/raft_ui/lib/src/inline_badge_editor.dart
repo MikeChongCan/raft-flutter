@@ -46,7 +46,6 @@ class RaftInlineBadgeEditor extends StatefulWidget {
     this.taskStatus,
     this.open,
     this.onOpenChanged,
-    this.uppercase = false,
     this.menuMinWidth = 140,
     this.alignRight = false,
     this.enabled = true,
@@ -72,7 +71,7 @@ class RaftInlineBadgeEditor extends StatefulWidget {
   final RaftMessageTaskStatus? taskStatus;
   final bool? open;
   final ValueChanged<bool>? onOpenChanged;
-  final bool uppercase, alignRight, enabled;
+  final bool alignRight, enabled;
 
   /// `dropdownMinWidth` (`min-w-[140px]` for task status).
   final double menuMinWidth;
@@ -159,7 +158,6 @@ class _RaftInlineBadgeEditorState extends State<RaftInlineBadgeEditor> {
     final badge = RaftBadgeRecipe.resolve(
       theme: theme,
       appearance: RaftBadgeRecipeAppearance.soft,
-      uppercase: widget.uppercase,
       tokens: rt,
     ).root;
     // `rounded-full` resolves to a float-max radius; a finite one paints the
@@ -179,7 +177,7 @@ class _RaftInlineBadgeEditorState extends State<RaftInlineBadgeEditor> {
       height: 16 / 12,
       fontWeight: FontWeight.w700, // font-bold
       color: widget.foreground,
-      letterSpacing: widget.uppercase ? 12 * .025 : badge.letterSpacing,
+      letterSpacing: badge.letterSpacing,
     );
     // `badgeStatus`: raft-ui TaskStatusBadge (the TaskChip look) with the same
     // `mt-0.5`, a hover brightness shift and the 2px line-strong focus ring.
@@ -257,10 +255,7 @@ class _RaftInlineBadgeEditorState extends State<RaftInlineBadgeEditor> {
             mainAxisSize: MainAxisSize.min,
             spacing: 4, // gap-1
             children: [
-              RaftCssText(
-                widget.uppercase ? widget.label.toUpperCase() : widget.label,
-                style: label,
-              ),
+              RaftCssText(widget.label, style: label),
               Opacity(
                 opacity: .4,
                 child: RaftIcon(

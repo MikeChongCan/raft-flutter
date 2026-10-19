@@ -599,8 +599,8 @@ class _RaftComputerCommandGuideState extends State<RaftComputerCommandGuide> {
         const SizedBox(height: 8),
         Text(
           windows
-              ? 'Install Raft Computer from PowerShell, then connect this Windows x64 machine to the server.'
-              : 'Install the Raft Computer CLI on this macOS or Linux machine, then connect it to this server.',
+              ? 'Install Raft Computer from PowerShell, then connect this Windows x64 computer to the server.'
+              : 'Install the Raft Computer CLI on this macOS or Linux computer, then connect it to this server.',
           style: note,
         ),
         const SizedBox(height: 8),

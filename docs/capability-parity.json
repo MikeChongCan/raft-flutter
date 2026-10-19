@@ -2966,11 +2966,11 @@
    "flutterRefs": [
     {
      "file": "apps/raft_flutter/lib/features/workspace_view.dart",
-     "needle": "tr('Create joint channel')"
+     "needle": "tr('Create Joint Channel')"
     },
     {
      "file": "apps/raft_flutter/lib/features/workspace_view.dart",
-     "needle": "tr('Create channel')"
+     "needle": "tr('Create Channel')"
     }
    ],
    "justification": "",
@@ -3890,7 +3890,7 @@
     },
     {
      "file": "apps/raft_flutter/lib/features/administration_view.dart",
-     "needle": "Product analytics for this workspace"
+     "needle": "Product analytics for this server"
     }
    ],
    "justification": "",
@@ -5138,7 +5138,7 @@
     },
     {
      "file": "apps/raft_flutter/lib/features/provider_views.dart",
-     "needle": "Detach deleted agent"
+     "needle": "Detach Deleted Agent"
     }
    ],
    "justification": "",
@@ -5699,7 +5699,7 @@
     },
     {
      "file": "apps/raft_flutter/lib/features/provider_views.dart",
-     "needle": "Verify on a computer"
+     "needle": "Verify on Computer"
     }
    ],
    "justification": "",
@@ -6049,7 +6049,7 @@
     },
     {
      "file": "apps/raft_flutter/lib/features/desktop_directory_view.dart",
-     "needle": "Create external agent"
+     "needle": "Create External Agent"
     }
    ],
    "justification": "Managed create covers computer/name/description/runtime/model/effort/mode/env/capacity/onboarding/action-card, the remembered last computer/runtime/model, a suggested name with the dice button, the random pixel avatar and the dialog side of the channel Add members entry (autoJoinChannelName context line, prefilledNameNote). A cloud agent is the 'Cloud agent' choice of the Computer picker (flag antiproton_hosted_runtime + the provider probe). Gaps: the Add members entry that opens the dialog and joins the channel is not wired yet; Web's legacy (non-v2) runtime fields are not used, Flutter renders the server's v2 runtime form (saved provider, built-in provider, Pi provider, local plugins are fields of that form).",
@@ -6200,7 +6200,7 @@
     },
     {
      "file": "apps/raft_flutter/lib/features/agent_migration_section.dart",
-     "needle": "Cancel migration"
+     "needle": "Cancel Migration"
     }
    ],
    "justification": "",
@@ -6344,7 +6344,7 @@
     },
     {
      "file": "apps/raft_flutter/lib/features/provider_views.dart",
-     "needle": "Verify on computer"
+     "needle": "Verify on Computer"
     }
    ],
    "justification": "",
@@ -6483,7 +6483,7 @@
     },
     {
      "file": "apps/raft_flutter/lib/features/fleet_views.dart",
-     "needle": "Rotate computer key?"
+     "needle": "Rotate Computer Key"
     }
    ],
    "justification": "Marked covered because Flutter is a superset: Web has no user-facing rotate-key action (dead store method).",
@@ -8072,7 +8072,7 @@
     },
     {
      "file": "apps/raft_flutter/lib/features/desktop_directory_view.dart",
-     "needle": "Create external agent"
+     "needle": "Create External Agent"
     }
    ],
    "justification": "Handoff Session (take over a local coding session) is Electron-desktop-only on Web, tracked as ui:global-ui.desktop-handoff-local-session.",
@@ -8188,7 +8188,7 @@
    "flutterRefs": [
     {
      "file": "apps/raft_flutter/lib/features/integrations_views.dart",
-     "needle": "Uninstall app"
+     "needle": "Uninstall App"
     },
     {
      "file": "apps/raft_flutter/lib/features/integrations_views.dart",
@@ -8212,7 +8212,7 @@
    "flutterRefs": [
     {
      "file": "apps/raft_flutter/lib/features/mcp_views.dart",
-     "needle": "Delete server"
+     "needle": "Delete MCP Server"
     },
     {
      "file": "apps/raft_flutter/lib/features/mcp_views.dart",
@@ -8741,7 +8741,7 @@
     },
     {
      "file": "apps/raft_flutter/lib/features/agent_apps_view.dart",
-     "needle": "Review permissions"
+     "needle": "Review Permissions"
     }
    ],
    "justification": "Equivalent options and gate. Scopes are entered as a comma-separated text field (prefilled with all requested scopes, validated as a subset) instead of Web per-scope checkboxes.",
@@ -8837,7 +8837,7 @@
     },
     {
      "file": "apps/raft_flutter/lib/features/connected_app_editor.dart",
-     "needle": "Regenerate client secret"
+     "needle": "Regenerate Client Secret"
     }
    ],
    "justification": "",
@@ -8885,7 +8885,7 @@
     },
     {
      "file": "apps/raft_flutter/lib/features/connected_app_editor.dart",
-     "needle": "Request offline"
+     "needle": "Request Offline Review"
     }
    ],
    "justification": "",
@@ -8933,7 +8933,7 @@
     },
     {
      "file": "apps/raft_flutter/lib/features/agent_apps_view.dart",
-     "needle": "Revoke app access?"
+     "needle": "Revoke App Access"
     }
    ],
    "justification": "",
@@ -10054,7 +10054,7 @@
    "flutterRefs": [
     {
      "file": "apps/raft_flutter/lib/features/resource_view.dart",
-     "needle": "Delete task?"
+     "needle": "Delete Task"
     },
     {
      "file": "apps/raft_flutter/lib/features/resource_view.dart",
@@ -11438,7 +11438,7 @@
     },
     {
      "file": "apps/raft_flutter/lib/features/source_channel_files_view.dart",
-     "needle": "'Load more'"
+     "needle": "'Load More'"
     }
    ],
    "justification": "",
@@ -12986,7 +12986,7 @@
     },
     {
      "file": "apps/raft_flutter/lib/features/account_connections_view.dart",
-     "needle": "Disconnect this sign-in account?"
+     "needle": "Disconnect Account"
     }
    ],
    "justification": "",
@@ -13493,7 +13493,7 @@
    "flutterRefs": [
     {
      "file": "apps/raft_flutter/lib/features/account_settings.dart",
-     "needle": "Remove profile image"
+     "needle": "Remove Profile Image"
     }
    ],
    "justification": "Flutter superset action; recorded so it is not mistaken for a gap.",
@@ -14301,7 +14301,7 @@
     },
     {
      "file": "apps/raft_flutter/lib/features/account_connections_view.dart",
-     "needle": "Set password by email"
+     "needle": "Set Password by Email"
     }
    ],
    "justification": "",
@@ -14517,7 +14517,7 @@
     },
     {
      "file": "apps/raft_flutter/lib/features/server_setup_gate.dart",
-     "needle": "Start setup over?"
+     "needle": "Start Over"
     }
    ],
    "justification": "",
@@ -15109,7 +15109,7 @@
     },
     {
      "file": "apps/raft_flutter/lib/features/channel_conversion_section.dart",
-     "needle": "Cancel conversion"
+     "needle": "Cancel Conversion"
     }
    ],
    "justification": "",
@@ -15133,7 +15133,7 @@
     },
     {
      "file": "apps/raft_flutter/lib/features/channel_conversion_section.dart",
-     "needle": "Retry conversion"
+     "needle": "Retry Conversion"
     }
    ],
    "justification": "",
@@ -15225,7 +15225,7 @@
    "flutterRefs": [
     {
      "file": "apps/raft_flutter/lib/features/channel_conversion_section.dart",
-     "needle": "Cancel upload"
+     "needle": "Cancel Upload"
     }
    ],
    "justification": "",

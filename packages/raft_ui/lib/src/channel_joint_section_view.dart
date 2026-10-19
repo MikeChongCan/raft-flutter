@@ -286,7 +286,6 @@ class RaftChannelJointSectionView extends StatelessWidget {
                 children: [
                   RaftProductFormField(
                     label: 'Server slug',
-                    uppercase: false,
                     required: true,
                     labelWeight: FontWeight.w500,
                     family: t.bodyFont,
@@ -302,7 +301,6 @@ class RaftChannelJointSectionView extends StatelessWidget {
                   const SizedBox(height: 12),
                   RaftProductFormField(
                     label: 'Invited people',
-                    uppercase: false,
                     required: true,
                     labelWeight: FontWeight.w500,
                     family: t.bodyFont,

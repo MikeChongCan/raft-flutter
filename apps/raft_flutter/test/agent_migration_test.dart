@@ -385,7 +385,7 @@ void main() {
       expect(t.count('GET /billing/subscription'), 1);
       await tester.tap(_migrateButton);
       await tester.pumpAndSettle();
-      expect(find.text('UPGRADE TO PRO TO MIGRATE AGENTS'), findsOneWidget);
+      expect(find.text('Upgrade to Pro to migrate agents'), findsOneWidget);
       expect(
         find.textContaining(
           'After upgrading, you can migrate an agent and its workspace',
@@ -395,7 +395,7 @@ void main() {
       expect(find.byType(RaftFormDialog), findsNothing);
       // "Upgrade" opens Plan & Billing settings.
       await tester.tap(
-        find.widgetWithText(RaftSettingsRecipeButton, 'Upgrade'),
+        find.widgetWithText(RaftSettingsRecipeButton, 'Upgrade to Pro'),
       );
       await tester.pumpAndSettle();
       expect(w.section, 'billing');
@@ -411,10 +411,10 @@ void main() {
       );
       await tester.tap(find.widgetWithText(RaftButton, '迁移到另一台计算机'));
       await tester.pumpAndSettle();
-      expect(find.text('升级至 PRO 以迁移 AGENT'), findsOneWidget);
+      expect(find.text('升级至 Pro 以迁移 Agent'), findsOneWidget);
       expect(find.textContaining('升级后，可以把 Agent 连同工作区'), findsOneWidget);
       expect(
-        find.widgetWithText(RaftSettingsRecipeButton, '升级'),
+        find.widgetWithText(RaftSettingsRecipeButton, '升级到 Pro'),
         findsOneWidget,
       );
     });
@@ -432,7 +432,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.widgetWithText(RaftSettingsRecipeButton, 'Cancel'));
       await tester.pumpAndSettle();
-      expect(find.text('UPGRADE TO PRO TO MIGRATE AGENTS'), findsNothing);
+      expect(find.text('Upgrade to Pro to migrate agents'), findsNothing);
       expect(find.byType(AgentMigrationSection), findsOneWidget);
       expect(w.section, isNot('billing'));
     });
@@ -456,7 +456,7 @@ void main() {
         await tester.tap(_migrateButton);
         await tester.pumpAndSettle();
         expect(find.byType(RaftFormDialog), findsOneWidget, reason: plan);
-        expect(find.text('UPGRADE TO PRO TO MIGRATE AGENTS'), findsNothing);
+        expect(find.text('Upgrade to Pro to migrate agents'), findsNothing);
       }
     });
 
@@ -482,7 +482,7 @@ void main() {
         await tester.pumpAndSettle();
         expect(t.count('POST /agents/a1/migrate'), 1);
         expect(find.byType(RaftFormDialog), findsNothing);
-        expect(find.text('UPGRADE TO PRO TO MIGRATE AGENTS'), findsOneWidget);
+        expect(find.text('Upgrade to Pro to migrate agents'), findsOneWidget);
         expect(find.textContaining('requires the Pro plan'), findsNothing);
         expect(t.count('GET /billing/subscription'), billingReads + 1);
       },
@@ -496,7 +496,7 @@ void main() {
       await mount(tester);
       expect(find.text('Migrating to Target'), findsOneWidget);
       for (final step in [
-        'Stop agent',
+        'Stop Agent',
         'Pack workspace',
         'Transfer files',
         'Start on new computer',
@@ -508,7 +508,7 @@ void main() {
       expect(find.textContaining('Migration status:'), findsNothing);
       // The support reference only appears when something needs attention.
       expect(find.text('Migration ID'), findsNothing);
-      expect(find.text('Cancel'), findsOneWidget);
+      expect(find.text('Cancel Migration'), findsOneWidget);
     });
 
     testWidgets('packing shows the file count and size', (tester) async {
@@ -561,7 +561,7 @@ void main() {
           findsOneWidget,
         );
         expect(
-          find.text('Something went wrong during the transfer. Try again.'),
+          find.text('The transfer did not finish. Try again.'),
           findsOneWidget,
         );
         // Technical details are collapsed until opened.
@@ -573,7 +573,7 @@ void main() {
         expect(find.text('Migration ID'), findsOneWidget);
         expect(find.text('fixture-ref'), findsOneWidget);
         expect(find.text('Try migration again'), findsOneWidget);
-        expect(find.text('Cancel'), findsNothing);
+        expect(find.text('Cancel Migration'), findsNothing);
       },
     );
 
@@ -625,7 +625,7 @@ void main() {
         findsOneWidget,
       );
       expect(find.text('Migration ID'), findsNothing);
-      expect(find.text('Cancel'), findsNothing);
+      expect(find.text('Cancel Migration'), findsNothing);
       expect(find.text('Move to another Computer'), findsNothing);
     });
 
@@ -668,7 +668,7 @@ void main() {
       expect(find.text('停止 Agent'), findsOneWidget);
       expect(find.text('迁移完成'), findsOneWidget);
       expect(find.text('正在将工作区传输到 Target。'), findsOneWidget);
-      expect(find.text('取消'), findsOneWidget);
+      expect(find.text('取消迁移'), findsOneWidget);
     });
 
     testWidgets('the steps stack when the row does not fit', (tester) async {
@@ -676,7 +676,7 @@ void main() {
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.reset);
       await mount(tester);
-      final first = tester.getTopLeft(find.text('Stop agent'));
+      final first = tester.getTopLeft(find.text('Stop Agent'));
       final second = tester.getTopLeft(find.text('Pack workspace'));
       expect(second.dy, greaterThan(first.dy));
       expect(second.dx, first.dx);
@@ -685,14 +685,14 @@ void main() {
 
   group('cancel (Web AgentMigrationCancelDialog)', () {
     Future<void> openCancel(WidgetTester tester) async {
-      await tester.tap(find.widgetWithText(RaftButton, 'Cancel'));
+      await tester.tap(find.widgetWithText(RaftButton, 'Cancel Migration'));
       await tester.pumpAndSettle();
     }
 
     testWidgets('the dialog explains what cancelling does', (tester) async {
       await mount(tester);
       await openCancel(tester);
-      expect(find.text('CANCEL MIGRATION?'), findsOneWidget);
+      expect(find.text('Cancel Migration'), findsNWidgets(3));
       expect(find.text('Canceling is safe'), findsOneWidget);
       expect(
         find.textContaining(
@@ -708,11 +708,11 @@ void main() {
         findsOneWidget,
       );
       expect(
-        find.widgetWithText(RaftSettingsRecipeButton, 'Stop'),
+        find.widgetWithText(RaftSettingsRecipeButton, 'Cancel Migration'),
         findsOneWidget,
       );
       expect(
-        find.widgetWithText(RaftSettingsRecipeButton, 'Continue'),
+        find.widgetWithText(RaftSettingsRecipeButton, 'Keep Migrating'),
         findsOneWidget,
       );
     });
@@ -723,10 +723,10 @@ void main() {
       final (t, _) = await mount(tester);
       await openCancel(tester);
       await tester.tap(
-        find.widgetWithText(RaftSettingsRecipeButton, 'Continue'),
+        find.widgetWithText(RaftSettingsRecipeButton, 'Keep Migrating'),
       );
       await tester.pumpAndSettle();
-      expect(find.text('CANCEL MIGRATION?'), findsNothing);
+      expect(find.text('Cancel Migration'), findsOneWidget);
       expect(t.requests, isEmpty);
     });
 
@@ -735,7 +735,9 @@ void main() {
     ) async {
       final (t, _) = await mount(tester, setup: (t) => t.staleCancels = 2);
       await openCancel(tester);
-      await tester.tap(find.widgetWithText(RaftSettingsRecipeButton, 'Stop'));
+      await tester.tap(
+        find.widgetWithText(RaftSettingsRecipeButton, 'Cancel Migration'),
+      );
       await tester.pumpAndSettle();
       // The revision the dialog opened with, then each re-read revision.
       expect(t.requests, [
@@ -743,7 +745,7 @@ void main() {
         {'migrationRef': 'fixture-ref', 'expectedRevision': 3},
         {'migrationRef': 'fixture-ref', 'expectedRevision': 4},
       ]);
-      expect(find.text('CANCEL MIGRATION?'), findsNothing);
+      expect(find.text('Cancel Migration'), findsNothing);
       expect(find.text('Canceling migration to Target'), findsOneWidget);
     });
 
@@ -752,10 +754,12 @@ void main() {
     ) async {
       final (t, _) = await mount(tester);
       await openCancel(tester);
-      await tester.tap(find.widgetWithText(RaftSettingsRecipeButton, 'Stop'));
+      await tester.tap(
+        find.widgetWithText(RaftSettingsRecipeButton, 'Cancel Migration'),
+      );
       await tester.pumpAndSettle();
       expect(t.requests, hasLength(3));
-      expect(find.text('CANCEL MIGRATION?'), findsOneWidget);
+      expect(find.text('Cancel Migration'), findsNWidgets(3));
       expect(
         find.text(
           'The migration moved on before your request went through. Check the latest status and try again. (MIGRATION_REVISION_STALE)',
@@ -771,10 +775,12 @@ void main() {
       final (t, _) = await mount(tester, setup: (t) => t.staleCancels = 2);
       await openCancel(tester);
       t.extra = {'migrationRef': 'other-ref'};
-      await tester.tap(find.widgetWithText(RaftSettingsRecipeButton, 'Stop'));
+      await tester.tap(
+        find.widgetWithText(RaftSettingsRecipeButton, 'Cancel Migration'),
+      );
       await tester.pumpAndSettle();
       expect(t.requests, hasLength(1));
-      expect(find.text('CANCEL MIGRATION?'), findsOneWidget);
+      expect(find.text('Cancel Migration'), findsNWidgets(3));
     });
   });
 

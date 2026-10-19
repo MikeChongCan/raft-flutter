@@ -258,7 +258,6 @@ class RaftChannelSettingsSheet extends StatelessWidget {
             children: [
               RaftProductFormField(
                 label: 'Name',
-                uppercase: false,
                 required: true,
                 labelWeight: FontWeight.w500,
                 hint: nameHint,
@@ -274,7 +273,6 @@ class RaftChannelSettingsSheet extends StatelessWidget {
               if (descriptionController != null)
                 RaftProductFormField(
                   label: 'Description',
-                  uppercase: false,
                   optional: true,
                   labelWeight: FontWeight.w500,
                   child: RaftDialogTextInput(

@@ -132,7 +132,6 @@ class _AgentMigrationStartDialogState extends State<AgentMigrationStartDialog> {
               context,
               widget.hostedAvailable ? 'Move to' : 'Target computer',
             ),
-            uppercase: false,
             // Web asks nothing when the dialog is closed after only a target
             // change: the picker's text stays out of the unsaved-input guard.
             child: RaftUnsavedGuardIgnore(
@@ -158,7 +157,6 @@ class _AgentMigrationStartDialogState extends State<AgentMigrationStartDialog> {
             const SizedBox(height: RaftSpace.x4),
             RaftField(
               label: raftText(context, 'Model'),
-              uppercase: false,
               child: RaftUnsavedGuardIgnore(
                 child: HostedModelChoice(
                   loader: models!,

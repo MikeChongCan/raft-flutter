@@ -81,7 +81,7 @@ class SourceProfileLoadingPanel extends StatelessWidget {
         ),
         Expanded(
           child: error == null
-              ? RaftPanelMessage(raftText(context, 'Loading...'))
+              ? RaftPanelMessage(raftText(context, 'Loading profile…'))
               // Web page-level load failure: message + outline Retry.
               : RaftLoadError('Profile could not be loaded.', onRetry: onRetry),
         ),
@@ -1243,7 +1243,7 @@ class _AgentDetailPanelState extends State<AgentDetailPanel> {
                 child: RaftConnectionValue(online: m['status'] == 'online'),
               ),
               RaftInfoRow(
-                label: raftText(context, 'Computer Version'),
+                label: raftText(context, 'Raft Computer version'),
                 child: RaftCssText(
                   runLabel(m),
                   style: RaftPanelText.profileMono(t),
@@ -2034,7 +2034,7 @@ class _AgentChatTabState extends State<AgentChatTab> with _AgentTabLoader {
     // Nothing accepted yet: no "Channels 0" counts that would then fill in.
     if (!hasContent) {
       return RaftPanelMessage(
-        raftText(context, loadError ?? 'Loading…'),
+        raftText(context, loadError ?? 'Loading profile…'),
         action: loadError == null
             ? null
             : RaftButton(label: raftText(context, 'Retry'), onPressed: reload),

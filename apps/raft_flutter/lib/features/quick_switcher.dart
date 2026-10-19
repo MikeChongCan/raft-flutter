@@ -919,7 +919,6 @@ class _QuickSwitcherState extends State<QuickSwitcher> {
         if (searchBeyondHistory(row['createdAt'] as String?, data.plan, now))
           raftText(context, 'Upgrade to view'),
       ],
-      uppercaseWarnings: {raftText(context, 'Archived')},
       avatar: sender.isEmpty
           ? null
           : searchHitSenderAvatar(

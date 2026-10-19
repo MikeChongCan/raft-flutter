@@ -331,18 +331,19 @@ class RaftAvatarDiscardConfirmation extends StatelessWidget {
               RaftRecipeBox(
                 style: s.footer,
                 tokens: rt,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                child: Wrap(
+                  alignment: WrapAlignment.end,
+                  spacing: s.footer.columnGap ?? 12,
+                  runSpacing: 12,
                   children: [
                     RaftButton(
-                      label: raftText(context, 'Keep editing'),
+                      label: raftText(context, 'Keep Editing'),
                       size: RaftButtonRecipeSize.sm,
                       tone: RaftButtonRecipeVariant.outline,
                       onPressed: onKeep,
                     ),
-                    SizedBox(width: s.footer.columnGap ?? 12),
                     RaftButton(
-                      label: raftText(context, 'Discard'),
+                      label: raftText(context, 'Discard Changes'),
                       size: RaftButtonRecipeSize.sm,
                       tone: RaftButtonRecipeVariant.danger,
                       onPressed: onDiscard,

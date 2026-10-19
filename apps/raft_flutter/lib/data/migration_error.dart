@@ -94,7 +94,7 @@ const _copy = <String, String>{
   'MIGRATION_ALREADY_IN_PROGRESS':
       'This agent already has a migration in progress. Wait for it to finish before trying again.',
   'MIGRATION_PRO_PLAN_REQUIRED':
-      'Agent migration requires the Pro plan. Upgrade this Server to Pro before trying again.',
+      'Agent migration requires the Pro plan. Upgrade this server to Pro before trying again.',
   'MIGRATION_TRANSPORT_NOT_PROVISIONED':
       'Raft could not prepare a secure transfer between these computers. Make sure both computers are online and up to date, then try again.',
   'MIGRATION_TRANSPORT_PROVISION_FAILED':
@@ -137,7 +137,7 @@ const _copy = <String, String>{
       'Migration status could not be loaded. Refresh and try again.',
 };
 
-const _failedGeneric = 'Something went wrong during the transfer. Try again.';
+const _failedGeneric = 'The transfer did not finish. Try again.';
 
 const _abortReasons = <String, String>{
   'prep-deadline':

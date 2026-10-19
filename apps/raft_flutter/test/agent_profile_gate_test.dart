@@ -167,7 +167,7 @@ void main() {
         findsOneWidget,
       );
       expect(find.text('No computer assigned'), findsOneWidget);
-      expect(find.text('FROM'), findsNothing);
+      expect(find.text('From'), findsNothing);
     });
 
     testWidgets('deprecated runtimes carry Web\'s "(deprecated)" status', (
@@ -207,7 +207,7 @@ void main() {
       );
       expect(find.text('No computer assigned'), findsOneWidget);
       // v1.21.23: an agent profile has no Created Agents section.
-      expect(find.textContaining('CREATED AGENTS'), findsNothing);
+      expect(find.textContaining('Created Agents'), findsNothing);
     });
 
     testWidgets(
@@ -221,7 +221,7 @@ void main() {
         expect(find.text('Activity'), findsNothing);
         expect(find.text('No computer assigned'), findsOneWidget);
         // v1.21.23: an agent profile has no Created Agents section.
-        expect(find.textContaining('CREATED AGENTS'), findsNothing);
+        expect(find.textContaining('Created Agents'), findsNothing);
         expect(
           find.byKey(const Key('agent-profile-inline-start-stop')),
           findsNothing,
@@ -243,7 +243,7 @@ void main() {
       );
       expect(find.text('Activity'), findsOneWidget);
       expect(find.text('Archive Agent'), findsOneWidget);
-      expect(find.textContaining('RUNTIME CONFIG'), findsOneWidget);
+      expect(find.textContaining('Runtime Config'), findsOneWidget);
       expect(
         find.byKey(const Key('agent-profile-inline-start-stop')),
         findsOneWidget,
@@ -480,14 +480,14 @@ void expectPublicProfile(WidgetTester tester, {required String? from}) {
   expect(find.text('Direct Message'), findsNothing);
   expect(find.text('No computer assigned'), findsNothing);
   expect(find.text('No creator assigned'), findsNothing);
-  expect(find.textContaining('RUNTIME CONFIG'), findsNothing);
-  expect(find.textContaining('CREATED AGENTS'), findsNothing);
+  expect(find.textContaining('Runtime Config'), findsNothing);
+  expect(find.textContaining('Created Agents'), findsNothing);
   expect(find.text('Computer'), findsNothing);
   expect(find.text('Creator'), findsNothing);
   if (from == null) {
-    expect(find.text('FROM'), findsNothing);
+    expect(find.text('From'), findsNothing);
   } else {
-    expect(find.text('FROM'), findsOneWidget);
+    expect(find.text('From'), findsOneWidget);
     expect(find.text(from), findsOneWidget);
   }
 }

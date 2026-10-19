@@ -488,7 +488,7 @@ class RaftAuthWideButton extends StatelessWidget {
 }
 
 /// `my-4 flex items-center gap-3`; rules `h-0.5 flex-1 bg-line-strong
-/// theme-brutal:bg-black`; label `text-xs font-bold uppercase tracking-widest
+/// theme-brutal:bg-black`; label `text-xs font-bold
 /// text-foreground-muted theme-brutal:text-black/45`.
 class RaftAuthOrDivider extends StatelessWidget {
   const RaftAuthOrDivider({super.key, required this.label});
@@ -510,11 +510,12 @@ class RaftAuthOrDivider extends StatelessWidget {
           rule,
           const SizedBox(width: 12),
           Text(
-            label.toUpperCase(),
-            style: RaftTypography.heading(t, size: 12, line: 16).copyWith(
-              letterSpacing: 12 * .1,
-              color: t.brutal ? const Color(0x73000000) : t.muted,
-            ),
+            label,
+            style: RaftTypography.heading(
+              t,
+              size: 12,
+              line: 16,
+            ).copyWith(color: t.brutal ? const Color(0x73000000) : t.muted),
           ),
           const SizedBox(width: 12),
           rule,
@@ -1086,7 +1087,7 @@ class RaftAuthSessionFooter extends StatelessWidget {
           // `<TextLink variant="muted" inline>`: the underline stays at rest in
           // a sentence of the same colour.
           RaftAuthTextLink(
-            label: raftText(context, 'Log out'),
+            label: raftText(context, 'Log Out'),
             inline: true,
             onTap: onSignOut,
           ),
@@ -1386,7 +1387,7 @@ class RaftAuthPage extends StatelessWidget {
             // sign in</TextLink></TextSans>`
             const SizedBox(height: 16),
             RaftAuthTextLink(
-              label: tr('Back to sign in'),
+              label: tr('Back to Sign In'),
               primary: true,
               sans: true,
               onTap: busy ? null : () => onMode(RaftAuthMode.login),
@@ -1527,7 +1528,7 @@ class RaftAuthVerifyPage extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(bottom: 16),
               child: RaftAuthBanner(
-                text: tr('Verification email resent! Check your inbox.'),
+                text: tr('Verification email resent. Check your inbox.'),
                 success: true,
               ),
             ),
@@ -1618,7 +1619,7 @@ class RaftAuthVerifyPage extends StatelessWidget {
           const SizedBox(height: 12),
           RaftButton(
             key: const Key('verify-logout'),
-            label: tr('Log out'),
+            label: tr('Log Out'),
             glyph: RaftGlyph.logOut,
             variant: RaftControlVariant.outline,
             size: RaftButtonRecipeSize.lg,
@@ -1631,8 +1632,8 @@ class RaftAuthVerifyPage extends StatelessWidget {
   }
 }
 
-/// ServerSelector first-server heading: `font-mono text-[10px] font-bold
-/// uppercase tracking-[0.14em]` eyebrow, `mt-2 text-2xl font-bold
+/// ServerSelector first-server heading: `font-mono text-[10px] font-bold`
+/// eyebrow, `mt-2 text-2xl font-bold
 /// leading-tight` title, `mt-2 text-sm leading-5` description (brutal uses the
 /// `black/50` and `black/65` text colours).
 class RaftOnboardingHeading extends StatelessWidget {
@@ -1651,13 +1652,12 @@ class RaftOnboardingHeading extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          eyebrow.toUpperCase(),
+          eyebrow,
           style: TextStyle(
             fontFamily: t.monoFont,
             fontSize: 10,
             height: 1.5,
             fontWeight: FontWeight.w700,
-            letterSpacing: 10 * .14,
             color: t.brutal ? const Color(0x80000000) : t.muted,
             leadingDistribution: TextLeadingDistribution.even,
           ),

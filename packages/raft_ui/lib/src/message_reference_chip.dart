@@ -264,7 +264,6 @@ class RaftReferenceChip extends StatelessWidget {
         s = RaftBadgeRecipe.resolve(
           theme: _theme(t),
           variant: RaftBadgeRecipeVariant.muted,
-          uppercase: false,
           tokens: resolver,
         ).root;
         lineHeight = 1;

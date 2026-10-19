@@ -1415,7 +1415,7 @@ class _WorkspaceViewState extends State<WorkspaceView>
       );
       final navigationOnRight = desktopNavigationOnRight;
       final title = route == 'chat' || route == 'home'
-          ? (w.channel?.name ?? tr('Workspace'))
+          ? (w.channel?.name ?? tr('Server'))
           : tr(switch (route) {
               'activity' => 'Activity',
               'settings' => 'Settings',
@@ -1454,9 +1454,7 @@ class _WorkspaceViewState extends State<WorkspaceView>
                   children: [
                     RaftEmptyState(
                       title: tr('Welcome to Raft'),
-                      detail: tr(
-                        'Create a workspace or join with an invitation.',
-                      ),
+                      detail: tr('Create a server or join with an invitation.'),
                     ),
                     const SizedBox(height: 24),
                     Wrap(
@@ -1464,11 +1462,11 @@ class _WorkspaceViewState extends State<WorkspaceView>
                       runSpacing: 12,
                       children: [
                         RaftButton(
-                          label: tr('Create workspace'),
+                          label: tr('Create Server'),
                           onPressed: () => WorkspaceActions.create(context, w),
                         ),
                         RaftButton(
-                          label: tr('Join workspace'),
+                          label: tr('Join Server'),
                           secondary: true,
                           onPressed: () => WorkspaceActions.join(context, w),
                         ),
@@ -2649,7 +2647,7 @@ class _WorkspaceViewState extends State<WorkspaceView>
     final thread = target.kind == DesktopContentKind.thread;
     // The destination is still being resolved: like Source ChannelById, hold a
     // neutral "Loading channel" body instead of the previous channel's name
-    // above a bare "Loading...".
+    // above a bare "Loading thread…".
     final resolving =
         pendingDesktopSelection && w.channel?.id != target.channelId;
     final content = Column(
@@ -2672,7 +2670,7 @@ class _WorkspaceViewState extends State<WorkspaceView>
         Expanded(
           child: resolving
               ? thread
-                    ? Center(child: Text(tr('Loading...')))
+                    ? Center(child: Text(tr('Loading thread…')))
                     : RaftChannelResolutionBody(label: tr('Loading channel'))
               : ServerSetupGate(
                   controller: w,
@@ -2784,7 +2782,7 @@ class _WorkspaceViewState extends State<WorkspaceView>
           ? (id == 'search' ? openSearchFromRail() : select(id, fromRail: true))
           : selectRailDestination(id),
       workspaceName: w.server?.name ?? 'Raft',
-      workspaceTooltip: tr('Switch workspace'),
+      workspaceTooltip: tr('Switch server'),
       workspaceHeader: workspaceServerMenu(),
       onWorkspace: () => showWorkspaceSwitcher(),
       footer: RaftWorkspaceRailFooter(
@@ -2886,7 +2884,7 @@ class _WorkspaceViewState extends State<WorkspaceView>
         w.client.origin,
         w.server?.json['avatarUrl'] as String?,
       ),
-      label: tr('Switch workspace'),
+      label: tr('Switch server'),
       rows: [
         for (final server in w.servers)
           RaftServerMenuRow(
@@ -3032,7 +3030,7 @@ class _WorkspaceViewState extends State<WorkspaceView>
     final choice = await showDialog<String>(
       context: context,
       builder: (context) => SimpleDialog(
-        title: Text(tr('Switch workspace')),
+        title: Text(tr('Switch server')),
         children: [
           for (final server in w.servers)
             SimpleDialogOption(
@@ -3055,7 +3053,7 @@ class _WorkspaceViewState extends State<WorkspaceView>
                         workspaceBrowserOrigin(w.client.origin) != null)
                       RaftIconButton(
                         key: ValueKey('workspace-browser-${server.id}'),
-                        tooltip: tr('Open workspace in browser'),
+                        tooltip: tr('Open server in browser'),
                         glyph: RaftGlyph.arrowUpRight,
                         onPressed: () {
                           Navigator.pop(context);
@@ -3070,11 +3068,11 @@ class _WorkspaceViewState extends State<WorkspaceView>
             ),
           SimpleDialogOption(
             onPressed: () => Navigator.pop(context, 'create'),
-            child: Text(tr('Create workspace')),
+            child: Text(tr('Create Server')),
           ),
           SimpleDialogOption(
             onPressed: () => Navigator.pop(context, 'join'),
-            child: Text(tr('Join workspace')),
+            child: Text(tr('Join Server')),
           ),
         ],
       ),
@@ -3783,7 +3781,7 @@ class _WorkspaceViewState extends State<WorkspaceView>
     String label, {
     SidebarGroup? group,
     VoidCallback? onAdd,
-    String addLabel = 'Create channel',
+    String addLabel = 'Create Channel',
   }) {
     final id = group?.id;
     final header = RaftSidebarSectionHeader(
@@ -3839,8 +3837,8 @@ class _WorkspaceViewState extends State<WorkspaceView>
       if (onAdd != null)
         RaftSidebarSectionAction(
           label: id == 'system:joint'
-              ? tr('Create joint channel')
-              : tr('Create channel'),
+              ? tr('Create Joint Channel')
+              : tr('Create Channel'),
           glyph: RaftGlyph.plus,
           onPressed: () {
             if (scope == mobileAuthority) onAdd();

@@ -64,12 +64,12 @@ void main() {
     await t.pump();
     final badges = t.widgetList<RaftBadge>(find.byType(RaftBadge)).toList();
     expect(
-      badges.singleWhere((b) => b.label.toUpperCase() == 'ARCHIVED').uppercase,
-      isTrue,
+      badges.where((b) => b.label == 'Archived'),
+      hasLength(1),
     );
     expect(
-      badges.singleWhere((b) => b.label == 'Upgrade to view').uppercase,
-      isFalse,
+      badges.where((b) => b.label == 'Upgrade to view'),
+      hasLength(1),
     );
     expect(find.text('Upgrade to view'), findsOneWidget);
     expect(find.text('@Bob Builder'), findsOneWidget);

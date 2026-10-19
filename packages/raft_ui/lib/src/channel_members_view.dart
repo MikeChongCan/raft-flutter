@@ -314,7 +314,6 @@ class RaftChannelMembersModal extends StatelessWidget {
               if (humans.isNotEmpty) ...[
                 RaftDialogSectionEyebrow(
                   'Humans',
-                  uppercase: false,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,
                     vertical: 6,
@@ -326,7 +325,6 @@ class RaftChannelMembersModal extends StatelessWidget {
               if (agents.isNotEmpty) ...[
                 RaftDialogSectionEyebrow(
                   'Agents',
-                  uppercase: false,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,
                     vertical: 6,
@@ -366,7 +364,6 @@ class RaftChannelMembersModal extends StatelessWidget {
     final query = search.text;
     Widget eyebrow(String text) => RaftDialogSectionEyebrow(
       text,
-      uppercase: false,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       background: t.brutal
           ? Colors.white.withValues(alpha: .5)
@@ -513,7 +510,6 @@ class RaftChannelMembersModal extends StatelessWidget {
           padding: const EdgeInsets.only(bottom: 12), // mb-3
           child: RaftProductFormField(
             label: 'Search',
-            uppercase: false,
             child: RaftDialogTextInput(
               controller: search,
               placeholder: 'Name',

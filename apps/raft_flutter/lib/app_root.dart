@@ -1070,7 +1070,7 @@ class _RaftAppState extends State<RaftApp> with WidgetsBindingObserver {
           directoryLoading = false;
           selectorError = userErrorText(
             e,
-            fallback: 'Something went wrong',
+            fallback: 'Could not load your servers. Try again.',
             where: 'server directory',
           );
         });
@@ -1629,7 +1629,7 @@ class _RaftAppState extends State<RaftApp> with WidgetsBindingObserver {
                   w.setError(
                     userErrorText(
                       e,
-                      fallback: 'Could not switch servers. Please try again.',
+                      fallback: 'Could not switch servers. Try again.',
                       where: 'server selection',
                     ),
                   );
@@ -1690,7 +1690,7 @@ class _RaftAppState extends State<RaftApp> with WidgetsBindingObserver {
         setState(
           () => selectorError = userErrorText(
             e,
-            fallback: 'Could not switch servers. Please try again.',
+            fallback: 'Could not switch servers. Try again.',
             where: 'choose server',
           ),
         );
@@ -1819,7 +1819,7 @@ class _RaftAppState extends State<RaftApp> with WidgetsBindingObserver {
       );
     }
     if (workspace == null) {
-      return const RaftServerResolutionBody(label: 'Loading…');
+      return const RaftServerResolutionBody(label: 'Loading server…');
     }
     if (joiningCommunitySlug != null) {
       return const RaftServerResolutionBody(
@@ -1893,7 +1893,7 @@ class _RaftAppState extends State<RaftApp> with WidgetsBindingObserver {
     if (serverSwitchLocation != null) {
       return RaftServerResolutionBody(
         key: const Key('server-resolution-loading'),
-        label: selectorError ?? 'Loading…',
+        label: selectorError ?? 'Loading server…',
       );
     }
     return WorkspaceView(

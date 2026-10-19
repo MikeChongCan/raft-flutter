@@ -215,7 +215,7 @@ class RaftNewTaskButton extends StatelessWidget {
 }
 
 /// raft-ui Badge (badge recipe) with an optional leading 10px glyph, as the
-/// Activity rows use it (`uppercase={false}`).
+/// Activity rows use it.
 class RaftResourceBadge extends StatelessWidget {
   const RaftResourceBadge({
     super.key,
@@ -235,7 +235,6 @@ class RaftResourceBadge extends StatelessWidget {
       theme: t.brutal ? RaftRecipeTheme.brutal : RaftRecipeTheme.elegant,
       appearance: appearance,
       variant: variant,
-      uppercase: false,
       states: RaftRecipeStates({
         if (t.dark) RaftRecipeStates.dark,
         if (glyph != null) 'has:svg',

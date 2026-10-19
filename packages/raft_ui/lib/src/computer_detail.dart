@@ -544,8 +544,9 @@ class _RaftComputerDetailViewState extends State<RaftComputerDetailView> {
     final ok = await _confirm(
       title: 'Delete Workspace',
       message:
-          'Delete workspace for "${ws.label}"? This will permanently remove all workspace files (MEMORY.md, notes/, etc.) from the computer.',
+          'Delete workspace for "${ws.label}"? This permanently removes all workspace files (MEMORY.md, notes/, etc.) from the computer.',
       confirmLabel: 'Delete Workspace',
+      cancelLabel: 'Keep Workspace',
     );
     if (ok != true) return;
     await widget.actions.deleteWorkspace(ws.directoryName);
@@ -605,7 +606,7 @@ class _RaftComputerDetailViewState extends State<RaftComputerDetailView> {
         title: 'Cannot Delete Computer',
         message:
             'This computer has $count ${count == 1 ? 'agent' : 'agents'} assigned. Remove all agents before deleting the computer.',
-        confirmLabel: 'OK',
+        confirmLabel: 'Got It',
         variant: RaftButtonRecipeVariant.outline,
         showCancel: false,
       );
@@ -613,8 +614,10 @@ class _RaftComputerDetailViewState extends State<RaftComputerDetailView> {
     }
     final ok = await _confirm(
       title: 'Delete Computer',
-      message: 'Are you sure you want to delete "${d.name}"?',
+      message:
+          'Delete "${d.name}"? Its connection to this server is removed and its agents can no longer use it.',
       confirmLabel: 'Delete Computer',
+      cancelLabel: 'Keep Computer',
     );
     if (ok != true) return;
     await widget.actions.deleteComputer();
@@ -624,6 +627,7 @@ class _RaftComputerDetailViewState extends State<RaftComputerDetailView> {
     required String title,
     required String message,
     required String confirmLabel,
+    String cancelLabel = 'Cancel',
     RaftButtonRecipeVariant variant = RaftButtonRecipeVariant.danger,
     bool showCancel = true,
   }) => RaftConfirmDialog.show(
@@ -633,6 +637,7 @@ class _RaftComputerDetailViewState extends State<RaftComputerDetailView> {
       title: title,
       message: message,
       confirmLabel: confirmLabel,
+      cancelLabel: cancelLabel,
       confirmVariant: variant,
       showCancel: showCancel,
     ),
@@ -686,6 +691,7 @@ class _RaftComputerDetailViewState extends State<RaftComputerDetailView> {
         message:
             'Stop $count selected online ${count == 1 ? 'agent' : 'agents'}? They will stop processing messages.',
         confirmLabel: 'Stop Agents',
+        cancelLabel: 'Keep Working',
         confirmVariant: RaftButtonRecipeVariant.warning,
       ),
     );
@@ -1259,7 +1265,7 @@ class _RaftComputerDetailViewState extends State<RaftComputerDetailView> {
         ),
         const SizedBox(height: 8),
         RaftCssText(
-          "Raft Computer replaces the legacy daemon — it runs the agents on this machine and keeps itself up to date. Migrating keeps this machine's agents. Run this on the machine itself (${windows ? 'Windows x64 PowerShell' : 'macOS / Linux'}):",
+          "Raft Computer replaces the legacy app — it runs the agents on this computer and keeps itself up to date. Migrating keeps this computer's agents. Run this on the computer itself (${windows ? 'Windows x64 PowerShell' : 'macOS / Linux'}):",
           style: ink.note,
         ),
         const SizedBox(height: 8),
@@ -1436,7 +1442,7 @@ class _RaftComputerDetailViewState extends State<RaftComputerDetailView> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 RaftCssText(
-                  "This computer is set up on /$slug but isn't connected right now. Run this on the machine to bring it back:",
+                  "This computer is set up on /$slug but isn't connected right now. Run this on that computer to bring it back:",
                   style: ink.note,
                 ),
                 const SizedBox(height: 8),
@@ -1492,7 +1498,7 @@ class _RaftComputerDetailViewState extends State<RaftComputerDetailView> {
                       const SizedBox(height: 8),
                       _gapColumn(12, [
                         RaftCssText(
-                          'If the command is not installed, run Install first. Then re-run Setup to reconnect this Computer.',
+                          'If the command is not installed, run Install first. Then re-run Setup to reconnect this computer.',
                           style: ink.note,
                         ),
                         _commandStep(
@@ -2171,7 +2177,7 @@ class _RaftComputerDetailViewState extends State<RaftComputerDetailView> {
                       ),
                       step(
                         '2. Fresh install${windows ? ' · Windows x64' : ''}',
-                        "Reinstall the binary and supervisor without removing this Computer's identity or credentials.",
+                        "Reinstall the binary and supervisor without removing this computer's identity or credentials.",
                         c.install,
                         'Copy fresh install command',
                       ),
@@ -2299,7 +2305,6 @@ class _WorkspaceRow extends StatelessWidget {
                       status == 'deleted'
                           ? raftText(context, 'archived')
                           : status,
-                      uppercase: true,
                       appearance: RaftBadgeRecipeAppearance.solid,
                       variant: switch (status) {
                         'active' => RaftBadgeRecipeVariant.success,
@@ -2357,7 +2362,7 @@ class _WorkspaceRow extends StatelessWidget {
               glyph: RaftGlyph.trash2,
               // The sm recipe's `& svg` 14px beats Lucide's size={12}.
               glyphSize: 14,
-              tooltip: 'Delete workspace',
+              tooltip: 'Delete Workspace',
               onPressed: onDelete,
             ),
         ],
@@ -2438,7 +2443,7 @@ class _BulkResetDialogState extends State<_BulkResetDialog> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           RaftCssText(
-                            label.toUpperCase(),
+                            label,
                             style: ink.body(
                               14,
                               20,

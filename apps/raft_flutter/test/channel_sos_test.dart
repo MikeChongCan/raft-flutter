@@ -83,7 +83,7 @@ void main() {
     await tester.ensureVisible(_stopAgents);
     await tester.tap(_stopAgents);
     await tester.pumpAndSettle();
-    expect(find.text('STOP ALL AGENTS'), findsOneWidget);
+    expect(find.text('Stop Agents'), findsNWidgets(2));
     expect(_sos(api), isEmpty, reason: 'opening the dialog sends nothing');
     await tester.tap(find.byKey(const ValueKey('sos-stop')));
     await _settle(tester, () => _sos(api).isNotEmpty);
@@ -93,9 +93,9 @@ void main() {
     stop.complete({'ok': true});
     await _settle(
       tester,
-      () => find.text('AGENTS STOPPED').evaluate().isNotEmpty,
+      () => find.text('Agents Stopped').evaluate().isNotEmpty,
     );
-    expect(find.text('AGENTS STOPPED'), findsOneWidget);
+    expect(find.text('Agents Stopped'), findsOneWidget);
     final field = find.descendant(
       of: find.byKey(const ValueKey('sos-guidance')),
       matching: find.byType(EditableText),
@@ -142,7 +142,7 @@ void main() {
     // No route: the adapter answers 404 `Unexpected endpoint`.
     await tester.tap(find.byKey(const ValueKey('sos-stop')));
     await _settle(tester, () => _sos(api).isNotEmpty);
-    expect(find.text('STOP ALL AGENTS'), findsOneWidget);
+    expect(find.text('Stop Agents'), findsNWidgets(2));
     // Web shows nothing for a failed stop.
     expect(find.byKey(const ValueKey('sos-error')), findsNothing);
     expect(_sos(api).single.path, '/channels/c1/stop-all-agents');
@@ -159,7 +159,7 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('sos-stop')));
     await _settle(tester, () => false);
     expect(_sos(api), hasLength(1));
-    expect(find.text('STOP ALL AGENTS'), findsOneWidget);
+    expect(find.text('Stop Agents'), findsNWidgets(2));
     expect(find.byKey(const ValueKey('sos-error')), findsNothing);
   });
 
@@ -225,7 +225,7 @@ void main() {
       await tester.tap(find.byKey(const ValueKey('sos-stop')));
       await _settle(
         tester,
-        () => find.text('AGENTS STOPPED').evaluate().isNotEmpty,
+        () => find.text('Agents Stopped').evaluate().isNotEmpty,
       );
       final field = find.descendant(
         of: find.byKey(const ValueKey('sos-guidance')),

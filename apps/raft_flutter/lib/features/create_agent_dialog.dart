@@ -207,7 +207,7 @@ class _CreateAgentDialogState extends State<CreateAgentDialog> {
         : widget.initialName ??
               suggestAgentName(exclude: takenAgentNames(), random: random);
     description.text = widget.onboarding
-        ? 'Onboarding Assistant'
+        ? 'Onboarding agent'
         : widget.initialDescription ?? '';
     // An invalid prefill reports from the first render (task #1139 E-state).
     validationAttempted = name.text.isNotEmpty && _nameReasonInvalid(name.text);
@@ -680,7 +680,7 @@ class _CreateAgentDialogState extends State<CreateAgentDialog> {
             )
           else if (!preAdmissionLive)
             RaftAgentSourceStatus(
-              message: 'Could not load models from this Computer.',
+              message: 'Could not load models from this computer.',
               retryLabel: 'Retry',
               onRetry: () => loadPreAdmission(refresh: true),
             ),
@@ -887,9 +887,7 @@ class _CreateAgentDialogState extends State<CreateAgentDialog> {
       RaftStableField(
         label: 'Runtime',
         required: true,
-        hint: widget.onboarding
-            ? 'The AI agent runtime your agents run on.'
-            : null,
+        hint: widget.onboarding ? 'The runtime your agents run on.' : null,
         labelAccessory: widget.onboarding
             ? RaftRecipeButton(
                 key: const Key('cindy-rescan-runtimes'),

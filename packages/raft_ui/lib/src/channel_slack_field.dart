@@ -88,7 +88,6 @@ class RaftChannelSlackField extends StatelessWidget {
           const SizedBox(height: 12),
           RaftProductFormField(
             label: 'Slack channel',
-            uppercase: false,
             labelWeight: FontWeight.w500,
             family: t.bodyFont,
             child: RaftSelectField<String>(

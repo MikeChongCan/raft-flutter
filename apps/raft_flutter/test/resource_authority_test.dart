@@ -354,7 +354,7 @@ void main() {
         find.byWidgetPredicate(
           (widget) =>
               widget is RaftInteractive &&
-              widget.semanticLabel == 'Mark all read',
+              widget.semanticLabel == 'Mark All Read',
         ),
       );
       _role(w, 'member');
@@ -448,7 +448,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('Board'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Load more'));
+      await tester.tap(find.text('Load More'));
       await tester.pump();
       _role(w, 'guest');
       await tester.pumpAndSettle();

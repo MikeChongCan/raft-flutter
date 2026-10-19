@@ -244,7 +244,7 @@ class _AgentMigrationSectionState
       (_) => RaftConfirmDialog(
         title: 'Upgrade to Pro to migrate agents',
         message: 'After upgrading, you can migrate an agent and its workspace to another computer.',
-        confirmLabel: 'Upgrade',
+        confirmLabel: 'Upgrade to Pro',
         confirmVariant: RaftButtonRecipeVariant.accent,
         maxWidth: 448,
       ),
@@ -276,7 +276,7 @@ class _AgentMigrationSectionState
       String? computer,
     ) async {
       if (!accepts(generation) || sourceAuthority != authority) {
-        throw StateError('The active workspace changed. Reopen this form.');
+        throw StateError('The active server changed. Reopen this form.');
       }
       try {
         await w.command('POST', '/agents/$_agentId/migrate', data: data);
@@ -337,7 +337,7 @@ class _AgentMigrationSectionState
   /// is still cancellable; anything else refreshes and is surfaced.
   Future<void> _submitCancel(int generation, String sourceAuthority) async {
     if (!accepts(generation) || sourceAuthority != authority) {
-      throw StateError('The active workspace changed. Reopen this form.');
+      throw StateError('The active server changed. Reopen this form.');
     }
     final opened = _live.value;
     if (!canCancelMigration(opened)) return;
@@ -407,11 +407,12 @@ class _AgentMigrationSectionState
           // the source computer has to confirm.
           final hosted = isHostedMigration(current);
           return RaftConfirmDialog(
-            title: 'Cancel migration?',
-            confirmLabel: 'Stop',
-            cancelLabel: 'Continue',
+            title: 'Cancel Migration',
+            confirmLabel: 'Cancel Migration',
+            cancelLabel: 'Keep Migrating',
             loadingLabel: 'Canceling…',
             confirmVariant: RaftButtonRecipeVariant.warning,
+            confirmKey: const ValueKey('agent-migration-cancel-confirm'),
             confirmEnabled: _cancellable,
             maxWidth: 448,
             onConfirm: () => _submitCancel(generation, sourceAuthority),

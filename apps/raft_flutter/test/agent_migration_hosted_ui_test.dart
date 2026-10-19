@@ -480,7 +480,9 @@ void main() {
         ),
         findsOneWidget,
       );
-      await tester.tap(find.text('Stop'));
+      await tester.tap(
+        find.byKey(const ValueKey('agent-migration-cancel-confirm')),
+      );
       await tester.pumpAndSettle();
       expect(transport.bodies['POST /agents/a1/migration/cancel'], {
         'migrationRef': 'mig_1',

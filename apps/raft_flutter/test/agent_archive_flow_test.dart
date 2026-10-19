@@ -211,7 +211,7 @@ void main() {
         expect(find.text('Archive Agent'), findsOneWidget);
 
         await _tapText(tester, 'Archive Agent');
-        expect(find.text('ARCHIVE ALPHA AGENT?'), findsOneWidget);
+        expect(find.text('Archive Alpha Agent?'), findsOneWidget);
         expect(find.text('Keep it on the Computer'), findsOneWidget);
         expect(
           find.textContaining('browse it read-only while Studio Mac is online'),
@@ -273,7 +273,7 @@ void main() {
           ),
           findsOneWidget,
         );
-        expect(find.text('ARCHIVE ALPHA AGENT?'), findsOneWidget);
+        expect(find.text('Archive Alpha Agent?'), findsOneWidget);
         expect(w.agent['deletedAt'], isNull);
       },
     );

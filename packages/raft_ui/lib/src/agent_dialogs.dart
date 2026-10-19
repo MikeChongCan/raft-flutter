@@ -95,7 +95,7 @@ class _RaftResetAgentDialogState extends State<RaftResetAgentDialog> {
       : [
           (
             'restart',
-            'Restart',
+            'Restart Agent',
             'Stop and restart the agent process. Keeps the runtime session and workspace files.',
           ),
           (
@@ -135,6 +135,7 @@ class _RaftResetAgentDialogState extends State<RaftResetAgentDialog> {
       }),
       maxWidth: 448,
       confirmLabel: raftText(context, selected.$2),
+      cancelLabel: raftText(context, 'Keep Working'),
       loadingLabel: raftText(context, 'Restarting…'),
       confirmGlyph: RaftGlyph.rotateCcw,
       confirmVariant: mode == 'full'
@@ -166,9 +167,9 @@ class _RaftResetAgentDialogState extends State<RaftResetAgentDialog> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // `block text-sm font-bold uppercase`
+                        // `block text-sm font-bold`
                         RaftCssText(
-                          raftText(context, o.$2).toUpperCase(),
+                          raftText(context, o.$2),
                           style: RaftTypography.body(
                             t,
                             size: 14,

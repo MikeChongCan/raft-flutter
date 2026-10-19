@@ -1109,7 +1109,7 @@ class RaftFeedbackConversation extends StatelessWidget {
           Align(
             alignment: Alignment.centerLeft,
             child: RaftRecipeButton(
-              label: loadingMore ? 'Loading…' : 'Load more replies',
+              label: loadingMore ? 'Loading replies…' : 'Load more replies',
               variant: RaftButtonRecipeVariant.outline,
               disabled: loadingMore,
               onPressed: onLoadMore,

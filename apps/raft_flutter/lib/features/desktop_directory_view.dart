@@ -8,7 +8,6 @@ import '../data/workspace_entity_directory.dart';
 import 'desktop_navigation_policy.dart';
 import 'add_computer_dialog.dart';
 import 'agent_avatar_projection.dart';
-import 'agent_metadata_catalog.dart' show sourceAgentActivities;
 import 'chat_agent_presentation.dart';
 import 'computer_detail_view.dart'
     show computerAvailableVersion, computerDiskLow, computerRowStatus;
@@ -168,7 +167,7 @@ class _DesktopDirectoryViewState extends State<DesktopDirectoryView> {
     sideOffset: 8,
     entries: [
       RaftMenuEntry(
-        label: raftText(context, 'Create agent'),
+        label: raftText(context, 'Create Agent'),
         glyph: RaftGlyph.bot,
         onPressed: () async {
           final captured = authority;
@@ -179,7 +178,7 @@ class _DesktopDirectoryViewState extends State<DesktopDirectoryView> {
         },
       ),
       RaftMenuEntry(
-        label: raftText(context, 'Create external agent'),
+        label: raftText(context, 'Create External Agent'),
         glyph: RaftGlyph.link2,
         onPressed: () => register(false),
       ),
@@ -371,7 +370,7 @@ class _DesktopDirectoryViewState extends State<DesktopDirectoryView> {
           : null,
       emptyText: raftText(context, 'No computers yet'),
       addKey: const ValueKey('desktop-directory-add-computer'),
-      addLabel: raftText(context, 'Add computer'),
+      addLabel: raftText(context, 'Add Computer'),
       onAdd: w.can('registerMachines')
           ? () => showAddComputerDialog(context, w)
           : null,
@@ -494,7 +493,7 @@ class _DesktopDirectoryViewState extends State<DesktopDirectoryView> {
               kind == DesktopContentKind.computer && w.can('registerMachines')
               ? [
                   RaftSidebarSectionAction(
-                    label: raftText(context, 'Add computer'),
+                    label: raftText(context, 'Add Computer'),
                     key: const ValueKey('desktop-directory-add-computer'),
                     glyph: RaftGlyph.plus,
                     onPressed: () => register(true),

@@ -415,11 +415,11 @@ class _RaftTaskSurfaceState extends State<RaftTaskSurface> {
       // exception itself is never shown.
       return SingleChildScrollView(
         child: RaftThreadResolutionBody(
-          loadingLabel: raftText(context, 'Loading...'),
+          loadingLabel: raftText(context, 'Loading thread…'),
           errorTitle: raftText(context, "Couldn't load this thread"),
           errorBody: raftText(
             context,
-            "The thread couldn't be opened. If this channel just became public, retrying usually fixes it.",
+            "The thread couldn't be opened. If this channel recently became public, try again.",
           ),
           retryLabel: raftText(context, 'Retry'),
           onRetry: () => unawaited(widget.onRetry()),
@@ -522,7 +522,7 @@ class _RaftTaskSurfaceState extends State<RaftTaskSurface> {
             child: Text(
               raftText(
                 context,
-                'This task predates the channel conversion. Only the source workspace can change it.',
+                'This task predates the channel conversion. Only the source server can change it.',
               ),
               style: RaftTypography.body(
                 t,
@@ -533,7 +533,10 @@ class _RaftTaskSurfaceState extends State<RaftTaskSurface> {
             ),
           ),
         if (widget.canCleanupDelete && widget.onCleanupDelete != null)
-          RaftTextButton(label: 'Delete', onPressed: widget.onCleanupDelete),
+          RaftTextButton(
+            label: 'Delete Task',
+            onPressed: widget.onCleanupDelete,
+          ),
       ],
     );
     // `PanelSection bg-layer-panel theme-brutal:bg-white` then `<Separator />`
@@ -696,7 +699,7 @@ class _RaftTaskSurfaceState extends State<RaftTaskSurface> {
           ? null
           : raftText(
               context,
-              'This task predates the channel conversion. Only the source workspace can change it.',
+              'This task predates the channel conversion. Only the source server can change it.',
             ),
       onSelect: (next) => unawaited(widget.onUpdate('status', next)),
       taskStatus: raftTaskStatusOf(value),
@@ -731,7 +734,7 @@ class _RaftTaskSurfaceState extends State<RaftTaskSurface> {
       tooltip: task['readOnlyReason'] != null
           ? raftText(
               context,
-              'This task predates the channel conversion. Only the source workspace can change it.',
+              'This task predates the channel conversion. Only the source server can change it.',
             )
           : done
           ? raftText(

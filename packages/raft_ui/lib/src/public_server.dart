@@ -41,7 +41,7 @@ double _publicHeaderHeight(BuildContext context) =>
 /// theme-brutal:bg-brutal-cream` with a large centred Spinner (Web v1.21.12;
 /// it was the bold word "Loading" before). [label] is the Spinner's name.
 class RaftPublicServerLoading extends StatelessWidget {
-  const RaftPublicServerLoading({super.key, this.label = 'Loading…'});
+  const RaftPublicServerLoading({super.key, this.label = 'Loading server…'});
   final String label;
   @override
   Widget build(BuildContext context) {

@@ -190,11 +190,11 @@ void main() {
       expect(find.byType(RaftSidebarDraftIcon), findsNothing);
     });
 
-    testWidgets('the provider chip follows the name, upper-cased', (t) async {
+    testWidgets('the provider chip follows the name', (t) async {
       await t.pumpWidget(host(channel(badge: 'Slack')));
       final chip = find.byType(RaftBadge);
       expect(chip, findsOneWidget);
-      expect(t.widget<RaftBadge>(chip).uppercase, isTrue);
+      expect(t.widget<RaftBadge>(chip).label, 'Slack');
       expect(
         t.getTopLeft(chip).dx,
         greaterThan(t.getTopRight(find.text('general')).dx),

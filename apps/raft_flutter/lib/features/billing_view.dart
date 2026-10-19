@@ -635,7 +635,7 @@ class _BillingState extends ManagementState<BillingView> {
         (context) => RaftConfirmDialog(
           surfaceKey: const ValueKey('billing-confirm-dialog'),
           confirmKey: const ValueKey('billing-confirm'),
-          title: tr('Confirm Pro Checkout'),
+          title: tr('Upgrade to Pro'),
           confirmLabel: tr('Continue to Stripe'),
           confirmVariant: RaftButtonRecipeVariant.accent,
           content: RaftBillingConfirmMessage(
@@ -695,8 +695,8 @@ class _BillingState extends ManagementState<BillingView> {
         (context) => RaftConfirmDialog(
           surfaceKey: const ValueKey('billing-confirm-dialog'),
           confirmKey: const ValueKey('billing-confirm'),
-          title: tr('Confirm Seat Update'),
-          confirmLabel: tr('Confirm and update seats'),
+          title: tr('Update Seats'),
+          confirmLabel: tr('Update Seats'),
           confirmVariant: RaftButtonRecipeVariant.accent,
           content: RaftBillingConfirmMessage(
             lead: tr('You are about to update this Pro subscription.'),
@@ -753,7 +753,8 @@ class _BillingState extends ManagementState<BillingView> {
           message: tr(
             'Cancel the whole Pro subscription at the end of the current billing period. The server keeps Pro capacity until the cancellation date, then returns to Free.',
           ),
-          confirmLabel: tr('Cancel subscription'),
+          confirmLabel: tr('Cancel Subscription'),
+          cancelLabel: tr('Keep Subscription'),
           confirmVariant: RaftButtonRecipeVariant.warning,
         ),
       );
@@ -946,7 +947,7 @@ class _BillingState extends ManagementState<BillingView> {
               if (!cancelScheduled)
                 RaftBillingAction(
                   actionKey: const ValueKey('billing-cancel'),
-                  label: tr('Cancel subscription'),
+                  label: tr('Cancel Subscription'),
                   tooltip:
                       disabledReason ??
                       tr('Cancel the whole Pro subscription at period end.'),

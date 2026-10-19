@@ -352,7 +352,7 @@ class RaftExternalAgentToken extends StatelessWidget {
                   ),
                   _smOutline(
                     context,
-                    'Cancel',
+                    'Keep Token',
                     state.revokingId != null ? null : actions.onCancelRevoke,
                     key: const ValueKey('external-token-cancel-revoke'),
                   ),
@@ -435,7 +435,7 @@ class RaftExternalSetupSection extends StatelessWidget {
             context,
             height: 16,
             child: RaftCssText(
-              tr('External setup').toUpperCase(),
+              tr('External setup'),
               style: RaftSectionEyebrow.style(t),
             ),
           ),
@@ -469,7 +469,7 @@ class RaftExternalSetupSection extends StatelessWidget {
                   spacing: 8,
                   runSpacing: 8,
                   children: [
-                    // `inline-flex border ... px-2 py-0.5 text-xs font-bold uppercase`
+                    // `inline-flex border ... px-2 py-0.5 text-xs font-bold`
                     Container(
                       key: const ValueKey('external-setup-state'),
                       padding: const EdgeInsets.symmetric(
@@ -492,7 +492,7 @@ class RaftExternalSetupSection extends StatelessWidget {
                           'connected' => 'Connected',
                           'credential_minted' => 'Credential minted',
                           _ => 'Waiting for login',
-                        }).toUpperCase(),
+                        }),
                         style: _xs(
                           t,
                           weight: FontWeight.w700,
@@ -601,9 +601,7 @@ class RaftExternalSetupSection extends StatelessWidget {
                     runSpacing: 8,
                     children: [
                       RaftCssText(
-                        raftFormat(context, 'Step {step}', {
-                          'step': i + 1,
-                        }).toUpperCase(),
+                        raftFormat(context, 'Step {step}', {'step': i + 1}),
                         style: _xs(
                           t,
                           weight: FontWeight.w700,

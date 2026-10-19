@@ -165,8 +165,8 @@ void main() {
         client.calls,
         containsAll(['GET $_base', 'GET $_base/channels/c1/messages']),
       );
-      await t.tap(find.text('Sign in'));
-      await t.tap(find.text('Create account'));
+      await t.tap(find.text('Sign In'));
+      await t.tap(find.text('Create Account'));
       expect(signIn, 1);
       expect(register, 1);
     },
@@ -332,15 +332,15 @@ void main() {
         account: account(),
         onJoined: () async => joined++,
       );
-      expect(find.text('Sign in'), findsNothing);
+      expect(find.text('Sign In'), findsNothing);
       await t.tap(find.byKey(const ValueKey('public-join-guest')));
       await t.pumpAndSettle();
-      expect(find.text('JOIN THIS SERVER?'), findsOneWidget);
+      expect(find.text('Join as Guest'), findsNWidgets(3));
       await t.tap(find.byKey(const ValueKey('public-join-confirm')));
       await t.pumpAndSettle();
       expect(client.calls, contains('POST $_base/join-as-guest'));
       expect(joined, 1);
-      expect(find.text('JOIN THIS SERVER?'), findsNothing);
+      expect(find.text('Join as Guest'), findsOneWidget);
     });
 
     testWidgets('cancelling the confirm joins nothing', (t) async {
@@ -367,7 +367,7 @@ void main() {
       await t.tap(find.byKey(const ValueKey('public-join-confirm')));
       await t.pumpAndSettle();
       expect(find.text('Failed to join this public server'), findsWidgets);
-      expect(find.text('JOIN THIS SERVER?'), findsOneWidget);
+      expect(find.text('Join as Guest'), findsNWidgets(3));
     });
 
     testWidgets(

@@ -5,5 +5,5 @@ const Map<String, String> zhCatalogComputerConnection = {
   'Canceling...': '正在取消…',
   'Could not load runtimes. Try again.': '未能获取运行环境，请重试。',
   'This is the computer I just set up{hostname}.':
-      '这是我刚刚设置的 Computer{hostname}。',
+      "这是我刚刚设置的计算机{hostname}。",
 };

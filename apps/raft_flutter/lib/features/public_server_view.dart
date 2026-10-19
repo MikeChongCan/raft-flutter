@@ -698,7 +698,7 @@ class _PublicServerViewState extends State<PublicServerView> {
     await RaftConfirmDialog.show(
       context,
       RaftConfirmDialog(
-        title: tr('Join this server?'),
+        title: tr('Join as Guest'),
         message: raftFormat(
           context,
           'You will join {server} as a Guest. You can keep reading without joining by cancelling.',
@@ -1289,7 +1289,7 @@ class _PublicServerViewState extends State<PublicServerView> {
   @override
   Widget build(BuildContext context) {
     if (server == null && error.isEmpty) {
-      return RaftPublicServerLoading(label: tr('Loading…'));
+      return RaftPublicServerLoading(label: tr('Loading server…'));
     }
     final name = '${server?['name'] ?? widget.slug}';
     final band = raftBreakpointWidth(context);
@@ -1314,13 +1314,13 @@ class _PublicServerViewState extends State<PublicServerView> {
           ]
         : [
             RaftPublicActionButton(
-              label: tr('Sign in'),
+              label: tr('Sign In'),
               glyph: RaftGlyph.logIn,
               accent: canJoin,
               onPressed: widget.onSignIn,
             ),
             RaftPublicActionButton(
-              label: tr('Create account'),
+              label: tr('Create Account'),
               glyph: RaftGlyph.userPlus,
               accent: !canJoin,
               onPressed: widget.onRegister,

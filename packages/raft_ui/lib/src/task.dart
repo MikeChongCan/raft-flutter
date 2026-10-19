@@ -57,7 +57,7 @@ class RaftTaskStatus extends StatelessWidget {
 }
 
 /// TaskCard's status control: InlineBadgeEditor with the task status options
-/// (`uppercase={false}`, `dropdownMinWidth="min-w-[140px]"`).
+/// (`dropdownMinWidth="min-w-[140px]"`).
 class RaftTaskStatusEditor extends StatelessWidget {
   const RaftTaskStatusEditor({
     super.key,
@@ -385,7 +385,7 @@ class RaftSliverTaskSection extends StatelessWidget {
   final IndexedWidgetBuilder itemBuilder;
 
   /// Below the rows inside the open panel, with no gap (TaskSection's
-  /// per-lane "Load more" button follows `TaskSectionItems` directly).
+  /// per-lane "Load More" button follows `TaskSectionItems` directly).
   final Widget? footer;
   final bool collapsed;
   final VoidCallback? onToggle;
@@ -574,7 +574,6 @@ class RaftTaskSectionBadge extends StatelessWidget {
     final base = badge.textStyle(rt);
     final size = base.fontSize ?? 10;
     final fg = base.color ?? t.strong;
-    final upper = badge.textTransform == 'uppercase';
     final iconColor = t.brutal
         ? (badge.target('& svg')?.color?.resolve(rt) ?? fg)
         : switch (status) {
@@ -600,7 +599,7 @@ class RaftTaskSectionBadge extends StatelessWidget {
             size: badge.target('& svg')?.width ?? 10,
           ),
           Text(
-            upper ? label.toUpperCase() : label,
+            label,
             style: RaftControlTypography.of(
               context,
               base.copyWith(
@@ -609,7 +608,7 @@ class RaftTaskSectionBadge extends StatelessWidget {
                 // Unset line-height inherits the trigger button's 1.5.
                 height: base.height ?? 1.5,
                 color: fg,
-                letterSpacing: upper ? 0 : base.letterSpacing,
+                letterSpacing: base.letterSpacing,
               ),
             ),
           ),
@@ -819,7 +818,7 @@ class _LaneEmptyPainter extends CustomPainter {
 
 /// TasksPanel lane paging button: `<Button size="sm" variant="outline"
 /// className="box-border h-8 min-h-8 w-full gap-1 py-0 text-xs">`, labelled
-/// `task.panel.loadMore` ("Load more") or `common.loading` ("Loading…").
+/// `task.panel.loadMore` ("Load More") or `common.loading` ("Loading more…").
 class RaftTaskLoadMoreButton extends StatelessWidget {
   const RaftTaskLoadMoreButton({
     super.key,
@@ -839,7 +838,7 @@ class RaftTaskLoadMoreButton extends StatelessWidget {
       onPressed: loading ? null : onPressed,
       child: Center(
         child: Text(
-          raftText(context, loading ? 'Loading…' : 'Load more'),
+          raftText(context, loading ? 'Loading more…' : 'Load More'),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: const TextStyle(fontSize: 12, height: 16 / 12),

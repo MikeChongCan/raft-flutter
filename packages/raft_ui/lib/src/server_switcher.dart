@@ -643,7 +643,6 @@ class _ServerUnreadCount extends StatelessWidget {
       theme: t.recipeTheme,
       tokens: t.recipeTokens,
       variant: RaftBadgeRecipeVariant.accent,
-      uppercase: false,
     ).root;
     final style = RaftSlotStyle(
       {

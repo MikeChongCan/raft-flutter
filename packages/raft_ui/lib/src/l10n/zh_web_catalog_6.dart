@@ -24,8 +24,8 @@ const Map<String, String> zhCatalogWeb6 = <String, String>{
   "Read and send messages in channels, DMs, and threads the agent has access to.":
       "读取和发送 Agent 有权访问的频道、私信与消息列消息。",
   "Read members": "读取成员",
-  "Read the IDs, handles, display names and avatars of agents in the Server you authorize. This permission does not allow sending messages or reading conversations, activity or unread counts.":
-      "读取你授权的 Server 内 Agent 的 ID、名称、显示名和头像。此权限不允许发送消息，也不允许读取对话、活动或未读数。",
+  "Read the IDs, handles, display names and avatars of agents in the server you authorize. This permission does not allow sending messages or reading conversations, activity or unread counts.":
+      "读取你授权的服务器内 Agent 的 ID、名称、显示名和头像。此权限不允许发送消息，也不允许读取对话、活动或未读数。",
   "Read the task board and create / claim / progress tasks.":
       "读取任务看板，并创建、认领或推进任务。",
   "Read-only": "只读",
@@ -97,8 +97,8 @@ const Map<String, String> zhCatalogWeb6 = <String, String>{
       "请先注册应用，然后从“编辑”中上传 Logo。",
   "Registration failed": "注册失败",
   "Regular server participant.": "服务器普通成员。",
-  "Reinstall the binary and supervisor without removing this Computer's identity or credentials.":
-      "重新安装程序和后台服务，不会移除此 Computer 的身份或凭据。",
+  "Reinstall the binary and supervisor without removing this computer's identity or credentials.":
+      "重新安装程序和后台服务，不会移除此计算机的身份或凭据。",
   "Rejected": "已驳回",
   "Release Notes": "更新日志",
   "Release QA": "发布验收",
@@ -154,16 +154,16 @@ const Map<String, String> zhCatalogWeb6 = <String, String>{
   "Requesting offline review keeps the app live until App Admin approves removal.":
       "申请下架审核期间应用仍保持在线，直到应用管理员批准移除。",
   "Requesting the session record from the agent's computer…":
-      "正在向 Agent 所在的电脑请求会话记录…",
+      "正在向 Agent 所在的计算机请求会话记录…",
   "Requesting...": "正在申请…",
   "Requesting…": "申请中…",
   "Require agreement before joining": "加入前需同意协议",
   "Required by the action card.": "操作卡片要求。",
   "Required computer:": "指定的计算机：",
-  "Requires Agent + Computer": "需要 Agent + Computer",
+  "Requires Agent + Computer": "需要 Agent + 计算机",
   "Rescan": "重新扫描",
-  "Rescan models from this Computer": "重新扫描此 Computer 上的模型",
-  "Rescan runtimes on this computer": "重新扫描此 Computer 上的运行时",
+  "Rescan models from this Computer": "重新扫描此计算机上的模型",
+  "Rescan runtimes on this computer": "重新扫描此计算机上的运行时",
   "Resend Invite": "重新发送邀请",
   "Resend Verification Email": "重新发送验证邮件",
   "Resend briefing": "重发简报",
@@ -172,7 +172,6 @@ const Map<String, String> zhCatalogWeb6 = <String, String>{
   "Reset Model": "重置模型",
   "Reset Password": "重置密码",
   "Reset Session & Restart": "重置会话并重启",
-  "Reset runtime session": "重置运行时会话",
   "Resetting…": "重置中…",
   "Resize sidebar": "调整侧栏宽度",
   "Resize thread": "调整话题宽度",
@@ -181,15 +180,14 @@ const Map<String, String> zhCatalogWeb6 = <String, String>{
   "Restart": "重启",
   "Restart / Reset": "重启 / 重置",
   "Restart Model": "重启模型",
-  "Restart agent": "重启 Agent",
   "Restart failed.": "重启失败。",
   "Restart or reload Hermes after setup so the saved profile is picked up.":
       "设置后请重启或重新加载 Hermes，使其读取已保存的 profile。",
   "Restart or reset selected agents": "重启或重置选中的 Agent",
   "Restart the agent process while keeping its runtime session and workspace files.":
       "重新启动 agent 进程，同时保留运行时会话和工作区文件。",
-  "Restart timed out. Check that the Computer is online and retry.":
-      "重启超时。请检查 Computer 是否在线后重试。",
+  "Restart timed out. Check that the computer is online and retry.":
+      "重启超时。请检查计算机是否在线后重试。",
   "Restart to apply runtime config": "重启以应用运行时配置",
   "Restarted": "已重启",
   "Restarted.": "已重启。",
@@ -242,11 +240,11 @@ const Map<String, String> zhCatalogWeb6 = <String, String>{
   "Rolling back…": "正在回滚…",
   "Rotate secret": "轮换密钥",
   "Rotating...": "正在轮换…",
-  "Run agents on your own computer": "在你自己的 Computer 上运行 Agent",
+  "Run agents on your own computer": "在你自己的计算机上运行 Agent",
   "Run on antiproton": "在 antiproton 上运行",
   "Run preflight": "运行预检",
-  "Run these commands on the machine that will run this agent.":
-      "在将要运行此 Agent 的机器上执行以下命令。",
+  "Run these commands on the computer that will run this agent.":
+      "在将要运行此 Agent 的计算机上执行以下命令。",
   "Run these steps in the terminal.": "在终端中执行这些步骤。",
   "Run this after the fresh install finishes so the service reloads the newly installed binary.":
       "全新安装完成后运行此命令，让服务加载刚安装的新版本。",
@@ -263,8 +261,8 @@ const Map<String, String> zhCatalogWeb6 = <String, String>{
       "运行时检测失败。请重启 Raft Computer 后重试。",
   "Runtime form option sources are invalid": "运行时表单选项来源无效",
   "Runtime session transcript": "运行时会话记录",
-  "Runtime transcript upload is unavailable until the agent is assigned to a machine.":
-      "Agent 分配到机器后才能上传运行时记录。",
+  "Runtime transcript upload is unavailable until the agent is assigned to a computer.":
+      "Agent 分配到计算机后才能上传运行时记录。",
   "Runtime-owned keys are generated from Provider/Model above; add only extra launch env here.":
       "运行时持有的密钥会根据上方提供方/Model 自动生成；这里只添加额外启动环境变量。",
   "Canceling is safe": "可以放心取消",
@@ -272,16 +270,14 @@ const Map<String, String> zhCatalogWeb6 = <String, String>{
   "Save Image": "保存图片",
   "Save Message": "收藏消息",
   "Save Profile": "保存资料",
-  "Save a message by selecting its bookmark icon.": "选择消息上的书签图标即可保存。",
+  "Save a message to find it here later.": "保存消息后，可在这里找到它。",
   "Save a thread or message from Activity to keep it here.":
       "在动态中保存消息列或消息后，会显示在这里。",
-  "Save and close": "保存并关闭",
   "Save app first": "请先保存应用",
   "Save changes": "保存修改",
   "Save endpoint": "保存端点",
   "Save mappings and enable": "保存映射并启用",
   "Save permissions": "保存权限",
-  "Save runtime change": "保存运行时变更",
   "Save runtime config": "保存运行时配置",
   "Save the app before creating a share link or requesting Marketplace review.":
       "请先保存应用，之后才能创建分享链接或申请市场审核。",
@@ -289,7 +285,7 @@ const Map<String, String> zhCatalogWeb6 = <String, String>{
   "Save the app before lifecycle or credential actions become available.":
       "请先保存应用，之后才能进行生命周期或凭据操作。",
   "Save this connection, then use Connect from Settings → MCP Servers to authorize it. OAuth tokens never leave Raft Server.":
-      "保存此连接后，在设置 → MCP 服务器中使用「连接」完成授权。OAuth token 永远不会离开 Raft Server。",
+      "保存此连接后，在设置 → MCP 服务器中使用「连接」完成授权。OAuth token 永远不会离开 Raft 服务器。",
   "Save thread": "保存消息列",
   "Saved": "已保存",
   "Saved on this device.": "已保存到此设备。",
@@ -316,7 +312,7 @@ const Map<String, String> zhCatalogWeb6 = <String, String>{
   "Search": "搜索",
   "Search Activity": "搜索动态",
   "Search History": "搜索历史",
-  "Search Servers": "搜索 Server",
+  "Search Servers": "搜索服务器",
   "Search apps…": "搜索应用…",
   "Search by id, folder, or content…": "按 ID、目录或内容搜索…",
   "Search channels, DMs, people, agents, and message history.":
@@ -360,11 +356,11 @@ const Map<String, String> zhCatalogWeb6 = <String, String>{
   "Select All": "全选",
   "Select Message": "选择消息",
   "Select a Raft Server where this app is available.":
-      "请选择一个可使用该 App 的 Raft Server。",
+      "请选择一个可使用该 App 的 Raft 服务器。",
   "Select a channel": "选择一个频道",
   "Select a file to view": "选择一个文件查看",
   "Select a model reported by this computer, or enter an allowed custom model.":
-      "请选择此 Computer 报告的模型，或输入允许的自定义模型。",
+      "请选择此计算机报告的模型，或输入允许的自定义模型。",
   "Select a target first": "请先选择一个目标",
   "Select a target, then add an optional note...": "先选择一个目标，然后可选地添加备注…",
   "Select a valid provider": "请选择有效的提供商",
@@ -373,7 +369,7 @@ const Map<String, String> zhCatalogWeb6 = <String, String>{
   "Select agent": "选择 Agent",
   "Select an effort supported by this model.": "请选择此模型支持的推理强度。",
   "Conversations could not be loaded.": "无法加载会话。",
-  "The shared content could not be added. Please try again.": "无法添加分享内容，请重试。",
+  "The shared content could not be added. Try again.": "无法添加分享内容，请重试。",
   "Join {name} to add shared content?": "加入 {name} 以添加分享内容？",
   "Select destinations": "选择目标",
   "Preparing {done} of {total} files": "正在准备文件（{done}/{total}）",
@@ -431,9 +427,9 @@ const Map<String, String> zhCatalogWeb6 = <String, String>{
   "Server not found": "未找到服务器",
   "Server owners and admins can register apps in Settings > Applications.":
       "服务器所有者和管理员可在“设置 > 应用”中注册应用。",
-  "Server profile. Channels and channel members. Agents and machines. Invites, join links, and admin promotion.":
+  "Server profile. Channels and channel members. Agents and computers. Invites, join links, and admin promotion.":
       "服务器资料。频道与频道成员。Agent 与计算机。邀请、加入链接与管理员提升。",
-  "Server profile. Channels and channel members. No agents, machines, invites, join links, or role promotion yet.":
+  "Server profile. Channels and channel members. No agents, computers, invites, join links, or role promotion yet.":
       "服务器资料。频道与频道成员。尚不包含 Agent、计算机、邀请、加入链接或角色提升。",
   "Server setup": "服务器初始化",
   "Server setup could not be updated. Try again.": "无法更新服务器设置。请重试。",
@@ -451,7 +447,6 @@ const Map<String, String> zhCatalogWeb6 = <String, String>{
   "Set New Password": "设置新密码",
   "Set a password": "设置密码",
   "Set a password first": "请先设置密码",
-  "Set password by email": "通过邮件设置密码",
   "Set up your account": "设置你的账号",
   "Set up your server": "设置你的服务器",
   "Setting up": "正在创建",
@@ -494,9 +489,8 @@ const Map<String, String> zhCatalogWeb6 = <String, String>{
       "会写进 agent 的 system prompt；留空则不显示。",
   "Sidebar options": "侧栏选项",
   "Sign In": "登录",
-  "Sign in": "登录",
-  "Sign in again on this Computer. Last-known percentages are hidden until the provider authenticates.":
-      "请在此电脑上重新登录。在提供方重新认证前，已隐藏最后已知百分比。",
+  "Sign in again on this computer. Last-known percentages are hidden until the provider authenticates.":
+      "请在此计算机上重新登录。在提供方重新认证前，已隐藏最后已知百分比。",
   "Sign in or create an account to accept this invite.": "登录或创建账户以接受此邀请。",
   "Sign in to Raft": "登录到 Raft",
   "Sign out": "退出登录",

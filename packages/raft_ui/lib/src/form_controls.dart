@@ -32,7 +32,6 @@ class RaftField extends StatelessWidget {
     this.optionalLabel = '(optional)',
     this.hint,
     this.error,
-    this.uppercase = true,
     this.compact = false,
     this.labelAccessory,
   });
@@ -42,9 +41,6 @@ class RaftField extends StatelessWidget {
   final bool required, optional;
   final String optionalLabel;
   final String? hint, error;
-
-  /// `labelStyle="uppercase"` (default) vs `"plain"`.
-  final bool uppercase;
 
   /// `size="compact"`: `text-xs` label.
   final bool compact;
@@ -69,12 +65,11 @@ class RaftField extends StatelessWidget {
     );
     final base = DefaultTextStyle.of(context).style;
     var labelStyle = f.label.text(rt, base: base);
-    // FormField label classes: `text-sm` / `text-xs` + `uppercase
-    // tracking-wide` (0.025em).
+    // FormField label classes: `text-sm` / `text-xs` (decision 0002: no
+    // uppercase, so no tracking either).
     labelStyle = labelStyle.copyWith(
       fontSize: compact ? 12 : 14,
       height: compact ? 16 / 12 : 20 / 14,
-      letterSpacing: uppercase ? (compact ? 12 : 14) * .025 : null,
     );
     final sub = l.sub.text(rt, base: labelStyle);
     final asterisk = l.asterisk.text(rt, base: labelStyle);
@@ -82,7 +77,7 @@ class RaftField extends StatelessWidget {
     final labelText = Text.rich(
       TextSpan(
         children: [
-          TextSpan(text: uppercase ? label.toUpperCase() : label),
+          TextSpan(text: label),
           if (required) ...[
             const WidgetSpan(child: SizedBox(width: 4)),
             TextSpan(text: '*', style: asterisk),

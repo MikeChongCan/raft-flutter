@@ -138,9 +138,8 @@ void main() {
       rememberServerFlag(w, _flag, true, pageIdentity(w));
       api.hangAll = true;
       unawaited(
-        _presentation(
-          w,
-        ).open(t.element(find.byType(WorkspaceView)), 'app:github'),
+        _presentation(w)
+            .open(t.element(find.byType(WorkspaceView)), 'app:github'),
       );
       await frames(t, 3);
       expect(w.section, 'settings', reason: 'Integrations lives in Settings');

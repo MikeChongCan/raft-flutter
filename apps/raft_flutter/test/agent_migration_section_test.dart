@@ -136,7 +136,7 @@ void main() {
   ) async {
     await mount(tester);
     expect(find.byType(RaftPanelSection), findsOneWidget);
-    expect(find.text('AGENT MIGRATION'), findsOneWidget);
+    expect(find.text('Agent migration'), findsOneWidget);
     expect(find.text('Pro'), findsOneWidget);
     expect(
       find.text(
@@ -164,7 +164,7 @@ void main() {
     );
     expect(find.text('Migrating to Target'), findsOneWidget);
     expect(migrate, findsNothing);
-    expect(find.widgetWithText(RaftButton, 'Cancel'), findsOneWidget);
+    expect(find.widgetWithText(RaftButton, 'Cancel Migration'), findsOneWidget);
   });
 
   testWidgets('the start dialog says what happens next', (tester) async {

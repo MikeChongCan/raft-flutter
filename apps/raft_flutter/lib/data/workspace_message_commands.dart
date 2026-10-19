@@ -53,7 +53,7 @@ class WorkspaceThreadCommands {
       data: {'parentMessageId': parentId},
     );
     if (!request.current) {
-      throw const RaftApiException('The thread changed. Please retry.');
+      throw const RaftApiException('The thread changed. Try again.');
     }
     m.state.threadChannelId = value['threadChannelId'];
     ThreadRooms.join(m);
