@@ -240,11 +240,11 @@ class RunTests(unittest.TestCase):
         self.assertEqual(result['tree'], 'treehash0123456789abcdef')
         self.assertEqual(result['head'], 'headsha')
         self.assertEqual([c['name'] for c in result['checks']],
-                         ['structure-audit', 'ds-audit', 'docs-index', 'tool-tests', 'guard-tests', 'analyze', 'raft-lints', 'format', 'affected-tests', 'test-budget', 'portability'])
+                         ['structure-audit', 'ds-audit', 'docs-index', 'tool-tests', 'theme-values', 'guard-tests', 'analyze', 'raft-lints', 'format', 'affected-tests', 'test-budget', 'portability'])
         self.assertEqual(result['affectedTests'], {'maxTests': 40, 'selected': 1, 'total': 3, 'skipped': 2})
         self.assertEqual(result['changedDart'], 2)
         last = out.strip().splitlines()[-1]
-        self.assertTrue(last.startswith('preflight: PASSED 10/10 checks'), last)
+        self.assertTrue(last.startswith('preflight: PASSED 11/11 checks'), last)
         self.assertIn('tree treehash0123', last)
         for check in ('structure-audit', 'ds-audit', 'portability'):
             self.assertIn(check, out)
@@ -255,7 +255,7 @@ class RunTests(unittest.TestCase):
         self.assertEqual(code, 1)
         result = json.loads((world.root / 'result.json').read_text())
         statuses = {c['name']: c['status'] for c in result['checks']}
-        self.assertEqual(len(statuses), 11)
+        self.assertEqual(len(statuses), 12)
         self.assertEqual(statuses['structure-audit'], 'fail')
         self.assertEqual(statuses['ds-audit'], 'pass')
         self.assertEqual(statuses['format'], 'fail')
@@ -277,9 +277,9 @@ class RunTests(unittest.TestCase):
         self.assertEqual(code, 0)
         result = json.loads((world.root / 'result.json').read_text())
         statuses = {c['name']: c['status'] for c in result['checks']}
-        self.assertEqual({n for n, s in statuses.items() if s == 'pass'}, {'structure-audit', 'ds-audit', 'docs-index', 'guard-tests'})
+        self.assertEqual({n for n, s in statuses.items() if s == 'pass'}, {'structure-audit', 'ds-audit', 'docs-index', 'theme-values', 'guard-tests'})
         self.assertEqual({n for n, s in statuses.items() if s == 'skip'}, {'tool-tests', 'analyze', 'raft-lints', 'format', 'affected-tests', 'test-budget', 'portability'})
-        self.assertIn('PASSED 4/4 checks', out)
+        self.assertIn('PASSED 5/5 checks', out)
 
     def test_a_tool_change_runs_every_tool_suite_and_its_failure_fails_preflight(self):
         world = FakeWorld(self, files={'tool/git-hooks/pre-commit': '#!/bin/sh\n'}, failing=('tool/tests',))
