@@ -31,10 +31,13 @@ class GenGlyphs(unittest.TestCase):
                 name = gen.lower_camel(export)
                 self.assertTrue(name in self.by or name + 'RaftUi' in self.by, f'{build} {export}')
 
-    def test_single_pinned_build(self):
+    def test_product_pin_and_separate_specimen_extras(self):
         # raft-source v1.21.x: Web and raft-ui resolve lucide-react to one build, so no RaftUi variants.
         self.assertEqual(gen.WEB_LUCIDE, gen.RAFT_UI_LUCIDE)
-        self.assertEqual({i['version'] for i in self.doc['icons'].values()}, {gen.WEB_LUCIDE})
+        host = set(self.doc['resolved'].get('flutterHost', {}).values())
+        self.assertEqual(host, {'app-window@1.59.0', 'octagon-alert@1.59.0'})
+        self.assertEqual({v['version'] for k, v in self.doc['icons'].items() if k not in host}, {gen.WEB_LUCIDE})
+        self.assertEqual({self.doc['icons'][k]['version'] for k in host}, {'1.59.0'})
         self.assertFalse([n for n in self.by if n.endswith('RaftUi')])
 
     def test_provenance(self):

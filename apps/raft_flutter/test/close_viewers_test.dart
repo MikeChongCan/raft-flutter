@@ -802,7 +802,7 @@ void registerCloseViewerTests(TestPart part) {
     await frames(t, 25);
     expect(
       FocusManager.instance.primaryFocus?.context
-          ?.findAncestorWidgetOfExactType<RaftControl>(),
+          ?.findAncestorWidgetOfExactType<RaftTabButton>(),
       isNotNull,
       reason: 'a shell control must hold focus for this check',
     );

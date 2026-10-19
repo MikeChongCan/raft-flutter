@@ -51,14 +51,14 @@ import 'recipes/composer_suggestion_list.g.dart';
 import 'recipes/recipe_runtime.dart';
 import 'recipes/token_binding.dart';
 import 'mounted_avatar_recipe.dart';
+import 'raft/avatar.dart';
 import 'design_primitives.dart';
-import 'css_opacity.dart';
 import 'css_pixel_snap.dart';
 import 'icons.dart';
 import 'indicators.dart' show RaftBadge;
 import 'panel_layout.dart' show RaftCssText, RaftCssLineBox;
 import 'recipe_surface.dart';
-import 'recipes/button_variants.g.dart';
+export 'raft/button.dart' show RaftButton, RaftButtonVariant, RaftButtonSize;
 import 'recipes/card.g.dart';
 import 'recipes/recipe_utilities.g.dart';
 import 'tooltip.dart' show RaftTooltip;
@@ -163,223 +163,18 @@ class RaftPanel extends StatelessWidget {
   }
 }
 
-/// raft-ui `Button` (`buttonVariants` recipe): root box + `content` span
-/// (`inline-flex gap-[inherit]`), the elegant `::before` sheen, and the
-/// loading indicator that hides the content (`data-loading=true`).
-class RaftButton extends StatelessWidget {
-  const RaftButton({
-    super.key,
-    required this.label,
-    this.onPressed,
-    this.icon,
-    this.glyph,
-    this.busy = false,
-    this.secondary = false,
-    this.destructive = false,
-    this.variant,
-    this.tone,
-    this.size,
-    this.visualHeight = RaftMetrics.buttonMd,
-    this.expand = false,
-    this.focusNode,
-    this.tooltip,
-    this.semanticLabel,
-    this.foreground,
-    this.iconInlineStart = true,
-    this.opacityCompositing = RaftOpacityCompositing.layer,
-    this.leading,
-    this.gap,
-  });
-  final String label;
-
-  /// A custom leading node (a brand mark) before the label, separated by
-  /// [gap] (default: the recipe `gap-*`).
-  final Widget? leading;
-  final double? gap;
-
-  /// Whether the icon carries Source `data-icon="inline-start"` (the smaller
-  /// `has-data-[icon=inline-start]:pl-*` padding). Call sites that render a
-  /// bare `<svg>` (no `data-icon`) keep the size's plain `px-*`.
-  final bool iconInlineStart;
-
-  /// Explicit caller text/icon color; null retains the resolved button recipe.
-  final Color? foreground;
-  final VoidCallback? onPressed;
-  final IconData? icon;
-
-  /// Lucide glyph; wins over [icon].
-  final RaftGlyph? glyph;
-  final bool busy, secondary, destructive;
-
-  /// Legacy variant axis; mapped onto the recipe variant.
-  final RaftControlVariant? variant;
-
-  /// Recipe variant (wins over [variant]): information, success, muted,
-  /// warning, danger-secondary, danger-outline, link, ...
-  final RaftButtonRecipeVariant? tone;
-
-  /// Recipe size; when null it follows [visualHeight] (24 xs, 28 sm, 32 md,
-  /// larger lg).
-  final RaftButtonRecipeSize? size;
-  final double visualHeight;
-
-  /// `w-full` (stretch to the parent width; content stays centered).
-  final bool expand;
-  final FocusNode? focusNode;
-  final String? tooltip;
-
-  /// Explicit authored aria-label, independent of transient visual feedback.
-  final String? semanticLabel;
-
-  /// Matches the mounted Source component's opacity compositing boundary.
-  final RaftOpacityCompositing opacityCompositing;
-
-  RaftButtonRecipeVariant get recipeVariant =>
-      tone ??
-      switch (variant ??
-          (destructive
-              ? RaftControlVariant.danger
-              : secondary
-              ? RaftControlVariant.outline
-              : RaftControlVariant.accent)) {
-        RaftControlVariant.surface => RaftButtonRecipeVariant.default_,
-        RaftControlVariant.primary => RaftButtonRecipeVariant.primary,
-        RaftControlVariant.accent => RaftButtonRecipeVariant.accent,
-        RaftControlVariant.outline => RaftButtonRecipeVariant.outline,
-        RaftControlVariant.ghost => RaftButtonRecipeVariant.ghost,
-        RaftControlVariant.danger => RaftButtonRecipeVariant.danger,
-      };
-
-  RaftButtonRecipeSize get recipeSize =>
-      size ??
-      (visualHeight <= 24
-          ? RaftButtonRecipeSize.xs
-          : visualHeight <= 28
-          ? RaftButtonRecipeSize.sm
-          : visualHeight <= 32
-          ? RaftButtonRecipeSize.md
-          : RaftButtonRecipeSize.lg);
-
-  @override
-  Widget build(BuildContext context) {
-    final t = RaftTokens.of(context);
-    final rt = t.recipeTokens;
-    final text = raftText(context, label);
-    return RaftInteractive(
-      onPressed: onPressed,
-      busy: busy,
-      focusNode: focusNode,
-      tooltip: tooltip,
-      semanticLabel: semanticLabel ?? (busy ? text : null),
-      builder: (context, st) {
-        final s = RaftButtonRecipe.resolve(
-          theme: t.recipeTheme,
-          variant: recipeVariant,
-          size: recipeSize,
-          states: t.recipeStates(
-            hovered: st.hovered,
-            pressed: st.pressed,
-            focusVisible: st.focusVisible,
-            disabled: onPressed == null,
-            extra: [
-              if (busy) RaftRecipeStates.loading,
-              if (iconInlineStart && (icon != null || glyph != null))
-                RaftRecipeStates.iconInlineStart,
-            ],
-          ),
-          tokens: rt,
-        ).root;
-        final svg = s.target("& svg:not([class*='size-'])");
-        final gap = this.gap ?? s.columnGap ?? 0;
-        // Accessibility exception (not in the Web): with platform high
-        // contrast, elegant danger uses the in-repo component roles
-        // `--button-danger-high-contrast(-foreground)` (WCAG AA text).
-        final highContrastDanger =
-            (MediaQuery.highContrastOf(context)) &&
-            recipeVariant == RaftButtonRecipeVariant.danger;
-        final content = Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (glyph != null) ...[
-              RaftIcon(glyph!, size: svg?.width ?? 16),
-              SizedBox(width: gap),
-            ] else if (icon != null) ...[
-              RaftSymbol(icon!, size: svg?.width ?? 16),
-              SizedBox(width: gap),
-            ] else if (leading != null) ...[
-              leading!,
-              SizedBox(width: gap),
-            ],
-            Flexible(
-              child: Text(
-                text,
-                maxLines: 1,
-                softWrap: false,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ],
-        );
-        Widget content2 = Row(
-          mainAxisSize: expand ? MainAxisSize.max : MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Flexible(
-              child: busy
-                  ? Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Visibility.maintain(visible: false, child: content),
-                        const RaftSpinner(),
-                      ],
-                    )
-                  : content,
-            ),
-          ],
-        );
-        if (highContrastDanger || foreground != null) {
-          content2 = DefaultTextStyle.merge(
-            style: TextStyle(
-              color:
-                  foreground ?? t.components.buttonDangerHighContrastForeground,
-            ),
-            child: IconTheme.merge(
-              data: IconThemeData(
-                color:
-                    foreground ??
-                    t.components.buttonDangerHighContrastForeground,
-              ),
-              child: content2,
-            ),
-          );
-        }
-        return RaftRecipeBox(
-          style: s,
-          tokens: rt,
-          overflowCenter: true,
-          controlLabel: true,
-          opacityCompositing: opacityCompositing,
-          width: expand ? double.infinity : null,
-          decorationOverride: highContrastDanger
-              ? (d) => d.copyWith(color: t.components.buttonDangerHighContrast)
-              : null,
-          child: semanticLabel == null
-              ? content2
-              : ExcludeSemantics(child: content2),
-        );
-      },
-    );
-  }
-}
-
 enum RaftAvatarKind { human, agent, server, app }
 
+/// raft-ui `Avatar`: a square sticker. [size] is the outer edge in px (the generic sticker sizes are 19 / 27 /
+/// 35 / 51 / 99; any other value is kept and borrows the nearest size's text, icon and badge); [uiSize] picks a
+/// raft-ui size class instead. A person's fallback is the initials of [name] (or the placeholder icon for a
+/// blank name), an agent's its first letter; host artwork comes in through [content] / [imageUrl].
 class RaftAvatar extends StatelessWidget {
   const RaftAvatar({
     super.key,
     required this.name,
     this.size = 36,
+    this.uiSize,
     this.kind = RaftAvatarKind.human,
     this.imageUrl,
     this.content,
@@ -390,6 +185,9 @@ class RaftAvatar extends StatelessWidget {
   });
   final String name;
   final double size;
+
+  /// raft-ui size class; wins over [size].
+  final RaftAvatarSize? uiSize;
   final RaftAvatarKind kind;
   final String? imageUrl;
 
@@ -406,7 +204,6 @@ class RaftAvatar extends StatelessWidget {
   final bool muted;
   @override
   Widget build(BuildContext context) {
-    final t = RaftTokens.of(context);
     final mountedRole = mountedContext;
     if (mountedRole != null) {
       final identity = switch (kind) {
@@ -438,61 +235,51 @@ class RaftAvatar extends StatelessWidget {
                   )),
       );
     }
-    final fallback = Center(
-      child: switch (kind) {
-        RaftAvatarKind.human => RaftIcon(
-          RaftGlyph.user,
-          size: size >= 32 ? 18 : 12,
-          color: t.colors['foreground-placeholder']!.withValues(alpha: .7),
-        ),
-        RaftAvatarKind.agent => RaftIcon(
-          RaftGlyph.bot,
-          size: size >= 32 ? 18 : 12,
-          color: t.muted,
-        ),
-        _ => Text(
-          name.isEmpty ? '?' : name.characters.first.toUpperCase(),
-          // Initials fill a fixed-size avatar: they grow with the text size
-          // only up to the chrome bound.
-          textScaler: RaftChrome.boundedScalerOf(context),
-          style: RaftTypography.body(
-            t,
-            size: size * .4,
-            line: size * .5,
-            weight: FontWeight.w700,
-          ),
-        ),
-      },
+    final sizeClass = uiSize ?? RaftAvatarSize.nearest(size);
+    final identity = switch (kind) {
+      RaftAvatarKind.human => RaftMountedAvatarIdentity.human,
+      RaftAvatarKind.agent => RaftMountedAvatarIdentity.agent,
+      RaftAvatarKind.server => RaftMountedAvatarIdentity.server,
+      RaftAvatarKind.app => RaftMountedAvatarIdentity.app,
+    };
+    final initials = switch (kind) {
+      RaftAvatarKind.human => raftAvatarInitials(name),
+      RaftAvatarKind.agent => raftAvatarInitials(name, max: 1),
+      RaftAvatarKind.server =>
+        name.trim().isEmpty ? '' : raftAvatarInitials(name, max: 1),
+      RaftAvatarKind.app =>
+        name.trim().characters.take(2).toString().toUpperCase(),
+    };
+    final fallback = initials.isEmpty
+        ? RaftAvatarPlaceholder(size: sizeClass)
+        : RaftAvatarInitials(initials, size: sizeClass);
+    final admitted = kind == RaftAvatarKind.agent && !deactivated && !muted
+        ? presence
+        : null;
+    Widget avatar = RaftStickerAvatar(
+      size: sizeClass,
+      extent: uiSize == null ? size : null,
+      type: identity == RaftMountedAvatarIdentity.human
+          ? RaftAvatarType.human
+          : RaftAvatarType.agent,
+      presence: admitted?.light,
+      presenceLabel: admitted?.label,
+      child:
+          content ??
+          (imageUrl == null
+              ? fallback
+              : RaftSizedImage.avatar(
+                  imageUrl!,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, _, _) => fallback,
+                )),
     );
+    if (muted) avatar = Opacity(opacity: .6, child: avatar);
     return Semantics(
       label: name,
       image: true,
       excludeSemantics: true,
-      child: SizedBox.square(
-        dimension: size,
-        child: Padding(
-          padding: EdgeInsets.all(2),
-          child: Container(
-            width: size,
-            height: size,
-            clipBehavior: Clip.antiAlias,
-            decoration: BoxDecoration(
-              color: t.colors['fill-muted'],
-              border: null,
-              borderRadius: BorderRadius.circular(size / 2),
-            ),
-            child:
-                content ??
-                (imageUrl == null
-                    ? fallback
-                    : RaftSizedImage.avatar(
-                        imageUrl!,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, _, _) => fallback,
-                      )),
-          ),
-        ),
-      ),
+      child: avatar,
     );
   }
 }
