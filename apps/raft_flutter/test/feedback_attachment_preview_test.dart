@@ -54,7 +54,7 @@ Future<void> _pump(
   addTearDown(t.view.reset);
   await t.pumpWidget(
     MaterialApp(
-      theme: raftTheme(RaftFamily.elegant),
+      theme: raftTheme(),
       builder: (context, child) => RaftToastHost(child: child!),
       home: Scaffold(
         body: SourceFeedbackProjectionView(

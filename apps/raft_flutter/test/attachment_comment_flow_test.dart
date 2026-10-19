@@ -84,8 +84,7 @@ void main() {
     addTearDown(t.view.reset);
     await t.pumpWidget(
       MaterialApp(
-        theme: raftTheme(RaftFamily.elegant)
-            .copyWith(platform: TargetPlatform.linux),
+        theme: raftTheme().copyWith(platform: TargetPlatform.linux),
         home: Scaffold(
           body: Align(
             alignment: Alignment.topLeft,
@@ -115,7 +114,7 @@ void main() {
   testWidgets('the card shows how many comments the attachment has', (t) async {
     await t.pumpWidget(
       MaterialApp(
-        theme: raftTheme(RaftFamily.elegant),
+        theme: raftTheme(),
         home: Scaffold(
           body: AttachmentView(
             controller: w,

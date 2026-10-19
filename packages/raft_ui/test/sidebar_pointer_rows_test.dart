@@ -7,7 +7,7 @@ import 'package:raft_ui/raft_ui.dart';
 /// entries, the quiet "new" dot of a non-joined channel, the bridge chip.
 void main() {
   Widget host(Widget child) => MaterialApp(
-    theme: raftTheme(RaftFamily.elegant),
+    theme: raftTheme(),
     home: Scaffold(
       body: Align(
         alignment: Alignment.topLeft,
@@ -108,7 +108,7 @@ void main() {
       final log = <String>[];
       await t.pumpWidget(
         MaterialApp(
-          theme: raftTheme(RaftFamily.elegant),
+          theme: raftTheme(),
           home: Scaffold(
             body: SizedBox(
               width: 64,

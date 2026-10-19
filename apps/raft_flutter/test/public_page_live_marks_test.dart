@@ -91,7 +91,7 @@ Future<void> _pump(WidgetTester t, WorkspaceController w) async {
   addTearDown(t.view.resetDevicePixelRatio);
   await t.pumpWidget(
     MaterialApp(
-      theme: raftTheme(RaftFamily.elegant),
+      theme: raftTheme(),
       home: withAppServices(
         WorkspaceView(
           controller: w,

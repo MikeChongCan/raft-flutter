@@ -56,7 +56,7 @@ void main() {
   Future<WorkspaceController> mount(
     WidgetTester t, {
     required bool mobile,
-    RaftFamily family = RaftFamily.elegant,
+    bool dark = false,
     bool unread = true,
   }) async {
     final client = _Client();
@@ -71,7 +71,7 @@ void main() {
     });
     await t.pumpWidget(
       MaterialApp(
-        theme: raftTheme(family),
+        theme: raftTheme(dark: dark),
         home: Scaffold(
           body: Align(
             alignment: Alignment.topLeft,
@@ -114,12 +114,9 @@ void main() {
     expect(find.byType(RaftRailAttention), findsNothing);
   });
 
-  for (final (family, size) in [
-    (RaftFamily.elegant, 16.0),
-    (RaftFamily.brutal, 18.0),
-  ]) {
-    testWidgets('[$family] rail bell glyph is the rail icon size', (t) async {
-      await mount(t, mobile: false, family: family);
+  for (final (dark, size) in [(false, 16.0), (true, 16.0)]) {
+    testWidgets('[$dark] rail bell glyph is the rail icon size', (t) async {
+      await mount(t, mobile: false, dark: dark);
       expect(bell(t).size, size);
     });
   }

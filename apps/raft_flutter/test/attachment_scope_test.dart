@@ -98,8 +98,7 @@ void main() {
       });
       final files = _RebindingFiles();
       Widget host(WorkspaceController w, int revision) => MaterialApp(
-        theme: raftTheme(RaftFamily.elegant)
-            .copyWith(platform: TargetPlatform.linux),
+        theme: raftTheme().copyWith(platform: TargetPlatform.linux),
         home: Scaffold(
           body: AttachmentView(
             key: const Key('same-slot'),
@@ -176,8 +175,7 @@ void main() {
       final files = _Files();
       await tester.pumpWidget(
         MaterialApp(
-          theme: raftTheme(RaftFamily.brutal)
-              .copyWith(platform: TargetPlatform.linux),
+          theme: raftTheme().copyWith(platform: TargetPlatform.linux),
           home: Scaffold(
             body: AttachmentView(
               controller: w,
@@ -230,8 +228,7 @@ void main() {
       );
     await tester.pumpWidget(
       MaterialApp(
-        theme: raftTheme(RaftFamily.brutal)
-            .copyWith(platform: TargetPlatform.linux),
+        theme: raftTheme().copyWith(platform: TargetPlatform.linux),
         home: Scaffold(
           body: AttachmentView(
             controller: w,
@@ -288,8 +285,7 @@ void main() {
       final files = _Files()..pending.complete(bytes);
       await tester.pumpWidget(
         MaterialApp(
-          theme: raftTheme(RaftFamily.brutal)
-              .copyWith(platform: TargetPlatform.linux),
+          theme: raftTheme().copyWith(platform: TargetPlatform.linux),
           home: Scaffold(
             body: AttachmentView(
               controller: w,
@@ -344,8 +340,7 @@ void main() {
       var ready = 0;
       await tester.pumpWidget(
         MaterialApp(
-          theme: raftTheme(RaftFamily.brutal)
-              .copyWith(platform: TargetPlatform.linux),
+          theme: raftTheme().copyWith(platform: TargetPlatform.linux),
           home: Scaffold(
             body: AttachmentView(
               controller: w,
@@ -400,8 +395,7 @@ void main() {
     final show = ValueNotifier(true);
     await tester.pumpWidget(
       MaterialApp(
-        theme: raftTheme(RaftFamily.brutal)
-            .copyWith(platform: TargetPlatform.linux),
+        theme: raftTheme().copyWith(platform: TargetPlatform.linux),
         home: Scaffold(
           body: ValueListenableBuilder<bool>(
             valueListenable: show,
@@ -460,8 +454,7 @@ void main() {
       var ready = 0;
       await t.pumpWidget(
         MaterialApp(
-          theme: raftTheme(RaftFamily.brutal)
-              .copyWith(platform: TargetPlatform.linux),
+          theme: raftTheme().copyWith(platform: TargetPlatform.linux),
           home: Scaffold(
             body: AttachmentView(
               controller: w,

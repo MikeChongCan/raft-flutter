@@ -115,7 +115,7 @@ void main() {
     );
     await tester.pumpWidget(
       MaterialApp(
-        theme: raftTheme(RaftFamily.elegant),
+        theme: raftTheme(),
         home: DesktopTitleBar(
           controller: controller,
           workspace: w,
@@ -151,7 +151,7 @@ void main() {
     // Leaving the workspace restores the plain app title.
     await tester.pumpWidget(
       MaterialApp(
-        theme: raftTheme(RaftFamily.elegant),
+        theme: raftTheme(),
         home: DesktopTitleBar(
           controller: controller,
           child: const SizedBox.expand(),

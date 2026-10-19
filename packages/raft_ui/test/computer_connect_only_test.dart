@@ -7,7 +7,7 @@ import 'package:raft_ui/raft_ui.dart';
 /// still-waiting hint after 45 seconds.
 Widget _guide({String platform = 'mac-linux', String? installAndSetup}) =>
     MaterialApp(
-      theme: raftTheme(RaftFamily.elegant),
+      theme: raftTheme(),
       home: Scaffold(
         body: SingleChildScrollView(
           child: RaftComputerCommandGuide(
@@ -83,7 +83,7 @@ void main() {
     Future<void> openWaiting(WidgetTester t) async {
       await t.pumpWidget(
         MaterialApp(
-          theme: raftTheme(RaftFamily.elegant),
+          theme: raftTheme(),
           home: Scaffold(
             body: RaftAddComputerDialog(
               commandsFor: (_) => ('install-cmd', 'setup-cmd'),

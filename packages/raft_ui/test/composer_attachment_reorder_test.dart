@@ -21,7 +21,7 @@ Future<List<List<String>>> _pump(
   final orders = <List<String>>[];
   await tester.pumpWidget(
     MaterialApp(
-      theme: raftTheme(RaftFamily.elegant),
+      theme: raftTheme(),
       home: Scaffold(
         body: RaftDensityScope(
           density: touch ? RaftDensity.touch : RaftDensity.desktop,

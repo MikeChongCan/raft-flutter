@@ -203,7 +203,7 @@ Future<(_Client, WorkspaceController)> _pump(
   });
   await tester.pumpWidget(
     MaterialApp(
-      theme: raftTheme(RaftFamily.brutal),
+      theme: raftTheme(),
       builder: (context, child) => RaftToastHost(child: child!),
       home: Scaffold(
         body: FleetDetail(

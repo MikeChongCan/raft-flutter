@@ -10,7 +10,7 @@ Widget _guide({
   String? installAndSetup,
   (String, String)? commands = ('install-cmd', 'setup-cmd'),
 }) => MaterialApp(
-  theme: raftTheme(RaftFamily.elegant),
+  theme: raftTheme(),
   home: Scaffold(
     body: SingleChildScrollView(
       child: RaftComputerCommandGuide(

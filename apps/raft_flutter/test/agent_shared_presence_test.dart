@@ -132,13 +132,9 @@ void main() {
     expect(open.display('a')!.activity, 'thinking');
     expect(mountMessageSurface().display('a')!.activity, 'thinking');
   });
-  for (final (family, dark) in raftThemeMatrix([
-    (RaftFamily.brutal, false),
-    (RaftFamily.elegant, false),
-    (RaftFamily.elegant, true),
-  ])) {
+  for (final dark in raftThemeMatrix([false, true])) {
     testWidgets(
-      'mounted sidebar, detail and mention avatars share reconciliation $family/$dark',
+      'mounted sidebar, detail and mention avatars share reconciliation $dark',
       (t) async {
         await t.binding.setSurfaceSize(const Size(1800, 1400));
         addTearDown(() => t.binding.setSurfaceSize(null));
@@ -159,7 +155,7 @@ void main() {
         late StateSetter rebuild;
         await t.pumpWidget(
           MaterialApp(
-            theme: raftTheme(family, dark: dark),
+            theme: raftTheme(dark: dark),
             home: Scaffold(
               body: StatefulBuilder(
                 builder: (context, setState) {

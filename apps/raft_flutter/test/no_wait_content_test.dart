@@ -221,7 +221,7 @@ void main() {
       String? initialQuery,
       SearchMemoryStore? memory,
     }) => MaterialApp(
-      theme: raftTheme(RaftFamily.elegant),
+      theme: raftTheme(),
       home: RaftDensityScope(
         density: RaftDensity.desktop,
         child: Scaffold(
@@ -237,7 +237,7 @@ void main() {
       ),
     );
     final away = MaterialApp(
-      theme: raftTheme(RaftFamily.elegant),
+      theme: raftTheme(),
       home: const Scaffold(body: SizedBox.expand()),
     );
 
@@ -329,7 +329,7 @@ void main() {
       final (w, api) = await mountWorkspace(t, const Size(1280, 800));
       await t.pumpWidget(
         MaterialApp(
-          theme: raftTheme(RaftFamily.elegant),
+          theme: raftTheme(),
           home: Scaffold(
             body: AttachmentView(
               controller: w,
@@ -359,7 +359,7 @@ void main() {
       };
       await t.pumpWidget(
         MaterialApp(
-          theme: raftTheme(RaftFamily.elegant),
+          theme: raftTheme(),
           home: Scaffold(
             body: AttachmentView(
               controller: w,
@@ -451,7 +451,7 @@ void main() {
         'viewer': {'canComment': true},
       };
       Widget comments() => MaterialApp(
-        theme: raftTheme(RaftFamily.elegant),
+        theme: raftTheme(),
         home: Scaffold(
           body: AttachmentCommentsView(
             controller: w,

@@ -13,14 +13,13 @@ void main() {
   Future<RaftTokens> host(
     WidgetTester tester,
     Widget child, {
-    required RaftFamily family,
     bool dark = false,
   }) async {
     late RaftTokens tokens;
     addTearDown(() => tester.pumpWidget(const SizedBox()));
     await tester.pumpWidget(
       MaterialApp(
-        theme: raftTheme(family, dark: dark),
+        theme: raftTheme(dark: dark),
         home: Scaffold(
           body: Builder(
             builder: (context) {
@@ -50,7 +49,6 @@ void main() {
     final t = await host(
       tester,
       const RaftInfoRow(label: 'Computer', child: Text('Mac')),
-      family: RaftFamily.elegant,
     );
     final label = styleOf(tester, 'Computer');
     expect(label.fontSize, 13);
@@ -62,16 +60,16 @@ void main() {
     expect(value.color, t.colors['foreground-muted']);
   });
 
-  testWidgets('brutal info row keeps black ink at the new 13px term', (
+  testWidgets('dark info row keeps its 13px term and muted value', (
     tester,
   ) async {
-    await host(
+    final t = await host(
       tester,
       const RaftInfoRow(label: 'Computer', child: Text('Mac')),
-      family: RaftFamily.brutal,
+      dark: true,
     );
     expect(styleOf(tester, 'Computer').fontSize, 13);
-    expect(styleOf(tester, 'Mac').color, Colors.black);
+    expect(styleOf(tester, 'Mac').color, t.colors['foreground-muted']);
   });
 
   testWidgets('elegant detail-block name is PanelTitle: 17 semibold muted', (
@@ -80,7 +78,6 @@ void main() {
     final t = await host(
       tester,
       const RaftProfileIdentity(name: 'Product UX Designer', handle: 'pux'),
-      family: RaftFamily.elegant,
     );
     final name = styleOf(tester, 'Product UX Designer');
     expect(name.fontSize, 17);
@@ -92,19 +89,19 @@ void main() {
     expect(handle.color, t.colors['foreground-placeholder']);
   });
 
-  testWidgets('brutal detail-block name stays 18 bold, now pure black', (
+  testWidgets('dark detail-block name keeps its 17px semibold muted role', (
     tester,
   ) async {
-    await host(
+    final t = await host(
       tester,
       const RaftProfileIdentity(name: 'Product UX Designer', handle: 'pux'),
-      family: RaftFamily.brutal,
+      dark: true,
     );
     final name = styleOf(tester, 'Product UX Designer');
-    expect(name.fontSize, 18);
-    expect(name.fontWeight, FontWeight.w700);
-    expect(name.color, Colors.black);
-    expect(styleOf(tester, '@pux').fontSize, 14);
+    expect(name.fontSize, 17);
+    expect(name.fontWeight, FontWeight.w600);
+    expect(name.color, t.colors['foreground-muted']);
+    expect(styleOf(tester, '@pux').fontSize, 15);
   });
 
   testWidgets('profile text scope switches to Geist only with `sans`', (
@@ -113,15 +110,10 @@ void main() {
     final t = await host(
       tester,
       const RaftPanelTextScope(sans: true, child: Text('Body')),
-      family: RaftFamily.elegant,
     );
     final style = DefaultTextStyle.of(tester.element(find.text('Body'))).style;
     expect(style.fontFamily, t.bodyFont);
-    await host(
-      tester,
-      const RaftPanelTextScope(child: Text('Body')),
-      family: RaftFamily.elegant,
-    );
+    await host(tester, const RaftPanelTextScope(child: Text('Body')));
     expect(
       DefaultTextStyle.of(tester.element(find.text('Body'))).style.fontFamily,
       t.headingFont,
@@ -143,7 +135,6 @@ void main() {
           ),
         ],
       ),
-      family: RaftFamily.elegant,
     );
     expect(styleOf(tester, 'Email').fontSize, 13);
     expect(styleOf(tester, 'Email').color, t.colors['foreground-hint']);
@@ -154,7 +145,7 @@ void main() {
     expect(styleOf(tester, 'Claude').color, t.colors['foreground-hint']);
   });
 
-  testWidgets('profile header handle is 15px mono in elegant only', (
+  testWidgets('profile header handle keeps its 15px mono role in both modes', (
     tester,
   ) async {
     final t = await host(
@@ -164,7 +155,6 @@ void main() {
         subtitle: '@agent',
         profileHandle: true,
       ),
-      family: RaftFamily.elegant,
     );
     final handle = styleOf(tester, '@agent');
     expect(handle.fontSize, 15);
@@ -176,9 +166,8 @@ void main() {
         subtitle: '@agent',
         profileHandle: true,
       ),
-      family: RaftFamily.brutal,
     );
-    expect(styleOf(tester, '@agent').fontSize, 12);
+    expect(styleOf(tester, '@agent').fontSize, 15);
   });
 
   testWidgets('elegant profile header carries the 1px line-muted divider', (
@@ -187,7 +176,6 @@ void main() {
     final t = await host(
       tester,
       const RaftPanelHeaderBar(title: 'Agent', profileBody: true),
-      family: RaftFamily.elegant,
     );
     BoxDecoration headerDecoration() => tester
         .widgetList<Container>(
@@ -219,7 +207,6 @@ void main() {
         value: 'a',
         onChanged: (_) {},
       ),
-      family: RaftFamily.elegant,
     );
     // `h-12` list and no root `border-b` / list hairline: 48, not 49.
     expect(tester.getSize(find.byType(RaftPanelTabBar<String>)).height, 48);
@@ -231,7 +218,6 @@ void main() {
     await host(
       tester,
       const RaftProfileIdentity(name: 'Product UX Designer', handle: 'pux'),
-      family: RaftFamily.elegant,
     );
     final name = find.ancestor(
       of: find.text('Product UX Designer'),
@@ -255,7 +241,6 @@ void main() {
         slot: RaftAvatarSlotContext.panelHeader,
         avatarUrl: 'pixel:robot',
       ),
-      family: RaftFamily.elegant,
     );
     final clip = tester.widget<ClipRRect>(
       find.descendant(
@@ -273,7 +258,6 @@ void main() {
     final t = await host(
       tester,
       const RaftKeyValueRow.child(label: 'Created', child: Text('Jun 18')),
-      family: RaftFamily.elegant,
     );
     expect(styleOf(tester, 'Created').fontSize, 13);
     final style = DefaultTextStyle.of(tester.element(find.text('Jun 18')))

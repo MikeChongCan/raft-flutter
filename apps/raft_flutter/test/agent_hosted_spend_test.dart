@@ -160,7 +160,7 @@ void main() {
     final opened = <Uri>[];
     await t.pumpWidget(
       MaterialApp(
-        theme: raftTheme(RaftFamily.elegant),
+        theme: raftTheme(),
         home: Scaffold(
           body: ListView(
             padding: const EdgeInsets.all(20),

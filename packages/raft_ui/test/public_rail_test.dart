@@ -6,19 +6,15 @@ import 'package:raft_ui/raft_ui.dart';
 // AppRail chrome as the signed-in rail on every theme (the soft-signal strip and
 // the black logo block are gone).
 void main() {
-  for (final (family, dark) in [
-    (RaftFamily.brutal, false),
-    (RaftFamily.elegant, false),
-    (RaftFamily.elegant, true),
-  ]) {
-    testWidgets('[$family/$dark] public rail is the app rail', (tester) async {
+  for (final dark in [false, true]) {
+    testWidgets('[$dark] public rail is the app rail', (tester) async {
       var chat = 0, settings = 0;
       tester.view.devicePixelRatio = 1;
       tester.view.physicalSize = const Size(400, 700);
       addTearDown(tester.view.reset);
       await tester.pumpWidget(
         MaterialApp(
-          theme: raftTheme(family, dark: dark),
+          theme: raftTheme(dark: dark),
           home: Scaffold(
             body: Align(
               alignment: Alignment.topLeft,

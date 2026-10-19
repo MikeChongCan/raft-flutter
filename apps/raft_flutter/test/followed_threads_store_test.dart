@@ -110,7 +110,7 @@ Future<void> _pumpThreadActions(WidgetTester t, WorkspaceController w) async {
     ..threadChannelId = 't1';
   await t.pumpWidget(
     MaterialApp(
-      theme: raftTheme(RaftFamily.elegant),
+      theme: raftTheme(),
       home: Scaffold(
         body: ThreadActions(
           controller: w,
@@ -383,7 +383,7 @@ void main() {
     w.messageDomain.visibleIds['c1'] = {'m'};
     await t.pumpWidget(
       MaterialApp(
-        theme: raftTheme(RaftFamily.elegant),
+        theme: raftTheme(),
         home: Scaffold(body: RaftChatView(controller: w)),
       ),
     );

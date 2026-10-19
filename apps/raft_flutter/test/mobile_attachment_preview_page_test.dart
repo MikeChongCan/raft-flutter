@@ -55,14 +55,10 @@ class _Routes extends NavigatorObserver {
 
 void main() {
   _narrowDesktopTests();
-  for (final (family, dark) in raftThemeMatrix([
-    (RaftFamily.brutal, false),
-    (RaftFamily.elegant, false),
-    (RaftFamily.elegant, true),
-  ])) {
+  for (final dark in raftThemeMatrix([false, true])) {
     for (final dm in [false, true]) {
       testWidgets(
-        'Attachment predictive back preserves message history $family/$dark DM=$dm',
+        'Attachment predictive back preserves message history ${dark ? 'dark' : 'light'} DM=$dm',
         (t) async {
           t.view.physicalSize = const Size(390, 844);
           t.view.devicePixelRatio = 1;
@@ -112,7 +108,7 @@ void main() {
             home: (_) => withAppServices(
               WorkspaceView(
                 controller: w,
-                appearance: RaftAppearance(light: family),
+                appearance: RaftAppearance(),
                 onAppearance: (_) async {},
                 onLogout: () async {},
               ),
@@ -124,7 +120,7 @@ void main() {
           addTearDown(router.dispose);
           await t.pumpWidget(
             MaterialApp.router(
-              theme: raftTheme(family, dark: dark),
+              theme: raftTheme(dark: dark),
               routerDelegate: router,
               routeInformationParser: const RaftAppRouteParser(),
             ),
@@ -216,7 +212,7 @@ void main() {
           final routes = _Routes();
           await t.pumpWidget(
             MaterialApp(
-              theme: raftTheme(RaftFamily.elegant).copyWith(platform: platform),
+              theme: raftTheme().copyWith(platform: platform),
               navigatorObservers: [routes],
               home: Scaffold(
                 body: Align(
@@ -344,7 +340,7 @@ Future<(WorkspaceController, RaftAppRouter)> _desktopChat(
     home: (_) => withAppServices(
       WorkspaceView(
         controller: w,
-        appearance: RaftAppearance(light: RaftFamily.elegant),
+        appearance: RaftAppearance(),
         onAppearance: (_) async {},
         onLogout: () async {},
       ),
@@ -356,7 +352,7 @@ Future<(WorkspaceController, RaftAppRouter)> _desktopChat(
   addTearDown(router.dispose);
   await t.pumpWidget(
     MaterialApp.router(
-      theme: raftTheme(RaftFamily.elegant),
+      theme: raftTheme(),
       routerDelegate: router,
       routeInformationParser: const RaftAppRouteParser(),
     ),

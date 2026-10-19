@@ -19,18 +19,14 @@ Future<void> loadTaskFonts(WidgetTester tester) => tester.runAsync(() async {
 });
 
 void main() {
-  for (final (family, dark) in raftThemeMatrix([
-    (RaftFamily.brutal, false),
-    (RaftFamily.elegant, false),
-    (RaftFamily.elegant, true),
-  ])) {
+  for (final dark in raftThemeMatrix([false, true])) {
     testWidgets(
-      '$family/$dark task inherits document face and retains separate status action',
+      '$dark task inherits document face and retains separate status action',
       (tester) async {
         await loadTaskFonts(tester);
         var opened = 0;
         String? selected;
-        final theme = raftTheme(family, dark: dark);
+        final theme = raftTheme(dark: dark);
         final tokens = theme.extension<RaftTokens>()!;
         await tester.pumpWidget(
           MaterialApp(
@@ -75,7 +71,7 @@ void main() {
         );
         expect(
           tester.widget<Text>(find.text('#210')).style!.fontFamily,
-          family == RaftFamily.brutal ? tokens.monoFont : tokens.bodyFont,
+          tokens.bodyFont,
         );
         await tester.tap(find.text('Review the thread header strip baselines'));
         expect(opened, 1);
@@ -88,11 +84,11 @@ void main() {
         expect(tester.takeException(), isNull);
       },
     );
-    testWidgets('$family/$dark inline status inherits its document face', (
+    testWidgets('$dark inline status inherits its document face', (
       tester,
     ) async {
       await loadTaskFonts(tester);
-      final theme = raftTheme(family, dark: dark);
+      final theme = raftTheme(dark: dark);
       final tokens = theme.extension<RaftTokens>()!;
       await tester.pumpWidget(
         MaterialApp(
@@ -119,25 +115,15 @@ void main() {
       // Web v1.21.12: the status trigger is the TaskChip (h18.25 Brutal, h19
       // Elegant, `mt-0.5`); both fit the document's h24 strut line.
       expect(tester.getSize(find.byType(RaftInlineLineBox)).height, 24);
-      if (family == RaftFamily.brutal) {
-        final badge = find
-            .ancestor(
-              of: find.text('In Progress'),
-              matching: find.byType(DecoratedBox),
-            )
-            .first;
-        // The chip sits on the line's baseline: top 4, h18.25 in the h24 line.
-        expect(tester.getTopLeft(badge).dy, 4);
-        expect(tester.getSize(badge).height, 18.25);
-      }
+
       expect(tester.takeException(), isNull);
     });
   }
-  testWidgets('task keeps the Source fractional meta line and card height', (
+  testWidgets('Raft task keeps its token meta line and card height', (
     tester,
   ) async {
     await loadTaskFonts(tester);
-    final theme = raftTheme(RaftFamily.brutal);
+    final theme = raftTheme();
     final tokens = theme.extension<RaftTokens>()!;
     await tester.pumpWidget(
       MaterialApp(
@@ -167,9 +153,9 @@ void main() {
       of: find.text('#210'),
       matching: find.byType(RaftCssText),
     );
-    expect(tester.getSize(number).height, 16.5);
-    // Source DOM measurement, 358px card, one title line, editable status.
-    expect(tester.getSize(find.byType(RaftTaskCard)).height, 103.25);
+    expect(tester.getSize(number).height, 14);
+    // Raft token metrics, 358px card, one title line, editable status.
+    expect(tester.getSize(find.byType(RaftTaskCard)).height, 102);
     expect(tester.takeException(), isNull);
   });
 }

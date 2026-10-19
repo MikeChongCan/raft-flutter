@@ -10,7 +10,6 @@ void main() {
   Future<void> mount(
     WidgetTester tester,
     Widget child, {
-    RaftFamily family = RaftFamily.elegant,
     bool dark = false,
     Size size = const Size(1280, 800),
   }) async {
@@ -19,7 +18,7 @@ void main() {
     addTearDown(tester.view.reset);
     await tester.pumpWidget(
       MaterialApp(
-        theme: raftTheme(family, dark: dark),
+        theme: raftTheme(dark: dark),
         home: Scaffold(body: child),
       ),
     );
@@ -41,13 +40,9 @@ void main() {
     ),
   );
 
-  for (final (family, dark, header) in [
-    (RaftFamily.elegant, false, 56.0),
-    (RaftFamily.elegant, true, 56.0),
-    (RaftFamily.brutal, false, 62.0),
-  ]) {
-    testWidgets('[$family/$dark] channel column frame', (tester) async {
-      await mount(tester, sidebar(), family: family, dark: dark);
+  for (final (dark, header) in [(false, 56.0), (true, 56.0)]) {
+    testWidgets('[$dark] channel column frame', (tester) async {
+      await mount(tester, sidebar(), dark: dark);
       final t = RaftTokens.of(
         tester.element(find.byType(RaftPublicChannelSidebar)),
       );
@@ -57,9 +52,7 @@ void main() {
           (tester.widget<Container>(frame).decoration! as BoxDecoration).color;
       expect(
         fill,
-        family == RaftFamily.brutal
-            ? t.product.brutalCream
-            : t.colors['layer-canvas-muted'],
+        t.colors['layer-canvas-muted'],
         reason: 'SidebarRoot bg, not the old layer-inset',
       );
       // `h-panel-header` follows the shell's header height, not a fixed 62.

@@ -205,7 +205,7 @@ void main() {
           ..server = one;
         await t.pumpWidget(
           MaterialApp(
-            theme: raftTheme(RaftFamily.elegant),
+            theme: raftTheme(),
             builder: (context, child) => RaftToastHost(child: child!),
             home: AnnouncementHost(
               controller: w,

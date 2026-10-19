@@ -164,7 +164,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           builder: (context, child) => RaftToastHost(child: child!),
-          theme: raftTheme(RaftFamily.elegant),
+          theme: raftTheme(),
           home: Scaffold(
             body: Builder(
               builder: (context) => TextButton(
@@ -249,7 +249,7 @@ void main() {
     addTearDown(w.dispose);
     await tester.pumpWidget(
       MaterialApp(
-        theme: raftTheme(RaftFamily.elegant),
+        theme: raftTheme(),
         home: Scaffold(
           body: Builder(
             builder: (context) => TextButton(
@@ -303,7 +303,7 @@ void main() {
       addTearDown(w.dispose);
       await tester.pumpWidget(
         MaterialApp(
-          theme: raftTheme(RaftFamily.elegant),
+          theme: raftTheme(),
           home: Scaffold(
             body: Builder(
               builder: (context) => TextButton(

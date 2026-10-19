@@ -17,11 +17,7 @@ void main() {
   // keep the width a function of the digits.
   double maxWidth(int count) => 14.0 + 10 * (count > 99 ? 3 : '$count'.length);
 
-  for (final (family, dark) in raftThemeMatrix([
-    (RaftFamily.brutal, false),
-    (RaftFamily.elegant, false),
-    (RaftFamily.elegant, true),
-  ], full: true)) {
+  for (final dark in raftThemeMatrix([false, true], full: true)) {
     for (final (width, density) in [
       (280.0, RaftDensity.desktop),
       (360.0, RaftDensity.touch),
@@ -43,7 +39,7 @@ void main() {
         addTearDown(tester.view.reset);
         await tester.pumpWidget(
           MaterialApp(
-            theme: raftTheme(family, dark: dark),
+            theme: raftTheme(dark: dark),
             builder: (context, app) => MediaQuery(
               data: MediaQuery.of(context)
                   .copyWith(textScaler: TextScaler.linear(textScale)),
@@ -97,7 +93,7 @@ void main() {
         double minHeight = 14,
       }) {
         final chip = countRect(tester, count);
-        final reason = '$family/$dark ${width}px $density count $count';
+        final reason = '$dark ${width}px $density count $count';
         expect(
           chip.height,
           inInclusiveRange(minHeight, 20),
@@ -158,7 +154,7 @@ void main() {
           ),
         ]) {
           scenario(
-            '$family/$dark ${width}px $density $name unread $count keeps the chip size',
+            '$dark ${width}px $density $name unread $count keeps the chip size',
             (tester) async {
               await mount(tester, build(count));
               expectChip(
@@ -199,7 +195,7 @@ void main() {
         ),
       ]) {
         scenario(
-          '$family/$dark ${width}px $density $name chip grows with larger text without stretching',
+          '$dark ${width}px $density $name chip grows with larger text without stretching',
           (tester) async {
             await mount(tester, row, textScale: 2);
             final chip = countRect(tester, 12);
@@ -213,7 +209,7 @@ void main() {
       }
 
       scenario(
-        '$family/$dark ${width}px $density mention-list badges keep their size in a tall row',
+        '$dark ${width}px $density mention-list badges keep their size in a tall row',
         (tester) async {
           // `Container(minHeight:, alignment:)` fills a Row's height, the same
           // stretch as the Activity chip.
@@ -239,7 +235,7 @@ void main() {
       );
 
       scenario(
-        '$family/$dark ${width}px $density Saved count stays text beside the Activity chip',
+        '$dark ${width}px $density Saved count stays text beside the Activity chip',
         (tester) async {
           await mount(
             tester,
@@ -274,41 +270,40 @@ void main() {
         },
       );
 
-      scenario(
-        '$family/$dark ${width}px $density rail count keeps the chip size',
-        (tester) async {
-          await mount(
-            tester,
-            SizedBox(
-              width: family == RaftFamily.brutal ? 64 : 56,
-              height: 400,
-              child: RaftWorkspaceRail(
-                destinations: const [
-                  RaftRailDestination(
-                    id: 'chat',
-                    label: 'Chat',
-                    glyph: RaftGlyph.messageSquare,
-                  ),
-                  RaftRailDestination(
-                    id: 'activity',
-                    label: 'Activity',
-                    glyph: RaftGlyph.activity,
-                    unread: 12,
-                  ),
-                ],
-                selected: 'chat',
-                onSelected: (_) {},
-                workspaceName: 'Visual Server',
-                onWorkspace: () {},
-              ),
+      scenario('$dark ${width}px $density rail count keeps the chip size', (
+        tester,
+      ) async {
+        await mount(
+          tester,
+          SizedBox(
+            width: 56,
+            height: 400,
+            child: RaftWorkspaceRail(
+              destinations: const [
+                RaftRailDestination(
+                  id: 'chat',
+                  label: 'Chat',
+                  glyph: RaftGlyph.messageSquare,
+                ),
+                RaftRailDestination(
+                  id: 'activity',
+                  label: 'Activity',
+                  glyph: RaftGlyph.activity,
+                  unread: 12,
+                ),
+              ],
+              selected: 'chat',
+              onSelected: (_) {},
+              workspaceName: 'Visual Server',
+              onWorkspace: () {},
             ),
-          );
-          expectChip(tester, 12, null, centered: false, minHeight: 8);
-        },
-      );
+          ),
+        );
+        expectChip(tester, 12, null, centered: false, minHeight: 8);
+      });
 
       scenario(
-        '$family/$dark ${width}px $density phone tab-bar count keeps the chip size',
+        '$dark ${width}px $density phone tab-bar count keeps the chip size',
         (tester) async {
           await mount(
             tester,
@@ -336,15 +331,14 @@ void main() {
         },
       );
 
-      testWidgets(
-        '$family/$dark ${width}px $density count chips keep their size',
-        (tester) async {
-          for (final (name, body) in scenarios) {
-            printOnFailure('scenario: $name');
-            await body(tester);
-          }
-        },
-      );
+      testWidgets('$dark ${width}px $density count chips keep their size', (
+        tester,
+      ) async {
+        for (final (name, body) in scenarios) {
+          printOnFailure('scenario: $name');
+          await body(tester);
+        }
+      });
     }
   }
 }

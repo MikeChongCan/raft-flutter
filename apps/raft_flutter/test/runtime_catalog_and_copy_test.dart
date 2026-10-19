@@ -13,7 +13,7 @@ Future<BuildContext> _context(WidgetTester tester) async {
   late BuildContext context;
   await tester.pumpWidget(
     MaterialApp(
-      theme: raftTheme(RaftFamily.brutal),
+      theme: raftTheme(),
       home: Builder(
         builder: (c) {
           context = c;
@@ -122,7 +122,7 @@ void main() {
       addTearDown(() => tester.binding.setSurfaceSize(null));
       await tester.pumpWidget(
         MaterialApp(
-          theme: raftTheme(RaftFamily.brutal),
+          theme: raftTheme(),
           home: Scaffold(
             body: RuntimeModelCombobox(
               key: const ValueKey('model'),

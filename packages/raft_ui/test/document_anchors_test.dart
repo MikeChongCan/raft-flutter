@@ -22,8 +22,7 @@ Future<RaftAttachmentCommentState> _pump(
   addTearDown(state.dispose);
   await tester.pumpWidget(
     MaterialApp(
-      theme: raftTheme(RaftFamily.elegant)
-          .copyWith(platform: TargetPlatform.linux),
+      theme: raftTheme().copyWith(platform: TargetPlatform.linux),
       home: Scaffold(
         body: RaftAttachmentCommentScope(
           state: state,

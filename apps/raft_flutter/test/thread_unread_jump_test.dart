@@ -155,7 +155,7 @@ void main() {
       api.routes['POST /channels/c1/read'] = (_) => {};
       await tester.pumpWidget(
         MaterialApp(
-          theme: raftTheme(RaftFamily.elegant),
+          theme: raftTheme(),
           home: Scaffold(body: RaftChatView(controller: w)),
         ),
       );

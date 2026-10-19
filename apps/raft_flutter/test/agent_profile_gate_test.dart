@@ -260,7 +260,7 @@ void main() {
       addTearDown(tester.view.reset);
       await tester.pumpWidget(
         MaterialApp(
-          theme: raftTheme(RaftFamily.elegant),
+          theme: raftTheme(),
           home: Scaffold(
             body: AgentDetailPanel(
               controller: workspace,
@@ -327,7 +327,7 @@ void main() {
         locale: const Locale('zh'),
         supportedLocales: const [Locale('zh'), Locale('en')],
         localizationsDelegates: GlobalMaterialLocalizations.delegates,
-        theme: raftTheme(RaftFamily.elegant),
+        theme: raftTheme(),
         home: Scaffold(
           body: RepaintBoundary(
             key: const Key('profile-shot'),
@@ -513,7 +513,7 @@ Future<void> openFleet(
   addTearDown(tester.view.reset);
   await tester.pumpWidget(
     MaterialApp(
-      theme: raftTheme(RaftFamily.elegant),
+      theme: raftTheme(),
       home: Scaffold(
         body: FleetDetail(
           controller: workspace,
@@ -554,7 +554,7 @@ Future<void> openMenu(
   workspace.messageDomain.visibleIds['c1'] = {'m'};
   await tester.pumpWidget(
     MaterialApp(
-      theme: raftTheme(RaftFamily.elegant),
+      theme: raftTheme(),
       home: Scaffold(body: RaftChatView(controller: workspace)),
     ),
   );

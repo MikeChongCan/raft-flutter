@@ -19,20 +19,15 @@ import 'support/app_services_fixture.dart';
 /// load), activate the same Activity row again. The re-positioning must never
 /// overscroll (no spring-back with an empty gap) on any frame.
 void main() {
-  for (final (family, dark, fling, last, thread) in [
-    (RaftFamily.brutal, false, false, false, false),
-    (RaftFamily.elegant, false, false, false, false),
-    (RaftFamily.brutal, false, true, false, false),
-    (RaftFamily.elegant, false, true, false, false),
-    (RaftFamily.brutal, false, false, true, false),
-    (RaftFamily.elegant, false, true, true, false),
-    (RaftFamily.brutal, false, false, true, true),
-    (RaftFamily.elegant, false, true, true, true),
-    (RaftFamily.brutal, false, false, false, true),
+  for (final (dark, fling, last, thread) in [
+    (false, false, false, false),
+    (false, true, false, false),
+    (false, true, true, false),
+    (false, true, true, true),
   ]) {
     final target = last ? 't-199' : 't-150';
     testWidgets(
-      '$family/$dark fling=$fling target=$target thread=$thread Activity re-activation never overscrolls',
+      '$dark fling=$fling target=$target thread=$thread Activity re-activation never overscrolls',
       // CPU-bound, not waiting: the full desktop workspace over 200 rows is
       // ~9 s of CPU a case (the first case of a process ~2x, JIT warm-up). A
       // wall clock bound of 60 s then fails whenever the process is starved
@@ -133,11 +128,11 @@ void main() {
         };
         await tester.pumpWidget(
           MaterialApp(
-            theme: raftTheme(family, dark: dark),
+            theme: raftTheme(dark: dark),
             home: withAppServices(
               WorkspaceView(
                 controller: w,
-                appearance: RaftAppearance(light: family),
+                appearance: RaftAppearance(),
                 onAppearance: (_) async {},
                 onLogout: () async {},
               ),

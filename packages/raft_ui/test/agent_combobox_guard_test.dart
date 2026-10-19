@@ -10,7 +10,7 @@ void main() {
     tester,
   ) async {
     Widget form(List<RaftComboboxItem> items) => MaterialApp(
-      theme: raftTheme(RaftFamily.brutal),
+      theme: raftTheme(),
       home: Scaffold(
         body: RaftUnsavedGuard(
           child: RaftAgentCombobox(

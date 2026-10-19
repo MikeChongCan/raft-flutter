@@ -355,7 +355,7 @@ void main() {
       addTearDown(secret.dispose);
       await t.pumpWidget(
         MaterialApp(
-          theme: raftTheme(RaftFamily.elegant),
+          theme: raftTheme(),
           home: Scaffold(
             body: ConnectedAppEditor(
               controller: w,
@@ -388,12 +388,12 @@ void main() {
       t,
     ) async {
       await pump(t, app: base);
-      expect(find.text('No setup required'), findsOneWidget);
+      expect(find.text('No setup required'), findsNWidgets(2));
       expect(find.byKey(const ValueKey('app-setup-url')), findsNothing);
       await t.ensureVisible(find.byKey(const ValueKey('app-setup-required')));
       await t.tap(find.byKey(const ValueKey('app-setup-required')));
       await t.pumpAndSettle();
-      expect(find.text('Setup required'), findsOneWidget);
+      expect(find.text('Setup required'), findsNWidgets(2));
       expect(find.byKey(const ValueKey('app-setup-url')), findsOneWidget);
       expect(
         find.textContaining('Configuration instructions', findRichText: true),
@@ -452,7 +452,7 @@ void main() {
           'setupDescription': 'x',
         },
       );
-      expect(find.text('Setup required'), findsOneWidget);
+      expect(find.text('Setup required'), findsNWidgets(2));
       await t.ensureVisible(find.byKey(const ValueKey('app-setup-required')));
       await t.tap(find.byKey(const ValueKey('app-setup-required')));
       await t.pumpAndSettle();

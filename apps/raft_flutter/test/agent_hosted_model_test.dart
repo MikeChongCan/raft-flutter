@@ -131,7 +131,7 @@ Future<_Client> _pump(
   });
   await tester.pumpWidget(
     MaterialApp(
-      theme: raftTheme(RaftFamily.brutal),
+      theme: raftTheme(),
       home: Scaffold(
         body: FleetDetail(
           key: UniqueKey(),
@@ -175,7 +175,7 @@ void main() {
     tester,
   ) async {
     final client = await _pump(tester);
-    expect(find.text('MODEL'), findsOneWidget);
+    expect(find.text('Model'), findsNWidgets(2));
     expect(_field(tester), 'Fast');
     expect(_notice(tester), _hint);
     expect(client.calls, contains('GET /agents/ext-1/hosted-runtime/model'));

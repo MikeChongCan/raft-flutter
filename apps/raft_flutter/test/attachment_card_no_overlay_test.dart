@@ -80,14 +80,10 @@ const _kinds = [
 ];
 
 void main() {
-  for (final (family, dark) in const [
-    (RaftFamily.brutal, false),
-    (RaftFamily.elegant, false),
-    (RaftFamily.elegant, true),
-  ]) {
+  for (final dark in const [false, true]) {
     for (final touch in const [false, true]) {
       testWidgets(
-        '${family.name} dark=$dark ${touch ? 'touch' : 'mouse'}: file cards '
+        '${dark ? "dark" : "light"} dark=$dark ${touch ? 'touch' : 'mouse'}: file cards '
         'have no Share/Download icons and open on tap, Enter and Space',
         (tester) async {
           final client = _Client()..user = RaftRecord({'id': 'alice'});
@@ -108,7 +104,7 @@ void main() {
             for (final kind in _kinds) {
               await tester.pumpWidget(
                 MaterialApp(
-                  theme: raftTheme(family, dark: dark).copyWith(
+                  theme: raftTheme(dark: dark).copyWith(
                     platform: touch
                         ? TargetPlatform.android
                         : TargetPlatform.linux,
@@ -264,7 +260,7 @@ void main() {
     });
     await tester.pumpWidget(
       MaterialApp(
-        theme: raftTheme(RaftFamily.elegant),
+        theme: raftTheme(),
         home: Scaffold(
           body: AttachmentView(
             controller: w,

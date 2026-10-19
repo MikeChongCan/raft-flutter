@@ -198,7 +198,7 @@ void main() {
     locale: locale,
     supportedLocales: const [Locale('en'), Locale('zh', 'CN')],
     localizationsDelegates: GlobalMaterialLocalizations.delegates,
-    theme: raftTheme(RaftFamily.brutal),
+    theme: raftTheme(),
     home: Scaffold(
       body: Builder(
         builder: (context) => TextButton(
@@ -359,10 +359,7 @@ void main() {
       final before = w.sourceQueries.length;
       await t.tap(pencil);
       await t.pumpAndSettle();
-      expect(
-        find.text('Edit DeepSeek · Team key'.toUpperCase()),
-        findsOneWidget,
-      );
+      expect(find.text('Edit DeepSeek · Team key'), findsOneWidget);
       await t.enterText(_key('provider-edit-name'), 'DeepSeek · Renamed');
       await t.pump();
       await t.tap(_key('provider-edit-save'));
@@ -484,7 +481,7 @@ void main() {
       addTearDown(t.view.reset);
       await t.pumpWidget(
         MaterialApp(
-          theme: raftTheme(RaftFamily.brutal),
+          theme: raftTheme(),
           home: Scaffold(
             body: SingleChildScrollView(
               child: ListenableBuilder(
@@ -595,7 +592,7 @@ void main() {
       addTearDown(t.view.reset);
       await t.pumpWidget(
         MaterialApp(
-          theme: raftTheme(RaftFamily.brutal),
+          theme: raftTheme(),
           home: Scaffold(
             body: SingleChildScrollView(
               child: ListenableBuilder(
@@ -671,7 +668,7 @@ void main() {
       addTearDown(t.view.reset);
       await t.pumpWidget(
         MaterialApp(
-          theme: raftTheme(RaftFamily.brutal),
+          theme: raftTheme(),
           home: Scaffold(
             body: SingleChildScrollView(
               child: RuntimeFormDialog(

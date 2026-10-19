@@ -28,7 +28,7 @@ void main() {
     );
     await t.pumpWidget(
       MaterialApp(
-        theme: raftTheme(RaftFamily.elegant),
+        theme: raftTheme(),
         home: AppServicesHost(
           services: const AppServices.updatesDisabledForTestOrPreview(),
           child: Scaffold(body: SingleChildScrollView(child: body)),
@@ -95,7 +95,7 @@ void main() {
     );
     await t.pumpWidget(
       MaterialApp(
-        theme: raftTheme(RaftFamily.elegant),
+        theme: raftTheme(),
         home: const Scaffold(body: RaftMessageBody(content: note)),
       ),
     );

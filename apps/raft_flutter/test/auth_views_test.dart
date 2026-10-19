@@ -52,7 +52,7 @@ void main() {
       final calls = <List<String>>[];
       await tester.pumpWidget(
         MaterialApp(
-          theme: raftTheme(RaftFamily.brutal),
+          theme: raftTheme(),
           home: AuthView(
             origin: 'https://example.invalid',
             onLogin: (b, e, p) async {
@@ -77,7 +77,7 @@ void main() {
       // called (the origin is edited from the brand bar).
       await tester.pumpWidget(
         MaterialApp(
-          theme: raftTheme(RaftFamily.brutal),
+          theme: raftTheme(),
           home: AuthView(
             key: const ValueKey('bad-origin'),
             origin: 'https://user:secret@example.invalid',
@@ -108,7 +108,7 @@ void main() {
     var registered = 0;
     await tester.pumpWidget(
       MaterialApp(
-        theme: raftTheme(RaftFamily.elegant),
+        theme: raftTheme(),
         home: AuthView(
           origin: 'https://example.invalid',
           onLogin: (b, e, p) async {},
@@ -152,7 +152,7 @@ void main() {
     locale: locale,
     supportedLocales: const [Locale('en'), Locale('zh')],
     localizationsDelegates: GlobalMaterialLocalizations.delegates,
-    theme: raftTheme(RaftFamily.elegant),
+    theme: raftTheme(),
     home: AuthView(
       origin: 'https://example.invalid',
       initialMode: mode,
@@ -245,7 +245,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           key: ValueKey(dark),
-          theme: raftTheme(RaftFamily.elegant, dark: dark),
+          theme: raftTheme(dark: dark),
           home: AuthView(
             origin: 'https://example.invalid',
             onLogin: (b, e, p) async {},
@@ -300,7 +300,7 @@ void main() {
     final calls = <String>[];
     await tester.pumpWidget(
       MaterialApp(
-        theme: raftTheme(RaftFamily.elegant),
+        theme: raftTheme(),
         home: AuthView(
           origin: 'https://example.invalid',
           onLogin: (b, e, p) async => calls.add(e),
@@ -328,7 +328,7 @@ void main() {
     final requests = <String>[];
     await tester.pumpWidget(
       MaterialApp(
-        theme: raftTheme(RaftFamily.brutal),
+        theme: raftTheme(),
         home: AuthView(
           origin: 'http://localhost:13041',
           initialMode: 'forgot',
@@ -359,7 +359,7 @@ void main() {
     final requests = <String>[];
     await tester.pumpWidget(
       MaterialApp(
-        theme: raftTheme(RaftFamily.brutal),
+        theme: raftTheme(),
         home: AuthView(
           origin: 'http://localhost:13041',
           initialMode: 'reset',
@@ -403,7 +403,7 @@ void main() {
     addTearDown(client.dispose);
     await tester.pumpWidget(
       MaterialApp(
-        theme: raftTheme(RaftFamily.elegant),
+        theme: raftTheme(),
         home: AccountOnboardingView(
           client: client,
           onComplete: () async {},

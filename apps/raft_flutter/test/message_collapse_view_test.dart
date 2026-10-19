@@ -80,7 +80,7 @@ Future<WorkspaceController> prepare(
 Future<void> mountChat(WidgetTester tester, WorkspaceController w) async {
   await tester.pumpWidget(
     MaterialApp(
-      theme: raftTheme(RaftFamily.elegant),
+      theme: raftTheme(),
       home: Scaffold(body: RaftChatView(controller: w)),
     ),
   );

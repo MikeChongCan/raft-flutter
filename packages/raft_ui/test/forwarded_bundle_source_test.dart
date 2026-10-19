@@ -42,7 +42,7 @@ void main() {
     final opened = <Map<String, dynamic>>[];
     await tester.pumpWidget(
       MaterialApp(
-        theme: raftTheme(RaftFamily.elegant),
+        theme: raftTheme(),
         home: Scaffold(
           body: RaftForwardedBundle(
             metadata: metadata,

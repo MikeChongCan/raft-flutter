@@ -38,7 +38,7 @@ Future<void> _pump(
   addTearDown(tester.view.resetDevicePixelRatio);
   await tester.pumpWidget(
     MaterialApp(
-      theme: raftTheme(RaftFamily.elegant),
+      theme: raftTheme(),
       home: RaftAttachmentPreviewShell(
         filename: 'notes.txt',
         onClose: () {},

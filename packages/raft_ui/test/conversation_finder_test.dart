@@ -104,7 +104,7 @@ void main() {
   testWidgets('an empty list says so', (t) async {
     await t.pumpWidget(
       MaterialApp(
-        theme: raftTheme(RaftFamily.elegant),
+        theme: raftTheme(),
         home: const Material(
           child: RaftConversationFinderPanel(
             children: [],

@@ -16,7 +16,7 @@ Widget _page({
   DateTime? now,
   List<String>? asked,
 }) => MaterialApp(
-  theme: raftTheme(RaftFamily.elegant),
+  theme: raftTheme(),
   home: ChineseCommunityPage(
     configUrl: _primary,
     fallbackConfigUrl: _fallback,

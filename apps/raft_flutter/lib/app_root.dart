@@ -247,7 +247,7 @@ class _RaftAppState extends State<RaftApp> with WidgetsBindingObserver {
   ];
   StreamSubscription<RaftEvent>? sessionEvents;
   // Known before the first build: the deferred first frame is not the only
-  // guard against painting the default family before the stored one.
+  // guard against painting the default mode before the stored one.
   RaftAppearance appearance = storedAppearance();
   bool restoring = true;
   // ignore: raft_lints/avoid_imperative_notice_state -- Cleared when a new sign-in succeeds (new client installed).
@@ -703,6 +703,7 @@ class _RaftAppState extends State<RaftApp> with WidgetsBindingObserver {
       DevicePreferences.adopt(p);
       origin = p.getString('raft.origin') ?? origin;
       appearance = storedAppearance(p);
+      unawaited(retireStoredAppearanceTheme(p));
       // Heals the native splash theme (app update, restored preferences).
       unawaited(NativeLaunchTheme.instance.set(appearance));
       try {
@@ -2040,7 +2041,7 @@ class _RaftAppState extends State<RaftApp> with WidgetsBindingObserver {
     setState(() => appearance = value);
     final p = await SharedPreferences.getInstance();
     await p.setString('raft.mode', value.mode.name);
-    await p.setString('raft.light', value.light.name);
+    await p.remove(retiredAppearanceThemeKey);
     // The next cold start's native splash needs the new canvas.
     await NativeLaunchTheme.instance.set(value);
   }
@@ -2145,8 +2146,7 @@ class _RaftAppState extends State<RaftApp> with WidgetsBindingObserver {
     );
     final locale = displayLocale(client?.user?.string('displayLanguage'));
     final textLocale = WidgetsBinding.instance.platformDispatcher.locale;
-    ThemeData themed(RaftFamily family, {bool dark = false}) => raftTheme(
-      family,
+    ThemeData themed({bool dark = false}) => raftTheme(
       dark: dark,
       systemFonts: !kIsWeb && defaultTargetPlatform == TargetPlatform.android,
       systemFontFamilies: NativeSystemFonts.instance.value,
@@ -2199,8 +2199,8 @@ class _RaftAppState extends State<RaftApp> with WidgetsBindingObserver {
         ),
       ),
       debugShowCheckedModeBanner: false,
-      theme: themed(appearance.light),
-      darkTheme: themed(RaftFamily.elegant, dark: true),
+      theme: themed(),
+      darkTheme: themed(dark: true),
       themeMode: appearance.mode,
     );
   }

@@ -38,7 +38,7 @@ Widget _app(Widget child, {Locale locale = const Locale('en')}) => MaterialApp(
   locale: locale,
   supportedLocales: const [Locale('en'), Locale('zh')],
   localizationsDelegates: GlobalMaterialLocalizations.delegates,
-  theme: raftTheme(RaftFamily.elegant),
+  theme: raftTheme(),
   home: Scaffold(body: child),
 );
 

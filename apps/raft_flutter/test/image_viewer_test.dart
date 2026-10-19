@@ -359,7 +359,7 @@ Future<_Rig> _mount(
   });
   await tester.pumpWidget(
     MaterialApp(
-      theme: raftTheme(RaftFamily.elegant).copyWith(
+      theme: raftTheme().copyWith(
         platform:
             platform ??
             (size == _wide ? TargetPlatform.linux : TargetPlatform.android),
@@ -2318,7 +2318,7 @@ void registerImageViewerTests(TestPart part) {
       final shown = <String>[];
       await tester.pumpWidget(
         MaterialApp(
-          theme: raftTheme(RaftFamily.elegant),
+          theme: raftTheme(),
           home: MediaBrowser(
             controller: rig.w,
             files: rig.files,

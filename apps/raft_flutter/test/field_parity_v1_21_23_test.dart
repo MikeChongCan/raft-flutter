@@ -258,7 +258,7 @@ void main() {
       });
       await t.pumpWidget(
         MaterialApp(
-          theme: raftTheme(RaftFamily.brutal),
+          theme: raftTheme(),
           home: Scaffold(
             body: AgentActivityTab(
               controller: w,
@@ -272,10 +272,10 @@ void main() {
       expect(t.takeException(), isNull);
       // The badge of every lineage row, whatever its phase or outcome.
       expect(
-        find.text('SUBAGENT: EXPLORE', findRichText: true),
+        find.text('Subagent: Explore', findRichText: true),
         findsNWidgets(3),
       );
-      expect(find.text('SUBAGENT', findRichText: true), findsOneWidget);
+      expect(find.text('Subagent', findRichText: true), findsNWidgets(2));
     });
   });
 }

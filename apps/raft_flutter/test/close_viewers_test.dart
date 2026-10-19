@@ -107,8 +107,7 @@ Future<void> mountAttachment(
   });
   await t.pumpWidget(
     MaterialApp(
-      theme: raftTheme(RaftFamily.elegant)
-          .copyWith(platform: closePlatform(size)),
+      theme: raftTheme().copyWith(platform: closePlatform(size)),
       home: Scaffold(
         body: AttachmentView(
           controller: w,
@@ -156,11 +155,11 @@ Future<WorkspaceController> openTask(
   ], expectedGeneration: w.messageDomain.ledger.generation);
   await t.pumpWidget(
     MaterialApp(
-      theme: raftTheme(RaftFamily.elegant),
+      theme: raftTheme(),
       home: withAppServices(
         WorkspaceView(
           controller: w,
-          appearance: RaftAppearance(light: RaftFamily.elegant),
+          appearance: RaftAppearance(),
           onAppearance: (_) async {},
           onLogout: () async {},
         ),
@@ -302,7 +301,7 @@ Future<SourceFeedbackStore> mountFeedback(WidgetTester t, Size size) async {
   await store.loadList();
   await t.pumpWidget(
     MaterialApp(
-      theme: raftTheme(RaftFamily.elegant),
+      theme: raftTheme(),
       home: Scaffold(body: SourceFeedbackProjectionView(store: store)),
     ),
   );
@@ -349,7 +348,7 @@ void registerCloseViewerTests(TestPart part) {
       await t.pumpWidget(const SizedBox());
       await t.pumpWidget(
         MaterialApp(
-          theme: raftTheme(RaftFamily.elegant),
+          theme: raftTheme(),
           home: Scaffold(
             body: PublicServerView(
               client: _PublicClient(),
@@ -396,7 +395,7 @@ void registerCloseViewerTests(TestPart part) {
       addTearDown(t.view.reset);
       await t.pumpWidget(
         MaterialApp(
-          theme: raftTheme(RaftFamily.elegant),
+          theme: raftTheme(),
           home: const Scaffold(body: Text('host')),
         ),
       );
@@ -549,7 +548,7 @@ void registerCloseViewerTests(TestPart part) {
       late BuildContext host;
       await t.pumpWidget(
         MaterialApp(
-          theme: raftTheme(RaftFamily.elegant),
+          theme: raftTheme(),
           home: Builder(
             builder: (context) {
               host = context;
@@ -591,7 +590,7 @@ void registerCloseViewerTests(TestPart part) {
       late BuildContext host;
       await t.pumpWidget(
         MaterialApp(
-          theme: raftTheme(RaftFamily.elegant),
+          theme: raftTheme(),
           home: Builder(
             builder: (context) {
               host = context;
@@ -690,7 +689,7 @@ void registerCloseViewerTests(TestPart part) {
       addTearDown(t.view.reset);
       await t.pumpWidget(
         MaterialApp(
-          theme: raftTheme(RaftFamily.elegant),
+          theme: raftTheme(),
           home: const Scaffold(
             body: SingleChildScrollView(
               child: RaftMessageBody(
@@ -727,7 +726,7 @@ void registerCloseViewerTests(TestPart part) {
       });
       await t.pumpWidget(
         MaterialApp(
-          theme: raftTheme(RaftFamily.elegant),
+          theme: raftTheme(),
           home: Builder(
             builder: (context) => Scaffold(
               body: TextButton(

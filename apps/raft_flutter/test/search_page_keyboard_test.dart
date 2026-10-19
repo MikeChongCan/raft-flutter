@@ -89,7 +89,7 @@ void main() {
         locale: locale,
         supportedLocales: const [Locale('en'), Locale('zh')],
         localizationsDelegates: GlobalMaterialLocalizations.delegates,
-        theme: raftTheme(RaftFamily.elegant).copyWith(platform: platform),
+        theme: raftTheme().copyWith(platform: platform),
         home: Scaffold(
           body: ResourceView(
             controller: w,
@@ -282,14 +282,12 @@ void main() {
     (TargetPlatform.linux, 'Ctrl+K'),
     (TargetPlatform.windows, 'Ctrl+K'),
   ]) {
-    testWidgets(
-      'the field hint shows ${platform.$2} on ${platform.$1.name}',
-      (t) async {
-        await mount(t);
-        final field = t.widget<TextField>(find.byType(TextField).first);
-        expect(field.decoration!.hintText, endsWith(platform.$2));
-      },
-      variant: TargetPlatformVariant.only(platform.$1),
-    );
+    testWidgets('the field hint shows ${platform.$2} on ${platform.$1.name}', (
+      t,
+    ) async {
+      await mount(t);
+      final field = t.widget<TextField>(find.byType(TextField).first);
+      expect(field.decoration!.hintText, endsWith(platform.$2));
+    }, variant: TargetPlatformVariant.only(platform.$1));
   }
 }

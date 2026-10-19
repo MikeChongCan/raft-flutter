@@ -52,7 +52,7 @@ Future<void> _mount(WidgetTester t, String rowServer) async {
     ..server = one;
   await t.pumpWidget(
     MaterialApp(
-      theme: raftTheme(RaftFamily.elegant),
+      theme: raftTheme(),
       builder: (context, child) => RaftToastHost(child: child!),
       home: AnnouncementHost(
         controller: w,

@@ -21,7 +21,6 @@ Intro paragraph with `inline code`, **bold** and a [link](https://raft.build).
 ''';
 
 Widget frame(
-  RaftFamily family,
   bool dark, {
   String text = body,
   String? label,
@@ -33,7 +32,7 @@ Widget frame(
   Locale? locale,
   Size? size,
 }) => MaterialApp(
-  theme: raftTheme(family, dark: dark),
+  theme: raftTheme(dark: dark),
   home: MediaQuery(
     data: MediaQueryData(size: size ?? const Size(800, 600)),
     child: Scaffold(
@@ -58,39 +57,34 @@ Widget frame(
 );
 
 void main() {
-  for (final (family, dark) in raftThemeMatrix([
-    (RaftFamily.brutal, false),
-    (RaftFamily.elegant, false),
-    (RaftFamily.elegant, true),
-  ])) {
-    testWidgets('renders every block in ${family.name}${dark ? ' dark' : ''}', (
-      t,
-    ) async {
-      await t.pumpWidget(frame(family, dark));
-      expect(t.takeException(), isNull);
-      // Web v1.21.12: the title is no longer uppercased, the label is the
-      // default "Latest updates", headings keep their case.
-      expect(find.text('What is new'), findsOneWidget);
-      expect(find.text('Latest updates'), findsOneWidget);
-      expect(find.text('inline code'), findsOneWidget);
-      expect(find.text('Heading one'), findsOneWidget);
-      expect(find.text('First item'), findsOneWidget);
-      expect(find.text('2. '), findsOneWidget);
-      expect(find.text('Got it'), findsOneWidget);
-      // max-w-xl
-      expect(
-        t.getSize(find.byKey(const ValueKey('announcement-modal'))).width,
-        RaftAnnouncementCard.maxWidth,
-      );
-    });
+  for (final dark in raftThemeMatrix([false, true])) {
+    testWidgets(
+      'renders every block in ${dark ? "dark" : "light"}${dark ? ' dark' : ''}',
+      (t) async {
+        await t.pumpWidget(frame(dark));
+        expect(t.takeException(), isNull);
+        // Web v1.21.12: the title is no longer uppercased, the label is the
+        // default "Latest updates", headings keep their case.
+        expect(find.text('What is new'), findsOneWidget);
+        expect(find.text('Latest updates'), findsOneWidget);
+        expect(find.text('inline code'), findsOneWidget);
+        expect(find.text('Heading one'), findsOneWidget);
+        expect(find.text('First item'), findsOneWidget);
+        expect(find.text('2. '), findsOneWidget);
+        expect(find.text('Got it'), findsOneWidget);
+        // max-w-xl
+        expect(
+          t.getSize(find.byKey(const ValueKey('announcement-modal'))).width,
+          RaftAnnouncementCard.maxWidth,
+        );
+      },
+    );
   }
 
   testWidgets('heading sizes: text-xl, text-lg, text-base; paragraphs mt-3', (
     t,
   ) async {
-    await t.pumpWidget(
-      frame(RaftFamily.elegant, false, text: '# One\n\n## Two\n\n### Three'),
-    );
+    await t.pumpWidget(frame(false, text: '# One\n\n## Two\n\n### Three'));
     double sizeOf(String text) => t
         .widget<RaftCssText>(find.widgetWithText(RaftCssText, text))
         .style!
@@ -98,7 +92,7 @@ void main() {
     expect(sizeOf('One'), 20);
     expect(sizeOf('Two'), 18);
     expect(sizeOf('Three'), 16);
-    await t.pumpWidget(frame(RaftFamily.elegant, false, text: 'A\n\nB\n\nC'));
+    await t.pumpWidget(frame(false, text: 'A\n\nB\n\nC'));
     final a = t.getBottomLeft(find.text('A')).dy;
     final b = t.getTopLeft(find.text('B')).dy;
     final bBottom = t.getBottomLeft(find.text('B')).dy;
@@ -113,7 +107,6 @@ void main() {
     final links = <String>[];
     await t.pumpWidget(
       frame(
-        RaftFamily.elegant,
         false,
         onDismiss: () => dismiss++,
         onCta: () => cta++,
@@ -138,7 +131,6 @@ void main() {
     var dismiss = 0, cta = 0;
     await t.pumpWidget(
       frame(
-        RaftFamily.brutal,
         false,
         label: 'Release',
         ctaLabel: 'Read more',
@@ -155,7 +147,7 @@ void main() {
     expect(gotIt.top, closeTo(primary.top, 0.5));
     expect(gotIt.left, lessThan(primary.left));
     final card = t.getRect(find.byKey(const ValueKey('announcement-modal')));
-    expect(primary.right, closeTo(card.right - 2 - 28, 0.5));
+    expect(primary.right, closeTo(card.right - 28, 0.5));
     await t.sendKeyEvent(LogicalKeyboardKey.enter);
     expect((dismiss, cta), (0, 1));
     await t.tap(find.byKey(const ValueKey('announcement-dismiss')));
@@ -166,12 +158,7 @@ void main() {
 
   testWidgets('narrow dialogs stack the actions at full width', (t) async {
     await t.pumpWidget(
-      frame(
-        RaftFamily.elegant,
-        false,
-        ctaLabel: 'Read more',
-        size: const Size(390, 800),
-      ),
+      frame(false, ctaLabel: 'Read more', size: const Size(390, 800)),
     );
     await t.pump();
     final gotIt = t.getRect(find.byKey(const ValueKey('announcement-dismiss')));
@@ -184,7 +171,6 @@ void main() {
   testWidgets('a long CTA label wraps and the footer wraps with it', (t) async {
     await t.pumpWidget(
       frame(
-        RaftFamily.elegant,
         false,
         ctaLabel: 'Read the full migration guide and the list of changes for every runtime',
       ),
@@ -201,7 +187,6 @@ void main() {
   testWidgets('the picture box is h-44 inside the body', (t) async {
     await t.pumpWidget(
       frame(
-        RaftFamily.brutal,
         false,
         image: const RaftAnnouncementImage(
           url: 'https://fixture.invalid/api/announcements/images/x',
@@ -214,13 +199,11 @@ void main() {
       find.byKey(const ValueKey('announcement-picture')),
     );
     expect(picture.height, 176);
-    expect(picture.width, 576 - 4 - 56);
+    expect(picture.width, 576 - 56);
   });
 
   testWidgets('zh copy', (t) async {
-    await t.pumpWidget(
-      frame(RaftFamily.brutal, false, locale: const Locale('zh', 'CN')),
-    );
+    await t.pumpWidget(frame(false, locale: const Locale('zh', 'CN')));
     expect(find.text('知道了'), findsOneWidget);
     expect(find.text('最新动态'), findsOneWidget);
   });

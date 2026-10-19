@@ -132,7 +132,7 @@ const metadata = <String, dynamic>{
 }
 
 Widget view(WorkspaceController w, AttachmentFiles files) => MaterialApp(
-  theme: raftTheme(RaftFamily.elegant).copyWith(platform: TargetPlatform.linux),
+  theme: raftTheme().copyWith(platform: TargetPlatform.linux),
   home: Scaffold(
     body: Align(
       alignment: Alignment.topLeft,

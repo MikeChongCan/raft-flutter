@@ -11,21 +11,15 @@ VoidCallback? _onPressed(WidgetTester tester, String key) =>
     tester.widget<RaftButton>(_button(key)).onPressed;
 
 void main() {
-  for (final (family, dark) in raftThemeMatrix([
-    (RaftFamily.brutal, false),
-    (RaftFamily.elegant, false),
-    (RaftFamily.elegant, true),
-  ])) {
-    testWidgets('$family/$dark confirm → stopping → stopped → resume', (
-      tester,
-    ) async {
+  for (final dark in raftThemeMatrix([false, true])) {
+    testWidgets('$dark confirm → stopping → stopped → resume', (tester) async {
       final stop = Completer<RaftSosOutcome?>();
       final resume = Completer<Object?>();
       final guidance = <String>[];
       var closed = 0;
       await tester.pumpWidget(
         MaterialApp(
-          theme: raftTheme(family, dark: dark),
+          theme: raftTheme(dark: dark),
           home: Scaffold(
             body: Center(
               child: RaftSosDialog(
@@ -88,7 +82,7 @@ void main() {
     var closed = 0;
     await tester.pumpWidget(
       MaterialApp(
-        theme: raftTheme(RaftFamily.elegant),
+        theme: raftTheme(),
         home: Scaffold(
           body: Center(
             child: RaftSosDialog(
@@ -116,7 +110,7 @@ void main() {
     var closed = 0;
     await tester.pumpWidget(
       MaterialApp(
-        theme: raftTheme(RaftFamily.brutal),
+        theme: raftTheme(),
         home: Scaffold(
           body: Center(
             child: RaftSosDialog(
@@ -149,7 +143,7 @@ void main() {
   testWidgets('copy is localized', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
-        theme: raftTheme(RaftFamily.elegant),
+        theme: raftTheme(),
         home: Scaffold(
           body: Builder(
             builder: (context) => Localizations.override(

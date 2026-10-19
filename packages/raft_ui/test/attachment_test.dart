@@ -6,20 +6,16 @@ import 'package:raft_ui/raft_ui.dart';
 import 'package:raft_ui/test_themes.dart';
 
 void main() {
-  for (final (family, dark) in raftThemeMatrix([
-    (RaftFamily.brutal, false),
-    (RaftFamily.elegant, false),
-    (RaftFamily.elegant, true),
-  ])) {
+  for (final dark in raftThemeMatrix([false, true])) {
     testWidgets(
-      '${family.name} dark=$dark file opens as one accessible action',
+      '${dark ? "dark" : "light"} dark=$dark file opens as one accessible action',
       (tester) async {
         final semantics = tester.ensureSemantics();
         try {
           var opened = 0;
           await tester.pumpWidget(
             MaterialApp(
-              theme: raftTheme(family, dark: dark),
+              theme: raftTheme(dark: dark),
               home: Scaffold(
                 body: RaftAttachmentCard(
                   filename: '日本語.pdf',
@@ -44,14 +40,14 @@ void main() {
     );
     for (final density in RaftDensity.values) {
       testWidgets(
-        '${family.name} dark=$dark $density image opens without share/download overlays',
+        '${dark ? "dark" : "light"} dark=$dark $density image opens without share/download overlays',
         (tester) async {
           final semantics = tester.ensureSemantics();
           try {
             var opened = 0;
             await tester.pumpWidget(
               MaterialApp(
-                theme: raftTheme(family, dark: dark),
+                theme: raftTheme(dark: dark),
                 home: Scaffold(
                   body: RaftDensityScope(
                     density: density,
@@ -111,7 +107,7 @@ void main() {
     'pending image preview reserves its final box without a spinner',
     (tester) async {
       Widget card(Widget? preview) => MaterialApp(
-        theme: raftTheme(RaftFamily.elegant),
+        theme: raftTheme(),
         home: Scaffold(
           body: Align(
             alignment: Alignment.topLeft,
@@ -141,7 +137,7 @@ void main() {
   ) async {
     await tester.pumpWidget(
       MaterialApp(
-        theme: raftTheme(RaftFamily.elegant),
+        theme: raftTheme(),
         home: Scaffold(
           body: RaftAttachmentCard(
             filename: 'export.png',
@@ -170,7 +166,7 @@ void main() {
       var sends = 0, picks = 0;
       await tester.pumpWidget(
         MaterialApp(
-          theme: raftTheme(RaftFamily.brutal),
+          theme: raftTheme(),
           home: Scaffold(
             body: RaftComposer(
               canSend: false,

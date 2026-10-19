@@ -15,7 +15,7 @@ void main() {
     addTearDown(tester.view.reset);
     await tester.pumpWidget(
       MaterialApp(
-        theme: raftTheme(RaftFamily.elegant).copyWith(platform: platform),
+        theme: raftTheme().copyWith(platform: platform),
         home: Scaffold(
           body: RaftPanelTabBar<String>(
             value: 'a',

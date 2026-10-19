@@ -5,7 +5,7 @@ import 'package:raft_ui/raft_ui.dart';
 /// Web v1.21.12 Computer detail: workspace real path, upgrade outcome lines,
 /// the ask-an-admin line, agent selection labels and the bulk model tooltip.
 Widget _app(Widget child, {Locale? locale}) => MaterialApp(
-  theme: raftTheme(RaftFamily.elegant),
+  theme: raftTheme(),
   home: Localizations(
     locale: locale ?? const Locale('en'),
     delegates: const [

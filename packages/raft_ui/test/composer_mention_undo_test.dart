@@ -13,8 +13,7 @@ void main() {
   Widget host({RaftComposerHandle? handle}) {
     sent = [];
     return MaterialApp(
-      theme: raftTheme(RaftFamily.elegant)
-          .copyWith(platform: TargetPlatform.macOS),
+      theme: raftTheme().copyWith(platform: TargetPlatform.macOS),
       home: Scaffold(
         body: Align(
           alignment: Alignment.bottomCenter,

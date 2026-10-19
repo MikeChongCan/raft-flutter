@@ -22,7 +22,7 @@ void main() {
       await t.pumpWidget(
         MaterialApp(
           navigatorKey: nav,
-          theme: raftTheme(RaftFamily.elegant).copyWith(
+          theme: raftTheme().copyWith(
             platform: size.width >= 768
                 ? TargetPlatform.macOS
                 : TargetPlatform.android,

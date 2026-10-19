@@ -91,8 +91,7 @@ void main() {
     addTearDown(t.view.reset);
     await t.pumpWidget(
       MaterialApp(
-        theme: raftTheme(RaftFamily.elegant)
-            .copyWith(platform: TargetPlatform.linux),
+        theme: raftTheme().copyWith(platform: TargetPlatform.linux),
         home: Scaffold(
           body: RaftAttachmentCommentScope(
             state: session,

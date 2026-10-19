@@ -55,7 +55,7 @@ void main() {
     transport.routes['PATCH /servers/s1/sidebar-order'] = (_) => {'ok': true};
     await t.pumpWidget(
       MaterialApp(
-        theme: raftTheme(RaftFamily.elegant),
+        theme: raftTheme(),
         home: RaftInteractionScope(
           interaction: touch
               ? RaftInteraction.touchMode

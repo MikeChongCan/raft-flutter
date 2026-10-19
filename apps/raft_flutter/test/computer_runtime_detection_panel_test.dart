@@ -116,7 +116,7 @@ void main() {
         locale: locale,
         supportedLocales: const [Locale('en'), Locale('zh')],
         localizationsDelegates: GlobalMaterialLocalizations.delegates,
-        theme: raftTheme(RaftFamily.brutal),
+        theme: raftTheme(),
         home: Scaffold(
           body: ComputerDetailPanel(
             controller: w,
@@ -329,7 +329,7 @@ void main() {
         await t.pumpAndSettle();
         expect(dialog, findsOneWidget);
         // The dialog card writes its title in capitals.
-        expect(find.text("WHAT'S NEW IN V1.5.0"), findsOneWidget);
+        expect(find.text("What's new in v1.5.0"), findsOneWidget);
         expect(
           find.textContaining('Faster', findRichText: true),
           findsOneWidget,
@@ -368,7 +368,7 @@ void main() {
       expect(find.text('查看更新内容'), findsOneWidget);
       await t.tap(link);
       await t.pumpAndSettle();
-      expect(find.text('V1.5.0 更新内容'), findsOneWidget);
+      expect(find.text('v1.5.0 更新内容'), findsOneWidget);
       expect(find.textContaining('启动更快', findRichText: true), findsOneWidget);
     });
   });

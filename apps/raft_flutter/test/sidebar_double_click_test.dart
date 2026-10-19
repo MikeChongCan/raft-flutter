@@ -104,7 +104,7 @@ void main() {
             dms = <DesktopContentTarget>[];
         await t.pumpWidget(
           MaterialApp(
-            theme: raftTheme(RaftFamily.elegant),
+            theme: raftTheme(),
             home: Scaffold(
               body: SizedBox(
                 width: 320,
@@ -151,7 +151,7 @@ void main() {
       api.routes['POST /channels/dm'] = (_) => dm.json;
       api.routes['GET /messages/channel/dm1'] = (_) => {'messages': []};
       api.routes['POST /channels/dm1/read'] = (_) => {};
-      await mountPage(t, w, RaftFamily.elegant, false);
+      await mountPage(t, w, false);
       await t.tap(find.byKey(const ValueKey('rail-members')));
       await t.pumpAndSettle();
       expect(w.section, 'members');
@@ -183,7 +183,7 @@ void main() {
       await w.entityDirectory.preload();
       await t.pumpWidget(
         MaterialApp(
-          theme: raftTheme(RaftFamily.elegant),
+          theme: raftTheme(),
           home: Scaffold(
             body: SizedBox(
               width: 320,
@@ -216,7 +216,7 @@ void main() {
     ) async {
       final (w, api) = await pageFixture(t);
       api.routes['GET /activity'] = (_) => {'items': []};
-      await mountPage(t, w, RaftFamily.elegant, false);
+      await mountPage(t, w, false);
       final activity = find.byKey(const ValueKey('rail-activity'));
       expect(activity, findsOneWidget);
       await click(t, activity, kind: PointerDeviceKind.touch);
@@ -303,11 +303,11 @@ void main() {
       ];
       await t.pumpWidget(
         MaterialApp(
-          theme: raftTheme(RaftFamily.elegant),
+          theme: raftTheme(),
           home: withAppServices(
             WorkspaceView(
               controller: w,
-              appearance: RaftAppearance(light: RaftFamily.elegant),
+              appearance: RaftAppearance(),
               onAppearance: (_) async {},
               onLogout: () async {},
             ),

@@ -23,7 +23,7 @@ void main() {
     addTearDown(changes.dispose);
     await t.pumpWidget(
       MaterialApp(
-        theme: raftTheme(RaftFamily.elegant),
+        theme: raftTheme(),
         home: Scaffold(
           body: Material(
             type: MaterialType.transparency,
@@ -63,14 +63,8 @@ void main() {
     await t.pump(const Duration(milliseconds: 250));
     await t.pump();
     final badges = t.widgetList<RaftBadge>(find.byType(RaftBadge)).toList();
-    expect(
-      badges.where((b) => b.label == 'Archived'),
-      hasLength(1),
-    );
-    expect(
-      badges.where((b) => b.label == 'Upgrade to view'),
-      hasLength(1),
-    );
+    expect(badges.where((b) => b.label == 'Archived'), hasLength(1));
+    expect(badges.where((b) => b.label == 'Upgrade to view'), hasLength(1));
     expect(find.text('Upgrade to view'), findsOneWidget);
     expect(find.text('@Bob Builder'), findsOneWidget);
     expect(find.text('unknown time'), findsOneWidget);

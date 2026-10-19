@@ -144,7 +144,7 @@ void main() {
     addTearDown(w.dispose);
     await t.pumpWidget(
       MaterialApp(
-        theme: raftTheme(RaftFamily.elegant),
+        theme: raftTheme(),
         home: Scaffold(
           body: MemberProfileView(
             controller: w,

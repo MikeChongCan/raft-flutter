@@ -64,7 +64,7 @@ Future<void> _mount(WidgetTester t, _Run run) async {
   addTearDown(t.view.reset);
   await t.pumpWidget(
     MaterialApp(
-      theme: raftTheme(RaftFamily.elegant),
+      theme: raftTheme(),
       home: Scaffold(
         body: PublicServerView(
           client: run.f.client,

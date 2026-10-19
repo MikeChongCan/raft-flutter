@@ -38,7 +38,7 @@ void main() {
             ..['claimedByName'] = 'Alice';
           return {'task': task};
         };
-        await t.pumpWidget(taskHost(w, RaftFamily.elegant, false));
+        await t.pumpWidget(taskHost(w, false));
         await flush(t);
         await t.tap(find.text('Scoped actual task'));
         await flush(t);
@@ -91,7 +91,7 @@ void main() {
         'task': {...task, 'status': 'in_progress'},
       };
     };
-    await t.pumpWidget(taskHost(w, RaftFamily.elegant, false));
+    await t.pumpWidget(taskHost(w, false));
     await flush(t);
     await t.tap(find.text('Scoped actual task'));
     await flush(t);

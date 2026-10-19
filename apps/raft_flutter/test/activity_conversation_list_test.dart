@@ -148,7 +148,7 @@ void main() {
       ActivityRolloutFlags.of(w);
       await tester.pumpWidget(
         MaterialApp(
-          theme: raftTheme(RaftFamily.elegant),
+          theme: raftTheme(),
           home: Scaffold(
             body: RaftInteractionScope(
               interaction: pointer

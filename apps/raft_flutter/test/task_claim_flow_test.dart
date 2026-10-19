@@ -100,7 +100,7 @@ void main() {
     });
 
     Widget page() => MaterialApp(
-      theme: raftTheme(RaftFamily.elegant),
+      theme: raftTheme(),
       home: RaftDensityScope(
         density: RaftDensity.desktop,
         child: Scaffold(

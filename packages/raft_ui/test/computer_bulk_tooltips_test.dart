@@ -6,7 +6,7 @@ import 'package:raft_ui/raft_ui.dart';
 /// Restart-Reset (the first and last say why when the Computer is offline),
 /// and a workspace path that is an empty string shows as empty.
 Widget _app(Widget child) => MaterialApp(
-  theme: raftTheme(RaftFamily.elegant),
+  theme: raftTheme(),
   home: Scaffold(body: child),
 );
 

@@ -309,7 +309,7 @@ void main() {
       client.on('DELETE $_session', () => {});
       await tester.pumpWidget(
         MaterialApp(
-          theme: raftTheme(RaftFamily.brutal),
+          theme: raftTheme(),
           home: Scaffold(
             body: SingleChildScrollView(
               child: ListenableBuilder(

@@ -178,8 +178,7 @@ void main() {
     Future<void> pump(WidgetTester t, AttachmentPlayback playback) =>
         t.pumpWidget(
           MaterialApp(
-            theme: raftTheme(RaftFamily.elegant)
-                .copyWith(platform: TargetPlatform.linux),
+            theme: raftTheme().copyWith(platform: TargetPlatform.linux),
             home: Scaffold(
               body: Builder(
                 builder: (context) => video.overlay(

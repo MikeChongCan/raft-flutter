@@ -72,7 +72,7 @@ void main() {
   });
 
   Widget host(Widget header) => MaterialApp(
-    theme: raftTheme(RaftFamily.elegant),
+    theme: raftTheme(),
     home: Scaffold(body: SizedBox(width: 700, child: header)),
   );
 

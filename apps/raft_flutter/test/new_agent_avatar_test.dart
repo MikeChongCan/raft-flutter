@@ -84,7 +84,7 @@ void main() {
   Future<void> mountMembers(WidgetTester t, {required bool page}) async {
     await t.pumpWidget(
       MaterialApp(
-        theme: raftTheme(RaftFamily.elegant),
+        theme: raftTheme(),
         home: Scaffold(
           body: ChannelMembers(controller: w, channel: w.channel!, page: page),
         ),
@@ -173,7 +173,7 @@ void main() {
       };
       await t.pumpWidget(
         MaterialApp(
-          theme: raftTheme(RaftFamily.elegant),
+          theme: raftTheme(),
           home: Scaffold(
             body: Align(
               alignment: Alignment.topRight,

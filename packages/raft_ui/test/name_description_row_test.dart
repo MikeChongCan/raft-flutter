@@ -12,11 +12,11 @@ void main() {
     String? description = 'Announcements and community news',
     Widget? tag,
     double width = 240,
-    RaftFamily family = RaftFamily.elegant,
+    bool dark = false,
   }) async {
     await tester.pumpWidget(
       MaterialApp(
-        theme: raftTheme(family),
+        theme: raftTheme(dark: dark),
         home: Scaffold(
           body: Align(
             alignment: Alignment.topLeft,
@@ -41,12 +41,12 @@ void main() {
   Finder nameFinder(String label) => find.text(label);
   Finder descriptionFinder(String text) => find.text(text);
 
-  for (final family in [RaftFamily.elegant, RaftFamily.brutal]) {
-    group('$family', () {
+  for (final dark in [false, true]) {
+    group('$dark', () {
       testWidgets(
         'a short name keeps its natural width, the description gets the rest',
         (tester) async {
-          await mount(tester, label: 'ops', family: family);
+          await mount(tester, label: 'ops', dark: dark);
           final name = tester.getRect(nameFinder('ops'));
           final description = tester.getRect(
             descriptionFinder('Announcements and community news'),
@@ -63,7 +63,7 @@ void main() {
         tester,
       ) async {
         const long = 'platform-engineering-announcements';
-        await mount(tester, label: long, family: family);
+        await mount(tester, label: long, dark: dark);
         final row = tester.getRect(find.byKey(const ValueKey('row')));
         final name = tester.getRect(nameFinder(long));
         final line = row.width;
@@ -85,7 +85,7 @@ void main() {
       ) async {
         for (final width in [120.0, 180.0, 240.0, 300.0, 420.0]) {
           for (final label in ['a', 'general', 'a-rather-long-channel-name']) {
-            await mount(tester, label: label, width: width, family: family);
+            await mount(tester, label: label, width: width, dark: dark);
             final row = tester.getRect(find.byKey(const ValueKey('row')));
             final name = tester.getRect(nameFinder(label));
             expect(name.right, lessThanOrEqualTo(row.right + .01));
@@ -111,7 +111,6 @@ void main() {
           label: 'Wenyi',
           description: 'Design lead',
           tag: const RaftSidebarTag('Guest'),
-          family: family,
         );
         final name = tester.getRect(nameFinder('Wenyi'));
         final tag = tester.getRect(find.byType(RaftSidebarTag));
@@ -127,12 +126,7 @@ void main() {
       });
 
       testWidgets('without a description the row is unchanged', (tester) async {
-        await mount(
-          tester,
-          label: 'general',
-          description: null,
-          family: family,
-        );
+        await mount(tester, label: 'general', description: null);
         expect(nameFinder('general'), findsOneWidget);
         expect(tester.takeException(), isNull);
       });

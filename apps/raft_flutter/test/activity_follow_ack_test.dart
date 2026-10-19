@@ -85,11 +85,7 @@ class Workspace extends WorkspaceController {
 }
 
 void main() {
-  for (final theme in raftThemeMatrix([
-    (RaftFamily.brutal, false),
-    (RaftFamily.elegant, false),
-    (RaftFamily.elegant, true),
-  ])) {
+  for (final dark in raftThemeMatrix([false, true])) {
     late Client client;
     late Workspace workspace;
     final acceptedWindows = <Map?>[];
@@ -110,7 +106,7 @@ void main() {
     Future<dynamic> mount(WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
-          theme: raftTheme(theme.$1, dark: theme.$2),
+          theme: raftTheme(dark: dark),
           home: Scaffold(
             body: ResourceView(
               controller: workspace,
@@ -137,7 +133,7 @@ void main() {
     }
 
     testWidgets(
-      '[N24g] ${theme.$1}/${theme.$2} Unfollow ACK fences a held prior read and overlays a later stale read until convergence',
+      '[N24g] ${dark ? 'dark' : 'light'} Unfollow ACK fences a held prior read and overlays a later stale read until convergence',
       (tester) async {
         final dynamic state = await mount(tester);
         await action(tester, 'Unfollow');
@@ -174,7 +170,7 @@ void main() {
       },
     );
     testWidgets(
-      '[N24g] ${theme.$1}/${theme.$2} Follow ACK exposes Unfollow without resurrecting cleared unread from a stale response',
+      '[N24g] ${dark ? 'dark' : 'light'} Follow ACK exposes Unfollow without resurrecting cleared unread from a stale response',
       (tester) async {
         final dynamic state = await mount(tester);
         await action(tester, 'Unfollow');
@@ -201,7 +197,7 @@ void main() {
       },
     );
     testWidgets(
-      '[N24g] ${theme.$1}/${theme.$2} failed Unfollow preserves canonical state and reconciles instead of accepting success',
+      '[N24g] ${dark ? 'dark' : 'light'} failed Unfollow preserves canonical state and reconciles instead of accepting success',
       (tester) async {
         final dynamic state = await mount(tester);
         await action(tester, 'Unfollow');
@@ -215,7 +211,7 @@ void main() {
       },
     );
     testWidgets(
-      '[N24g] ${theme.$1}/${theme.$2} principal change retires late ACK and the old menu handler',
+      '[N24g] ${dark ? 'dark' : 'light'} principal change retires late ACK and the old menu handler',
       (tester) async {
         final dynamic state = await mount(tester);
         await tester.tap(
@@ -241,7 +237,7 @@ void main() {
       },
     );
     testWidgets(
-      '[N24g] ${theme.$1}/${theme.$2} denied Unfollow retires accepted Activity rows',
+      '[N24g] ${dark ? 'dark' : 'light'} denied Unfollow retires accepted Activity rows',
       (tester) async {
         final dynamic state = await mount(tester);
         await action(tester, 'Unfollow');
@@ -255,7 +251,7 @@ void main() {
       },
     );
     testWidgets(
-      '[N24g] ${theme.$1}/${theme.$2} Unfollow ACK retains row and exposes Follow before stale inbox read',
+      '[N24g] ${dark ? 'dark' : 'light'} Unfollow ACK retains row and exposes Follow before stale inbox read',
       (tester) async {
         final dynamic state = await mount(tester);
         await action(tester, 'Unfollow');

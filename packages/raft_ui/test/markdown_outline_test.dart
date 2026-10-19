@@ -23,7 +23,7 @@ Future<ScrollController> _pump(
   addTearDown(tester.view.resetDevicePixelRatio);
   await tester.pumpWidget(
     MaterialApp(
-      theme: raftTheme(RaftFamily.elegant),
+      theme: raftTheme(),
       home: Scaffold(
         body: RaftDocumentPreview(
           data: {'kind': 'markdown', 'markdown': markdown},

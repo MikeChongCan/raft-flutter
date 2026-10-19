@@ -135,7 +135,7 @@ Future<_Transport> _open(
       supportedLocales: const [Locale('en'), Locale('zh', 'CN')],
       localizationsDelegates: GlobalMaterialLocalizations.delegates,
       builder: (context, child) => RaftToastHost(child: child!),
-      theme: raftTheme(RaftFamily.elegant),
+      theme: raftTheme(),
       home: Scaffold(
         body: Builder(
           builder: (context) => TextButton(

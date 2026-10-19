@@ -82,7 +82,7 @@ void main() {
     }
     await t.pumpWidget(
       MaterialApp(
-        theme: raftTheme(RaftFamily.elegant).copyWith(platform: platform),
+        theme: raftTheme().copyWith(platform: platform),
         home: Scaffold(
           body: ResourceView(
             controller: w,
@@ -266,7 +266,10 @@ void main() {
       addTearDown(t.view.resetDevicePixelRatio);
       memory.rememberQuery(scope, 'Android');
       await mount(t, initialQuery: '');
-      expect(find.byTooltip('Remove "Android" from search history'), findsNothing);
+      expect(
+        find.byTooltip('Remove "Android" from search history'),
+        findsNothing,
+      );
       await t.tap(find.text('Edit'));
       await t.pumpAndSettle();
       await t.tap(find.byTooltip('Remove "Android" from search history'));

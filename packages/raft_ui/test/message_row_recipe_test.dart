@@ -14,8 +14,7 @@ const avatarKey = Key('public-avatar');
 const bodyKey = Key('public-body');
 const actionKey = Key('public-thread-action');
 
-Widget host(
-  RaftFamily family, {
+Widget host({
   bool dark = false,
   bool continuation = false,
   bool coarse = false,
@@ -24,7 +23,7 @@ Widget host(
   double width = 390,
 }) {
   return MaterialApp(
-    theme: raftTheme(family, dark: dark),
+    theme: raftTheme(dark: dark),
     home: MediaQuery(
       data: MediaQueryData(size: Size(width, 480), devicePixelRatio: 1),
       child: Scaffold(
@@ -59,17 +58,13 @@ Widget host(
 }
 
 void main() {
-  for (final (family, dark) in raftThemeMatrix([
-    (RaftFamily.brutal, false),
-    (RaftFamily.elegant, false),
-    (RaftFamily.elegant, true),
-  ], full: true)) {
+  for (final (dark) in raftThemeMatrix([(false), (true)], full: true)) {
     testWidgets(
-      'header gives up space in the Web order: description, model, name; the clock stays $family/$dark',
+      'header gives up space in the Web order: description, model, name; the clock stays $dark',
       (tester) async {
         var mentions = 0;
         Widget frame(double width) => MaterialApp(
-          theme: raftTheme(family, dark: dark),
+          theme: raftTheme(dark: dark),
           home: Scaffold(
             body: Align(
               alignment: Alignment.topLeft,
@@ -109,11 +104,7 @@ void main() {
         // Brutal 8, elegant 6 between the header items.
         expect(
           tester.getTopLeft(model).dx,
-          closeTo(
-            tester.getTopRight(author).dx +
-                (family == RaftFamily.brutal ? 8 : 6),
-            .01,
-          ),
+          closeTo(tester.getTopRight(author).dx + (6), .01),
         );
         await tester.tap(author);
         await tester.pump();
@@ -156,19 +147,15 @@ void main() {
     );
 
     testWidgets(
-      'mounted avatar and content origins match source $family/$dark',
+      'mounted avatar and content origins match source ${dark ? 'dark' : 'light'}',
       (tester) async {
-        await tester.pumpWidget(host(family, dark: dark));
-        final brutal = family == RaftFamily.brutal;
+        await tester.pumpWidget(host(dark: dark));
         // Web v1.21.12 (raft-ui 0.5.52): the avatar reads 28 below 768
         // (32 above), centred in the 32/36 slot; brutal has no row margin
         // and shifts the image 3px down (`--mi-avatar-shift`).
         expect(tester.getSize(find.byKey(avatarKey)), const Size(28, 28));
-        expect(
-          tester.getTopLeft(find.byKey(avatarKey)),
-          Offset(brutal ? 10 : 10, brutal ? 17 : 16),
-        );
-        expect(tester.getTopLeft(find.byKey(bodyKey)).dx, brutal ? 52 : 48);
+        expect(tester.getTopLeft(find.byKey(avatarKey)), Offset(10, 16));
+        expect(tester.getTopLeft(find.byKey(bodyKey)).dx, 48);
         final body = tester.widget<Text>(find.byKey(bodyKey));
         expect(body.style, isNull);
         final resolved = DefaultTextStyle.of(
@@ -184,69 +171,56 @@ void main() {
       },
     );
 
-    testWidgets(
-      'mounted avatar and content origins at desktop width $family/$dark',
-      (tester) async {
-        await tester.pumpWidget(host(family, dark: dark, width: 1280));
-        final brutal = family == RaftFamily.brutal;
-        expect(tester.getSize(find.byKey(avatarKey)), const Size(32, 32));
-        expect(
-          tester.getTopLeft(find.byKey(avatarKey)),
-          Offset(brutal ? 10 : 10, brutal ? 17 : 20),
-        );
-        expect(tester.getTopLeft(find.byKey(bodyKey)).dx, brutal ? 56 : 56);
-        expect(tester.takeException(), isNull);
-      },
-    );
+    testWidgets('mounted avatar and content origins at desktop width $dark', (
+      tester,
+    ) async {
+      await tester.pumpWidget(host(dark: dark, width: 1280));
+      expect(tester.getSize(find.byKey(avatarKey)), const Size(32, 32));
+      expect(tester.getTopLeft(find.byKey(avatarKey)), Offset(10, 20));
+      expect(tester.getTopLeft(find.byKey(bodyKey)).dx, 56);
+      expect(tester.takeException(), isNull);
+    });
 
-    testWidgets(
-      'hover and keyboard focus reveal the source strip $family/$dark',
-      (tester) async {
-        var activated = 0;
-        await tester.pumpWidget(
-          host(family, dark: dark, action: () => activated++),
-        );
-        Opacity strip() => tester.widget<Opacity>(
-          find
-              .ancestor(
-                of: find.byType(RaftMessageToolbar),
-                matching: find.byType(Opacity),
-              )
-              .first,
-        );
-        expect(find.byType(RaftMessageToolbar), findsNothing);
-        final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
-        await mouse.addPointer(location: const Offset(2, 300));
-        await mouse.moveTo(tester.getCenter(find.byKey(bodyKey)));
-        await tester.pump();
-        expect(strip().opacity, 1);
-        final button = find.byKey(actionKey);
-        expect(
-          tester.getSize(button),
-          Size.square(family == RaftFamily.brutal ? 24 : 28),
-        );
-        await mouse.moveTo(const Offset(2, 300));
-        await tester.pump();
-        expect(find.byType(RaftMessageToolbar), findsNothing);
-        await tester.sendKeyEvent(LogicalKeyboardKey.tab);
-        await tester.pump();
-        expect(strip().opacity, 1);
-        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
-        await tester.pump();
-        expect(activated, 1);
-        await mouse.removePointer();
-        expect(tester.takeException(), isNull);
-      },
-    );
+    testWidgets('hover and keyboard focus reveal the source strip $dark', (
+      tester,
+    ) async {
+      var activated = 0;
+      await tester.pumpWidget(host(dark: dark, action: () => activated++));
+      Opacity strip() => tester.widget<Opacity>(
+        find
+            .ancestor(
+              of: find.byType(RaftMessageToolbar),
+              matching: find.byType(Opacity),
+            )
+            .first,
+      );
+      expect(find.byType(RaftMessageToolbar), findsNothing);
+      final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
+      await mouse.addPointer(location: const Offset(2, 300));
+      await mouse.moveTo(tester.getCenter(find.byKey(bodyKey)));
+      await tester.pump();
+      expect(strip().opacity, 1);
+      final button = find.byKey(actionKey);
+      expect(tester.getSize(button), Size.square(28));
+      await mouse.moveTo(const Offset(2, 300));
+      await tester.pump();
+      expect(find.byType(RaftMessageToolbar), findsNothing);
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pump();
+      expect(strip().opacity, 1);
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pump();
+      expect(activated, 1);
+      await mouse.removePointer();
+      expect(tester.takeException(), isNull);
+    });
   }
 
   testWidgets('coarse pointer hides strip at both mobile and desktop widths', (
     tester,
   ) async {
     for (final width in [390.0, 1280.0]) {
-      await tester.pumpWidget(
-        host(RaftFamily.elegant, width: width, coarse: true),
-      );
+      await tester.pumpWidget(host(width: width, coarse: true));
       expect(find.byType(RaftMessageToolbar), findsNothing);
       expect(find.byKey(bodyKey), findsOneWidget);
       expect(tester.takeException(), isNull);
@@ -256,7 +230,7 @@ void main() {
   testWidgets(
     'continuation omits avatar/header but keeps body and hidden gutter clock',
     (tester) async {
-      await tester.pumpWidget(host(RaftFamily.elegant, continuation: true));
+      await tester.pumpWidget(host(continuation: true));
       expect(find.byKey(avatarKey), findsNothing);
       expect(find.text('Public Agent'), findsNothing);
       expect(find.text('14:30'), findsOneWidget);
@@ -268,7 +242,7 @@ void main() {
   testWidgets('popup retains strip without hover or keyboard focus', (
     tester,
   ) async {
-    await tester.pumpWidget(host(RaftFamily.elegant, popup: true));
+    await tester.pumpWidget(host(popup: true));
     final opacity = tester.widget<Opacity>(
       find
           .ancestor(
@@ -286,7 +260,7 @@ void main() {
     (tester) async {
       await tester.pumpWidget(
         MaterialApp(
-          theme: raftTheme(RaftFamily.elegant),
+          theme: raftTheme(),
           home: const Scaffold(
             body: SizedBox(
               width: 390,
@@ -313,18 +287,16 @@ void main() {
   // The recipe is hand-written (it carries the mounted MessageItem.tsx
   // overrides); every geometry value it owns is pinned to the generated raft-ui
   // 0.5.52 `messageItem` recipe, so a raft-ui upgrade cannot drift silently.
-  for (final family in [RaftFamily.brutal, RaftFamily.elegant]) {
-    test('row geometry equals the generated messageItem recipe $family', () {
-      final t = raftTheme(family).extension<RaftTokens>()!;
-      final theme = family == RaftFamily.brutal
-          ? RaftRecipeTheme.brutal
-          : RaftRecipeTheme.elegant;
+  for (final dark in [false, true]) {
+    test('row geometry equals the generated messageItem recipe $dark', () {
+      final t = raftTheme(dark: dark).extension<RaftTokens>()!;
+      final theme = RaftRecipeTheme.elegant;
       for (final width in [390.0, 767.0, 768.0, 1280.0]) {
         for (final continuation in [false, true]) {
           for (final followedBy in [null, ...RaftMessageFollowedBy.values]) {
             for (final followsSystem in [false, true]) {
               final label =
-                  '$family width=$width continuation=$continuation '
+                  '$dark width=$width continuation=$continuation '
                   'followedBy=$followedBy followsSystem=$followsSystem';
               final recipe = RaftMessageRowRecipe(
                 t,
@@ -367,7 +339,7 @@ void main() {
     expect(RaftMessageSizeTier.of(12), RaftMessageSizeTier.sm);
     expect(RaftMessageSizeTier.of(14), RaftMessageSizeTier.md);
     expect(RaftMessageSizeTier.of(16), RaftMessageSizeTier.lg);
-    final t = raftTheme(RaftFamily.elegant).extension<RaftTokens>()!;
+    final t = raftTheme().extension<RaftTokens>()!;
     RaftMessageRowRecipe at(RaftMessageSizeTier tier, double width) =>
         RaftMessageRowRecipe(t, viewportWidth: width, sizeTier: tier);
     // Name 12/14/16, meta and time 11/12/14.
@@ -382,8 +354,8 @@ void main() {
   });
 
   test('header reserve, name weight and toolbar edge follow v1.21.12', () {
-    final b = raftTheme(RaftFamily.brutal).extension<RaftTokens>()!;
-    final e = raftTheme(RaftFamily.elegant).extension<RaftTokens>()!;
+    final b = raftTheme().extension<RaftTokens>()!;
+    final e = raftTheme().extension<RaftTokens>()!;
     RaftMessageRowRecipe row(RaftTokens t, double w, [bool thread = false]) =>
         RaftMessageRowRecipe(
           t,
@@ -398,18 +370,18 @@ void main() {
     expect(row(e, 390, true).headerReserve, 40);
     // Elegant sender 600 (was 500); brutal stays 700.
     expect(row(e, 1280).author.fontWeight, FontWeight.w600);
-    expect(row(b, 1280).author.fontWeight, FontWeight.w700);
+    expect(row(b, 1280).author.fontWeight, FontWeight.w600);
     // Elegant notes (meta, time) read `foreground-hint`.
     expect(row(e, 1280).time.color, e.colors['foreground-hint']);
     // MessageHoverToolbar `right-2`, `max-md:right-0.5`, brutal `-right-1.5`.
     expect(row(e, 1280).toolbarRight, 8);
     expect(row(b, 1280).toolbarRight, 8);
     expect(row(e, 390).toolbarRight, 2);
-    expect(row(b, 390).toolbarRight, -6);
+    expect(row(b, 390).toolbarRight, 2);
   });
 
   test('the content ends with Web\'s mb-px only where the Web adds it', () {
-    final t = raftTheme(RaftFamily.elegant).extension<RaftTokens>()!;
+    final t = raftTheme().extension<RaftTokens>()!;
     bool px(
       RaftMessageFollowedBy? followedBy, {
       bool attachments = false,
@@ -441,7 +413,7 @@ void main() {
       Future<double> height(RaftMessageFollowedBy? followedBy) async {
         await tester.pumpWidget(
           MaterialApp(
-            theme: raftTheme(RaftFamily.elegant),
+            theme: raftTheme(),
             home: MediaQuery(
               data: const MediaQueryData(size: Size(1280, 480)),
               child: Scaffold(
@@ -475,7 +447,7 @@ void main() {
   );
 
   test('a followed body that ends in code keeps Web mb-px', () {
-    final t = raftTheme(RaftFamily.elegant).extension<RaftTokens>()!;
+    final t = raftTheme().extension<RaftTokens>()!;
     RaftMessageRowRecipe recipe(RaftMessageFollowedBy? by, bool code) =>
         RaftMessageRowRecipe(
           t,

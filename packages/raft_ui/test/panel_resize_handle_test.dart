@@ -4,8 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_ui/raft_ui.dart';
 
-Widget frame(
-  RaftFamily family, {
+Widget frame({
   bool hairline = false,
   double value = 240,
   bool reversed = false,
@@ -13,7 +12,7 @@ Widget frame(
   VoidCallback? onStart,
   VoidCallback? onEnd,
 }) => MaterialApp(
-  theme: raftTheme(family),
+  theme: raftTheme(),
   home: Scaffold(
     body: Center(
       child: SizedBox(
@@ -49,7 +48,7 @@ void main() {
   testWidgets(
     'the public page handle paints foreground/25 and darkens on hover',
     (t) async {
-      await t.pumpWidget(frame(RaftFamily.elegant, hairline: true));
+      await t.pumpWidget(frame(hairline: true));
       final ink = RaftTokens.of(t.element(find.byKey(const Key('handle'))))
           .colors['foreground']!;
       expect(rule(t), ink.withValues(alpha: .25));
@@ -62,13 +61,15 @@ void main() {
     },
   );
 
-  testWidgets('Brutal paints black/25', (t) async {
-    await t.pumpWidget(frame(RaftFamily.brutal, hairline: true));
-    expect(rule(t), Colors.black.withValues(alpha: .25));
+  testWidgets('Raft paints foreground/25', (t) async {
+    await t.pumpWidget(frame(hairline: true));
+    final ink = RaftTokens.of(t.element(find.byKey(const Key('handle'))))
+        .colors['foreground']!;
+    expect(rule(t), ink.withValues(alpha: .25));
   });
 
   testWidgets('the signed-in shell handle stays invisible', (t) async {
-    await t.pumpWidget(frame(RaftFamily.elegant));
+    await t.pumpWidget(frame());
     expect(rule(t), Colors.transparent);
   });
 
@@ -78,7 +79,6 @@ void main() {
     final log = <String>[];
     await t.pumpWidget(
       frame(
-        RaftFamily.elegant,
         reversed: true,
         onChanged: (v) => log.add('value ${v.round()}'),
         onStart: () => log.add('start'),
@@ -96,7 +96,6 @@ void main() {
     final log = <String>[];
     await t.pumpWidget(
       frame(
-        RaftFamily.elegant,
         onChanged: (v) => log.add('value ${v.round()}'),
         onStart: () => log.add('start'),
         onEnd: () => log.add('end'),

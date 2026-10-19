@@ -52,7 +52,7 @@ void main() {
       expect(source, isNotNull);
       await tester.pumpWidget(
         MaterialApp(
-          theme: raftTheme(RaftFamily.elegant, dark: false),
+          theme: raftTheme(dark: false),
           home: Scaffold(body: RaftChatView(controller: w, thread: true)),
         ),
       );

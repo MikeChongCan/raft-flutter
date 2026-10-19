@@ -32,7 +32,7 @@ class _AnyWidgetsLocale extends LocalizationsDelegate<WidgetsLocalizations> {
 }
 
 Widget _app(Widget child, {Locale locale = const Locale('en')}) => MaterialApp(
-  theme: raftTheme(RaftFamily.elegant),
+  theme: raftTheme(),
   home: Localizations(
     locale: locale,
     delegates: const [_AnyLocale(), _AnyWidgetsLocale()],

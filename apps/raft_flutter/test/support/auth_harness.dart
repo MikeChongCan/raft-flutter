@@ -102,7 +102,7 @@ class AuthHarness {
             ? const [Locale('zh')]
             : const [Locale('en', 'US')],
         localizationsDelegates: GlobalMaterialLocalizations.delegates,
-        theme: raftTheme(RaftFamily.elegant),
+        theme: raftTheme(),
         home: AuthView(
           origin: 'https://example.invalid',
           onLogin: (b, e, p) async {},

@@ -383,7 +383,7 @@ void main() {
       late List<RaftSlackChannelOption> options;
       await t.pumpWidget(
         MaterialApp(
-          theme: raftTheme(RaftFamily.elegant),
+          theme: raftTheme(),
           home: Builder(
             builder: (context) {
               options = pairing.options(context, 'public');
@@ -423,7 +423,7 @@ void main() {
       final channel = (w.channels as List<RaftChannel>).first;
       await t.pumpWidget(
         MaterialApp(
-          theme: raftTheme(RaftFamily.elegant),
+          theme: raftTheme(),
           home: Builder(
             builder: (context) => Scaffold(
               body: TextButton(
@@ -595,7 +595,7 @@ void main() {
         addTearDown(t.view.reset);
         await t.pumpWidget(
           MaterialApp(
-            theme: raftTheme(RaftFamily.elegant),
+            theme: raftTheme(),
             home: Scaffold(
               body: CreateChannelDialog(
                 controller: w,
@@ -644,7 +644,7 @@ void main() {
       addTearDown(t.view.reset);
       await t.pumpWidget(
         MaterialApp(
-          theme: raftTheme(RaftFamily.elegant),
+          theme: raftTheme(),
           home: Scaffold(body: CreateChannelDialog(controller: w)),
         ),
       );

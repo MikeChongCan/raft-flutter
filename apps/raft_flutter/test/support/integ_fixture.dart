@@ -56,6 +56,6 @@ Future<(WorkspaceController, IntegAdapter)> integFixture(String role) async {
 }
 
 Widget integHost(Widget child) => MaterialApp(
-  theme: raftTheme(RaftFamily.elegant),
+  theme: raftTheme(),
   home: Scaffold(body: SingleChildScrollView(child: child)),
 );

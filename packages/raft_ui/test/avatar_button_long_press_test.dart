@@ -10,7 +10,7 @@ void main() {
     var pressed = 0, held = 0;
     await t.pumpWidget(
       MaterialApp(
-        theme: raftTheme(RaftFamily.elegant),
+        theme: raftTheme(),
         home: Scaffold(
           body: Center(
             child: RaftAvatarButton(

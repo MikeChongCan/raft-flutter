@@ -162,7 +162,7 @@ Future<(_Workspace, _Client)> _open(
   });
   await tester.pumpWidget(
     MaterialApp(
-      theme: raftTheme(RaftFamily.elegant),
+      theme: raftTheme(),
       home: Scaffold(
         body: FleetDetail(
           controller: w,

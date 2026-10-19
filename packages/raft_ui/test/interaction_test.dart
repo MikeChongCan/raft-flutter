@@ -21,7 +21,7 @@ Future<BuildContext> _mount(
   addTearDown(t.view.reset);
   await t.pumpWidget(
     MaterialApp(
-      theme: raftTheme(RaftFamily.elegant).copyWith(platform: platform),
+      theme: raftTheme().copyWith(platform: platform),
       home: Scaffold(body: Center(child: child)),
     ),
   );
@@ -105,8 +105,7 @@ void main() {
   testWidgets('a scope overrides the platform for its subtree', (t) async {
     await t.pumpWidget(
       MaterialApp(
-        theme: raftTheme(RaftFamily.elegant)
-            .copyWith(platform: TargetPlatform.android),
+        theme: raftTheme().copyWith(platform: TargetPlatform.android),
         home: RaftInteractionScope(
           interaction: RaftInteraction.pointerMode,
           child: Builder(
@@ -126,8 +125,7 @@ void main() {
     late BuildContext inner;
     await t.pumpWidget(
       MaterialApp(
-        theme: raftTheme(RaftFamily.elegant)
-            .copyWith(platform: TargetPlatform.android),
+        theme: raftTheme().copyWith(platform: TargetPlatform.android),
         home: RaftDensityScope(
           density: RaftDensity.desktop,
           child: Builder(

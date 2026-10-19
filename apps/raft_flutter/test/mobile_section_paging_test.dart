@@ -27,7 +27,7 @@ void main() {
     addTearDown(t.view.reset);
     await t.pumpWidget(
       MaterialApp(
-        theme: raftTheme(RaftFamily.brutal).copyWith(platform: platform),
+        theme: raftTheme().copyWith(platform: platform),
         home: Scaffold(body: child),
       ),
     );

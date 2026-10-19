@@ -80,7 +80,6 @@ Widget _page(ParityContext ctx) {
               controller: controller,
               appearance: RaftAppearance(
                 mode: ctx.dark ? ThemeMode.dark : ThemeMode.light,
-                light: ctx.family,
               ),
               onAppearance: (_) {},
             ),

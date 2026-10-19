@@ -4,8 +4,8 @@ import 'package:raft_ui/raft_ui.dart';
 
 /// Web Stepper: "1 Choose model ── 2 Review"; while reviewing, step 1 is a
 /// check mark.
-Widget _app(bool reviewing, RaftFamily family) => MaterialApp(
-  theme: raftTheme(family),
+Widget _app(bool reviewing, [bool dark = false]) => MaterialApp(
+  theme: raftTheme(dark: dark),
   home: Scaffold(
     body: SizedBox(
       width: 500,
@@ -16,7 +16,7 @@ Widget _app(bool reviewing, RaftFamily family) => MaterialApp(
 
 void main() {
   testWidgets('choosing shows both numbers and no check', (tester) async {
-    await tester.pumpWidget(_app(false, RaftFamily.elegant));
+    await tester.pumpWidget(_app(false));
     expect(find.text('1'), findsOneWidget);
     expect(find.text('2'), findsOneWidget);
     expect(find.text('Choose model'), findsOneWidget);
@@ -25,20 +25,20 @@ void main() {
   });
 
   testWidgets('reviewing replaces the 1 with a check mark', (tester) async {
-    await tester.pumpWidget(_app(true, RaftFamily.elegant));
+    await tester.pumpWidget(_app(true));
     expect(find.text('1'), findsNothing);
     expect(find.text('2'), findsOneWidget);
     expect(find.byType(RaftIcon), findsOneWidget);
   });
 
-  testWidgets('brutal writes the labels in capitals', (tester) async {
-    await tester.pumpWidget(_app(false, RaftFamily.brutal));
-    expect(find.text('CHOOSE MODEL'), findsOneWidget);
-    expect(find.text('REVIEW'), findsOneWidget);
+  testWidgets('dark mode keeps the labels in reading case', (tester) async {
+    await tester.pumpWidget(_app(false, true));
+    expect(find.text('Choose model'), findsOneWidget);
+    expect(find.text('Review'), findsOneWidget);
   });
 
   testWidgets('the rule fills the space between the steps', (tester) async {
-    await tester.pumpWidget(_app(false, RaftFamily.elegant));
+    await tester.pumpWidget(_app(false));
     final box = tester.getRect(
       find.byKey(const ValueKey('bulk-model-stepper')),
     );

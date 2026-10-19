@@ -43,7 +43,7 @@ void main() {
         RaftChannel({'id': 'mine', 'name': 'Mine', 'joined': true}),
         RaftChannel({'id': 'old', 'name': 'Old', 'joined': false}),
       ]);
-      await mountPage(t, w, RaftFamily.elegant, false);
+      await mountPage(t, w, false);
       // The unread summary the page loads on mount replaces both.
       w.conversationReads
         ..newFlags = {'fresh', 'counted', 'mine'}
@@ -78,7 +78,7 @@ void main() {
         }),
         RaftChannel({'id': 'plain', 'name': 'Plain', 'joined': true}),
       ]);
-      await mountPage(t, w, RaftFamily.elegant, false);
+      await mountPage(t, w, false);
       Finder chip(String id) => find.descendant(
         of: find.byKey(ValueKey('sidebar-channel-$id')),
         matching: find.byType(RaftBadge),
@@ -127,7 +127,7 @@ void main() {
         RaftChannel({'id': 'in', 'name': 'Inside', 'joined': true}),
         RaftChannel({'id': 'out', 'name': 'Outside', 'joined': false}),
       ]);
-      await mountPage(t, w, RaftFamily.elegant, false);
+      await mountPage(t, w, false);
       expect(find.text('Outside'), findsOneWidget);
       await t.tapAt(
         t.getCenter(
@@ -152,7 +152,7 @@ void main() {
       w.channels = [
         RaftChannel({'id': 'out', 'name': 'Outside'}),
       ];
-      await mountPage(t, w, RaftFamily.elegant, false);
+      await mountPage(t, w, false);
       await t.tapAt(
         t.getCenter(
           find.byKey(const ValueKey('sidebar-section-system:channels')),

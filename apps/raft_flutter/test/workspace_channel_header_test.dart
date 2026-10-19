@@ -20,7 +20,7 @@ void main() {
     final opened = <String>[];
     await t.pumpWidget(
       MaterialApp(
-        theme: raftTheme(RaftFamily.elegant),
+        theme: raftTheme(),
         home: RaftToastHost(
           child: Scaffold(
             body: SizedBox(

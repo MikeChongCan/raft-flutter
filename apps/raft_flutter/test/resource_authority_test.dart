@@ -97,10 +97,9 @@ Widget _host(
   _Workspace w,
   String section, {
   String? channelId,
-  RaftFamily family = RaftFamily.elegant,
   bool dark = false,
 }) => MaterialApp(
-  theme: raftTheme(family, dark: dark),
+  theme: raftTheme(dark: dark),
   home: Scaffold(
     body: ResourceView(
       controller: w,
@@ -147,13 +146,9 @@ void _taskRoutes(_Workspace w, _Adapter a) {
 void main() {
   // Leak debt (open task dialog): see docs/development.md, Leak tracking.
   leakDebt(const ['TaskSurfaceController']);
-  for (final theme in raftThemeMatrix([
-    (RaftFamily.brutal, false),
-    (RaftFamily.elegant, false),
-    (RaftFamily.elegant, true),
-  ])) {
+  for (final dark in raftThemeMatrix([false, true])) {
     testWidgets(
-      '[K10a] immediate task dialog while both requests are held ${theme.$1}/${theme.$2}',
+      '[K10a] immediate task dialog while both requests are held ${dark ? 'dark' : 'light'}',
       (tester) async {
         final (w, a) = (await tester.runAsync(_fixture))!;
         addTearDown(w.dispose);
@@ -161,9 +156,7 @@ void main() {
         final details = Completer<dynamic>(), history = Completer<dynamic>();
         a.routes['GET /tasks/channel/c1/number/1'] = (_) => details.future;
         a.routes['GET /tasks/t1/history'] = (_) => history.future;
-        await tester.pumpWidget(
-          _host(w, 'tasks', family: theme.$1, dark: theme.$2),
-        );
+        await tester.pumpWidget(_host(w, 'tasks', dark: dark));
         await tester.pumpAndSettle();
         await tester.tap(find.text('Private task'));
         await tester.pump();
@@ -203,16 +196,14 @@ void main() {
       },
     );
     testWidgets(
-      '[K10c] closing a pending task rejects late details ${theme.$1}/${theme.$2}',
+      '[K10c] closing a pending task rejects late details ${dark ? 'dark' : 'light'}',
       (tester) async {
         final (w, a) = (await tester.runAsync(_fixture))!;
         addTearDown(w.dispose);
         _taskRoutes(w, a);
         final details = Completer<dynamic>();
         a.routes['GET /tasks/channel/c1/number/1'] = (_) => details.future;
-        await tester.pumpWidget(
-          _host(w, 'tasks', family: theme.$1, dark: theme.$2),
-        );
+        await tester.pumpWidget(_host(w, 'tasks', dark: dark));
         await tester.pumpAndSettle();
         await tester.tap(find.text('Private task'));
         await tester.pump();
@@ -234,16 +225,14 @@ void main() {
       },
     );
     testWidgets(
-      '[K10c] revocation closes a pending task before late lookup ${theme.$1}/${theme.$2}',
+      '[K10c] revocation closes a pending task before late lookup ${dark ? 'dark' : 'light'}',
       (tester) async {
         final (w, a) = (await tester.runAsync(_fixture))!;
         addTearDown(w.dispose);
         _taskRoutes(w, a);
         final details = Completer<dynamic>();
         a.routes['GET /tasks/channel/c1/number/1'] = (_) => details.future;
-        await tester.pumpWidget(
-          _host(w, 'tasks', family: theme.$1, dark: theme.$2),
-        );
+        await tester.pumpWidget(_host(w, 'tasks', dark: dark));
         await tester.pumpAndSettle();
         await tester.tap(find.text('Private task'));
         await tester.pump();
@@ -266,7 +255,7 @@ void main() {
       },
     );
     testWidgets(
-      'pending task history failure remains an error ${theme.$1}/${theme.$2}',
+      'pending task history failure remains an error ${dark ? 'dark' : 'light'}',
       (tester) async {
         final (w, a) = (await tester.runAsync(_fixture))!;
         addTearDown(w.dispose);
@@ -274,9 +263,7 @@ void main() {
         final history = Completer<dynamic>();
         a.routes['GET /tasks/t1/history'] = (_) => history.future;
         a.statuses['GET /tasks/t1/history'] = 500;
-        await tester.pumpWidget(
-          _host(w, 'tasks', family: theme.$1, dark: theme.$2),
-        );
+        await tester.pumpWidget(_host(w, 'tasks', dark: dark));
         await tester.pumpAndSettle();
         await tester.tap(find.text('Private task'));
         await tester.pump();
@@ -299,7 +286,7 @@ void main() {
       },
     );
     testWidgets(
-      'closed task discards late history failure ${theme.$1}/${theme.$2}',
+      'closed task discards late history failure ${dark ? 'dark' : 'light'}',
       (tester) async {
         final (w, a) = (await tester.runAsync(_fixture))!;
         addTearDown(w.dispose);
@@ -307,9 +294,7 @@ void main() {
         final history = Completer<dynamic>();
         a.routes['GET /tasks/t1/history'] = (_) => history.future;
         a.statuses['GET /tasks/t1/history'] = 500;
-        await tester.pumpWidget(
-          _host(w, 'tasks', family: theme.$1, dark: theme.$2),
-        );
+        await tester.pumpWidget(_host(w, 'tasks', dark: dark));
         await tester.pumpAndSettle();
         await tester.tap(find.text('Private task'));
         await tester.pump();

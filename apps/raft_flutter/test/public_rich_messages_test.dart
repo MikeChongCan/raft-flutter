@@ -81,7 +81,7 @@ Future<_Client> _mount(
   final client = _Client(messages);
   await t.pumpWidget(
     MaterialApp(
-      theme: raftTheme(RaftFamily.elegant),
+      theme: raftTheme(),
       home: Scaffold(
         body: PublicServerView(
           client: client,
@@ -132,7 +132,7 @@ Future<void> _pumpAttachments(
   addTearDown(t.view.reset);
   await t.pumpWidget(
     MaterialApp(
-      theme: raftTheme(RaftFamily.elegant),
+      theme: raftTheme(),
       home: Scaffold(
         body: Padding(
           padding: const EdgeInsets.all(16),

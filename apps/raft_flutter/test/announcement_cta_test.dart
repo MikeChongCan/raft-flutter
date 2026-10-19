@@ -33,7 +33,7 @@ Future<(host.Fixture, List<String>)> mount(
   expect(f.w.location.uri.path, '/s/visual');
   await t.pumpWidget(
     MaterialApp(
-      theme: raftTheme(RaftFamily.elegant),
+      theme: raftTheme(),
       builder: (context, child) => RaftToastHost(child: child!),
       home: AnnouncementHost(
         controller: f.w,

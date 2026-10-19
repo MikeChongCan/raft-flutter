@@ -88,7 +88,7 @@ Future<(WorkspaceController, _Adapter)> _fixture([
 }
 
 Widget _host(Widget child) => MaterialApp(
-  theme: raftTheme(RaftFamily.elegant),
+  theme: raftTheme(),
   home: Scaffold(body: child),
 );
 

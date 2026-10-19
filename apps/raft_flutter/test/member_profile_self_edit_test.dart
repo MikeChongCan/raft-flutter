@@ -82,7 +82,7 @@ Future<_Client> _open(WidgetTester t, Map<String, dynamic> profile) async {
   addTearDown(w.dispose);
   await t.pumpWidget(
     MaterialApp(
-      theme: raftTheme(RaftFamily.elegant),
+      theme: raftTheme(),
       home: Scaffold(
         body: MemberProfileView(
           controller: w,

@@ -29,11 +29,8 @@ void main() {
     RaftComboboxItem('gpt-6', 'GPT 6 Sol', group: 'Direct setup'),
   ];
 
-  for (final theme in raftThemeMatrix([
-    (RaftFamily.brutal, false),
-    (RaftFamily.elegant, false),
-  ])) {
-    group('$theme', () {
+  for (final dark in raftThemeMatrix([false, true])) {
+    group('$dark', () {
       late List<String> chosen, custom;
       Future<void> pump(
         WidgetTester tester, {
@@ -45,7 +42,7 @@ void main() {
         custom = [];
         await tester.pumpWidget(
           MaterialApp(
-            theme: raftTheme(theme.$1, dark: theme.$2),
+            theme: raftTheme(dark: dark),
             home: Scaffold(
               body: Padding(
                 padding: const EdgeInsets.only(top: 40),

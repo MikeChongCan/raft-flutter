@@ -76,14 +76,10 @@ Widget _surface({
 );
 
 void main() {
-  for (final (family, dark) in raftThemeMatrix([
-    (RaftFamily.brutal, false),
-    (RaftFamily.elegant, false),
-    (RaftFamily.elegant, true),
-  ])) {
-    final theme = raftTheme(family, dark: dark);
+  for (final dark in raftThemeMatrix([false, true])) {
+    final theme = raftTheme(dark: dark);
     for (final (id, status, label) in _statuses) {
-      testWidgets('$family/$dark $id pill is a TaskStatusBadge on the tokens', (
+      testWidgets('$dark $id pill is a TaskStatusBadge on the tokens', (
         tester,
       ) async {
         await _pump(tester, theme, RaftTaskStatus(status: id));
@@ -114,40 +110,39 @@ void main() {
         );
       });
 
-      testWidgets(
-        '$family/$dark $id editor trigger shows icon, label, pencil',
-        (tester) async {
-          await _pump(
-            tester,
-            theme,
-            RaftTaskStatusEditor(
-              status: id,
-              options: raftTaskStatuses,
-              onSelect: (_) {},
-            ),
-          );
-          final badge = find.byType(RaftTaskStatusBadge);
-          expect(badge, findsOneWidget);
-          expect(tester.widget<RaftTaskStatusBadge>(badge).status, status);
-          expect(find.text(label), findsOneWidget);
-          expect(
-            find.descendant(
-              of: badge,
-              matching: find.byType(RaftBadgeEditPencil),
-            ),
-            findsOneWidget,
-          );
-          final t = _tokens(tester);
-          final token = RaftMessageTaskChipRecipe.tokenOf(status);
-          expect(
-            _pillOf(tester, badge).color,
-            t.colors[t.brutal ? token : '$token-soft'],
-          );
-        },
-      );
+      testWidgets('$dark $id editor trigger shows icon, label, pencil', (
+        tester,
+      ) async {
+        await _pump(
+          tester,
+          theme,
+          RaftTaskStatusEditor(
+            status: id,
+            options: raftTaskStatuses,
+            onSelect: (_) {},
+          ),
+        );
+        final badge = find.byType(RaftTaskStatusBadge);
+        expect(badge, findsOneWidget);
+        expect(tester.widget<RaftTaskStatusBadge>(badge).status, status);
+        expect(find.text(label), findsOneWidget);
+        expect(
+          find.descendant(
+            of: badge,
+            matching: find.byType(RaftBadgeEditPencil),
+          ),
+          findsOneWidget,
+        );
+        final t = _tokens(tester);
+        final token = RaftMessageTaskChipRecipe.tokenOf(status);
+        expect(
+          _pillOf(tester, badge).color,
+          t.colors[t.brutal ? token : '$token-soft'],
+        );
+      });
     }
 
-    testWidgets('$family/$dark history markers use the task-status tokens', (
+    testWidgets('$dark history markers use the task-status tokens', (
       tester,
     ) async {
       await _pump(

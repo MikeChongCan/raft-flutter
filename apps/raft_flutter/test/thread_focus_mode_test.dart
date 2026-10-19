@@ -17,9 +17,9 @@ import 'mounted_message_navigation_test.dart'
 // the flag without applying it.
 void main() {
   Future<(WorkspaceController, dynamic)> openThread(
-    WidgetTester tester,
-    RaftFamily family, {
+    WidgetTester tester, {
     double width = 1440,
+    bool dark = false,
   }) async {
     final (w, api) = await pageFixture(tester);
     w.messageDomain.ledger.ingest([
@@ -44,7 +44,7 @@ void main() {
         navigate: false,
       ),
     );
-    await mountPage(tester, w, family, false, width: width);
+    await mountPage(tester, w, dark, width: width);
     return (w, api);
   }
 
@@ -82,11 +82,11 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  for (final family in [RaftFamily.brutal, RaftFamily.elegant]) {
+  for (final dark in [false, true]) {
     testWidgets(
-      '[$family] Focus mode hides the channel, Standard mode brings it back',
+      '[$dark] Focus mode hides the channel, Standard mode brings it back',
       (tester) async {
-        final (w, api) = await openThread(tester, family);
+        final (w, api) = await openThread(tester, dark: dark);
         final location = w.location,
             index = w.navigation.index,
             entries = w.navigation.entries.length;
@@ -131,7 +131,7 @@ void main() {
   testWidgets('a window that folds the thread has no Focus mode item', (
     tester,
   ) async {
-    final (w, api) = await openThread(tester, RaftFamily.elegant, width: 1279);
+    final (w, api) = await openThread(tester, width: 1279);
     tester.view.physicalSize = const Size(1279, 1400);
     await pageFrames(tester, () {}, count: 3);
     expect(panel, findsNothing);
@@ -148,7 +148,7 @@ void main() {
   testWidgets(
     'focus survives a trip through a narrow window without moving the location',
     (tester) async {
-      final (w, _) = await openThread(tester, RaftFamily.elegant);
+      final (w, _) = await openThread(tester);
       await toggle(tester);
       expect(main, findsNothing);
       final location = w.location,
@@ -171,7 +171,7 @@ void main() {
   testWidgets('opening a profile restores the channel for good', (
     tester,
   ) async {
-    final (w, api) = await openThread(tester, RaftFamily.elegant);
+    final (w, api) = await openThread(tester);
     await toggle(tester);
     expect(main, findsNothing);
     w.openProfile(RaftProfileKind.human, 'bob');
@@ -190,7 +190,7 @@ void main() {
   });
 
   testWidgets('closing the thread ends focus mode', (tester) async {
-    final (w, _) = await openThread(tester, RaftFamily.elegant);
+    final (w, _) = await openThread(tester);
     await toggle(tester);
     w.closeThread();
     await tester.pumpAndSettle();
@@ -236,7 +236,7 @@ void main() {
         menuMode: true,
       );
       return MaterialApp(
-        theme: raftTheme(RaftFamily.elegant),
+        theme: raftTheme(),
         home: Scaffold(
           body: placed
               ? RaftThreadPlacement(

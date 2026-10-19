@@ -165,7 +165,7 @@ void main() {
     expect((document.last as dynamic).tag, 'pre');
   });
 
-  for (final theme in [raftTheme(RaftFamily.elegant)]) {
+  for (final theme in [raftTheme()]) {
     testWidgets('a message shows an escaped angle ref, repairs and marks', (
       tester,
     ) async {

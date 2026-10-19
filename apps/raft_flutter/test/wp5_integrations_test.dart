@@ -68,7 +68,7 @@ Future<(WorkspaceController, _Adapter)> _fixture() async {
 }
 
 Widget _host(Widget child) => MaterialApp(
-  theme: raftTheme(RaftFamily.elegant),
+  theme: raftTheme(),
   home: Scaffold(body: SingleChildScrollView(child: child)),
 );
 
@@ -153,7 +153,7 @@ void main() {
       await t.tap(find.byKey(const ValueKey('connected-app-rev')));
       await t.pumpAndSettle();
       expect(find.text('Permission update pending review'), findsOneWidget);
-      expect(find.text('REQUESTED DATA GROUPS'), findsOneWidget);
+      expect(find.text('Requested data groups'), findsOneWidget);
       expect(find.text('REQUESTED NOTIFICATION EVENTS'), findsOneWidget);
       expect(
         find.text('A marketplace reviewer can approve this permission update.'),
@@ -208,7 +208,7 @@ void main() {
       await t.tap(find.byKey(const ValueKey('connected-app-rev')));
       await t.pumpAndSettle();
       expect(find.text('Permission update pending review'), findsOneWidget);
-      expect(find.text('REQUESTED DATA GROUPS'), findsOneWidget);
+      expect(find.text('Requested data groups'), findsOneWidget);
       expect(find.text('Approve update'), findsNothing);
     });
 
@@ -326,7 +326,7 @@ void main() {
       addTearDown(t.view.reset);
       await t.pumpWidget(
         MaterialApp(
-          theme: raftTheme(RaftFamily.elegant),
+          theme: raftTheme(),
           home: Scaffold(body: IMBridgesView(controller: w)),
         ),
       );
