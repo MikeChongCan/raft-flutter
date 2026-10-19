@@ -87,7 +87,7 @@ class RaftSelectionShortcutBar extends StatelessWidget {
               color: state.hovered || state.focusVisible
                   ? t.colors['primary-soft']
                   : null,
-              borderRadius: BorderRadius.circular(t.brutal ? 0 : 6),
+              borderRadius: BorderRadius.circular(6),
             ),
             child: SizedBox(
               height: 28,
@@ -127,7 +127,7 @@ class RaftSelectionShortcutBar extends StatelessWidget {
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   color: t.popover,
-                  borderRadius: BorderRadius.circular(t.brutal ? 0 : 8),
+                  borderRadius: BorderRadius.circular(8),
                   border: Border.all(
                     color: t.colors['line-hairline'] ?? t.muted,
                   ),

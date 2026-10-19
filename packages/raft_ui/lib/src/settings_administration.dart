@@ -14,8 +14,7 @@ import 'anchored_popup.dart';
 import 'recipes/input.g.dart' show RaftInputRecipe;
 
 /// `text-foreground-muted theme-brutal:text-black/40`.
-Color _quiet(RaftTokens t) =>
-    t.brutal ? Colors.black.withValues(alpha: .4) : t.muted;
+Color _quiet(RaftTokens t) => t.muted;
 
 /// The `sm:` breakpoint (640px viewport).
 bool _sm(BuildContext context) => raftBreakpointWidth(context) >= 640;
@@ -542,11 +541,7 @@ class _RaftAdminPrincipalPickerState extends State<RaftAdminPrincipalPicker> {
           padding: grows
               ? const EdgeInsets.symmetric(horizontal: 12, vertical: 8)
               : const EdgeInsets.symmetric(horizontal: 12),
-          color: hover
-              ? (t.brutal
-                    ? t.colors['color-soft-signal']!.withValues(alpha: .3)
-                    : t.colors['primary-soft'])
-              : null,
+          color: hover ? t.colors['primary-soft'] : null,
           child: Row(
             children: [
               Expanded(
@@ -560,11 +555,7 @@ class _RaftAdminPrincipalPickerState extends State<RaftAdminPrincipalPicker> {
                     size: 12,
                     line: 16,
                     weight: FontWeight.w700,
-                    color: selected != null
-                        ? text.strong
-                        : t.brutal
-                        ? Colors.black.withValues(alpha: .45)
-                        : t.muted,
+                    color: selected != null ? text.strong : t.muted,
                   ),
                 ),
               ),
@@ -727,10 +718,7 @@ class RaftAdminInvitesCard extends StatelessWidget {
                       vertical: 8,
                     ),
                     decoration: BoxDecoration(
-                      border: Border.all(
-                        color: text.softEdge,
-                        width: t.brutal ? 2 : 1,
-                      ),
+                      border: Border.all(color: text.softEdge, width: 1),
                     ),
                     child: Row(
                       children: [
@@ -955,7 +943,7 @@ class _JoinLinkRow extends StatelessWidget {
       key: ValueKey('admin-join-link-${link.id}'),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        border: Border.all(color: text.softEdge, width: t.brutal ? 2 : 1),
+        border: Border.all(color: text.softEdge, width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -965,7 +953,7 @@ class _JoinLinkRow extends StatelessWidget {
           // each to whole pixels; Flutter would paint the half pixel.
           Builder(
             builder: (context) {
-              final urlHeight = 8 + 16.5 + (t.brutal ? 4.0 : 2.0);
+              final urlHeight = 8 + 16.5 + (2.0);
               final rowHeight = urlHeight > 28 ? urlHeight : 28.0;
               double snapped(double h) => ((rowHeight - h) / 2).roundToDouble();
               Widget top(double h, Widget child) => Padding(
@@ -989,10 +977,7 @@ class _JoinLinkRow extends StatelessWidget {
                           ),
                           decoration: BoxDecoration(
                             color: text.panel,
-                            border: Border.all(
-                              color: text.edge,
-                              width: t.brutal ? 2 : 1,
-                            ),
+                            border: Border.all(color: text.edge, width: 1),
                           ),
                           child: ConstrainedBox(
                             // Blink's 16.5px line box (Flutter rounds a
@@ -1323,7 +1308,7 @@ class RaftAdminAgreementCard extends StatelessWidget {
                   // `mt-1` plus the inline-block textarea's baseline gap
                   // (the 20px strut's descent) under it.
                   // ds-allow: Web SettingsPanel.tsx agreement textarea `mt-1` plus inline-block baseline gap (computed, no class)
-                  SizedBox(height: t.brutal ? 7 : 10),
+                  SizedBox(height: 10),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -1341,9 +1326,7 @@ class RaftAdminAgreementCard extends StatelessWidget {
                                     t,
                                     size: 12,
                                     line: 16,
-                                    color: t.brutal
-                                        ? t.colors['color-brutal-red']
-                                        : t.colors['danger'],
+                                    color: t.colors['danger'],
                                   ),
                                 ),
                               )
@@ -1363,13 +1346,8 @@ class RaftAdminAgreementCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: t.brutal
-                    ? t.colors['color-brutal-cream']
-                    : t.colors['layer-canvas-muted'],
-                border: Border.all(
-                  color: text.softEdge,
-                  width: t.brutal ? 2 : 1,
-                ),
+                color: t.colors['layer-canvas-muted'],
+                border: Border.all(color: text.softEdge, width: 1),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -1773,23 +1751,16 @@ class RaftPublicChannelList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context), text = RaftSettingsText(t);
-    final radius = BorderRadius.circular(t.brutal ? 0 : 6);
+    final radius = BorderRadius.circular(6);
     if (channels.isEmpty) {
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
         decoration: BoxDecoration(
-          color: t.brutal
-              ? const Color(0xFFF9FAFB)
-              : t.colors['fill-muted']!.withValues(
-                  alpha: t.colors['fill-muted']!.a * .4,
-                ),
-          borderRadius: radius,
-          border: Border.all(
-            color: t.brutal
-                ? Colors.black.withValues(alpha: .25)
-                : t.colors['line-muted']!,
-            width: t.brutal ? 2 : 1,
+          color: t.colors['fill-muted']!.withValues(
+            alpha: t.colors['fill-muted']!.a * .4,
           ),
+          borderRadius: radius,
+          border: Border.all(color: t.colors['line-muted']!, width: 1),
         ),
         child: RaftCssText(
           raftText(
@@ -1797,12 +1768,7 @@ class RaftPublicChannelList extends StatelessWidget {
             'No channels are currently marked visible to Guests.',
           ),
           textAlign: TextAlign.center,
-          style: raftSettingsBody(
-            t,
-            size: 12,
-            line: 16,
-            color: t.brutal ? Colors.black.withValues(alpha: .55) : t.muted,
-          ),
+          style: raftSettingsBody(t, size: 12, line: 16, color: t.muted),
         ),
       );
     }
@@ -1812,7 +1778,7 @@ class RaftPublicChannelList extends StatelessWidget {
       decoration: BoxDecoration(
         color: text.panel,
         borderRadius: radius,
-        border: Border.all(color: text.edge, width: t.brutal ? 2 : 1),
+        border: Border.all(color: text.edge, width: 1),
       ),
       child: SingleChildScrollView(
         child: Column(
@@ -1839,15 +1805,9 @@ class RaftPublicChannelList extends StatelessWidget {
                       height: 28,
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
-                        color: t.brutal
-                            ? t.colors['color-brutal-cream']
-                            : t.colors['layer-inset'],
+                        color: t.colors['layer-inset'],
                         borderRadius: radius,
-                        border: Border.all(
-                          color: t.brutal
-                              ? Colors.black
-                              : t.colors['line-muted']!,
-                        ),
+                        border: Border.all(color: t.colors['line-muted']!),
                       ),
                       child: RaftIcon(
                         RaftGlyph.hash,
@@ -2001,7 +1961,7 @@ class RaftPublicVisibilityCard extends StatelessWidget {
     return RaftSettingsCard.box(
       t,
       padding: const EdgeInsets.all(16),
-      radius: t.brutal ? null : BorderRadius.circular(8),
+      radius: BorderRadius.circular(8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

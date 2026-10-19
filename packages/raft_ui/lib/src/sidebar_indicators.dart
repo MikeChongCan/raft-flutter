@@ -20,9 +20,7 @@ class RaftSidebarQuietUnreadCount extends StatelessWidget {
         count > 99 ? '99+' : '$count',
         style: RaftTypography.mono(t, size: 10, line: 10).copyWith(
           fontWeight: FontWeight.w500,
-          color: t.brutal
-              ? Colors.black.withValues(alpha: .5)
-              : t.colors['foreground-muted'],
+          color: t.colors['foreground-muted'],
         ),
       ),
     );
@@ -46,9 +44,7 @@ class RaftSidebarQuietNewDot extends StatelessWidget {
           key: const ValueKey('sidebar-quiet-new-dot'),
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: t.brutal
-                ? Colors.black.withValues(alpha: .5)
-                : t.colors['foreground-muted'],
+            color: t.colors['foreground-muted'],
           ),
           child: const SizedBox.square(dimension: 6),
         ),
@@ -76,9 +72,7 @@ class RaftSidebarMutedIcon extends StatelessWidget {
             child: RaftIcon(
               RaftGlyph.bellOff,
               size: 12,
-              color: t.brutal
-                  ? Colors.black.withValues(alpha: .7)
-                  : t.colors['foreground-icon'],
+              color: t.colors['foreground-icon'],
             ),
           ),
         ),
@@ -97,9 +91,7 @@ class RaftSidebarDraftIcon extends StatelessWidget {
     return RaftIcon(
       RaftGlyph.pencil,
       size: 12,
-      color: t.brutal
-          ? Colors.black.withValues(alpha: .4)
-          : t.colors['foreground-placeholder'],
+      color: t.colors['foreground-placeholder'],
     );
   }
 }
@@ -125,18 +117,14 @@ class RaftSidebarMentionMarker extends StatelessWidget {
           height: 16,
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: t.brutal
-                ? t.colors['color-soft-signal']
-                : t.colors['primary-soft'],
-            border: Border.all(
-              color: t.brutal ? Colors.black : t.colors['line-strong']!,
-            ),
+            color: t.colors['primary-soft'],
+            border: Border.all(color: t.colors['line-strong']!),
             borderRadius: BorderRadius.circular(4),
           ),
           child: RaftIcon(
             RaftGlyph.atSign,
             size: 10,
-            color: t.brutal ? Colors.black : t.colors['primary-strong'],
+            color: t.colors['primary-strong'],
           ),
         ),
       ),

@@ -19,40 +19,23 @@ class RaftSystemMessageRecipe {
   const RaftSystemMessageRecipe(this.tokens, {this.inGroup = false});
   final RaftTokens tokens;
   final bool inGroup;
-  EdgeInsets get padding => EdgeInsets.fromLTRB(
-    8,
-    inGroup
-        ? (tokens.brutal ? 6 : 4)
-        : tokens.brutal
-        ? 0
-        // ignore: raft_lints/off_grid_spacing -- Web `pt-[3px]`
-        : 3,
-    8,
-    0,
-  );
+  EdgeInsets get padding => EdgeInsets.fromLTRB(8, inGroup ? (4) : 3, 8, 0);
   Color get clockColor =>
       (tokens.dark ? tokens.strong : Colors.black).withValues(alpha: .4);
   Color get contentColor =>
       (tokens.dark ? tokens.strong : Colors.black).withValues(alpha: .5);
   TextStyle get clock =>
-      (tokens.brutal
-              ? RaftTypography.mono(tokens, size: 12, line: 16)
-              : RaftTypography.body(
-                  tokens,
-                  size: 11,
-                  line: 16.5,
-                  weight: FontWeight.w500,
-                ))
-          .copyWith(
-            color: clockColor,
-            fontFeatures: const [FontFeature.tabularFigures()],
-          );
-  TextStyle get content => RaftTypography.body(
-    tokens,
-    size: 12,
-    line: tokens.brutal ? 16 : 18,
-    color: contentColor,
-  );
+      RaftTypography.body(
+        tokens,
+        size: 11,
+        line: 16.5,
+        weight: FontWeight.w500,
+      ).copyWith(
+        color: clockColor,
+        fontFeatures: const [FontFeature.tabularFigures()],
+      );
+  TextStyle get content =>
+      RaftTypography.body(tokens, size: 12, line: 18, color: contentColor);
 }
 
 /// The rows of an expanded [RaftSystemMessageGroup] (Web

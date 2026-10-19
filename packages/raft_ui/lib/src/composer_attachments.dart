@@ -246,7 +246,7 @@ RaftComposerAttachmentRecipeStyle _style(
   required bool touch,
   bool hovered = false,
 }) => RaftComposerAttachmentRecipe.resolve(
-  theme: t.brutal ? RaftRecipeTheme.brutal : RaftRecipeTheme.elegant,
+  theme: RaftRecipeTheme.elegant,
   states: RaftRecipeStates({
     if (t.dark) RaftRecipeStates.dark,
     if (image) 'has:data-slot=composer-attachment-image',
@@ -359,7 +359,7 @@ class _AttachmentChipState extends State<_AttachmentChip> {
             tokens: t,
             label: raftText(context, 'Upload failed'),
             // The brutal image chip already has the 2px border.
-            borderless: image && t.brutal,
+            borderless: false,
           ),
         ),
     ];
@@ -542,10 +542,7 @@ class _FileBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final slot = style.attachmentFile;
-    final brutal = tokens.brutal;
-    final iconColor = brutal
-        ? const Color(0xb3000000)
-        : tokens.colors['foreground-icon'] ?? tokens.muted;
+    final iconColor = tokens.colors['foreground-icon'] ?? tokens.muted;
     final meta = style.attachmentMeta;
     final metaText = item.mimeType.isEmpty
         ? raftText(context, 'file')
@@ -564,27 +561,10 @@ class _FileBody extends StatelessWidget {
       style: text(meta),
     );
     final padding = slot.padding;
-    final body = brutal
-        ? SizedBox(
-            height: style.attachmentBody.height,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(
-                    top: style.attachmentTitle.margin.top,
-                  ),
-                  child: title,
-                ),
-                metaWidget,
-              ],
-            ),
-          )
-        : Transform.translate(
-            offset: style.attachmentTitle.translate ?? Offset.zero,
-            child: title,
-          );
+    final body = Transform.translate(
+      offset: style.attachmentTitle.translate ?? Offset.zero,
+      child: title,
+    );
     final inner = slot.width == null
         ? null
         : slot.width! - slot.borderWidth.horizontal;
@@ -600,9 +580,7 @@ class _FileBody extends StatelessWidget {
             child: Padding(
               padding: padding,
               child: Row(
-                crossAxisAlignment: brutal
-                    ? CrossAxisAlignment.center
-                    : CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   RaftIcon(RaftGlyph.fileText, size: 16, color: iconColor),
                   SizedBox(width: slot.columnGap ?? 8),
@@ -611,26 +589,23 @@ class _FileBody extends StatelessWidget {
               ),
             ),
           ),
-          if (!brutal)
-            Positioned(
-              right: meta.length('right') ?? 10,
-              bottom: meta.length('bottom') ?? 6,
-              width: inner,
-              child: Align(alignment: Alignment.bottomRight, child: metaWidget),
-            ),
+          Positioned(
+            right: meta.length('right') ?? 10,
+            bottom: meta.length('bottom') ?? 6,
+            width: inner,
+            child: Align(alignment: Alignment.bottomRight, child: metaWidget),
+          ),
         ],
       ),
     );
     // Elegant ring (`ring-1 ink10`) is a box-shadow outside the card.
-    if (!brutal) {
-      card = DecoratedBox(
-        decoration: BoxDecoration(
-          borderRadius: slot.borderRadius,
-          boxShadow: slot.decoration(resolver).boxShadow,
-        ),
-        child: card,
-      );
-    }
+    card = DecoratedBox(
+      decoration: BoxDecoration(
+        borderRadius: slot.borderRadius,
+        boxShadow: slot.decoration(resolver).boxShadow,
+      ),
+      child: card,
+    );
     return card;
   }
 }
@@ -777,8 +752,7 @@ class _FailureRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
-    final brutal = t.brutal;
-    final ink = brutal ? Colors.black : t.colors['warning-foreground']!;
+    final ink = t.colors['warning-foreground']!;
     final style = TextStyle(
       fontFamily: t.headingFont,
       fontSize: 12,
@@ -826,12 +800,9 @@ class _FailureRow extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: brutal ? Colors.white : t.panel,
-                  borderRadius: BorderRadius.circular(brutal ? 0 : 6),
-                  border: Border.all(
-                    color: brutal ? Colors.black : t.colors['line-muted']!,
-                    width: brutal ? 2 : 1,
-                  ),
+                  color: t.panel,
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(color: t.colors['line-muted']!, width: 1),
                   boxShadow: t.themeShadows.xs.paintOrder,
                 ),
                 child: RaftCssText(
@@ -839,7 +810,7 @@ class _FailureRow extends StatelessWidget {
                   underline: true,
                   style: style.copyWith(
                     fontWeight: FontWeight.w700,
-                    color: brutal ? Colors.black : t.strong,
+                    color: t.strong,
                   ),
                 ),
               ),
@@ -861,17 +832,14 @@ class _FailureRow extends StatelessWidget {
               height: 28,
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                color: brutal ? Colors.black : t.colors['inactive'],
-                borderRadius: BorderRadius.circular(brutal ? 0 : 6),
-                border: Border.all(
-                  color: brutal ? Colors.black : t.colors['line-strong']!,
-                  width: brutal ? 2 : 1,
-                ),
+                color: t.colors['inactive'],
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(color: t.colors['line-strong']!, width: 1),
               ),
               child: RaftIcon(
                 RaftGlyph.x,
                 size: 12,
-                color: brutal ? Colors.white : t.colors['inactive-foreground'],
+                color: t.colors['inactive-foreground'],
               ),
             ),
           ),
@@ -885,12 +853,9 @@ class _FailureRow extends StatelessWidget {
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
         decoration: BoxDecoration(
-          color: brutal ? t.product.brutalOrange : t.colors['warning'],
-          borderRadius: BorderRadius.circular(brutal ? 0 : 6),
-          border: Border.all(
-            color: brutal ? Colors.black : t.colors['line-strong']!,
-            width: brutal ? 2 : 1,
-          ),
+          color: t.colors['warning'],
+          borderRadius: BorderRadius.circular(6),
+          border: Border.all(color: t.colors['line-strong']!, width: 1),
         ),
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -905,7 +870,7 @@ class _FailureRow extends StatelessWidget {
               textDirection: TextDirection.ltr,
             )..layout();
             final actionsWidth =
-                28 + (retry ? 6 + measured.width + 16 + (brutal ? 4 : 2) : 0);
+                28 + (retry ? 6 + measured.width + 16 + (2) : 0);
             measured.dispose();
             final wide = constraints.maxWidth >= 224 + 8 + actionsWidth;
             return wide

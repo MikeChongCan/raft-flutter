@@ -170,8 +170,7 @@ class _InteractivePreviewState extends State<_InteractivePreview> {
         author: 'Cody',
         timestamp: '10:42',
         badge: 'Agent',
-        content:
-            '**Raft Flutter** is ready for review.\n\n- Linux and Android\n- 日本語 / 中文\n\n```dart\nawait client.send(channel, content);\n```',
+        content: '**Raft Flutter** is ready for review.\n\n- Linux and Android\n- 日本語 / 中文\n\n```dart\nawait client.send(channel, content);\n```',
         onThread: () => record('Thread opened'),
         onActions: () => record('Actions opened'),
         onLink: (href) => record('Link: $href'),
@@ -260,8 +259,9 @@ class _InteractivePreviewState extends State<_InteractivePreview> {
                   RaftFormField('description', 'Description', multiline: true),
                 ],
                 onSubmit: (values) async {
-                  if (failDelivery)
+                  if (failDelivery) {
                     throw StateError('Submission failed; keep your changes.');
+                  }
                   record('Created: ${values['title']}');
                 },
               ),
@@ -518,8 +518,7 @@ class _RichMessagePreviewState extends State<_RichMessagePreview> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           RaftMessageBody(
-            content:
-                '### Delivery plan\nAsk @Cody in #design about task #27.\n\n- **Draft** the change\n- Review the evidence\n\n```mermaid\nflowchart LR\n A[Draft] --> B[Review]\n B --> C[Ship]\n```\n\n`@Cody` stays code.',
+            content: '### Delivery plan\nAsk @Cody in #design about task #27.\n\n- **Draft** the change\n- Review the evidence\n\n```mermaid\nflowchart LR\n A[Draft] --> B[Review]\n B --> C[Ship]\n```\n\n`@Cody` stays code.',
             references: const [
               RaftTextReference(
                 text: '@Cody',
@@ -626,8 +625,7 @@ class _MessageExportPreviewState extends State<_MessageExportPreview> {
         content: '',
         collapseLongMessages: false,
         body: RaftMessageBody(
-          content:
-              '**中文输入、日本語確認**\n\n```mermaid\nflowchart LR\n A[Draft] --> B[Review]\n```',
+          content: '**中文输入、日本語確認**\n\n```mermaid\nflowchart LR\n A[Draft] --> B[Review]\n```',
           exportMode: true,
         ),
       ),
@@ -742,8 +740,7 @@ Widget forwardedBundlePreview() => SingleChildScrollView(
                   'type': 'user',
                   'name': 'Former member',
                 },
-                'contentSnapshot':
-                    'The copied message remains available without a source link.',
+                'contentSnapshot': 'The copied message remains available without a source link.',
                 'attachmentPolicy': 'excluded',
               },
             ],
@@ -959,8 +956,7 @@ Widget setupResumeBarOpeningPreview() => Align(
 Widget communityAgreementPreview() => RaftCommunityAgreementDialog(
   title: 'Community agreement',
   version: 3,
-  bodyMarkdown:
-      'Welcome to the Raft community.\n\n1. Be kind and assume good intent.\n2. No spam.\n\nModerators may remove content that breaks these rules.',
+  bodyMarkdown: 'Welcome to the Raft community.\n\n1. Be kind and assume good intent.\n2. No spam.\n\nModerators may remove content that breaks these rules.',
   onClose: () {},
   onAgree: () async {},
   errorMessage: (_, _) => 'Failed to join community server',

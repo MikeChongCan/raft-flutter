@@ -51,7 +51,7 @@ class RaftTimelineSm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
-    final rail = t.colors[t.brutal ? 'line-strong' : 'line-muted']!;
+    final rail = t.colors['line-muted']!;
     return Column(
       key: const ValueKey('timeline'),
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -70,9 +70,12 @@ class RaftTimelineSm extends StatelessWidget {
     required bool last,
   }) {
     final (color, fill) = _tones(t, e.status);
-    final title = t.brutal
-        ? RaftTypography.heading(t, size: 12, line: 16)
-        : RaftTypography.body(t, size: 12, line: 16, weight: FontWeight.w500);
+    final title = RaftTypography.body(
+      t,
+      size: 12,
+      line: 16,
+      weight: FontWeight.w500,
+    );
     // The body sets the height; the axis is stretched alongside it (the CSS
     // flex row, without an intrinsic pass: the body may contain a LayoutBuilder).
     return Stack(
@@ -101,9 +104,7 @@ class RaftTimelineSm extends StatelessWidget {
                     t,
                     size: 12,
                     line: 16,
-                    color: t.brutal
-                        ? Colors.black.withValues(alpha: .5)
-                        : t.muted,
+                    color: t.muted,
                   ),
                 ),
               ),
@@ -128,11 +129,8 @@ class RaftTimelineSm extends StatelessWidget {
                 height: marker,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: t.brutal ? fill : Colors.transparent,
-                  border: Border.all(
-                    color: t.brutal ? t.colors['line-strong']! : color,
-                    width: 2,
-                  ),
+                  color: Colors.transparent,
+                  border: Border.all(color: color, width: 2),
                 ),
               ),
               Expanded(

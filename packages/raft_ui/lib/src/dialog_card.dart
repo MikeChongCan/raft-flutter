@@ -68,8 +68,7 @@ TextStyle raftCssTextStyle({
   leadingDistribution: TextLeadingDistribution.even,
 );
 
-RaftRecipeTheme raftRecipeThemeOf(RaftTokens t) =>
-    t.brutal ? RaftRecipeTheme.brutal : RaftRecipeTheme.elegant;
+RaftRecipeTheme raftRecipeThemeOf(RaftTokens t) => RaftRecipeTheme.elegant;
 
 /// raft-ui `Button` painted from `buttonVariants`. [padding], [textStep] and
 /// [expand] are the JSX `className` overrides (`px-4 py-2`, `text-sm`,
@@ -168,9 +167,7 @@ class RaftRecipeButton extends StatelessWidget {
       tokens: tokens,
     ).root;
     var decoration = root.decoration(tokens);
-    if (t.brutal && brutalSurface != null) {
-      decoration = brutalSurface!(t, state.hovered && state.enabled);
-    }
+
     final base = root.textStyle(tokens);
     final color = foreground ?? base.color ?? t.ink;
     final step = textStep;
@@ -284,7 +281,7 @@ class RaftCloseButton extends StatelessWidget {
       tooltip: raftText(context, tooltip),
       onPressed: onPressed,
       // text-foreground-muted (elegant) / theme-brutal:text-black.
-      foreground: t.brutal ? Colors.black : t.colors['foreground-muted'],
+      foreground: t.colors['foreground-muted'],
       brutalSurface: (t, hovered) => BoxDecoration(
         color: Colors.white,
         border: Border.all(color: Colors.black, width: 2),
@@ -307,7 +304,7 @@ class RaftThreadViewButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
-    final color = t.brutal ? Colors.black : t.colors['foreground-muted']!;
+    final color = t.colors['foreground-muted']!;
     return RaftRecipeButton(
       variant: RaftButtonRecipeVariant.ghost,
       size: RaftButtonRecipeSize.iconSm,
@@ -365,9 +362,7 @@ class _RaftModalBackdropState extends State<RaftModalBackdrop> {
     final child = widget.child, onBackdrop = widget.onBackdrop;
     final t = RaftTokens.of(context);
     // backdrop-blur-[2px]: CSS blur radius is the Gaussian standard deviation.
-    final scrim = t.brutal
-        ? Colors.black.withValues(alpha: .6)
-        : t.colors['layer-backdrop']!;
+    final scrim = t.colors['layer-backdrop']!;
     // The scrim dims the status bar band over its width too (see
     // `status_bar.dart`: a modal inside the host's scope publishes it).
     return RaftStatusBarSource(
@@ -1127,7 +1122,7 @@ class RaftDialogTextInput extends StatelessWidget {
     final base = Theme.of(context).inputDecorationTheme.contentPadding;
     final resolved = base?.resolve(Directionality.of(context));
     final style =
-        (enabled || t.brutal
+        ((enabled)
                 ? t.fieldStyle
                 : t.fieldStyle.copyWith(color: t.colors['foreground-disabled']))
             .copyWith(
@@ -1192,9 +1187,7 @@ class RaftDialogTextInput extends StatelessWidget {
       );
     }
     final surface = RaftFieldSurface(child: field);
-    return !enabled && t.brutal && multiline
-        ? Opacity(opacity: .6, child: surface)
-        : surface;
+    return surface;
   }
 }
 

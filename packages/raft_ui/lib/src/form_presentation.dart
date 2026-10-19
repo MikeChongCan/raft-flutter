@@ -222,8 +222,9 @@ class RaftUnsavedGuardState extends State<RaftUnsavedGuard> {
   /// name once the list has loaded), not the member: the new text is its
   /// baseline.
   void rebase(TextEditingController controller) {
-    if (_initial.containsKey(controller))
+    if (_initial.containsKey(controller)) {
       _initial[controller] = controller.text;
+    }
   }
 
   void _refresh() {

@@ -74,8 +74,9 @@ class _RaftCollapsibleState extends State<RaftCollapsible> {
         focus is! RenderBox ||
         content is! RenderBox ||
         !focus.hasSize ||
-        !content.hasSize)
+        !content.hasSize) {
       return;
+    }
     // Only focus inside this message may reveal its hidden content.
     var ancestor = focus.parent;
     var owned = identical(focus, content);
@@ -659,8 +660,9 @@ class _SizeReporter extends RenderProxyBox {
       if (!attached ||
           revision != _receiptRevision ||
           _pending != next ||
-          _natural != next)
+          _natural != next) {
         return;
+      }
       _pending = null;
       _delivered = next;
       callback?.call(next);

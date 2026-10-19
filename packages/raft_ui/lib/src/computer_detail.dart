@@ -241,7 +241,7 @@ class _Ink {
   _Ink(this.t);
   final RaftTokens t;
 
-  Color get strong => t.brutal ? Colors.black : t.colors['foreground-strong']!;
+  Color get strong => t.colors['foreground-strong']!;
   Color muted(double brutalAlpha) =>
       raftPanelInk(t, brutalAlpha, t.colors['foreground-muted']!);
   Color get orange => t.product.brutalOrange;
@@ -702,9 +702,7 @@ class _RaftComputerDetailViewState extends State<RaftComputerDetailView> {
     final count = selected.length;
     final mode = await showDialog<RaftComputerBulk>(
       context: context,
-      barrierColor: RaftTokens.of(context).brutal
-          ? Colors.black.withValues(alpha: .6)
-          : RaftTokens.of(context).colors['layer-backdrop'],
+      barrierColor: RaftTokens.of(context).colors['layer-backdrop'],
       // Web `DialogCard` without `closeOnBackdrop`: a stray press on the
       // scrim keeps the choice; Escape and Back still close it.
       barrierDismissible: false,
@@ -727,7 +725,7 @@ class _RaftComputerDetailViewState extends State<RaftComputerDetailView> {
           _header(context, t),
           Expanded(
             child: ColoredBox(
-              color: t.brutal ? Colors.white : t.colors['layer-panel']!,
+              color: t.colors['layer-panel']!,
               child: SingleChildScrollView(
                 key: const Key('fleet-detail'),
                 padding: raftScrollPadding(context),
@@ -798,12 +796,12 @@ class _RaftComputerDetailViewState extends State<RaftComputerDetailView> {
   /// PanelHeader with the Monitor 18 icon, `iconBg="bg-primary-soft
   /// theme-brutal:bg-soft-signal ..."` and `iconAlwaysVisible`.
   Widget _header(BuildContext context, RaftTokens t) => RaftStatusBarSource(
-    color: t.brutal ? Colors.white : t.colors['layer-canvas-muted']!,
+    color: t.colors['layer-canvas-muted']!,
     child: Container(
       key: widget.headerKey ?? const ValueKey('computer-section-header'),
       // MainLayout's content column (`bg-layer-canvas-muted`) shows through
       // the transparent Elegant PanelHeader; Brutal paints white.
-      color: t.brutal ? Colors.white : t.colors['layer-canvas-muted'],
+      color: t.colors['layer-canvas-muted'],
       child: RaftPanelHeaderBar(
         title: '${d.name}',
         iconAlwaysVisible: true,
@@ -813,8 +811,8 @@ class _RaftComputerDetailViewState extends State<RaftComputerDetailView> {
           glyph: RaftGlyph.monitor,
           // bg-primary-soft theme-brutal:bg-soft-signal; elegant border-0
           // bg-fill-muted (`in-data-[theme=elegant]` wins).
-          background: t.brutal ? t.product.softSignal : t.colors['fill-muted']!,
-          borderless: !t.brutal,
+          background: t.colors['fill-muted']!,
+          borderless: !false,
         ),
       ),
     ),
@@ -1165,7 +1163,7 @@ class _RaftComputerDetailViewState extends State<RaftComputerDetailView> {
             // `valueClassName="tabular-nums theme-brutal:font-mono"`.
             RaftKeyValueRow.child(
               label: 'Created',
-              mono: t.brutal,
+              mono: false,
               child: DefaultTextStyle.merge(
                 style: const TextStyle(
                   fontFeatures: [FontFeature.tabularFigures()],
@@ -1359,11 +1357,7 @@ class _RaftComputerDetailViewState extends State<RaftComputerDetailView> {
   ) {
     if (outcome == RaftComputerUpgradeOutcome.none) return null;
     final ink = _Ink(t);
-    final style = ink.body(
-      12,
-      20,
-      color: t.brutal ? t.product.brutalOrange : t.colors['warning-strong'],
-    );
+    final style = ink.body(12, 20, color: t.colors['warning-strong']);
     if (outcome == RaftComputerUpgradeOutcome.refusedUnknown) {
       return RaftCssText(
         raftText(context, "Can't upgrade right now. Try again later."),
@@ -1414,13 +1408,7 @@ class _RaftComputerDetailViewState extends State<RaftComputerDetailView> {
               {'version': d.upgradeVersion},
             ),
             key: const ValueKey('computer-upgrade-reconnect-overdue'),
-            style: ink.body(
-              12,
-              20,
-              color: t.brutal
-                  ? t.product.brutalOrange
-                  : t.colors['warning-strong'],
-            ),
+            style: ink.body(12, 20, color: t.colors['warning-strong']),
           ),
           const SizedBox(height: 8),
         ],
@@ -1638,8 +1626,6 @@ class _RaftComputerDetailViewState extends State<RaftComputerDetailView> {
             ? t.colors['success-soft']
             : selectionMode && isSelected
             ? null
-            : t.brutal
-            ? const Color(0xFFF3F4F6)
             : t.colors['layer-canvas-muted'],
         onTap: selectionMode
             ? () => setState(() {
@@ -1697,9 +1683,7 @@ class _RaftComputerDetailViewState extends State<RaftComputerDetailView> {
               RaftSurfaceListItem(
                 selected: true,
                 interactive: false,
-                selectedBackground: t.brutal
-                    ? const Color(0xFFF3F4F6)
-                    : t.colors['layer-canvas-muted'],
+                selectedBackground: t.colors['layer-canvas-muted'],
                 padding: const EdgeInsets.symmetric(
                   horizontal: 12,
                   vertical: 8,
@@ -2212,11 +2196,8 @@ class _DeletedWorkspaceNote extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: t.brutal ? const Color(0xFFE5E7EB) : t.colors['fill-muted'],
-        border: Border.all(
-          color: t.brutal ? Colors.black : t.colors['line-muted']!,
-          width: 2,
-        ),
+        color: t.colors['fill-muted'],
+        border: Border.all(color: t.colors['line-muted']!, width: 2),
       ),
       child: Text.rich(
         TextSpan(
@@ -2254,20 +2235,9 @@ class _WorkspaceRow extends StatelessWidget {
     final ink = _Ink(t);
     final status = ws.status;
     final (border, fill) = switch (status) {
-      'orphan' => (
-        t.brutal ? t.product.brutalOrange : t.colors['warning']!,
-        t.brutal
-            ? t.product.brutalOrange.withValues(alpha: .1)
-            : t.colors['warning-soft'],
-      ),
-      'deleted' => (
-        t.brutal ? Colors.black : t.colors['line-muted']!,
-        t.brutal ? const Color(0xFFF3F4F6) : t.colors['fill-muted'],
-      ),
-      _ => (
-        t.brutal ? Colors.black.withValues(alpha: .3) : t.colors['line-muted']!,
-        null,
-      ),
+      'orphan' => (t.colors['warning']!, t.colors['warning-soft']),
+      'deleted' => (t.colors['line-muted']!, t.colors['fill-muted']),
+      _ => (t.colors['line-muted']!, null),
     };
     final meta = ink.mono(10, 15, color: ink.muted(.5));
     return Container(
@@ -2391,25 +2361,19 @@ class _BulkResetDialogState extends State<_BulkResetDialog> {
         RaftComputerBulk.restart,
         'Restart',
         'Stop and restart the selected agents. Runtime sessions and workspace files are preserved.',
-        t.brutal
-            ? t.product.brutalCyan.withValues(alpha: .2)
-            : t.colors['info-soft']!,
+        t.colors['info-soft']!,
       ),
       (
         RaftComputerBulk.session,
         'Reset Session & Restart',
         'Clear runtime sessions and restart the selected agents. Workspace files are preserved.',
-        t.brutal
-            ? t.product.brutalOrange.withValues(alpha: .2)
-            : t.colors['warning-soft']!,
+        t.colors['warning-soft']!,
       ),
       (
         RaftComputerBulk.full,
         'Full Reset & Restart',
         'Clear runtime sessions, delete workspace files, and restart the selected agents.',
-        t.brutal
-            ? t.product.brutalRed.withValues(alpha: .2)
-            : t.colors['danger-soft']!,
+        t.colors['danger-soft']!,
       ),
     ];
     // ignore: raft_lints/avoid_render_where_without_or_else -- `options` is a fixed list holding every mode the state can take.

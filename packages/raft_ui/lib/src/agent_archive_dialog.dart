@@ -139,9 +139,7 @@ class _RaftAgentArchiveDialogState extends State<RaftAgentArchiveDialog> {
                                         size: 15,
                                         line: 20,
                                         weight: FontWeight.w600,
-                                        color: t.brutal
-                                            ? Colors.black
-                                            : t.strong,
+                                        color: t.strong,
                                       ),
                                     ),
                                     const SizedBox(height: 2),

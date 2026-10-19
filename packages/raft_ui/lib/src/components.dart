@@ -55,9 +55,8 @@ import 'design_primitives.dart';
 import 'css_opacity.dart';
 import 'css_pixel_snap.dart';
 import 'icons.dart';
-import 'indicators.dart' show RaftBadge, RaftWebPalette;
+import 'indicators.dart' show RaftBadge;
 import 'panel_layout.dart' show RaftCssText, RaftCssLineBox;
-import 'tokens/tokens.dart';
 import 'recipe_surface.dart';
 import 'recipes/button_variants.g.dart';
 import 'recipes/card.g.dart';
@@ -132,9 +131,9 @@ class RaftPanel extends StatelessWidget {
         final s = raftRecipeEngine.resolveSlot(
           [
             for (final name in [
-              t.brutal ? 'border-2' : 'border',
-              t.brutal ? 'border-black' : 'border-line-muted',
-              t.brutal ? 'bg-white' : 'bg-layer-panel',
+              'border',
+              'border-line-muted',
+              'bg-layer-panel',
               'shadow-raft-md',
             ])
               raftRecipeUtilities.indexWhere((u) => u.name == name),
@@ -147,11 +146,7 @@ class RaftPanel extends StatelessWidget {
           tokens: rt,
           padding: padding.resolve(Directionality.of(context)),
           applyText: false,
-          decorationOverride: t.brutal
-              ? (d) => d.copyWith(
-                  boxShadow: RaftProductShadows.shadowBrutal.paintOrder,
-                )
-              : null,
+          decorationOverride: null,
           child: body,
         );
       case RaftPanelStyle.panel:
@@ -300,8 +295,7 @@ class RaftButton extends StatelessWidget {
         // contrast, elegant danger uses the in-repo component roles
         // `--button-danger-high-contrast(-foreground)` (WCAG AA text).
         final highContrastDanger =
-            !t.brutal &&
-            MediaQuery.highContrastOf(context) &&
+            (MediaQuery.highContrastOf(context)) &&
             recipeVariant == RaftButtonRecipeVariant.danger;
         final content = Row(
           mainAxisSize: MainAxisSize.min,
@@ -449,14 +443,12 @@ class RaftAvatar extends StatelessWidget {
         RaftAvatarKind.human => RaftIcon(
           RaftGlyph.user,
           size: size >= 32 ? 18 : 12,
-          color: t.brutal
-              ? Colors.black
-              : t.colors['foreground-placeholder']!.withValues(alpha: .7),
+          color: t.colors['foreground-placeholder']!.withValues(alpha: .7),
         ),
         RaftAvatarKind.agent => RaftIcon(
           RaftGlyph.bot,
           size: size >= 32 ? 18 : 12,
-          color: t.brutal ? Colors.black : t.muted,
+          color: t.muted,
         ),
         _ => Text(
           name.isEmpty ? '?' : name.characters.first.toUpperCase(),
@@ -479,23 +471,15 @@ class RaftAvatar extends StatelessWidget {
       child: SizedBox.square(
         dimension: size,
         child: Padding(
-          padding: EdgeInsets.all(t.brutal ? 0 : 2),
+          padding: EdgeInsets.all(2),
           child: Container(
             width: size,
             height: size,
             clipBehavior: Clip.antiAlias,
             decoration: BoxDecoration(
-              color: t.brutal
-                  ? t.colors[kind == RaftAvatarKind.agent
-                        ? 'color-brutal-cyan'
-                        : kind == RaftAvatarKind.human
-                        ? 'color-brutal-lavender'
-                        : 'brutal-cream']
-                  : t.colors['fill-muted'],
-              border: t.brutal
-                  ? Border.all(color: Colors.black, width: size >= 28 ? 2 : 1)
-                  : null,
-              borderRadius: BorderRadius.circular(t.brutal ? 0 : size / 2),
+              color: t.colors['fill-muted'],
+              border: null,
+              borderRadius: BorderRadius.circular(size / 2),
             ),
             child:
                 content ??
@@ -531,20 +515,17 @@ class RaftMountedSidebarNavigationRecipe extends RaftControlRecipe {
   final double viewportWidth, viewportHeight;
   bool get compact =>
       viewportHeight <= 600 ||
-      (viewportWidth >= 768 &&
-          (tokens.brutal || role != RaftNavItemRole.saved));
+      (viewportWidth >= 768 && ((role != RaftNavItemRole.saved)));
   bool get active => selected && role != RaftNavItemRole.search;
-  double get sourceBorder => tokens.brutal ? 2 : 1;
+  double get sourceBorder => 1;
   double get glyphSize => 14;
   double get gap => 6;
   double get marginBottom => 4;
-  double get fontSize =>
-      !tokens.brutal && role == RaftNavItemRole.saved ? 13 : 14;
-  double get contentHeight =>
-      !tokens.brutal && role == RaftNavItemRole.saved ? 19.5 : 20;
+  double get fontSize => (role == RaftNavItemRole.saved) ? 13 : 14;
+  double get contentHeight => (role == RaftNavItemRole.saved) ? 19.5 : 20;
   double get verticalInset => compact
       ? 4
-      : !tokens.brutal && role == RaftNavItemRole.saved
+      : (role == RaftNavItemRole.saved)
       ? 6
       : 8;
   double get sourceHeight =>
@@ -552,45 +533,32 @@ class RaftMountedSidebarNavigationRecipe extends RaftControlRecipe {
   @override
   bool get transformsOnInteraction => false;
   @override
-  EdgeInsets get padding => EdgeInsets.symmetric(
-    horizontal: tokens.brutal || role != RaftNavItemRole.saved ? 8 : 6,
-  );
+  EdgeInsets get padding =>
+      EdgeInsets.symmetric(horizontal: (role != RaftNavItemRole.saved) ? 8 : 6);
   @override
-  BorderRadius get radius => BorderRadius.circular(
-    !tokens.brutal && role == RaftNavItemRole.saved ? 6 : 0,
-  );
+  BorderRadius get radius =>
+      BorderRadius.circular((role == RaftNavItemRole.saved) ? 6 : 0);
   @override
   Gradient? get overlayGradient => null;
   @override
   double get insetHighlightAlpha => 0;
   @override
-  Color get foreground => tokens.brutal
-      ? Colors.black
-      : role == RaftNavItemRole.saved && !active
-      ? tokens.muted
-      : tokens.strong;
+  Color get foreground =>
+      role == RaftNavItemRole.saved && !active ? tokens.muted : tokens.strong;
   @override
   Color foregroundFor({bool hovered = false}) =>
-      (hovered || pointerPressed) &&
-          !tokens.brutal &&
-          role == RaftNavItemRole.saved &&
-          !active
+      ((hovered || pointerPressed)) && role == RaftNavItemRole.saved && !active
       ? tokens.ink
       : foreground;
   @override
-  Color get background => !active
-      ? Colors.transparent
-      : tokens.brutal
-      ? tokens.colors['color-brutal-pink']!
-      : tokens.colors['fill-muted']!;
+  Color get background =>
+      !active ? Colors.transparent : tokens.colors['fill-muted']!;
   @override
   Color backgroundFor({bool hovered = false}) {
     if (active || (!hovered && !pointerPressed)) {
       return background;
     }
-    if (tokens.brutal) {
-      return tokens.panel;
-    }
+
     if (role != RaftNavItemRole.saved) {
       return tokens.colors['fill-muted']!;
     }
@@ -610,11 +578,9 @@ class RaftMountedSidebarNavigationRecipe extends RaftControlRecipe {
   BorderSide side({bool hovered = false}) => BorderSide(
     width: sourceBorder,
     color:
-        !tokens.brutal && role == RaftNavItemRole.saved ||
+        (role == RaftNavItemRole.saved) ||
             (!active && !hovered && !pointerPressed)
         ? Colors.transparent
-        : tokens.brutal
-        ? Colors.black
         : tokens.colors['line-strong']!,
   );
   @override
@@ -633,23 +599,15 @@ class RaftMountedSidebarNavigationRecipe extends RaftControlRecipe {
     bool focused = false,
   }) {
     if (focused) {
-      return [
-        BoxShadow(
-          color: tokens.brutal ? Colors.black : tokens.colors['line-strong']!,
-          spreadRadius: 2,
-        ),
-      ];
+      return [BoxShadow(color: tokens.colors['line-strong']!, spreadRadius: 2)];
     }
     if (!active && !hovered && !pressed) {
       return const [];
     }
-    if (!tokens.brutal && role == RaftNavItemRole.saved) {
+    if ((role == RaftNavItemRole.saved)) {
       return const [];
     }
-    if (tokens.brutal && (role != RaftNavItemRole.saved || active)) {
-      // Product index.css `--shadow-brutal-sm: 2px 2px 0px #141111`.
-      return RaftProductShadows.shadowBrutalSm.outer;
-    }
+
     return tokens.shadows;
   }
 
@@ -657,9 +615,7 @@ class RaftMountedSidebarNavigationRecipe extends RaftControlRecipe {
     tokens,
     size: 10,
     line: 15,
-    color: tokens.brutal
-        ? Colors.black.withValues(alpha: .4)
-        : tokens.colors['foreground-placeholder'],
+    color: tokens.colors['foreground-placeholder'],
   ).copyWith(fontWeight: FontWeight.w500);
 }
 
@@ -693,41 +649,35 @@ class RaftMountedConversationControlRecipe extends RaftControlRecipe {
   @override
   double get insetHighlightAlpha => 0;
   @override
-  BorderRadius get radius => BorderRadius.circular(tokens.brutal ? 0 : 6);
+  BorderRadius get radius => BorderRadius.circular(6);
   @override
   // SidebarItem: `px-2` Brutal, `px-1.5` Elegant (measured on desktop and mobile).
-  EdgeInsets get padding =>
-      EdgeInsets.symmetric(horizontal: tokens.brutal ? 8 : 6);
+  EdgeInsets get padding => EdgeInsets.symmetric(horizontal: 6);
   @override
   double get focusOutlineWidth => 2;
   @override
   double get focusOutlineOffset => 2;
   @override
-  Color get focusRing =>
-      tokens.brutal ? Colors.black : tokens.colors['line-strong']!;
+  Color get focusRing => tokens.colors['line-strong']!;
   @override
-  Color get foreground => tokens.brutal
-      ? Colors.black
-      : selected
+  Color get foreground => selected
       ? tokens.colors['foreground-strong']!
       : tokens.colors['foreground-muted']!;
   @override
   Color foregroundFor({bool hovered = false}) =>
       hovered || pointerPressed || selected
-      ? (tokens.brutal ? Colors.black : tokens.colors['foreground-strong']!)
+      ? (tokens.colors['foreground-strong']!)
       : foreground;
   @override
   Color get background => !selected
       ? (menuOpen ? tokens.colors['fill-muted']! : Colors.transparent)
-      : tokens.colors[tokens.brutal ? 'color-brutal-pink' : 'fill-muted']!;
+      : tokens.colors['fill-muted']!;
   @override
   Color backgroundFor({bool hovered = false}) {
     if (selected || menuOpen || (!hovered && !pointerPressed)) {
       return background;
     }
-    return tokens.brutal
-        ? Colors.white
-        : tokens.dark
+    return tokens.dark
         ? tokens.colors['ink-6']!
         : tokens.colors['fill-strong']!.withValues(alpha: .8);
   }
@@ -738,21 +688,14 @@ class RaftMountedConversationControlRecipe extends RaftControlRecipe {
     bool pressed = false,
   }) => backgroundFor(hovered: hovered || pressed);
   @override
-  BorderSide side({bool hovered = false}) => BorderSide(
-    width: tokens.brutal ? 2 : 1,
-    color: tokens.brutal && (selected || hovered || pointerPressed)
-        ? Colors.black
-        : Colors.transparent,
-  );
+  BorderSide side({bool hovered = false}) =>
+      BorderSide(width: 1, color: Colors.transparent);
   @override
   List<BoxShadow> shadows({
     bool hovered = false,
     bool pressed = false,
     bool focused = false,
-  }) => [
-    if (tokens.brutal && (selected || hovered || pressed || pointerPressed))
-      ...RaftProductShadows.shadowBrutalSm.outer,
-  ];
+  }) => [];
 }
 
 class RaftConversationNavigationRecipe {
@@ -771,8 +714,6 @@ class RaftConversationNavigationRecipe {
       ? null
       : channelGlyphVariant == RaftChannelGlyphVariant.mountedProduct
       ? 14
-      : tokens.brutal
-      ? 12
       : 14;
   double? get glyphSlotSize =>
       kind == RaftConversationNavKind.channel &&
@@ -804,32 +745,18 @@ class RaftConversationNavigationRecipe {
   double rowHeight({
     required double viewportWidth,
     required double viewportHeight,
-  }) => tokens.brutal
-      ? viewportWidth >= RaftLayoutMetrics.desktopBreakpoint ||
-                viewportHeight <= 600
-            ? 32
-            : 40
-      : viewportHeight <= 600
-      ? 30
-      : 34;
+  }) => viewportHeight <= 600 ? 30 : 34;
 
   // SidebarItemCount solid/accent merges Sidebar count and Badge recipes.
   double get countHeight => 16;
-  double get countMinimumWidth => tokens.brutal ? 0 : 16;
-  EdgeInsets get countPadding => EdgeInsets.symmetric(
-    horizontal: tokens.brutal ? 6 : 4,
-    vertical: tokens.brutal ? 2 : 0,
-  );
-  Color get countBackground => tokens.brutal
-      ? tokens.colors['color-brutal-pink']!
-      : tokens.colors['accent-soft']!;
-  Color get countForeground =>
-      tokens.brutal ? Colors.white : tokens.colors['accent-strong']!;
+  double get countMinimumWidth => 16;
+  EdgeInsets get countPadding =>
+      EdgeInsets.symmetric(horizontal: 4, vertical: 0);
+  Color get countBackground => tokens.colors['accent-soft']!;
+  Color get countForeground => tokens.colors['accent-strong']!;
   BoxDecoration get countDecoration => BoxDecoration(
     color: countBackground,
-    border: Border.all(
-      color: tokens.brutal ? Colors.black : Colors.transparent,
-    ),
+    border: Border.all(color: Colors.transparent),
     borderRadius: BorderRadius.circular(4),
   );
   // Elegant inherits the mounted Sidebar Inter face; Brutal font-sans resolves
@@ -839,7 +766,7 @@ class RaftConversationNavigationRecipe {
         tokens,
         size: 10,
         line: 10,
-        weight: tokens.brutal ? FontWeight.w700 : FontWeight.w400,
+        weight: FontWeight.w400,
       ).copyWith(
         color: countForeground,
         fontFeatures: const [FontFeature.tabularFigures()],
@@ -1030,17 +957,11 @@ class RaftNavItem extends StatelessWidget {
       (unread > 0 || _threadSegment) && (!_channel || joined && !_mutedIcon);
   bool get _dimmed => _channel && !selected && !joined;
   Color? _titleColor(BuildContext context, RaftTokens t) => _dimmed
-      ? t.brutal
-            ? Colors.black.withValues(alpha: .4)
-            : t.colors['foreground-placeholder']
+      ? t.colors['foreground-placeholder']
       : _channel && activityMuted
-      ? t.brutal
-            ? Colors.black.withValues(alpha: .7)
-            : t.colors['foreground-muted']
+      ? t.colors['foreground-muted']
       : conversationKind == null
       ? t.strong
-      : conversationKind == RaftConversationNavKind.directMessage && t.brutal
-      ? Colors.black
       : DefaultTextStyle.of(context).style.color;
   Widget _title(RaftTokens t, TextStyle style) => labelSuffix == null
       ? Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: style)
@@ -1051,9 +972,7 @@ class RaftNavItem extends StatelessWidget {
               TextSpan(
                 text: ' $labelSuffix',
                 style: style.copyWith(
-                  color: t.brutal
-                      ? Colors.black.withValues(alpha: .4)
-                      : t.colors['foreground-placeholder'],
+                  color: t.colors['foreground-placeholder'],
                 ),
               ),
             ],
@@ -1095,28 +1014,17 @@ class RaftNavItem extends StatelessWidget {
         (glyph != null
             ? RaftIcon(
                 glyph!,
-                size:
-                    glyphSize ??
-                    conversation?.glyphSize ??
-                    (t.brutal ? 12 : 18),
+                size: glyphSize ?? conversation?.glyphSize ?? (18),
                 strokeWidth: conversation?.glyphStrokeWidth ?? 2,
                 color: _dimmed
-                    ? t.brutal
-                          ? Colors.black.withValues(alpha: .4)
-                          : t.colors['foreground-placeholder']
-                    : t.brutal
-                    ? t.strong
+                    ? t.colors['foreground-placeholder']
                     : t.colors['foreground-icon'],
               )
             : RaftSymbol(
                 icon!,
-                size: conversation?.glyphSize ?? (t.brutal ? 12 : 18),
+                size: conversation?.glyphSize ?? (18),
                 color: _dimmed
-                    ? t.brutal
-                          ? Colors.black.withValues(alpha: .4)
-                          : t.colors['foreground-placeholder']
-                    : t.brutal
-                    ? t.strong
+                    ? t.colors['foreground-placeholder']
                     : t.colors['foreground-icon'],
               ));
     Widget wrappedTitle(BuildContext context) {
@@ -1130,9 +1038,7 @@ class RaftNavItem extends StatelessWidget {
                 : FontWeight.w500,
           ).copyWith(
             color: description != null
-                ? (t.brutal
-                      ? Colors.black
-                      : DefaultTextStyle.of(context).style.color)
+                ? (DefaultTextStyle.of(context).style.color)
                 : _titleColor(context, t),
           );
       final text = Text(label, style: style);
@@ -1145,17 +1051,12 @@ class RaftNavItem extends StatelessWidget {
           const SizedBox(height: 2),
           Text(
             description,
-            style:
-                RaftTypography.heading(
-                  t,
-                  size: 12,
-                  line: 15,
-                  weight: FontWeight.w500,
-                ).copyWith(
-                  color: t.brutal
-                      ? Colors.black.withValues(alpha: .4)
-                      : t.colors['foreground-muted'],
-                ),
+            style: RaftTypography.heading(
+              t,
+              size: 12,
+              line: 15,
+              weight: FontWeight.w500,
+            ).copyWith(color: t.colors['foreground-muted']),
           ),
         ],
       );
@@ -1169,12 +1070,10 @@ class RaftNavItem extends StatelessWidget {
             (conversation?.titleStyle(loudUnread: _loudUnread) ??
                     RaftTypography.body(
                       t,
-                      size: t.brutal ? 14 : 13,
+                      size: 13,
                       line: 20,
                       weight: selected || unread > 0
                           ? FontWeight.w700
-                          : t.brutal
-                          ? FontWeight.w400
                           : FontWeight.w500,
                     ))
                 .copyWith(color: _titleColor(context, t)),
@@ -1196,11 +1095,7 @@ class RaftNavItem extends StatelessWidget {
                   size: 14,
                   line: 20,
                   weight: unread > 0 ? FontWeight.w700 : FontWeight.w500,
-                ).copyWith(
-                  color: t.brutal
-                      ? Colors.black
-                      : DefaultTextStyle.of(context).style.color,
-                ),
+                ).copyWith(color: DefaultTextStyle.of(context).style.color),
               ),
               Padding(
                 padding: EdgeInsets.only(top: tag == null ? 0 : 2),
@@ -1208,17 +1103,12 @@ class RaftNavItem extends StatelessWidget {
                   description,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style:
-                      RaftTypography.heading(
-                        t,
-                        size: 12,
-                        line: 16,
-                        weight: FontWeight.w500,
-                      ).copyWith(
-                        color: t.brutal
-                            ? Colors.black.withValues(alpha: .4)
-                            : t.colors['foreground-muted'],
-                      ),
+                  style: RaftTypography.heading(
+                    t,
+                    size: 12,
+                    line: 16,
+                    weight: FontWeight.w500,
+                  ).copyWith(color: t.colors['foreground-muted']),
                 ),
               ),
               if (tag != null) RaftCssPixelSnap(child: tag!),
@@ -1276,17 +1166,8 @@ class RaftNavItem extends StatelessWidget {
                 (wrap ? 2 : 0)
           : 32,
       flexibleHeight: wrap,
-      padding: wrap
-          ? EdgeInsets.symmetric(
-              horizontal: t.brutal ? 8 : 6,
-              vertical: t.brutal ? 4 : 6,
-            )
-          : null,
-      variant: selected
-          ? t.brutal
-                ? RaftControlVariant.accent
-                : RaftControlVariant.surface
-          : RaftControlVariant.ghost,
+      padding: wrap ? EdgeInsets.symmetric(horizontal: 6, vertical: 6) : null,
+      variant: selected ? RaftControlVariant.surface : RaftControlVariant.ghost,
       child: Builder(
         builder: (context) => Row(
           crossAxisAlignment: wrap
@@ -1319,17 +1200,12 @@ class RaftNavItem extends StatelessWidget {
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 textAlign: TextAlign.end,
-                                style:
-                                    RaftTypography.heading(
-                                      t,
-                                      size: 12,
-                                      line: 16,
-                                      weight: FontWeight.w500,
-                                    ).copyWith(
-                                      color: t.brutal
-                                          ? Colors.black.withValues(alpha: .6)
-                                          : t.colors['foreground-muted'],
-                                    ),
+                                style: RaftTypography.heading(
+                                  t,
+                                  size: 12,
+                                  line: 16,
+                                  weight: FontWeight.w500,
+                                ).copyWith(color: t.colors['foreground-muted']),
                               ),
                             ),
                           ),
@@ -1423,7 +1299,7 @@ class RaftNavItem extends StatelessWidget {
       child: conversationKind == null
           ? row(false)
           : Padding(
-              padding: EdgeInsets.only(bottom: t.brutal ? 4 : 2),
+              padding: EdgeInsets.only(bottom: 2),
               child: _MountedNavigationPointerSurface(
                 // Touch density keeps Web's row box (34 / 40 / 32 / 30) and
                 // expands only the hit / semantic area to 48dp.
@@ -1786,14 +1662,8 @@ class RaftMessageTile extends StatelessWidget {
                         vertical: 2,
                       ),
                       decoration: BoxDecoration(
-                        color: t.brutal
-                            ? RaftWebPalette.gray300
-                            : t.colors['fill-muted'],
-                        border: Border.all(
-                          color: t.brutal
-                              ? Colors.black
-                              : t.colors['line-muted']!,
-                        ),
+                        color: t.colors['fill-muted'],
+                        border: Border.all(color: t.colors['line-muted']!),
                       ),
                       child: RaftCssText(
                         departureLabel!.toUpperCase(),
@@ -1807,11 +1677,9 @@ class RaftMessageTile extends StatelessWidget {
                         // 1/3px taller and pushed the body down a device row.
                         style: recipe.body.copyWith(
                           fontSize: 10,
-                          height: t.brutal ? 14 / 10 : null,
+                          height: null,
                           fontWeight: FontWeight.w700,
-                          color: t.brutal
-                              ? Colors.black.withValues(alpha: .6)
-                              : t.muted,
+                          color: t.muted,
                         ),
                       ),
                     ),
@@ -2184,8 +2052,9 @@ class _RaftComposerState extends State<RaftComposer> {
           !presentationActive ||
           !widget.enabled ||
           !widget.autofocus ||
-          widget.canAutofocus?.call() == false)
+          widget.canAutofocus?.call() == false) {
         return;
+      }
       initialFocusHandled = true;
       focus.requestFocus();
     });
@@ -2221,8 +2090,9 @@ class _RaftComposerState extends State<RaftComposer> {
         composing ||
         sending ||
         widget.submitBusy ||
-        !widget.enabled)
+        !widget.enabled) {
       return [];
+    }
     final q = trigger!.query.toLowerCase();
     final result = widget.suggestions
         .where(
@@ -2271,8 +2141,9 @@ class _RaftComposerState extends State<RaftComposer> {
       : 2;
 
   void changed() {
-    if (dismissedValue != null && dismissedValue != controller.text)
+    if (dismissedValue != null && dismissedValue != controller.text) {
       dismissedValue = null;
+    }
     if (mentionUndo != null && mentionUndo!.afterText != controller.text) {
       mentionUndo = null;
     }
@@ -2290,11 +2161,13 @@ class _RaftComposerState extends State<RaftComposer> {
     final next = composing || dismissedValue == controller.text
         ? null
         : raftComposerTrigger(controller.text, controller.selection.baseOffset);
-    if (next?.query != trigger?.query || next?.prefix != trigger?.prefix)
+    if (next?.query != trigger?.query || next?.prefix != trigger?.prefix) {
       suggestionIndex = 0;
+    }
     trigger = next;
-    if (presentationActive && next != null)
+    if (presentationActive && next != null) {
       widget.onSuggestionsRequested?.call(next.prefix);
+    }
     if (mounted) {
       setState(() {});
       updateSuggestionPortal();
@@ -2357,8 +2230,9 @@ class _RaftComposerState extends State<RaftComposer> {
         composing ||
         sending ||
         widget.submitBusy ||
-        !widget.enabled)
+        !widget.enabled) {
       return;
+    }
     final next = controller.text.replaceRange(
       raftSafeEditingOffset(controller.text, range.start),
       raftSafeEditingOffset(controller.text, range.end, forward: true),
@@ -2415,8 +2289,9 @@ class _RaftComposerState extends State<RaftComposer> {
         sending ||
         widget.submitBusy ||
         !widget.enabled ||
-        !suggestion.isMention)
+        !suggestion.isMention) {
       return false;
+    }
     final cursor = raftSafeEditingOffset(
       controller.text,
       controller.selection.baseOffset < 0
@@ -2891,14 +2766,9 @@ class _RaftComposerState extends State<RaftComposer> {
                                 Container(
                                   margin: const EdgeInsets.only(top: 4),
                                   // Elegant has the spacing only (no rule).
-                                  height: 4 + (recipe.tokens.brutal ? 2 : 0),
+                                  height: 4 + (0),
                                   alignment: Alignment.topCenter,
-                                  child: recipe.tokens.brutal
-                                      ? Container(
-                                          height: 2,
-                                          color: Colors.black,
-                                        )
-                                      : null,
+                                  child: null,
                                 ),
                               if (startGroup && label != null)
                                 Padding(
@@ -2910,12 +2780,11 @@ class _RaftComposerState extends State<RaftComposer> {
                                 ),
                               // Elegant group: `flex-col gap-2` (2px) and the
                               // label's `mb-0.5`; Brutal has neither.
-                              if (!recipe.tokens.brutal)
-                                SizedBox(
-                                  height: startGroup
-                                      ? (label != null ? 4 : 0)
-                                      : 2,
-                                ),
+                              SizedBox(
+                                height: startGroup
+                                    ? (label != null ? 4 : 0)
+                                    : 2,
+                              ),
                               row,
                             ],
                           );
@@ -3296,7 +3165,7 @@ class _RaftComposerSuggestionRowState
   Widget build(BuildContext context) {
     final s = widget.suggestion;
     final recipe = widget.recipe;
-    final t = recipe.tokens;
+
     final title = recipe.suggestionTitle(
       highlighted: widget.highlighted,
       hovered: hovered,
@@ -3330,7 +3199,7 @@ class _RaftComposerSuggestionRowState
                     highlighted: widget.highlighted,
                     hovered: hovered,
                   ),
-                  borderRadius: BorderRadius.circular(t.brutal ? 0 : 2),
+                  borderRadius: BorderRadius.circular(2),
                 ),
                 child: Row(
                   children: [
@@ -3376,7 +3245,7 @@ class _RaftComposerSuggestionRowState
                         size: 14,
                         color: title.color,
                       ),
-                    SizedBox(width: t.brutal ? 8 : 10),
+                    SizedBox(width: 10),
                     Expanded(
                       child: s.isMention
                           ? _MentionSuggestionBody(
@@ -3486,7 +3355,7 @@ class _FramedSuggestionIcon extends StatelessWidget {
     final t = RaftTokens.of(context);
     final resolver = RaftRecipeTokens(t);
     final s = RaftComposerSuggestionListRecipe.resolve(
-      theme: t.brutal ? RaftRecipeTheme.brutal : RaftRecipeTheme.elegant,
+      theme: RaftRecipeTheme.elegant,
       iconVariant: RaftComposerSuggestionListRecipeIconVariant.framed,
       tokens: resolver,
     ).icon;
@@ -3509,7 +3378,7 @@ class _FramedSuggestionIcon extends StatelessWidget {
           decoration: s.decoration(resolver),
           child: RaftIcon(
             glyph,
-            size: t.brutal ? 12 : width,
+            size: width,
             color: s.color?.resolve(resolver),
           ),
         ),
@@ -3669,7 +3538,7 @@ class RaftActorTypeBadge extends StatelessWidget {
     final t = RaftTokens.of(context);
     final resolver = RaftRecipeTokens(t);
     final s = RaftBadgeRecipe.resolve(
-      theme: t.brutal ? RaftRecipeTheme.brutal : RaftRecipeTheme.elegant,
+      theme: RaftRecipeTheme.elegant,
       appearance: RaftBadgeRecipeAppearance.soft,
       variant: RaftBadgeRecipeVariant.muted,
       tokens: resolver,
@@ -3737,7 +3606,7 @@ class RaftArchivedBadge extends StatelessWidget {
     final t = RaftTokens.of(context);
     final resolver = RaftRecipeTokens(t);
     final s = RaftBadgeRecipe.resolve(
-      theme: t.brutal ? RaftRecipeTheme.brutal : RaftRecipeTheme.elegant,
+      theme: RaftRecipeTheme.elegant,
       appearance: RaftBadgeRecipeAppearance.soft,
       variant: RaftBadgeRecipeVariant.muted,
       tokens: resolver,

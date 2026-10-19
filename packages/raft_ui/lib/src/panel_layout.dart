@@ -33,13 +33,11 @@ import 'large_content_viewer.dart';
 import 'theme.dart';
 import 'tooltip.dart';
 
-RaftRecipeTheme raftRecipeTheme(RaftTokens t) =>
-    t.brutal ? RaftRecipeTheme.brutal : RaftRecipeTheme.elegant;
+RaftRecipeTheme raftRecipeTheme(RaftTokens t) => RaftRecipeTheme.elegant;
 
 /// `theme-brutal:text-black/<n>` overrides used across the Web panels; other
 /// themes keep the semantic token.
-Color raftPanelInk(RaftTokens t, double brutalAlpha, Color elegant) =>
-    t.brutal ? Colors.black.withValues(alpha: brutalAlpha) : elegant;
+Color raftPanelInk(RaftTokens t, double brutalAlpha, Color elegant) => elegant;
 
 /// raft-ui `PanelTitle` as the profile detail block uses it (Web v1.21.12
 /// `<PanelTitle className="min-w-0 text-foreground-muted
@@ -60,9 +58,7 @@ TextStyle raftPanelTitleStyle(RaftTokens t) {
         .merge(slot.textStyle(rt))
         .copyWith(fontFamily: slot.fontFamily == null ? t.bodyFont : null),
   );
-  return t.brutal
-      ? style.copyWith(fontSize: 18, color: Colors.black)
-      : style.copyWith(color: t.colors['foreground-muted']);
+  return style.copyWith(color: t.colors['foreground-muted']);
 }
 
 /// AgentDetailPanel.tsx InfoRow (Web v1.21.12): `grid
@@ -86,7 +82,7 @@ class RaftInfoRow extends StatelessWidget {
       t,
       size: 14,
       line: 20,
-    ).copyWith(color: t.brutal ? Colors.black : t.colors['foreground-muted']),
+    ).copyWith(color: t.colors['foreground-muted']),
   );
 
   /// The term: `text-[13px] text-foreground-hint theme-brutal:text-black/50`.
@@ -159,7 +155,7 @@ class _RaftInlineIconButtonState extends State<RaftInlineIconButton> {
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
     final color = hovered
-        ? (t.brutal ? Colors.black : t.strong)
+        ? (t.strong)
         : raftPanelInk(t, .4, t.colors['foreground-placeholder']!);
     return RaftTooltip(
       message: widget.tooltip,
@@ -456,12 +452,12 @@ class RaftPanelHeaderBar extends StatelessWidget {
                   border: Border(
                     // Brutal `border-b-2 border-black` (pure black, not ink).
                     bottom: BorderSide(
-                      color: t.brutal ? Colors.black : t.colors['line-muted']!,
-                      width: t.brutal ? 2 : 1,
+                      color: t.colors['line-muted']!,
+                      width: 1,
                     ),
                   ),
                 )
-          : profileBody && !t.brutal
+          : (profileBody)
           // Web v1.21.12 PROFILE_HEADER_SURFACE_CLASS (elegant only):
           // `border-b border-line-muted` on the header; the 1px is inside the
           // header's height. Brutal keeps the recipe's own 2px rule.
@@ -542,7 +538,7 @@ class RaftPanelHeaderBar extends StatelessWidget {
                           overflow: lines == null
                               ? TextOverflow.clip
                               : TextOverflow.ellipsis,
-                          style: profileHandle && !t.brutal
+                          style: (profileHandle)
                               ? text(
                                   s.meta,
                                 ).copyWith(fontFamily: t.monoFont, fontSize: 15)
@@ -698,16 +694,14 @@ class _RaftPanelTabBarState<T> extends State<RaftPanelTabBar<T>> {
           }),
           tokens: rt,
         );
-    final base = style(false, false);
+
     final listBg = t.colors['layer-panel']!;
     return Container(
       decoration: BoxDecoration(
         color: listBg,
         // Web v1.21.12 drops the Tabs root `border-b` in elegant (the profile
         // header's own divider sits above); brutal keeps `border-b-2`.
-        border: t.brutal
-            ? const Border(bottom: BorderSide(color: Colors.black, width: 2))
-            : null,
+        border: null,
       ),
       child: NotificationListener<ScrollMetricsNotification>(
         onNotification: _metricsChanged,
@@ -716,37 +710,22 @@ class _RaftPanelTabBarState<T> extends State<RaftPanelTabBar<T>> {
           child: SingleChildScrollView(
             controller: scroll,
             scrollDirection: Axis.horizontal,
-            child: t.brutal
-                ? Row(
-                    children: [
-                      for (var i = 0; i < widget.tabs.length; i++)
-                        _reorderable(
-                          widget.tabs[i],
-                          _tab(widget.tabs[i], i, style, base, rt, t),
-                        ),
-                    ],
-                  )
-                // Elegant `tabs-list`: `h-12 gap-1 px-5`, no rule of its own
-                // (raft-ui 0.5.52 only draws one with TabsBackground); the
-                // `h-7` tabs sit centred and the 2px indicator on the list floor.
-                : Container(
-                    height: grows ? null : 48,
-                    constraints: grows
-                        ? const BoxConstraints(minHeight: 48)
-                        : null,
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Row(
-                      children: [
-                        for (var i = 0; i < widget.tabs.length; i++) ...[
-                          if (i > 0) const SizedBox(width: 4),
-                          _reorderable(
-                            widget.tabs[i],
-                            _elegantTab(widget.tabs[i], style, rt, t),
-                          ),
-                        ],
-                      ],
+            child: Container(
+              height: grows ? null : 48,
+              constraints: grows ? const BoxConstraints(minHeight: 48) : null,
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                children: [
+                  for (var i = 0; i < widget.tabs.length; i++) ...[
+                    if (i > 0) const SizedBox(width: 4),
+                    _reorderable(
+                      widget.tabs[i],
+                      _elegantTab(widget.tabs[i], style, rt, t),
                     ),
-                  ),
+                  ],
+                ],
+              ),
+            ),
           ),
         ),
       ),
@@ -945,99 +924,6 @@ class _RaftPanelTabBarState<T> extends State<RaftPanelTabBar<T>> {
             RaftIcon(tab.glyph!, size: size),
         child: child,
       );
-
-  Widget _tab(
-    RaftPanelTab<T> tab,
-    int index,
-    RaftTabsRecipeStyle Function(bool, bool) style,
-    RaftTabsRecipeStyle base,
-    RaftRecipeTokens rt,
-    RaftTokens t,
-  ) {
-    final grows = RaftScaled.grows(context);
-    final active = tab.id == widget.value;
-    final s = style(active, hovered == tab.id).tab;
-    final svg = s.target('& svg:not([class*=\'size-\'])') ?? s.target('& svg');
-    final iconSize = svg?.width ?? 14;
-    // CSS resolves this dimension as `2.5px`; parsing its printed text as
-    // a bare number used to fall back to 2 and thin every Brutal tab icon.
-    final strokeValue = (s.target('& svg') ?? s)['stroke-width'];
-    final stroke = strokeValue is CssNum ? strokeValue.value : 2.0;
-    final fg = s.color?.resolve(rt) ?? (t.brutal ? Colors.black : t.strong);
-    final iconColor = s.target('& svg')?.color?.resolve(rt) ?? fg;
-    final label = raftCssText.merge(
-      RaftTypography.body(
-        t,
-        size: 12,
-        line: 16,
-      ).merge(s.textStyle(rt).copyWith(color: fg)),
-    );
-    // `[&+&]:before:absolute before:inset-y-0 before:left-0 before:w-0.5
-    // before:bg-line-strong` (brutal): a 2px divider inside every tab that
-    // follows another tab.
-    final divider = index > 0 && t.brutal;
-    return RaftHoverRegion(
-      key: keys.putIfAbsent(tab.id, GlobalKey.new),
-      cursor: SystemMouseCursors.basic,
-      onEnter: (_) => setState(() => hovered = tab.id),
-      onExit: (_) => setState(() => hovered = null),
-      child: Semantics(
-        selected: active,
-        button: true,
-        label: tab.label,
-        excludeSemantics: true,
-        child: _largeContent(
-          tab,
-          child: GestureDetector(
-            key: ValueKey(
-              'panel-tab-${tab.id is Enum ? (tab.id as Enum).name : tab.id}',
-            ),
-            behavior: HitTestBehavior.opaque,
-            onTap: () => widget.onChanged(tab.id),
-            child: Container(
-              // `h-7` on SortableTabsTab overrides the recipe height.
-              height: grows ? null : 28,
-              constraints: grows ? const BoxConstraints(minHeight: 28) : null,
-              padding: EdgeInsets.only(
-                left: s.padding.left,
-                right: s.padding.right,
-              ),
-              color: s.backgroundColor?.resolve(rt),
-              foregroundDecoration: BoxDecoration(
-                border: divider
-                    ? Border(
-                        left: BorderSide(
-                          color: t.colors['line-strong']!,
-                          width: 2,
-                        ),
-                      )
-                    : null,
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  tab.iconBuilder?.call(iconSize, iconColor, stroke) ??
-                      RaftIcon(
-                        tab.glyph!,
-                        size: iconSize,
-                        strokeWidth: stroke,
-                        color: iconColor,
-                      ),
-                  SizedBox(width: s.columnGap ?? s.length('gap') ?? 6),
-                  RaftCssText(
-                    tab.label,
-                    style: label,
-                    maxLines: 1,
-                    controlLabel: true,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 }
 
 /// `<Button size="icon-sm" variant="outline">` as the detail panels use it

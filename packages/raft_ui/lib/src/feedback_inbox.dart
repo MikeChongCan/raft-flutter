@@ -403,13 +403,6 @@ class _RaftFeedbackFilterTabsState extends State<RaftFeedbackFilterTabs> {
         padding: slot.padding,
         alignment: Alignment.center,
         decoration: BoxDecoration(color: slot.backgroundColor?.resolve(rt)),
-        foregroundDecoration: t.brutal && index > 0
-            ? BoxDecoration(
-                border: Border(
-                  left: BorderSide(color: t.colors['line-strong']!, width: 2),
-                ),
-              )
-            : null,
         child: _line(
           text,
           Text(
@@ -421,7 +414,7 @@ class _RaftFeedbackFilterTabsState extends State<RaftFeedbackFilterTabs> {
           ),
         ),
       );
-      if (active && !t.brutal) {
+      if (active) {
         // The indicator: 1px inset horizontally, ~1.67px vertically.
         body = Stack(
           children: [
@@ -807,7 +800,7 @@ class RaftFeedbackEmptyState extends StatelessWidget {
     final titleStyle = _system(
       t,
       size: 15.5,
-      line: t.brutal ? 28 : 20,
+      line: 20,
       weight: FontWeight.w700,
     );
     final bodyStyle = _system(

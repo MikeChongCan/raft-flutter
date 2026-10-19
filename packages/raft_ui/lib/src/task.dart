@@ -138,7 +138,7 @@ class RaftTaskCard extends StatelessWidget {
     final t = RaftTokens.of(context);
     final rt = RaftRecipeTokens(t);
     final r = RaftTaskCardRecipe.resolve(
-      theme: t.brutal ? RaftRecipeTheme.brutal : RaftRecipeTheme.elegant,
+      theme: RaftRecipeTheme.elegant,
       states: RaftRecipeStates({if (t.dark) RaftRecipeStates.dark}),
       tokens: rt,
     );
@@ -279,14 +279,6 @@ class _RenderTaskMetaBaseline extends RenderProxyBox {
   }
 }
 
-RaftTaskStatusRecipeStatus _recipeStatus(String status) => switch (status) {
-  'in_progress' => RaftTaskStatusRecipeStatus.inProgress,
-  'in_review' => RaftTaskStatusRecipeStatus.inReview,
-  'done' => RaftTaskStatusRecipeStatus.done,
-  'closed' => RaftTaskStatusRecipeStatus.closed,
-  _ => RaftTaskStatusRecipeStatus.todo,
-};
-
 /// raft-ui TaskSection (taskListSection recipe) as TasksPanel's list view
 /// composes it (packages/web/src/components/task/TasksPanel.tsx TaskSection):
 /// trigger row with TaskSectionBadge + TaskSectionCount, then the cards
@@ -314,7 +306,7 @@ class RaftTaskSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
     final rt = RaftRecipeTokens(t);
-    final theme = t.brutal ? RaftRecipeTheme.brutal : RaftRecipeTheme.elegant;
+    final theme = RaftRecipeTheme.elegant;
     final states = RaftRecipeStates({if (t.dark) RaftRecipeStates.dark});
     final r = RaftTaskListSectionRecipe.resolve(
       theme: theme,
@@ -398,7 +390,7 @@ class RaftSliverTaskSection extends StatelessWidget {
     final t = RaftTokens.of(context),
         rt = RaftRecipeTokens(RaftTokens.of(context));
     final r = RaftTaskListSectionRecipe.resolve(
-      theme: t.brutal ? RaftRecipeTheme.brutal : RaftRecipeTheme.elegant,
+      theme: RaftRecipeTheme.elegant,
       states: RaftRecipeStates({if (t.dark) RaftRecipeStates.dark}),
       tokens: rt,
     );
@@ -563,32 +555,24 @@ class RaftTaskSectionBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
     final rt = RaftRecipeTokens(t);
-    final theme = t.brutal ? RaftRecipeTheme.brutal : RaftRecipeTheme.elegant;
+    final theme = RaftRecipeTheme.elegant;
     final badge = board
         ? RaftTaskBoardColumnRecipe.resolve(theme: theme, tokens: rt).badge
         : RaftTaskListSectionRecipe.resolve(theme: theme, tokens: rt).badge;
-    final statusStyle = RaftTaskStatusRecipe.resolve(
-      status: _recipeStatus(status),
-      tokens: rt,
-    ).base;
+
     final base = badge.textStyle(rt);
     final size = base.fontSize ?? 10;
     final fg = base.color ?? t.strong;
-    final iconColor = t.brutal
-        ? (badge.target('& svg')?.color?.resolve(rt) ?? fg)
-        : switch (status) {
-            'in_progress' => t.semantic.taskStatusInProgressStrong,
-            'in_review' => t.semantic.taskStatusInReviewStrong,
-            'done' => t.semantic.taskStatusDoneStrong,
-            'closed' => t.semantic.taskStatusClosedStrong,
-            _ => t.semantic.taskStatusTodoStrong,
-          };
+    final iconColor = switch (status) {
+      'in_progress' => t.semantic.taskStatusInProgressStrong,
+      'in_review' => t.semantic.taskStatusInReviewStrong,
+      'done' => t.semantic.taskStatusDoneStrong,
+      'closed' => t.semantic.taskStatusClosedStrong,
+      _ => t.semantic.taskStatusTodoStrong,
+    };
     return Container(
       padding: badge.padding,
-      decoration: BoxDecoration(
-        color: t.brutal ? statusStyle.backgroundColor?.resolve(rt) : null,
-        border: badge.border(rt),
-      ),
+      decoration: BoxDecoration(color: null, border: badge.border(rt)),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         spacing: badge.columnGap ?? 4,
@@ -691,16 +675,12 @@ class RaftTaskBoardColumn extends StatelessWidget {
       decorationOverride: (d) => d.copyWith(
         color: dropActive
             ? t.colors['primary-soft']
-            : t.brutal
-            ? Colors.white.withValues(alpha: .3)
             : t.colors['fill-muted']!.withValues(alpha: .3),
         border: Border.all(
           color: dropActive
-              ? (t.brutal ? Colors.black : t.colors['line-strong']!)
-              : t.brutal
-              ? Colors.black.withValues(alpha: .2)
+              ? (t.colors['line-strong']!)
               : t.colors['line-muted']!,
-          width: t.brutal ? 2 : 1,
+          width: 1,
         ),
       ),
       child: Column(
@@ -742,14 +722,10 @@ class RaftTaskLaneEmpty extends StatelessWidget {
     final t = RaftTokens.of(context);
     // Board: border 1 (Brutal 2) line-muted (black/20); list: border-2
     // line-muted (black/30).
-    final borderWidth = board ? (t.brutal ? 2.0 : 1.0) : 2.0;
-    final borderColor = t.brutal
-        ? Colors.black.withValues(alpha: board ? .2 : .3)
-        : t.colors['line-muted']!;
-    final radius = t.brutal ? 0.0 : 8.0;
-    final fillColor = board
-        ? (t.brutal ? null : t.colors['layer-panel'])
-        : fill;
+    final borderWidth = board ? (1.0) : 2.0;
+    final borderColor = t.colors['line-muted']!;
+    final radius = 8.0;
+    final fillColor = board ? (t.colors['layer-panel']) : fill;
     return SizedBox(
       width: double.infinity,
       child: CustomPaint(

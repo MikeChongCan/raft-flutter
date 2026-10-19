@@ -14,9 +14,8 @@ import 'icons.dart';
 import 'recipes/input_group.g.dart' show RaftInputGroupRecipeVariant;
 import 'theme.dart';
 
-Color _rule(RaftTokens t) => t.brutal ? Colors.black : t.colors['line-muted']!;
-Color _panel(RaftTokens t) =>
-    t.brutal ? Colors.white : t.colors['layer-panel']!;
+Color _rule(RaftTokens t) => t.colors['line-muted']!;
+Color _panel(RaftTokens t) => t.colors['layer-panel']!;
 
 /// `text-xs font-bold` strong label (selected count, Clear, error).
 TextStyle _label(RaftTokens t) => TextStyle(
@@ -101,8 +100,8 @@ class RaftForwardDesktopDialog extends StatelessWidget {
           height: height,
           decoration: BoxDecoration(
             color: panel,
-            border: Border.all(color: rule, width: t.brutal ? 2 : 1),
-            borderRadius: BorderRadius.circular(t.brutal ? 0 : 8),
+            border: Border.all(color: rule, width: 1),
+            borderRadius: BorderRadius.circular(8),
           ),
           clipBehavior: Clip.antiAlias,
           child: Column(
@@ -136,9 +135,7 @@ class RaftForwardDesktopDialog extends StatelessWidget {
                               t,
                               size: 12,
                               line: 16,
-                              color: t.brutal
-                                  ? Colors.black.withValues(alpha: .55)
-                                  : t.muted,
+                              color: t.muted,
                             ),
                           ),
                         ],

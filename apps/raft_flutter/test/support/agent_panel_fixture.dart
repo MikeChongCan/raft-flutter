@@ -139,7 +139,6 @@ Future<(AgentPanelWorkspace, AgentPanelClient)> pumpAgentPanel(
   bool canViewPrivate = true,
   AgentDetailTab tab = AgentDetailTab.profile,
   Size size = const Size(900, 1600),
-  RaftFamily family = RaftFamily.elegant,
 }) async {
   SharedPreferences.setMockInitialValues({});
   tester.view.physicalSize = size;
@@ -160,7 +159,7 @@ Future<(AgentPanelWorkspace, AgentPanelClient)> pumpAgentPanel(
   });
   await tester.pumpWidget(
     MaterialApp(
-      theme: raftTheme(family).copyWith(platform: TargetPlatform.linux),
+      theme: raftTheme().copyWith(platform: TargetPlatform.linux),
       home: Scaffold(
         body: AgentDetailPanel(
           controller: w,

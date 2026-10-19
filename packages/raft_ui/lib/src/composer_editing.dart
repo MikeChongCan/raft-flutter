@@ -92,10 +92,12 @@ class RaftDeferredComposerDraft {
     if (preferPrepend && requested.endsWith(base)) {
       return requested.substring(0, requested.length - base.length) + current;
     }
-    if (requested.startsWith(base))
+    if (requested.startsWith(base)) {
       return current + requested.substring(base.length);
-    if (requested.endsWith(base))
+    }
+    if (requested.endsWith(base)) {
       return requested.substring(0, requested.length - base.length) + current;
+    }
     final position = base.isEmpty ? -1 : requested.indexOf(base);
     if (position >= 0) {
       return requested.substring(0, position) +
@@ -118,8 +120,9 @@ class RaftDeferredComposerDraft {
         external.insertion,
       );
     }
-    if (requested.isEmpty || current.isEmpty)
+    if (requested.isEmpty || current.isEmpty) {
       return current.isEmpty ? requested : current;
+    }
     return current == requested ? current : '$current\n$requested';
   }
 }
@@ -130,8 +133,9 @@ TextSelection raftProgrammaticSelection(
   String next, {
   bool preferPrepend = false,
 }) {
-  if (!old.selection.isValid)
+  if (!old.selection.isValid) {
     return TextSelection.collapsed(offset: next.length);
+  }
   final unchanged = old.text.isEmpty
       ? -1
       : preferPrepend && next.endsWith(old.text)

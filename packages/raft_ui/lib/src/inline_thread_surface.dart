@@ -42,18 +42,13 @@ class RaftInlineThreadRecipe {
       const EdgeInsets.symmetric(horizontal: 10, vertical: 8);
   double get topGap => 6;
   double get rowGap => 4;
-  double get summaryBottomGap => tokens.brutal ? 0 : 6;
-  BorderRadius get radius => BorderRadius.circular(tokens.brutal ? 0 : 6);
-  BorderSide get border => tokens.brutal
-      ? BorderSide.none
-      : BorderSide(
-          color: tokens.dark
-              ? Colors.transparent
-              : tokens.colors['line-muted']!,
-          width: .5,
-        );
-  Color get normal =>
-      tokens.brutal ? Colors.black.withValues(alpha: .03) : tokens.card;
+  double get summaryBottomGap => 6;
+  BorderRadius get radius => BorderRadius.circular(6);
+  BorderSide get border => BorderSide(
+    color: tokens.dark ? Colors.transparent : tokens.colors['line-muted']!,
+    width: .5,
+  );
+  Color get normal => tokens.card;
   Color get muted => tokens.muted;
 
   /// `messageReplies.summary`: brutal 12.5/700 black/55; elegant 12/500
@@ -61,10 +56,10 @@ class RaftInlineThreadRecipe {
   TextStyle get summary => TextStyle(
     fontFamily: tokens.bodyFont,
     fontFamilyFallback: tokens.systemFonts ? tokens.fontFallback : null,
-    fontSize: tokens.brutal ? 12.5 : 12,
-    height: tokens.brutal ? 20 / 14 : 16 / 12,
-    fontWeight: tokens.brutal ? FontWeight.w700 : FontWeight.w500,
-    color: tokens.brutal ? Colors.black.withValues(alpha: .55) : muted,
+    fontSize: 12,
+    height: 16 / 12,
+    fontWeight: FontWeight.w500,
+    color: muted,
   );
   TextStyle get sender => TextStyle(
     fontFamily: tokens.bodyFont,
@@ -73,26 +68,22 @@ class RaftInlineThreadRecipe {
     height: 1.25,
     fontWeight: FontWeight.w600,
     // `messageReplies.sender`: brutal black/70, elegant foreground-muted.
-    color: tokens.brutal ? Colors.black.withValues(alpha: .7) : muted,
+    color: muted,
   );
   TextStyle get preview => sender.copyWith(
     fontWeight: FontWeight.w400,
     // `messageReplies.content`: brutal black/60, elegant muted at 80%.
-    color: tokens.brutal
-        ? Colors.black.withValues(alpha: .6)
-        : muted.withValues(alpha: muted.a * .8),
+    color: muted.withValues(alpha: muted.a * .8),
   );
 
   /// `messageReplies.time` (raft-ui 0.5.45: elegant sans, brutal mono) with
   /// the host's colour: elegant light `oklch(0.52 0 0)`, dark placeholder,
   /// brutal black/40.
   TextStyle get clock => TextStyle(
-    fontFamily: tokens.brutal ? tokens.monoFont : tokens.bodyFont,
+    fontFamily: tokens.bodyFont,
     fontSize: sizeTier.previewTime,
     height: 1.25,
-    color: tokens.brutal
-        ? Colors.black.withValues(alpha: .4)
-        : tokens.dark
+    color: tokens.dark
         ? tokens.colors['foreground-placeholder']
         : const Color(0xFF696969),
     fontFeatures: const [FontFeature.tabularFigures()],
@@ -149,8 +140,9 @@ class _RaftInlineThreadSurfaceState extends State<RaftInlineThreadSurface> {
         .where((r) => r.senderType != 'system')
         .take(3)
         .toList();
-    if (widget.replyCount <= 0 || visible.isEmpty)
+    if (widget.replyCount <= 0 || visible.isEmpty) {
       return const SizedBox.shrink();
+    }
     final t = RaftTokens.of(context);
     final recipe = RaftInlineThreadRecipe(
       t,
@@ -164,18 +156,14 @@ class _RaftInlineThreadSurfaceState extends State<RaftInlineThreadSurface> {
       padding: recipe.padding,
       decoration: RaftCssBoxDecoration(
         color: hovered
-            ? t.brutal
-                  ? Colors.black.withValues(alpha: .08)
-                  : widget.hoverBackground ?? recipe.normal
+            ? widget.hoverBackground ?? recipe.normal
             : recipe.normal,
         border: Border.fromBorderSide(recipe.border),
         borderRadius: recipe.radius,
         boxShadow: hovered ? widget.hoverShadows : widget.normalShadows,
       ),
       child: DefaultTextStyle(
-        style: recipe.summary.copyWith(
-          color: hovered && t.brutal ? t.strong : recipe.summary.color,
-        ),
+        style: recipe.summary.copyWith(color: recipe.summary.color),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisSize: MainAxisSize.min,
@@ -371,17 +359,8 @@ class RaftInlineReplyAvatar extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: t.colors['fill-muted'],
-        border: Border.all(
-          color: t.brutal ? Colors.black : t.colors['line-muted']!,
-          width: 1,
-        ),
-        borderRadius: BorderRadius.circular(
-          t.brutal
-              ? 0
-              : circular
-              ? 10
-              : 4,
-        ),
+        border: Border.all(color: t.colors['line-muted']!, width: 1),
+        borderRadius: BorderRadius.circular(circular ? 10 : 4),
       ),
       child: child,
     );

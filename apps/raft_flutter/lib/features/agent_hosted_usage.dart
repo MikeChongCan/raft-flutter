@@ -114,11 +114,8 @@ class _AgentHostedRuntimeUsageState extends State<AgentHostedRuntimeUsage> {
     final locale = Localizations.localeOf(context).toLanguageTag();
     final summary = _summary;
     String tr(String s) => raftText(context, s);
-    final hint = RaftPanelText.caption(t).copyWith(
-      color: t.brutal
-          ? raftPanelInk(t, .5, t.colors['foreground-muted']!)
-          : t.colors['foreground-hint'],
-    );
+    final hint = RaftPanelText.caption(t)
+        .copyWith(color: t.colors['foreground-hint']);
     final value = RaftPanelText.profileValue(t);
     final mono = RaftPanelText.profileMono(t);
     String usd(num v) => hostedUsd(

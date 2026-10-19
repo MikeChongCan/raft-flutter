@@ -13,7 +13,6 @@ Future<void> mountRaftbench(
   Widget child, {
   Size size = raftbenchDesktop,
   Locale locale = const Locale('en'),
-  RaftFamily family = RaftFamily.elegant,
   bool dark = false,
 }) async {
   t.view.physicalSize = size;
@@ -22,7 +21,7 @@ Future<void> mountRaftbench(
   await t.pumpWidget(
     MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: raftTheme(family, dark: dark),
+      theme: raftTheme(dark: dark),
       locale: locale,
       supportedLocales: const [Locale('en'), Locale('zh')],
       localizationsDelegates: GlobalMaterialLocalizations.delegates,

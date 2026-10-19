@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import 'attachment_tokens.dart';
@@ -9,10 +10,11 @@ import 'theme.dart';
 List<List<int>> raftImageGalleryRows(
   List<({double? width, double? height})> images,
 ) {
-  if (images.length == 1)
+  if (images.length == 1) {
     return [
       [0],
     ];
+  }
   final rows = <List<int>>[], buffered = <int>[];
   void flush() {
     final chunk = buffered.length == 4 ? 2 : 3;

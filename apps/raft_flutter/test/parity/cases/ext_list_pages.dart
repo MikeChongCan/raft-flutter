@@ -80,7 +80,9 @@ class _ListWorkspace extends ParityFixtureWorkspace {
     }
     if (path == '/agents' && ctx.props['extKind'] == 'create-channel') {
       // primeCreateChannelStores' roster: Cindy + the inline Visual QA agent.
-      final cindy = Map<String, dynamic>.from(ctx.fixtureData['agents']['cindy'] as Map);
+      final cindy = Map<String, dynamic>.from(
+        ctx.fixtureData['agents']['cindy'] as Map,
+      );
       return [
         {
           'id': cindy['id'],
@@ -188,7 +190,6 @@ SearchMemoryStore _memory(ParityContext ctx, _ListWorkspace w) {
   return SearchMemoryStore(storage: storage, clock: () => parityNow(ctx));
 }
 
-
 // ------------------------------------------------------------ notification center (desktop rail bell)
 
 class _NoticeStore extends SystemNotificationStore {
@@ -229,7 +230,7 @@ Widget _notification(ParityContext ctx) {
           padding: const EdgeInsets.only(bottom: 12),
           child: Builder(
             builder: (context) => SizedBox(
-              width: RaftTokens.of(context).brutal ? 64 : 56,
+              width: 56,
               height: 44,
               child: Center(
                 child: SystemNotificationBell(
@@ -362,7 +363,7 @@ Widget _mComputers(ParityContext ctx) => ScreenWorkspaceHost(
       // The Web body sits under the 62 / 56px PanelHeader; the page header
       // is the owner's native app bar, so only the body is compared.
       child: Padding(
-        padding: EdgeInsets.only(top: RaftTokens.of(context).brutal ? 62 : 56),
+        padding: EdgeInsets.only(top: 56),
         child: KeyedSubtree(
           key: const ValueKey('mobile-computers-body'),
           child: FleetView(
@@ -426,11 +427,7 @@ Widget _mAdd(ParityContext ctx) => ScreenWorkspaceHost(
           return Stack(
             children: [
               Positioned.fill(
-                child: ColoredBox(
-                  color: t.brutal
-                      ? Colors.black.withValues(alpha: .6)
-                      : t.colors['layer-backdrop']!,
-                ),
+                child: ColoredBox(color: t.colors['layer-backdrop']!),
               ),
               AddComputerDialog(controller: w, deployment: 'development'),
             ],
@@ -440,7 +437,6 @@ Widget _mAdd(ParityContext ctx) => ScreenWorkspaceHost(
     ),
   ),
 );
-
 
 // ------------------------------------------------------------ channel member dialogs
 
@@ -452,10 +448,7 @@ Widget _removeMember(ParityContext ctx) {
       alignment: Alignment.topLeft,
       child: Padding(
         padding: const EdgeInsets.all(16),
-        child: ChannelMembersButton(
-          controller: w,
-          channel: w.channels.first,
-        ),
+        child: ChannelMembersButton(controller: w, channel: w.channels.first),
       ),
     ),
   );
@@ -588,7 +581,12 @@ Widget _panel(ParityContext ctx) {
   );
 }
 
-Future<void> _tap(WidgetTester t, Finder f, [int ms = 300, bool last = false]) async {
+Future<void> _tap(
+  WidgetTester t,
+  Finder f, [
+  int ms = 300,
+  bool last = false,
+]) async {
   await t.tap(last ? f.last : f.first);
   await t.pump(Duration(milliseconds: ms));
 }
@@ -624,7 +622,10 @@ Future<void> _interact(WidgetTester t, ParityContext ctx) async {
     case final k when k.startsWith('activity.') && k.endsWith('-context-menu'):
       await _rightClick(t, find.byType(RaftConversationCard));
     case final k when k.startsWith('saved.') && k.endsWith('-actions'):
-      await _rightClick(t, find.byKey(const ValueKey('saved-msg-saved-visual-1')));
+      await _rightClick(
+        t,
+        find.byKey(const ValueKey('saved-msg-saved-visual-1')),
+      );
     case 'tasks.desktop-list':
       await _tap(t, find.text('List'));
     case 'tasks.desktop-status-menu':
@@ -654,7 +655,9 @@ Future<void> _interact(WidgetTester t, ParityContext ctx) async {
       await _click(t, find.byKey(const ValueKey('channel-members-open')));
       await t.pump(const Duration(milliseconds: 400));
       // ignore: avoid_print
-      print('REMOVE-DEBUG ${find.byType(RaftIconButton).evaluate().map((e) => (e.widget as RaftIconButton).tooltip).toList()}');
+      print(
+        'REMOVE-DEBUG ${find.byType(RaftIconButton).evaluate().map((e) => (e.widget as RaftIconButton).tooltip).toList()}',
+      );
       await _tap(
         t,
         find.byWidgetPredicate(

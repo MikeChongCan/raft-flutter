@@ -169,11 +169,8 @@ class _AgentHostedRuntimeStatusState extends State<AgentHostedRuntimeStatus> {
     final describe = view;
     String tr(String s) => raftText(context, s);
     final warning = RaftPanelText.warningCaption(t);
-    final hint = RaftPanelText.caption(t).copyWith(
-      color: t.brutal
-          ? raftPanelInk(t, .5, t.colors['foreground-muted']!)
-          : t.colors['foreground-hint'],
-    );
+    final hint = RaftPanelText.caption(t)
+        .copyWith(color: t.colors['foreground-hint']);
     return RaftGapColumn(
       key: ValueKey('agent-hosted-runtime-status-${summary.state}'),
       gap: 8,

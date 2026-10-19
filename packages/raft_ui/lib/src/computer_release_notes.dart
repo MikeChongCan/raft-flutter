@@ -39,7 +39,7 @@ class _RaftReleaseNotesLinkState extends State<RaftReleaseNotesLink> {
           size: 12,
           line: 16,
           weight: FontWeight.w500,
-          color: t.brutal ? t.product.brutalPink : t.colors['accent-strong'],
+          color: t.colors['accent-strong'],
         ),
       ),
     );

@@ -105,8 +105,9 @@ class _RaftEditorGroupsState extends State<RaftEditorGroups> {
               ![
                 LogicalKeyboardKey.arrowRight,
                 LogicalKeyboardKey.arrowLeft,
-              ].contains(event.logicalKey))
+              ].contains(event.logicalKey)) {
             return KeyEventResult.ignored;
+          }
           final step = event.logicalKey == LogicalKeyboardKey.arrowRight
               ? 1
               : -1;

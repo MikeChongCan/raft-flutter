@@ -315,7 +315,7 @@ class _MarkdownBlocks {
     );
     // Elegant InlineCode is `inline-flex` (an atomic box that can grow its
     // line); brutal code is an inline box that never does.
-    final atomic = !t.brutal && _hasWidgetSpan(spans);
+    final atomic = (_hasWidgetSpan(spans));
     return atomic ? _CssAtomicLines(style: style, child: text) : text;
   }
 
@@ -427,7 +427,6 @@ class _MarkdownBlocks {
           fontFamilyFallback: parent.fontFamilyFallback,
         );
     final size = style.fontSize ?? 14;
-    final elegant = !t.brutal;
     return WidgetSpan(
       alignment: PlaceholderAlignment.baseline,
       baseline: TextBaseline.alphabetic,
@@ -444,15 +443,12 @@ class _MarkdownBlocks {
               fontSize: MediaQuery.textScalerOf(context).scale(size),
             );
             final (ascent, descent) = raftCssContentMetrics(scaled);
-            final box = elegant
-                ? scaled.fontSize! * (scaled.height ?? 1)
-                : ascent + descent;
+            final box = scaled.fontSize! * (scaled.height ?? 1);
             return SizedBox(
               height: box,
               child: Baseline(
-                baseline: elegant
-                    ? ascent + ((box - (ascent + descent)) / 2).floorToDouble()
-                    : ascent,
+                baseline:
+                    ascent + ((box - (ascent + descent)) / 2).floorToDouble(),
                 baselineType: TextBaseline.alphabetic,
                 child: Text(
                   text,

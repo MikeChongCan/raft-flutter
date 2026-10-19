@@ -564,8 +564,9 @@ final class RaftRecipeAxis {
       throw ArgumentError('Recipe axis "$name" requires a value');
     }
     final i = values.indexOf(v);
-    if (i < 0)
+    if (i < 0) {
       throw ArgumentError.value(value, name, 'expected one of $values');
+    }
     return allowsUnset ? i + 1 : i;
   }
 
@@ -736,8 +737,9 @@ final class RaftRecipeEngine {
       CssValue? lookup(String name) {
         final own = props[name];
         if (own != null) return own;
-        if (target != 'self' && !registered.containsKey(name))
+        if (target != 'self' && !registered.containsKey(name)) {
           return self[name];
+        }
         return null;
       }
 
@@ -789,8 +791,9 @@ class _EvalContext {
             return CssNum(v, unit);
           }
         }
-        if (name == 'color-mix')
+        if (name == 'color-mix') {
           return _evalColorMix(args) ?? CssFunction(name, args);
+        }
         return CssFunction(name, args);
       case CssSeq(:final items):
         final evaluated = [for (final x in items) evaluate(x, depth + 1)];
@@ -849,8 +852,9 @@ class _EvalContext {
       return _arith(e.op, a, b) ?? CssOp(e.op, a, b);
     }
     if (e is CssCalc) return _evalMath(e.expr, depth + 1);
-    if (e is CssKeyword && e.value == 'infinity')
+    if (e is CssKeyword && e.value == 'infinity') {
       return const CssNum(3.4028234663852886e38);
+    }
     final v = evaluate(e, depth + 1);
     if (v is CssCalc) return v.expr;
     if (v is CssSeq && v.items.isEmpty) return const CssNum(0);
@@ -1140,16 +1144,18 @@ class RaftSlotStyle {
       final style = this['border-$s-style'];
       if (style == null ||
           (style is CssKeyword &&
-              (style.value == 'none' || style.value == 'hidden')))
+              (style.value == 'none' || style.value == 'hidden'))) {
         return 0;
+      }
       final w = this['border-$s-width'];
       if (w == null) return 3; // CSS initial 'medium'
-      if (w is CssKeyword)
+      if (w is CssKeyword) {
         return switch (w.value) {
           'thin' => 1,
           'thick' => 5,
           _ => 3,
         };
+      }
       return _px(w) ?? 0;
     }
 
@@ -1169,8 +1175,9 @@ class RaftSlotStyle {
   /// Corner radii in px (null when no radius is declared).
   BorderRadius? get borderRadius {
     final keys = ['top-left', 'top-right', 'bottom-right', 'bottom-left'];
-    if (!keys.any((k) => properties.containsKey('border-$k-radius')))
+    if (!keys.any((k) => properties.containsKey('border-$k-radius'))) {
       return null;
+    }
     Radius r(String k) => Radius.circular(length('border-$k-radius') ?? 0);
     return BorderRadius.only(
       topLeft: r('top-left'),
@@ -1398,8 +1405,9 @@ class RaftSlotStyle {
 /// Parses a resolved `box-shadow` value into layers (zero transparent layers
 /// such as Tailwind's `0 0 #0000` placeholders are dropped).
 List<RaftShadowLayer> raftShadowLayers(CssValue? v) {
-  if (v == null || v is CssUnset || (v is CssKeyword && v.value == 'none'))
+  if (v == null || v is CssUnset || (v is CssKeyword && v.value == 'none')) {
     return const [];
+  }
   final layers = v is CssList ? v.items : [v];
   final out = <RaftShadowLayer>[];
   for (final layer in layers) {

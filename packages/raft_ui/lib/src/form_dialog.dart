@@ -181,8 +181,9 @@ class _RaftFormDialogState extends State<RaftFormDialog> {
       });
       // Authority guards can remove this route while an awaited submission
       // completes. Its stale context must never pop the underlying home route.
-      if (mounted && ModalRoute.of(context)?.isCurrent == true)
+      if (mounted && ModalRoute.of(context)?.isCurrent == true) {
         Navigator.pop(context, true);
+      }
     } catch (e) {
       if (mounted) {
         final custom = widget.errorContent?.call(context, e);
@@ -219,7 +220,7 @@ class _RaftFormDialogState extends State<RaftFormDialog> {
                   t,
                   size: 14,
                   line: 20,
-                  weight: t.brutal ? FontWeight.w700 : FontWeight.w500,
+                  weight: FontWeight.w500,
                 ),
               ),
             ),
@@ -273,11 +274,12 @@ class _RaftFormDialogState extends State<RaftFormDialog> {
                         final text = field.trim
                             ? value?.trim() ?? ''
                             : value ?? '';
-                        if (field.required && text.isEmpty)
+                        if (field.required && text.isEmpty) {
                           return Localizations.localeOf(context).languageCode ==
                                   'zh'
                               ? '${label}为必填项。'
                               : '${field.label} is required.';
+                        }
                         final problem = field.validator?.call(text);
                         return problem == null
                             ? null

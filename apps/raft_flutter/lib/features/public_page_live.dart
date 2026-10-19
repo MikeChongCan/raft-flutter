@@ -41,11 +41,7 @@ Widget? channelPublicLeading(
   return RaftPublicChannelMark(
     size: 16,
     color: dimmed
-        ? t.brutal
-              ? t.strong.withValues(alpha: .4)
-              : t.colors['foreground-placeholder']
-        : t.brutal
-        ? t.strong
+        ? t.colors['foreground-placeholder']
         : t.colors['foreground-icon'],
   );
 }

@@ -22,7 +22,6 @@ import 'recipes/status.g.dart';
 import 'settings_controls.dart';
 import 'settings_layout.dart';
 import 'theme.dart';
-import 'tokens/shadows.g.dart' show RaftProductShadows;
 import 'tooltip.dart';
 import 'viewport_breakpoints.dart';
 
@@ -349,9 +348,7 @@ class RaftPlanBillingLoading extends StatelessWidget {
                   size: 12,
                   line: 16,
                   weight: FontWeight.w700,
-                  color: t.brutal
-                      ? Colors.black.withValues(alpha: .45)
-                      : t.muted,
+                  color: t.muted,
                 ),
               ),
             ),
@@ -461,7 +458,7 @@ class RaftPlanBillingLoading extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: divider.headerFill,
-                  border: Border.all(color: text.edge, width: t.brutal ? 2 : 1),
+                  border: Border.all(color: text.edge, width: 1),
                   boxShadow: _shadowSm(t),
                 ),
                 child: Column(
@@ -491,9 +488,7 @@ class RaftPlanBillingLoading extends StatelessWidget {
   }
 }
 
-List<BoxShadow> _shadowSm(RaftTokens t) => t.brutal
-    ? RaftProductShadows.shadowBrutalSm.outer
-    : t.themeShadows.sm.outer;
+List<BoxShadow> _shadowSm(RaftTokens t) => t.themeShadows.sm.outer;
 
 /// Card section rules: the header's `border-b-2 border-line-muted
 /// theme-brutal:border-black` and the strips' `border-t-2 border-line-muted
@@ -501,13 +496,11 @@ List<BoxShadow> _shadowSm(RaftTokens t) => t.brutal
 class _BillingLines {
   _BillingLines(this.t);
   final RaftTokens t;
-  Color get header => t.brutal ? Colors.black : t.colors['line-muted']!;
-  Color get strip =>
-      t.brutal ? Colors.black.withValues(alpha: .1) : t.colors['line-muted']!;
+  Color get header => t.colors['line-muted']!;
+  Color get strip => t.colors['line-muted']!;
 
   /// `bg-layer-canvas-muted theme-brutal:bg-brutal-cream`.
-  Color get headerFill =>
-      t.brutal ? t.product.brutalCream : t.colors['layer-canvas-muted']!;
+  Color get headerFill => t.colors['layer-canvas-muted']!;
   BoxDecoration get top => BoxDecoration(
     border: Border(top: BorderSide(color: strip, width: 2)),
   );
@@ -546,12 +539,7 @@ class _BillingSkeleton extends StatelessWidget {
         applyOpacity: false,
         decorationOverride: outlined
             ? (base) => base.copyWith(
-                border: Border.all(
-                  color: t.brutal
-                      ? Colors.black.withValues(alpha: .2)
-                      : t.colors['line-muted']!,
-                  width: t.brutal ? 2 : 1,
-                ),
+                border: Border.all(color: t.colors['line-muted']!, width: 1),
               )
             : null,
       ),
@@ -650,15 +638,12 @@ class _BillingNoticeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
     final text = RaftSettingsText(t);
-    final white = t.brutal ? Colors.white : t.panel;
+    final white = t.panel;
     final fill = switch (notice.tone) {
-      RaftBillingNoticeTone.trial =>
-        t.brutal
-            ? Color.alphaBlend(
-                t.product.softSignal.withValues(alpha: .3),
-                white,
-              )
-            : Color.alphaBlend(t.colors['primary-soft']!, white),
+      RaftBillingNoticeTone.trial => Color.alphaBlend(
+        t.colors['primary-soft']!,
+        white,
+      ),
       RaftBillingNoticeTone.downgrade => Color.alphaBlend(
         t.product.brutalOrange.withValues(alpha: .2),
         white,
@@ -679,7 +664,7 @@ class _BillingNoticeCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: fill,
-        border: Border.all(color: text.edge, width: t.brutal ? 2 : 1),
+        border: Border.all(color: text.edge, width: 1),
         boxShadow: _shadowSm(t),
       ),
       child: Column(
@@ -993,9 +978,7 @@ class _SeatUsage extends StatelessWidget {
                     width: box.maxWidth * usage.humanPercent / 100,
                     child: segment(
                       usage.humanPercent,
-                      t.brutal
-                          ? t.product.softSignal
-                          : t.colors['primary-strong']!,
+                      t.colors['primary-strong']!,
                       usage.humanTooltip,
                     ),
                   ),
@@ -1003,9 +986,7 @@ class _SeatUsage extends StatelessWidget {
                     width: box.maxWidth * usage.agentPercent / 100,
                     child: segment(
                       usage.agentPercent,
-                      t.brutal
-                          ? t.product.brutalPink
-                          : t.colors['accent-strong']!,
+                      t.colors['accent-strong']!,
                       usage.agentTooltip,
                     ),
                   ),
@@ -1150,7 +1131,7 @@ class _ManagePlanCard extends StatelessWidget {
               t,
               size: 11,
               line: 11 * 1.5,
-              color: t.brutal ? Colors.black.withValues(alpha: .5) : t.muted,
+              color: t.muted,
             ),
           ),
         ],
@@ -1221,12 +1202,8 @@ class _SummaryCard extends StatelessWidget {
       tokens: rt,
       padding: const EdgeInsets.all(16),
       applyText: false,
-      decorationOverride: (base) => base.copyWith(
-        color: t.brutal
-            ? t.product.brutalCream
-            : t.colors['layer-canvas-muted'],
-        border: t.brutal ? Border.all(color: Colors.black, width: 2) : null,
-      ),
+      decorationOverride: (base) =>
+          base.copyWith(color: t.colors['layer-canvas-muted']),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
@@ -1238,7 +1215,7 @@ class _SummaryCard extends StatelessWidget {
               size: 12,
               line: 16,
               weight: FontWeight.w700,
-              color: t.brutal ? Colors.black.withValues(alpha: .5) : t.muted,
+              color: t.muted,
             ),
           ),
           const SizedBox(height: 12),
@@ -1258,13 +1235,9 @@ class _SummaryCard extends StatelessWidget {
                       Text(
                         row.struck!,
                         style: value.copyWith(
-                          color: t.brutal
-                              ? Colors.black.withValues(alpha: .4)
-                              : t.muted,
+                          color: t.muted,
                           decoration: TextDecoration.lineThrough,
-                          decorationColor: t.brutal
-                              ? Colors.black.withValues(alpha: .4)
-                              : t.muted,
+                          decorationColor: t.muted,
                         ),
                       ),
                     for (final v in row.values) Text(v, style: value),

@@ -1218,8 +1218,9 @@ class _RaftMermaidBlockState extends State<RaftMermaidBlock> {
         if (mounted &&
             current == revision &&
             content == widget.source &&
-            renderedDark == dark)
+            renderedDark == dark) {
           setState(() => scene = value);
+        }
       },
       errorBuilder: (context, error) => Column(
         mainAxisSize: MainAxisSize.min,
@@ -1257,8 +1258,9 @@ class _RaftMermaidBlockState extends State<RaftMermaidBlock> {
         if (mounted && current == revision) setState(() => copied = false);
       });
     } catch (_) {
-      if (mounted && current == revision)
+      if (mounted && current == revision) {
         setState(() => copyError = 'Could not copy code.');
+      }
     }
   }
 
@@ -1291,15 +1293,17 @@ class _RaftMermaidBlockState extends State<RaftMermaidBlock> {
         if (!mounted ||
             current != revision ||
             content != widget.source ||
-            dark != RaftTokens.of(context).dark)
+            dark != RaftTokens.of(context).dark) {
           return;
+        }
         await widget.onExport!(extension, bytes);
       } finally {
         bytes.fillRange(0, bytes.length, 0);
       }
     } catch (_) {
-      if (mounted && current == revision)
+      if (mounted && current == revision) {
         setState(() => copyError = 'Could not export diagram.');
+      }
     }
   }
 
@@ -1329,7 +1333,7 @@ class _RaftMermaidBlockState extends State<RaftMermaidBlock> {
     final t = RaftTokens.of(context);
     final recipe = RaftCodeRecipe(t);
     final surface = recipe.background;
-    final border = t.brutal ? Colors.black : t.colors['line'] ?? t.line;
+    final border = t.colors['line'] ?? t.line;
     final height = (MediaQuery.sizeOf(context).height * .5).clamp(320.0, 560.0);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -1461,7 +1465,7 @@ class _MermaidToolbar extends StatelessWidget {
           sourceTabWidth: tabWidth('Code'),
         );
         final desktop = toolbarRecipe.desktop;
-        final line = t.brutal ? Colors.black : t.colors['line'] ?? t.line;
+        final line = t.colors['line'] ?? t.line;
         Widget control(
           RaftGlyph icon,
           String tooltip,
@@ -1485,7 +1489,7 @@ class _MermaidToolbar extends StatelessWidget {
             key: ValueKey((icon, desktop)),
             kind: RaftControlKind.tab,
             selected: selected,
-            shadow: !t.brutal,
+            shadow: true,
             onPressed: action,
             tooltip: raftText(context, tooltip),
             visualHeight: toolbarRecipe.tabVisualHeight,
@@ -2000,8 +2004,9 @@ class _RaftCodeBlockState extends State<RaftCodeBlock> {
         if (mounted && current == revision) setState(() => copied = false);
       });
     } catch (_) {
-      if (mounted && current == revision)
+      if (mounted && current == revision) {
         setState(() => error = 'Could not copy code.');
+      }
     }
   }
 
@@ -2159,7 +2164,7 @@ final _darkCodeTokenTheme = raftCodeTokenTheme(dark: true);
 /// The source Shiki Github high contrast primitives mapped to the native
 /// tokenizer's semantic scopes. Scope boundaries are independently compared.
 Map<String, TextStyle> raftCodeTokenTheme({required bool dark}) {
-  if (!dark)
+  if (!dark) {
     return {
       for (final entry in githubTheme.entries)
         entry.key
@@ -2169,6 +2174,7 @@ Map<String, TextStyle> raftCodeTokenTheme({required bool dark}) {
             entry.value,
       'root': const TextStyle(color: Color(0xff24292e)),
     };
+  }
   const colors = <int, int>{
     0xffc9d1d9: 0xfff0f3f6,
     0xffff7b72: 0xffff9492,
@@ -2259,13 +2265,8 @@ InlineSpan _searchMarkSpan(
     text: text,
     recognizer: recognizer,
     mouseCursor: recognizer == null ? null : SystemMouseCursors.click,
-    background: (t.brutal
-        ? t.product.softSignal.withValues(alpha: .7)
-        : t.colors['primary-soft'])!,
-    style: base.copyWith(
-      backgroundColor: Colors.transparent,
-      color: t.brutal ? base.color : t.strong,
-    ),
+    background: (t.colors['primary-soft'])!,
+    style: base.copyWith(backgroundColor: Colors.transparent, color: t.strong),
   );
 }
 

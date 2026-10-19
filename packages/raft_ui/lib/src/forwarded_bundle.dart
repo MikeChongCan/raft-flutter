@@ -64,8 +64,9 @@ bool _canOpenSource(Map item) {
 List<RaftForwardedItem> raftForwardedItems(Map<String, dynamic> metadata) {
   if (metadata['kind'] != 'forwarded-bundle' ||
       metadata['version'] != 1 ||
-      metadata['forwardedItems'] is! List)
+      metadata['forwardedItems'] is! List) {
     return [];
+  }
   final raw = metadata['forwardedItems'] as List;
   if (raw.isEmpty || raw.length > 20) return [];
   final result = <RaftForwardedItem>[];
@@ -76,8 +77,9 @@ List<RaftForwardedItem> raftForwardedItems(Map<String, dynamic> metadata) {
         ![
           'available',
           'original_unavailable',
-        ].contains(item['provenanceState']))
+        ].contains(item['provenanceState'])) {
       continue;
+    }
     final target = item['sourceTargetSnapshot'];
     final author = item['sourceAuthorSnapshot'];
     var name = '';
@@ -166,8 +168,9 @@ List<RaftForwardedItem> raftForwardedItems(Map<String, dynamic> metadata) {
   final isThread = result.any((r) => r.thread);
   if (isThread &&
       !raw.every((r) => r is Map && r['sourceIsThreadParent'] is bool) &&
-      !result.any((r) => r.parent))
+      !result.any((r) => r.parent)) {
     return result;
+  }
   result.sort(
     (a, b) => isThread && a.parent != b.parent
         ? a.parent
@@ -274,14 +277,14 @@ class _RaftForwardedBundleState extends State<RaftForwardedBundle> {
 
   @override
   Widget build(BuildContext context) {
-    final t = RaftTokens.of(context),
-        recipe = ForwardedSnapshotRecipe(
-          RaftTokens.of(context),
-          devicePixelRatio: MediaQuery.devicePixelRatioOf(context),
-        );
+    final recipe = ForwardedSnapshotRecipe(
+      RaftTokens.of(context),
+      devicePixelRatio: MediaQuery.devicePixelRatioOf(context),
+    );
     final items = raftForwardedItems(widget.metadata);
-    if (items.isEmpty)
+    if (items.isEmpty) {
       return Text(raftText(context, 'Forwarded messages unavailable.'));
+    }
     final foldable =
         bodyHeights.length == items.length &&
         bodyHeights.values.fold<double>(0, (a, b) => a + b) >
@@ -387,9 +390,9 @@ class _RaftForwardedBundleState extends State<RaftForwardedBundle> {
       decoration: recipe.contentDecoration,
       child: collapsed
           ? ClipRRect(
-              borderRadius: t.brutal
-                  ? BorderRadius.zero
-                  : BorderRadius.circular(RichCardPrimitive.contentRadius),
+              borderRadius: BorderRadius.circular(
+                RichCardPrimitive.contentRadius,
+              ),
               child: Stack(
                 children: [
                   ConstrainedBox(

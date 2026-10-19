@@ -160,8 +160,9 @@ class _RaftEmojiPickerState extends State<RaftEmojiPicker> {
     _recentEmoji
       ..remove(chosen)
       ..insert(0, chosen);
-    if (_recentEmoji.length > 8)
+    if (_recentEmoji.length > 8) {
       _recentEmoji.removeRange(8, _recentEmoji.length);
+    }
     widget.onEmojiClick(chosen);
   }
 

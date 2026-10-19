@@ -98,11 +98,7 @@ class _RaftSurfaceListItemState extends State<RaftSurfaceListItem> {
       states: t.recipeStates(),
       tokens: rt,
     ).root;
-    if (!t.brutal) {
-      // Source Card + SurfaceListItem caller classes. The mounted Web uses a
-      // 1px border; dark:border-transparent remains more specific than the
-      // caller's unprefixed border color. Re-resolve the complete shadow so a
-      // selected/hovered surface does not retain the default Card inset.
+    {
       final classes = [
         ...card.classes.where(
           (name) =>
@@ -129,29 +125,6 @@ class _RaftSurfaceListItemState extends State<RaftSurfaceListItem> {
         rt,
       );
     }
-    List<BoxShadow> shadow(RaftShadow s) => [
-      for (final l in s.layers.reversed)
-        if (!l.inset)
-          BoxShadow(
-            color: l.color,
-            offset: l.offset,
-            blurRadius: raftCssBlurRadius(l.blur),
-            spreadRadius: l.spread,
-          ),
-    ];
-    BoxDecoration brutalDecoration(BoxDecoration decoration) =>
-        decoration.copyWith(
-          color: widget.selected
-              ? widget.selectedBackground ??
-                    t.product.brutalCyan.withValues(alpha: .15)
-              : hover || widget.background == null
-              ? RaftPrimitiveColors.white
-              : widget.background,
-          border: Border.all(color: RaftPrimitiveColors.black, width: 2),
-          boxShadow: widget.selected || hover
-              ? shadow(RaftProductShadows.shadowBrutalSm)
-              : null,
-        );
 
     Widget item = RaftRecipeBox(
       style: card,
@@ -159,12 +132,9 @@ class _RaftSurfaceListItemState extends State<RaftSurfaceListItem> {
       width: double.infinity,
       padding: widget.padding,
       clip: true,
-      decorationOverride: t.brutal
-          ? brutalDecoration
-          : widget.selected && widget.selectedBackground != null
+      decorationOverride: widget.selected && widget.selectedBackground != null
           ? (d) => d.copyWith(color: widget.selectedBackground)
           : widget.background != null && !widget.selected
-          // `hover:bg-layer-panel` replaces the callsite fill on hover.
           ? (d) => d.copyWith(
               color: hover ? t.colors['layer-panel'] : widget.background,
             )
@@ -244,30 +214,15 @@ class RaftChoiceCard extends StatelessWidget {
           decorationOverride: (base) {
             final pressed = state.enabled && state.pressed;
             return base.copyWith(
-              color: pressed
-                  ? (t.brutal
-                        ? t.product.brutalCream
-                        : t.colors['layer-canvas-muted'])
-                  : base.color,
-              border: active && !t.brutal
+              color: pressed ? (t.colors['layer-canvas-muted']) : base.color,
+              border: (active)
                   ? Border.all(color: t.colors['line-strong']!)
                   : base.border,
               boxShadow: [
-                if (t.brutal)
-                  // The idle brutal card already carries `shadow-brutal-sm`;
-                  // pressing it in removes the shadow.
-                  ...(pressed
-                      ? const <BoxShadow>[]
-                      : base.boxShadow ?? const [])
-                else ...[
-                  ...?base.boxShadow,
-                  if (active) ...t.shadows,
-                ],
+                ...[...?base.boxShadow, if (active) ...t.shadows],
                 if (state.focusVisible)
                   BoxShadow(
-                    color: (t.brutal ? Colors.black : t.ink).withValues(
-                      alpha: .8,
-                    ),
+                    color: (t.ink).withValues(alpha: .8),
                     spreadRadius: 2,
                   ),
               ],
@@ -319,17 +274,15 @@ class RaftAvatarListRow extends StatelessWidget {
     final nameStyle = TextStyle(
       fontSize: 14,
       height: 20 / 14,
-      fontWeight: t.brutal ? FontWeight.w700 : FontWeight.w600,
-      color: t.brutal ? RaftPrimitiveColors.black : s.foregroundMuted,
+      fontWeight: FontWeight.w600,
+      color: s.foregroundMuted,
     );
     final subtitleStyle = TextStyle(
       fontFamily: t.monoFont,
       fontWeight: FontWeight.w400,
       fontSize: 12,
       height: 16 / 12,
-      color: t.brutal
-          ? RaftPrimitiveColors.black.withValues(alpha: .5)
-          : t.colors['foreground-hint']!,
+      color: t.colors['foreground-hint']!,
     );
     List<Widget> gapped(List<Widget> items) => [
       for (var i = 0; i < items.length; i++) ...[
@@ -497,11 +450,7 @@ class RaftSectionHeader extends StatelessWidget {
       children: [
         if (icon != null) ...[
           IconTheme.merge(
-            data: IconThemeData(
-              color: t.brutal
-                  ? RaftPrimitiveColors.black.withValues(alpha: .6)
-                  : t.semantic.foregroundMuted,
-            ),
+            data: IconThemeData(color: t.semantic.foregroundMuted),
             child: icon!,
           ),
           const SizedBox(width: 8),
@@ -517,9 +466,7 @@ class RaftSectionHeader extends StatelessWidget {
                       text: '$count',
                       style: TextStyle(
                         fontFamily: t.monoFont,
-                        color: t.brutal
-                            ? RaftPrimitiveColors.black.withValues(alpha: .4)
-                            : t.semantic.foregroundPlaceholder,
+                        color: t.semantic.foregroundPlaceholder,
                       ),
                     ),
                   ],
@@ -674,9 +621,7 @@ class _RaftCollapsibleSectionHeaderState
           child: RaftIcon(
             RaftGlyph.chevronRight,
             size: 12,
-            color: t.brutal
-                ? RaftPrimitiveColors.black.withValues(alpha: .6)
-                : t.semantic.foregroundMuted,
+            color: t.semantic.foregroundMuted,
           ),
         ),
       ],
@@ -790,12 +735,8 @@ class RaftMenuButtonItem extends StatelessWidget {
           ).root;
           final hover = st.hovered && enabled;
           final ink = !enabled
-              ? (t.brutal
-                    ? RaftPrimitiveColors.black.withValues(alpha: .3)
-                    : t.semantic.foregroundMuted)
-              : (t.brutal
-                    ? RaftPrimitiveColors.black
-                    : t.semantic.foregroundStrong);
+              ? (t.semantic.foregroundMuted)
+              : (t.semantic.foregroundStrong);
           final side = (s.border(rt) ?? const Border()).top;
           final dividerColor = RaftPrimitiveColors.black.withValues(alpha: .1);
           return RaftRecipeBox(
@@ -809,11 +750,7 @@ class RaftMenuButtonItem extends StatelessWidget {
               BorderSide sideOf(double w) =>
                   w <= 0 ? BorderSide.none : BorderSide(color: color, width: w);
               return d.copyWith(
-                color: hover
-                    ? (t.brutal
-                          ? t.product.softSignal.withValues(alpha: .3)
-                          : t.semantic.fillMuted)
-                    : d.color,
+                color: hover ? (t.semantic.fillMuted) : d.color,
                 border: Border(
                   top: sideOf(topDivider ? 1 : side.width),
                   left: sideOf(side.width),
@@ -937,8 +874,8 @@ class RaftSelectionPopover extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
     final s = t.semantic;
-    final black = RaftPrimitiveColors.black;
-    final divider = BorderSide(color: t.brutal ? black : s.lineMuted);
+
+    final divider = BorderSide(color: s.lineMuted);
     final eyebrow = TextStyle(
       fontSize: 10,
       height: 1.5,
@@ -998,7 +935,7 @@ class RaftSelectionPopover extends StatelessWidget {
                 base: DefaultTextStyle.of(context).style,
               ),
               childText: inputText,
-              height: 16 + 8 + (t.brutal ? 4 : 2),
+              height: 16 + 8 + (2),
               child: RaftTextInput(
                 controller: searchController,
                 focusNode: searchFocusNode,
@@ -1054,12 +991,7 @@ class RaftSelectionPopover extends StatelessWidget {
         padding: EdgeInsets.zero,
         // Source's theme-brutal:shadow-brutal is a product utility. It replaces
         // the default recipe shadow; an explicit caller recipe owns its shadows.
-        decorationOverride:
-            (surfaceStyle == null || brutalProductShadow) && t.brutal
-            ? (decoration) => decoration.copyWith(
-                boxShadow: RaftProductShadows.shadowBrutal.paintOrder,
-              )
-            : null,
+        decorationOverride: null,
         child: ClipRRect(borderRadius: contentRadius, child: body),
       ),
     );
@@ -1090,9 +1022,9 @@ RaftSlotStyle _selectionPopoverSurface(RaftTokens tokens) {
       }.contains(name),
     ),
     'min-w-[220px]',
-    tokens.brutal ? 'border-2' : 'border',
-    tokens.brutal ? 'border-black' : 'border-line-muted',
-    tokens.brutal ? 'bg-white' : 'bg-layer-panel',
+    'border',
+    'border-line-muted',
+    'bg-layer-panel',
     'shadow-raft-sm',
   ];
   return raftRecipeEngine.resolveSlot(
@@ -1193,13 +1125,9 @@ class _SelectionRowState extends State<_SelectionRow> {
     final t = RaftTokens.of(context);
     final s = t.semantic;
     final o = widget.option;
-    final black = RaftPrimitiveColors.black;
-    final ink = o.disabled
-        ? (t.brutal ? black.withValues(alpha: .3) : s.foregroundMuted)
-        : (t.brutal ? black : s.foregroundStrong);
-    final bg = !o.disabled && state.hovered
-        ? (t.brutal ? t.product.softSignal.withValues(alpha: .3) : s.fillMuted)
-        : (t.brutal ? RaftPrimitiveColors.white : s.layerPanel);
+
+    final ink = o.disabled ? (s.foregroundMuted) : (s.foregroundStrong);
+    final bg = !o.disabled && state.hovered ? (s.fillMuted) : (s.layerPanel);
     final leading = o.leading;
     final label = o.italic
         ? Text(
@@ -1208,7 +1136,7 @@ class _SelectionRowState extends State<_SelectionRow> {
             style: TextStyle(
               height: 2,
               fontStyle: FontStyle.italic,
-              color: t.brutal ? black.withValues(alpha: .7) : s.foregroundMuted,
+              color: s.foregroundMuted,
             ),
           )
         : Text(
@@ -1229,11 +1157,7 @@ class _SelectionRowState extends State<_SelectionRow> {
           color: bg,
           border: widget.last
               ? null
-              : Border(
-                  bottom: BorderSide(
-                    color: t.brutal ? black.withAlpha(26) : s.lineMuted,
-                  ),
-                ),
+              : Border(bottom: BorderSide(color: s.lineMuted)),
         ),
         child: DefaultTextStyle.merge(
           style: TextStyle(

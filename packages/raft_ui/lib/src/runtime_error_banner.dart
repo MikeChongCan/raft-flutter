@@ -41,7 +41,7 @@ class RaftRuntimeErrorBanner extends StatelessWidget {
       size: 13,
       line: 18,
       weight: FontWeight.w600,
-      color: t.brutal ? Colors.black : t.strong,
+      color: t.strong,
     ).copyWith(decoration: TextDecoration.underline);
     return Semantics(
       liveRegion: true,
@@ -50,14 +50,9 @@ class RaftRuntimeErrorBanner extends StatelessWidget {
         key: const ValueKey('runtime-error-banner'),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         decoration: BoxDecoration(
-          color: t.brutal
-              ? t.product.brutalOrange.withValues(alpha: .2)
-              : t.colors['warning-soft'],
+          color: t.colors['warning-soft'],
           border: Border(
-            bottom: BorderSide(
-              color: t.brutal ? Colors.black : t.colors['line-muted']!,
-              width: t.brutal ? 2 : 1,
-            ),
+            bottom: BorderSide(color: t.colors['line-muted']!, width: 1),
           ),
         ),
         child: Row(

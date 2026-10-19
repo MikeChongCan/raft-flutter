@@ -17,8 +17,7 @@ import 'theme.dart';
 import 'tokens/tokens.dart';
 
 extension RaftRecipeBinding on RaftTokens {
-  RaftRecipeTheme get recipeTheme =>
-      brutal ? RaftRecipeTheme.brutal : RaftRecipeTheme.elegant;
+  RaftRecipeTheme get recipeTheme => RaftRecipeTheme.elegant;
 
   RaftRecipeTokens get recipeTokens => RaftRecipeTokens(this);
 
@@ -356,8 +355,9 @@ class RaftRecipeBox extends StatelessWidget {
             ),
       ],
     );
-    if (decorationOverride != null)
+    if (decorationOverride != null) {
       decoration = decorationOverride!(decoration);
+    }
     // CSS outer box-shadows never paint under the border box (a translucent
     // background must not reveal them), unlike Flutter's BoxDecoration.
     final outerShadows = decoration.boxShadow ?? const <BoxShadow>[];

@@ -74,9 +74,7 @@ class RaftChannelJointSectionView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
-    final hairline = t.brutal
-        ? Colors.black.withValues(alpha: .1)
-        : t.colors['line-muted']!;
+    final hairline = t.colors['line-muted']!;
     // v1.21.23 `SectionEyebrow tone="muted"`: a small muted sentence-case
     // heading (the uppercase eyebrow went with the old themes).
     final eyebrow = raftCssTextStyle(

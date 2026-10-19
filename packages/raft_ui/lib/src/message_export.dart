@@ -167,8 +167,9 @@ class _RaftSelectionToolbarState extends State<RaftSelectionToolbar> {
                               (copy ? 1 : 0) +
                               (forward ? 1 : 0) +
                               (all ? 1 : 0);
-                          if (bounds.maxWidth > lastActionsWidth + 8)
+                          if (bounds.maxWidth > lastActionsWidth + 8) {
                             compactLevel = 0;
+                          }
                           lastActionsWidth = bounds.maxWidth;
                           compactLevel = compactLevel.clamp(0, maxLevel);
                           bool isCopy(int n) => n >= 1;

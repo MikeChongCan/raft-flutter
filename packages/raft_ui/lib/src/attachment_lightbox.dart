@@ -135,19 +135,16 @@ class RaftLightboxHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
-    final rule = t.brutal ? 2.0 : borderWidth;
+    final rule = borderWidth;
     return RaftStatusBarSource(
-      color: t.brutal ? Colors.white : t.panel,
+      color: t.panel,
       child: DefaultTextHeightBehavior(
         textHeightBehavior: raftCssTextHeightBehavior,
         child: DecoratedBox(
           decoration: BoxDecoration(
-            color: t.brutal ? Colors.white : t.panel,
+            color: t.panel,
             border: Border(
-              bottom: BorderSide(
-                color: t.brutal ? Colors.black : t.colors['line-muted']!,
-                width: rule,
-              ),
+              bottom: BorderSide(color: t.colors['line-muted']!, width: rule),
             ),
           ),
           // Larger text: the bar is a minimum height and the title and the
@@ -189,7 +186,7 @@ class RaftLightboxHeader extends StatelessWidget {
                                   fontWeight: titleBold
                                       ? FontWeight.w700
                                       : FontWeight.w400,
-                                  color: t.brutal ? Colors.black : t.strong,
+                                  color: t.strong,
                                 ),
                               ),
                               if (subtitle != null)
@@ -206,9 +203,7 @@ class RaftLightboxHeader extends StatelessWidget {
                                     fontFamily: t.bodyFont,
                                     fontSize: 12,
                                     height: 16 / 12,
-                                    color: t.brutal
-                                        ? Colors.black.withValues(alpha: .7)
-                                        : t.muted,
+                                    color: t.muted,
                                   ),
                                 ),
                             ],
@@ -259,12 +254,12 @@ class RaftLightboxAside extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
-    final rule = t.brutal ? 2.0 : borderWidth;
-    final color = t.brutal ? Colors.black : t.colors['line-muted']!;
+    final rule = borderWidth;
+    final color = t.colors['line-muted']!;
     return Container(
       width: raftLightboxAsideWidth,
       decoration: BoxDecoration(
-        color: t.brutal ? Colors.white : t.panel,
+        color: t.panel,
         border: Border(
           left: BorderSide(color: color, width: rule),
           top: topBorder
@@ -390,16 +385,10 @@ class RaftAttachmentLightbox extends StatelessWidget {
             Positioned.fill(
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: t.brutal ? Colors.white : t.panel,
+                  color: t.panel,
                   border: Border(
-                    left: BorderSide(
-                      color: t.brutal ? Colors.black : t.colors['line-muted']!,
-                      width: 2,
-                    ),
-                    top: BorderSide(
-                      color: t.brutal ? Colors.black : t.colors['line-muted']!,
-                      width: 2,
-                    ),
+                    left: BorderSide(color: t.colors['line-muted']!, width: 2),
+                    top: BorderSide(color: t.colors['line-muted']!, width: 2),
                   ),
                 ),
                 child: aside!,

@@ -404,9 +404,7 @@ class _DesktopDirectoryViewState extends State<DesktopDirectoryView> {
           id: 'directory-machine-group-${entry.key}',
           build: (_) => RaftSidebarMachineGroup(
             key: ValueKey('directory-machine-group-${entry.key}'),
-            topPadding: index == 0
-                ? 2
-                : 6 - (RaftTokens.of(context).brutal ? 4 : 2),
+            topPadding: index == 0 ? 2 : 6 - (2),
             disclosureKey: ValueKey(
               'directory-machine-disclosure-${entry.key}',
             ),
@@ -436,7 +434,7 @@ class _DesktopDirectoryViewState extends State<DesktopDirectoryView> {
     final inset = recipe
         .contentInset(headerInFlow: true)
         .resolve(Directionality.of(context));
-    final floatingBar = widget.mobileRoot && !RaftTokens.of(context).brutal;
+    final floatingBar = widget.mobileRoot;
     return raftScrollPadding(
       context,
       floatingBar ? inset.copyWith(bottom: 0) : inset,
@@ -584,7 +582,7 @@ class _DesktopDirectoryViewState extends State<DesktopDirectoryView> {
               ? 8
               : agents.isEmpty || loading
               ? 12
-              : 12 - (t.brutal ? 4 : 2),
+              : 12 - (2),
           failed: directory.state(WorkspaceEntityKind.members).error != null,
         ),
     ];

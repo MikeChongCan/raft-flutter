@@ -7,7 +7,6 @@ import 'css_pixel_snap.dart';
 import 'design_primitives.dart';
 import 'localization.dart';
 import 'theme.dart';
-import 'tokens/shadows.g.dart' show RaftProductShadows;
 
 /// What the QR box shows.
 enum RaftChineseCommunityQr {
@@ -49,7 +48,7 @@ class RaftChineseCommunityPage extends StatelessWidget {
     final t = RaftTokens.of(context);
     final safe = MediaQuery.paddingOf(context);
     final wide = MediaQuery.sizeOf(context).width >= 640;
-    final black = const Color(0xFF000000);
+
     final box = AspectRatio(
       aspectRatio: 1,
       child: Container(
@@ -57,12 +56,9 @@ class RaftChineseCommunityPage extends StatelessWidget {
         clipBehavior: Clip.antiAlias,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: t.brutal ? t.product.brutalCream : t.canvas,
-          border: Border.all(
-            color: t.brutal ? black : t.semantic.lineMuted,
-            width: t.border,
-          ),
-          borderRadius: BorderRadius.circular(t.brutal ? 0 : 6),
+          color: t.canvas,
+          border: Border.all(color: t.semantic.lineMuted, width: t.border),
+          borderRadius: BorderRadius.circular(6),
         ),
         child: switch (state) {
           RaftChineseCommunityQr.loading => Container(
@@ -71,7 +67,7 @@ class RaftChineseCommunityPage extends StatelessWidget {
             height: 160,
             decoration: BoxDecoration(
               color: t.colors['fill-muted'] ?? t.semantic.lineMuted,
-              borderRadius: BorderRadius.circular(t.brutal ? 0 : 6),
+              borderRadius: BorderRadius.circular(6),
             ),
           ),
           RaftChineseCommunityQr.image => SizedBox.expand(
@@ -107,21 +103,16 @@ class RaftChineseCommunityPage extends StatelessWidget {
         constraints: const BoxConstraints(maxWidth: 320),
         padding: EdgeInsets.all(wide ? 16 : 12),
         decoration: BoxDecoration(
-          color: t.brutal ? const Color(0xFFFFFFFF) : t.panel,
-          border: Border.all(
-            color: t.brutal ? black : t.semantic.lineMuted,
-            width: t.border,
-          ),
-          borderRadius: BorderRadius.circular(t.brutal ? 0 : 8),
-          boxShadow: t.brutal
-              ? RaftProductShadows.shadowBrutal.paintOrder
-              : t.themeShadows.md.paintOrder,
+          color: t.panel,
+          border: Border.all(color: t.semantic.lineMuted, width: t.border),
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: t.themeShadows.md.paintOrder,
         ),
         child: box,
       ),
     );
     return Material(
-      color: t.brutal ? t.product.brutalCream : t.canvas,
+      color: t.canvas,
       child: DefaultTextStyle.merge(
         style: TextStyle(
           fontFamily: t.headingFont,
@@ -156,7 +147,7 @@ class RaftChineseCommunityPage extends StatelessWidget {
                                   size: wide ? 30 : 24,
                                   line: wide ? 36 : 32,
                                   weight: RaftTypography.black(t),
-                                  color: t.brutal ? black : t.strong,
+                                  color: t.strong,
                                 ),
                               ),
                             ),

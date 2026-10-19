@@ -432,7 +432,7 @@ void main() {
       t,
     ) async {
       final (c, _) = await _pump(t, hosted: _hosted('active'));
-      expect(find.text('USAGE (LAST 7 DAYS)'), findsOneWidget);
+      expect(find.text('Usage (last 7 days)'), findsOneWidget);
       expect(c.calls, contains('GET /agents/ext-1/hosted-runtime/usage'));
       final q = c.queries['usage'] as Map;
       expect(q['bucket'], '1d');
@@ -477,7 +477,7 @@ void main() {
       final hidden = _Client(_hosted('active'))
         ..usage = RaftApiException('forbidden', status: 403);
       await _pump(t, client: hidden);
-      expect(find.text('USAGE (LAST 7 DAYS)'), findsNothing);
+      expect(find.text('Usage (last 7 days)'), findsNothing);
     });
 
     testWidgets('a provider failure or 429 warns instead of hiding', (t) async {
@@ -502,7 +502,7 @@ void main() {
 
     testWidgets('only an active cloud agent shows usage', (t) async {
       final (c, _) = await _pump(t, hosted: _hosted('failed'));
-      expect(find.text('USAGE (LAST 7 DAYS)'), findsNothing);
+      expect(find.text('Usage (last 7 days)'), findsNothing);
       expect(
         c.calls.where((x) => x.endsWith('/hosted-runtime/usage')),
         isEmpty,

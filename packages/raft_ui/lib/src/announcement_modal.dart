@@ -232,10 +232,7 @@ class RaftAnnouncementCard extends StatelessWidget {
       step: (14, 22.75), // text-sm/relaxed
       color: ink,
     ).copyWith(fontFamilyFallback: t.fontFallback);
-    final rule = BorderSide(
-      color: t.brutal ? t.semantic.lineStrong : t.semantic.lineMuted,
-      width: t.brutal ? 2 : 1,
-    );
+    final rule = BorderSide(color: t.semantic.lineMuted, width: 1);
     final picture = image;
     final content = Column(
       mainAxisSize: MainAxisSize.min,
@@ -339,7 +336,7 @@ class RaftAnnouncementCard extends StatelessWidget {
                 width: width,
                 // `p-0 gap-0` over the dialog recipe's padding and gap.
                 padding: EdgeInsets.zero,
-                clip: !t.brutal,
+                clip: !false,
                 child: content,
               ),
             ),
@@ -396,11 +393,8 @@ class _Picture extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
-    final border = Border.all(
-      color: t.brutal ? t.semantic.lineStrong : t.semantic.lineMuted,
-      width: t.brutal ? 2 : 1,
-    );
-    final radius = t.brutal ? BorderRadius.zero : BorderRadius.circular(8);
+    final border = Border.all(color: t.semantic.lineMuted, width: 1);
+    final radius = BorderRadius.circular(8);
     return Container(
       key: const ValueKey('announcement-picture'),
       height: 176,

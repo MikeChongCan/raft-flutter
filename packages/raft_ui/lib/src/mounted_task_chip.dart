@@ -18,10 +18,10 @@ class RaftMessageTaskChipRecipe extends RaftControlRecipe {
   const RaftMessageTaskChipRecipe(super.tokens, this.status)
     : super(variant: RaftControlVariant.ghost);
   final RaftMessageTaskStatus status;
-  double get chipHeight => tokens.brutal ? 13 * 1.25 + 2 : 19;
-  double get gap => tokens.brutal ? 4 : 6;
-  double get borderWidth => tokens.brutal ? 1 : .5;
-  double get hoverBrightness => tokens.brutal ? .90 : .96;
+  double get chipHeight => 19;
+  double get gap => 6;
+  double get borderWidth => .5;
+  double get hoverBrightness => .96;
   @override
   bool get transformsOnInteraction => false;
   @override
@@ -33,10 +33,9 @@ class RaftMessageTaskChipRecipe extends RaftControlRecipe {
   @override
   Color get focusRing => tokens.colors['line-strong']!;
   @override
-  BorderRadius get radius => BorderRadius.circular(tokens.brutal ? 0 : 999);
+  BorderRadius get radius => BorderRadius.circular(999);
   @override
-  EdgeInsets get padding =>
-      EdgeInsets.symmetric(horizontal: tokens.brutal ? 4 : 8);
+  EdgeInsets get padding => EdgeInsets.symmetric(horizontal: 8);
   String get _token => tokenOf(status);
 
   /// The `--task-status-*` token a status paints with. The one place a task
@@ -53,13 +52,11 @@ class RaftMessageTaskChipRecipe extends RaftControlRecipe {
   /// Brutal: the solid `taskStatus` fill. Elegant: the status' soft wash
   /// (raft-ui 0.5.30+: colours come from the `--task-status-*` tokens).
   @override
-  Color get background =>
-      tokens.colors[tokens.brutal ? _token : '$_token-soft']!;
+  Color get background => tokens.colors['$_token-soft']!;
 
   /// Brutal `text-black`; elegant the status' strong ink.
   @override
-  Color get foreground =>
-      tokens.brutal ? Colors.black : tokens.colors['$_token-strong']!;
+  Color get foreground => tokens.colors['$_token-strong']!;
 
   /// `TaskStatusIcon`: the strong token (elegant); brutal paints `currentColor`.
   Color get iconForeground => foreground;
@@ -77,9 +74,7 @@ class RaftMessageTaskChipRecipe extends RaftControlRecipe {
   @override
   BorderSide side({bool hovered = false}) => BorderSide(
     width: borderWidth,
-    color: tokens.brutal
-        ? Colors.black
-        : _opacity(tokens.colors['$_token-strong']!, .35),
+    color: _opacity(tokens.colors['$_token-strong']!, .35),
   );
   @override
   Gradient? get overlayGradient => null;
@@ -95,8 +90,8 @@ class RaftMessageTaskChipRecipe extends RaftControlRecipe {
   TextStyle get textStyle => RaftTypography.body(
     tokens,
     size: 13,
-    line: tokens.brutal ? 13 * 1.25 : 13,
-    weight: tokens.brutal ? FontWeight.w500 : FontWeight.w400,
+    line: 13,
+    weight: FontWeight.w400,
     color: foreground,
   ).copyWith(letterSpacing: 0);
   static Color _opacity(Color color, double factor) =>

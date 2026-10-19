@@ -380,28 +380,19 @@ class _MemberProfileViewState extends ManagementState<MemberProfileView> {
 
   /// HumanDetailPanel.tsx ROLE_CONFIG brutal backgrounds (`theme-brutal:bg-*`)
   /// and elegant soft tokens.
-  Color roleInk(RaftTokens t, String role) => t.brutal
-      ? t.product.brutalBlack
-      : switch (role) {
-          'owner' => t.colors['warning-strong']!,
-          'admin' => t.colors['accent-strong']!,
-          'guest' => t.colors['info-strong']!,
-          _ => t.colors['foreground-strong']!,
-        };
+  Color roleInk(RaftTokens t, String role) => switch (role) {
+    'owner' => t.colors['warning-strong']!,
+    'admin' => t.colors['accent-strong']!,
+    'guest' => t.colors['info-strong']!,
+    _ => t.colors['foreground-strong']!,
+  };
 
-  Color roleColor(RaftTokens t, String role) => t.brutal
-      ? switch (role) {
-          'owner' => t.product.brutalOrange,
-          'admin' => t.product.brutalPink,
-          'guest' => t.product.brutalCyan,
-          _ => t.product.brutalLavender,
-        }
-      : switch (role) {
-          'owner' => t.colors['warning-soft']!,
-          'admin' => t.colors['accent-soft']!,
-          'guest' => t.colors['info-soft']!,
-          _ => t.colors['fill-muted']!,
-        };
+  Color roleColor(RaftTokens t, String role) => switch (role) {
+    'owner' => t.colors['warning-soft']!,
+    'admin' => t.colors['accent-soft']!,
+    'guest' => t.colors['info-soft']!,
+    _ => t.colors['fill-muted']!,
+  };
 
   /// Live agent activity (`agent:activity`) else the summary's status: the
   /// created-agent row's StatusDot (`computeAgentDisplayState`).

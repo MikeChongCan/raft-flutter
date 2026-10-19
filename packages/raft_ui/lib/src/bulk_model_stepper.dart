@@ -12,21 +12,19 @@ class RaftBulkModelStepper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
-    final strong = t.brutal ? Colors.black : t.colors['foreground-strong']!;
-    final placeholder = t.brutal
-        ? Colors.black
-        : t.colors['foreground-placeholder']!;
-    final done = t.brutal ? Colors.black : t.colors['success-strong']!;
+    final strong = t.colors['foreground-strong']!;
+    final placeholder = t.colors['foreground-placeholder']!;
+    final done = t.colors['success-strong']!;
     TextStyle style(Color color) => RaftTypography.body(
       t,
       size: 12,
       line: 16,
-      weight: t.brutal ? FontWeight.w700 : FontWeight.w500,
+      weight: FontWeight.w500,
       color: color,
-    ).copyWith(letterSpacing: t.brutal ? 0.3 : null);
+    ).copyWith(letterSpacing: null);
     String label(String source) {
       final text = raftText(context, source);
-      return t.brutal ? text.toUpperCase() : text;
+      return text;
     }
 
     Widget step(Widget marker, String text, Color color) => Row(
@@ -62,12 +60,7 @@ class RaftBulkModelStepper extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          Expanded(
-            child: Container(
-              height: t.brutal ? 2 : 1,
-              color: t.brutal ? Colors.black : t.colors['line-muted'],
-            ),
-          ),
+          Expanded(child: Container(height: 1, color: t.colors['line-muted'])),
           const SizedBox(width: 8),
           Flexible(child: step(number(2, second), 'Review', second)),
         ],

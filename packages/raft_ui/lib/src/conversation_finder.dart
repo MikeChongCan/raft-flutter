@@ -67,7 +67,7 @@ class RaftConversationFinderField extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 10),
           decoration: BoxDecoration(
             color: t.colors['layer-card'],
-            borderRadius: BorderRadius.circular(t.brutal ? 0 : 8),
+            borderRadius: BorderRadius.circular(8),
             border: Border.all(color: t.colors['line-strong']!, width: 1.5),
             boxShadow: focusNode.hasFocus
                 ? [BoxShadow(color: t.colors['primary-soft']!, spreadRadius: 3)]
@@ -150,11 +150,8 @@ class RaftConversationFinderPanel extends StatelessWidget {
         padding: const EdgeInsets.all(6),
         decoration: BoxDecoration(
           color: t.popover,
-          borderRadius: BorderRadius.circular(t.brutal ? 0 : 12),
-          border: Border.all(
-            color: t.colors['line-muted']!,
-            width: t.brutal ? 2 : 1,
-          ),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: t.colors['line-muted']!, width: 1),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: .16),
@@ -227,7 +224,7 @@ class RaftConversationFinderRow extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(
               color: active ? t.colors['primary-soft'] : null,
-              borderRadius: BorderRadius.circular(t.brutal ? 0 : 8),
+              borderRadius: BorderRadius.circular(8),
             ),
             child: Row(
               spacing: 10,

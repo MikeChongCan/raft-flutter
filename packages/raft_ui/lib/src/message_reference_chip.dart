@@ -81,8 +81,7 @@ class RaftReferenceAppearance {
   final WidgetBuilder? hoverCard;
 }
 
-RaftRecipeTheme _theme(RaftTokens t) =>
-    t.brutal ? RaftRecipeTheme.brutal : RaftRecipeTheme.elegant;
+RaftRecipeTheme _theme(RaftTokens t) => RaftRecipeTheme.elegant;
 
 /// Inline span for one reference inside a markdown paragraph. [base] is the
 /// surrounding paragraph style (the recipes use `font-size: inherit`).
@@ -417,9 +416,7 @@ class RaftReferenceChip extends StatelessWidget {
                 fontSize: 10,
                 height: 1,
                 fontWeight: FontWeight.w400,
-                color: t.brutal
-                    ? Colors.black.withValues(alpha: .5)
-                    : t.colors['foreground-placeholder'],
+                color: t.colors['foreground-placeholder'],
               ),
             ),
           ],

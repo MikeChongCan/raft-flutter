@@ -231,11 +231,8 @@ class _AgentHostedRuntimeModelState extends State<AgentHostedRuntimeModel> {
     if (_load == _Load.hidden) return const SizedBox.shrink();
     final t = RaftTokens.of(context);
     final view = _view;
-    final muted = RaftPanelText.caption(t).copyWith(
-      color: t.brutal
-          ? raftPanelInk(t, .6, t.colors['foreground-muted']!)
-          : t.colors['foreground-muted'],
-    );
+    final muted = RaftPanelText.caption(t)
+        .copyWith(color: t.colors['foreground-muted']);
     final Widget body;
     if (_load == _Load.loading) {
       body = Align(

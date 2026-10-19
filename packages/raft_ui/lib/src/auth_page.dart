@@ -24,7 +24,6 @@ import 'recipes/recipe_runtime.dart';
 import 'recipes/token_binding.dart';
 import 'status_bar.dart';
 import 'theme.dart' hide RaftFieldRecipe;
-import 'tokens/tokens.dart';
 import 'recipe_surface.dart' show RaftCssBoxDecoration, RaftRecipeBinding;
 
 /// RaftAuthShell (packages/web/src/components/brand/RaftAuthShell.tsx):
@@ -175,7 +174,7 @@ class RaftAuthTopBar extends StatelessWidget {
     final t = RaftTokens.of(context);
     final width = MediaQuery.sizeOf(context).width;
     return RaftStatusBarSource(
-      color: t.brutal ? t.product.softSignal : t.panel,
+      color: t.panel,
       child: Container(
         height: height,
         // `px-4 sm:px-6 md:px-8`.
@@ -183,12 +182,8 @@ class RaftAuthTopBar extends StatelessWidget {
           horizontal: width >= 768 ? 32 : (width >= 640 ? 24 : 16),
         ),
         decoration: BoxDecoration(
-          color: t.brutal ? t.product.softSignal : t.panel,
-          border: Border(
-            bottom: t.brutal
-                ? const BorderSide(color: Color(0xFF000000), width: 2)
-                : BorderSide(color: t.semantic.lineHairline),
-          ),
+          color: t.panel,
+          border: Border(bottom: BorderSide(color: t.semantic.lineHairline)),
         ),
         child: Row(
           children: [
@@ -327,7 +322,7 @@ class RaftAuthField extends StatelessWidget {
     final t = RaftTokens.of(context);
     final tokens = RaftRecipeTokens(t);
     final style = field_recipe.RaftFieldRecipe.resolve(
-      theme: t.brutal ? RaftRecipeTheme.brutal : RaftRecipeTheme.elegant,
+      theme: RaftRecipeTheme.elegant,
       // `dark:text-foreground-hint` on the elegant label (raft-ui field).
       states: t.recipeStates(),
       tokens: tokens,
@@ -498,10 +493,7 @@ class RaftAuthOrDivider extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
     final rule = Expanded(
-      child: Container(
-        height: 2,
-        color: t.brutal ? const Color(0xFF000000) : t.semantic.lineStrong,
-      ),
+      child: Container(height: 2, color: t.semantic.lineStrong),
     );
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16),
@@ -515,7 +507,7 @@ class RaftAuthOrDivider extends StatelessWidget {
               t,
               size: 12,
               line: 16,
-            ).copyWith(color: t.brutal ? const Color(0x73000000) : t.muted),
+            ).copyWith(color: t.muted),
           ),
           const SizedBox(width: 12),
           rule,
@@ -600,7 +592,7 @@ class _RaftAuthLegalCheckboxState extends State<RaftAuthLegalCheckbox> {
     ).copyWith(color: t.muted);
     final link = base.copyWith(fontWeight: FontWeight.w700, color: t.strong);
     final size = RaftCheckboxRecipe.resolve(
-      theme: t.brutal ? RaftRecipeTheme.brutal : RaftRecipeTheme.elegant,
+      theme: RaftRecipeTheme.elegant,
       size: RaftCheckboxRecipeSize.md,
     ).root.width!;
     return Row(
@@ -684,7 +676,7 @@ class _RaftAuthLegalNoticeState extends State<RaftAuthLegalNotice> {
     final base = RaftTypography.sans(
       t,
       size: RaftSansSize.caption,
-      color: t.brutal ? const Color(0x99000000) : t.muted,
+      color: t.muted,
     ).copyWith(height: 20 / 12);
     return RaftUnderlines(
       child: Text.rich(
@@ -782,9 +774,7 @@ class RaftAuthTextLink extends StatelessWidget {
               boxShadow: [
                 if (state.focusVisible)
                   BoxShadow(
-                    color: (t.brutal ? Colors.black : t.ink).withValues(
-                      alpha: .8,
-                    ),
+                    color: (t.ink).withValues(alpha: .8),
                     spreadRadius: 2,
                   ),
               ],
@@ -837,11 +827,7 @@ TextStyle _linkStyle(
   final base = sans
       ? RaftTypography.body(t, size: size, line: line, weight: weight)
       : RaftTypography.heading(t, size: size, line: line, weight: weight);
-  return base.copyWith(
-    color: primary
-        ? (t.brutal ? t.product.brutalPink : t.semantic.accentStrong)
-        : t.muted,
-  );
+  return base.copyWith(color: primary ? (t.semantic.accentStrong) : t.muted);
 }
 
 /// `TextSans size="small" className="mt-4 text-center
@@ -871,7 +857,7 @@ class RaftAuthPrompt extends StatelessWidget {
     final style = RaftTypography.sans(
       t,
       size: RaftSansSize.small,
-      color: t.brutal ? const Color(0x99000000) : t.muted,
+      color: t.muted,
     );
     // Wrap measures a trailing/leading space as nothing: keep it as NBSP.
     Widget run(String value) => Text(
@@ -952,15 +938,13 @@ class RaftAuthHandleGroup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
-    final border = t.brutal
-        ? const BorderSide(color: Color(0xFF000000), width: 2)
-        : BorderSide(color: t.semantic.lineField);
+    final border = BorderSide(color: t.semantic.lineField);
     return Container(
       decoration: BoxDecoration(
-        color: t.brutal ? const Color(0xFFFFFFFF) : t.panel,
+        color: t.panel,
         border: Border.fromBorderSide(border),
-        borderRadius: t.brutal ? null : BorderRadius.circular(6),
-        boxShadow: t.brutal ? RaftProductShadows.shadowBrutalSm.outer : null,
+        borderRadius: BorderRadius.circular(6),
+        boxShadow: null,
       ),
       child: IntrinsicHeight(
         child: Row(
@@ -972,9 +956,7 @@ class RaftAuthHandleGroup extends StatelessWidget {
               decoration: BoxDecoration(
                 color: t.product.softSignal,
                 border: Border(
-                  right: t.brutal
-                      ? border
-                      : BorderSide(color: t.semantic.lineHairline),
+                  right: BorderSide(color: t.semantic.lineHairline),
                 ),
               ),
               child: Text(
@@ -983,7 +965,7 @@ class RaftAuthHandleGroup extends StatelessWidget {
                   t,
                   size: 16,
                   line: 24,
-                  color: t.brutal ? const Color(0x99000000) : t.muted,
+                  color: t.muted,
                 ).copyWith(fontWeight: FontWeight.w700),
               ),
             ),
@@ -1025,11 +1007,7 @@ class RaftAuthAvatarField extends StatelessWidget {
         Row(
           children: [
             DecoratedBox(
-              decoration: RaftCssBoxDecoration(
-                boxShadow: t.brutal
-                    ? RaftProductShadows.shadowBrutalSm.outer
-                    : null,
-              ),
+              decoration: RaftCssBoxDecoration(boxShadow: null),
               child: RaftAvatar(name: name, size: 56, imageUrl: imageUrl),
             ),
             const SizedBox(width: 12),
@@ -1313,9 +1291,7 @@ class RaftAuthPage extends StatelessWidget {
                 size: 12,
                 line: 16,
                 weight: FontWeight.w400,
-                color: RaftTokens.of(context).brutal
-                    ? const Color(0x80000000)
-                    : RaftTokens.of(context).muted,
+                color: RaftTokens.of(context).muted,
               ),
             ),
           ],
@@ -1569,27 +1545,27 @@ class RaftAuthVerifyPage extends StatelessWidget {
                     final color = active ? t.strong : t.muted;
                     return RaftUnderlines(
                       child: Text.rich(
-                      TextSpan(
-                        style: _linkStyle(t).copyWith(color: color),
-                        children: [
-                          WidgetSpan(
-                            alignment: PlaceholderAlignment.middle,
-                            child: Padding(
-                              padding: const EdgeInsets.only(right: 4),
-                              child: RaftIcon(
-                                RaftGlyph.keyRound,
-                                size: 12,
-                                color: color,
+                        TextSpan(
+                          style: _linkStyle(t).copyWith(color: color),
+                          children: [
+                            WidgetSpan(
+                              alignment: PlaceholderAlignment.middle,
+                              child: Padding(
+                                padding: const EdgeInsets.only(right: 4),
+                                child: RaftIcon(
+                                  RaftGlyph.keyRound,
+                                  size: 12,
+                                  color: color,
+                                ),
                               ),
                             ),
-                          ),
-                          RaftUnderlineSpan(
-                            text: manualOpen
-                                ? tr('Hide manual entry')
-                                : tr('Enter code manually'),
-                          ),
-                        ],
-                      ),
+                            RaftUnderlineSpan(
+                              text: manualOpen
+                                  ? tr('Hide manual entry')
+                                  : tr('Enter code manually'),
+                            ),
+                          ],
+                        ),
                       ),
                     );
                   },
@@ -1658,7 +1634,7 @@ class RaftOnboardingHeading extends StatelessWidget {
             fontSize: 10,
             height: 1.5,
             fontWeight: FontWeight.w700,
-            color: t.brutal ? const Color(0x80000000) : t.muted,
+            color: t.muted,
             leadingDistribution: TextLeadingDistribution.even,
           ),
         ),
@@ -1666,7 +1642,7 @@ class RaftOnboardingHeading extends StatelessWidget {
         Text(
           title,
           style: RaftTypography.heading(t, size: 24, line: 30).copyWith(
-            color: t.brutal ? Colors.black : t.strong,
+            color: t.strong,
             leadingDistribution: TextLeadingDistribution.even,
           ),
         ),
@@ -1680,7 +1656,7 @@ class RaftOnboardingHeading extends StatelessWidget {
                 line: 20,
                 weight: FontWeight.w400,
               ).copyWith(
-                color: t.brutal ? const Color(0xA6000000) : t.muted,
+                color: t.muted,
                 leadingDistribution: TextLeadingDistribution.even,
               ),
         ),
@@ -1722,10 +1698,8 @@ class RaftOnboardingShell extends StatelessWidget {
     final t = RaftTokens.of(context);
     final safe = MediaQuery.paddingOf(context);
     final keyboard = MediaQuery.viewInsetsOf(context).bottom;
-    const brutalBorder = BorderSide(color: Color(0xFF000000), width: 2);
-    final divider = t.brutal
-        ? brutalBorder
-        : BorderSide(color: t.semantic.lineHairline);
+
+    final divider = BorderSide(color: t.semantic.lineHairline);
     return Material(
       color: t.canvas,
       child: DefaultTextStyle.merge(

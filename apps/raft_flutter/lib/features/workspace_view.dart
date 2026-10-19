@@ -1356,8 +1356,9 @@ class _WorkspaceViewState extends State<WorkspaceView>
               MobileRouteGate.staleChannel(pageRoute.widget.location, w))) {
         return pageRoute.content!;
       }
-      if (pageRoute != null && !pageRoute.active)
+      if (pageRoute != null && !pageRoute.active) {
         return const SizedBox.shrink();
+      }
       final buildStarted = RouteFrameDiagnostics.enabled
           ? RouteFrameDiagnostics.now()
           : 0;
@@ -1845,7 +1846,7 @@ class _WorkspaceViewState extends State<WorkspaceView>
                                     child: workspaceRail(),
                                   )
                                 : const SizedBox.shrink(),
-                            mobileNavigationFloating: !t.brutal,
+                            mobileNavigationFloating: !false,
                             mobileNavigationClearance: raftTabBarClearance(),
                             mobileRail: railShown
                                 ? RailGestureExclusion(
