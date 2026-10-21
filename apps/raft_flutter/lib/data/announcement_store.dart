@@ -45,6 +45,8 @@ class Announcement {
     this.startsAt,
     this.endsAt,
     this.locale,
+    this.deliveryVersion,
+    this.deliveryServerId,
   });
 
   final String id, title;
@@ -58,6 +60,14 @@ class Announcement {
   /// the first page is shown.
   final List<AnnouncementPageData> pages;
   final String? publishedAt, startsAt, endsAt, locale;
+
+  /// Additive `deliveryVersion` (omitted by older servers: version 1).
+  final int? deliveryVersion;
+
+  /// `deliveryScope: { type: 'server', serverId }`: the one server this row
+  /// is delivered for. Null is the account scope (also the omitted legacy
+  /// value).
+  final String? deliveryServerId;
 
   static Announcement? fromJson(Object? raw) {
     if (raw is! Map) return null;
@@ -76,6 +86,7 @@ class Announcement {
     final label = text('label')?.trim();
     final cta = raw['cta'];
     final image = raw['image'];
+    final scope = raw['deliveryScope'];
     return Announcement(
       id: id,
       title: text('title') ?? '',
@@ -103,6 +114,15 @@ class Announcement {
       startsAt: text('startsAt'),
       endsAt: text('endsAt'),
       locale: text('locale'),
+      deliveryVersion: raw['deliveryVersion'] is int
+          ? raw['deliveryVersion'] as int
+          : null,
+      deliveryServerId:
+          scope is Map &&
+              scope['type'] == 'server' &&
+              scope['serverId'] is String
+          ? scope['serverId'] as String
+          : null,
     );
   }
 }
@@ -111,7 +131,10 @@ typedef AnnouncementGet = Future<dynamic> Function(
   String path, {
   Map<String, dynamic>? query,
 });
-typedef AnnouncementPost = Future<dynamic> Function(String path);
+typedef AnnouncementPost = Future<dynamic> Function(
+  String path, {
+  Map<String, dynamic>? query,
+});
 
 /// Web `useAnnouncementStore` (packages/web/src/store/announcementStore.ts).
 ///
@@ -124,9 +147,14 @@ typedef AnnouncementPost = Future<dynamic> Function(String path);
 ///   [dismiss].
 /// * [dismiss] hides the row and records `POST /announcements/:id/dismiss`
 ///   (closing counts as read since v1.21.12). A failed write
-///   lands in [writeFailedIds] (memory only): later loads skip past it with
-///   `?after=<last failed id>` for the rest of this session, and the
-///   presentation raises an error notice.
+///   lands in [writeFailedIds] (memory only): later loads of the same context
+///   skip past it with `?after=<last failed id of that context>` for the rest
+///   of this session, and the presentation raises an error notice.
+///
+/// Since Web v1.21.23 both calls carry `server_id=<current server>` whenever
+/// a server is selected: the server delivers a server-targeted announcement
+/// only with it. A switch of server fences the previous server's response,
+/// drops the previous server's rows from [pending] and re-reads.
 ///
 /// Account scoped: [reset] (account change / sign-out) drops everything and
 /// fences responses of the previous account.
@@ -135,6 +163,7 @@ class AnnouncementStore extends ChangeNotifier {
     required this.get,
     required this.post,
     required this.principal,
+    this.serverId,
   }) : _principal = principal();
 
   final AnnouncementGet get;
@@ -144,6 +173,20 @@ class AnnouncementStore extends ChangeNotifier {
   /// authStore does when `user.id` changes.
   final String? Function() principal;
   String? _principal;
+
+  /// The selected server (Web `useServerStore.current?.id`); null reads the
+  /// account context and sends no `server_id`.
+  final String? Function()? serverId;
+  String? _contextKey;
+  bool _contextSynced = false;
+
+  /// Failure frontiers per context (`account` or a server id): the last id is
+  /// the request-only `after` cursor of that context's queue.
+  final Map<String, List<String>> _failedByContext = {};
+
+  /// Bumped only by [reset] (Web `announcementAccountGeneration`): a write
+  /// that fails after an account change records nothing.
+  int _accountGeneration = 0;
 
   List<Announcement> pending = const [];
   bool loaded = false;
@@ -168,23 +211,56 @@ class AnnouncementStore extends ChangeNotifier {
     reset();
   }
 
+  String _context() => serverId?.call() ?? 'account';
+
+  /// The queue was last read (or never read) for another context than the
+  /// selected server.
+  bool get needsReload => !_contextSynced || _contextKey != _context();
+
+  /// Web `syncContext`: a changed context retires the in-flight read and
+  /// drops rows delivered for another server.
+  void _syncContext() {
+    final next = _context();
+    if (_contextSynced && _contextKey == next) return;
+    final first = !_contextSynced;
+    _contextSynced = true;
+    _contextKey = next;
+    if (first) return;
+    _generation++;
+    _inFlight = null;
+    pending = [
+      for (final a in pending)
+        if (a.deliveryServerId == null || a.deliveryServerId == next) a,
+    ];
+    loaded = false;
+    if (!_disposed) notifyListeners();
+  }
+
   Future<void> load() {
     if (_disposed) return Future.value();
     _syncPrincipal();
+    _syncContext();
     // A presented row is owned by this presentation until the user closes
     // it; another device's dismissal must not pull it away.
     if (pending.isNotEmpty) return Future.value();
     final inFlight = _inFlight;
     if (inFlight != null) return inFlight;
     final generation = _generation;
+    final requestContext = _context();
     final completer = Completer<void>();
     _inFlight = completer.future;
     () async {
       try {
-        final after = writeFailedIds.isEmpty ? null : writeFailedIds.last;
+        final skipped = _failedByContext[requestContext] ?? const <String>[];
+        final after = skipped.isEmpty ? null : skipped.last;
         final data = await get(
           '/announcements/active',
-          query: after == null ? null : {'after': after},
+          query: after == null && requestContext == 'account'
+              ? null
+              : {
+                  'after': ?after,
+                  if (requestContext != 'account') 'server_id': requestContext,
+                },
         );
         if (_disposed || generation != _generation) return;
         final rows = data is Map && data['announcements'] is List
@@ -197,7 +273,10 @@ class AnnouncementStore extends ChangeNotifier {
         // A row presented while this request was in flight wins over a late
         // (especially empty) response.
         if (pending.isEmpty) {
-          final hidden = {...writeFailedIds, ...markedReadIds};
+          final hidden = {
+            ...(_failedByContext[requestContext] ?? const <String>[]),
+            ...markedReadIds,
+          };
           pending = [
             for (final row in rows)
               if (!hidden.contains(row.id)) row,
@@ -221,12 +300,20 @@ class AnnouncementStore extends ChangeNotifier {
   /// alone never does.
   Future<void> markRead(String id) async {
     if (_disposed || markedReadIds.contains(id)) return;
-    final generation = _generation;
+    final writeContext = _context();
+    final accountGeneration = _accountGeneration;
     markedReadIds = [...markedReadIds, id];
     try {
-      await post('/announcements/$id/dismiss');
+      await post(
+        '/announcements/$id/dismiss',
+        query: writeContext == 'account' ? null : {'server_id': writeContext},
+      );
     } catch (error) {
-      if (_disposed || generation != _generation) return;
+      if (_disposed || accountGeneration != _accountGeneration) return;
+      final failed = _failedByContext[writeContext] ?? const <String>[];
+      if (!failed.contains(id)) {
+        _failedByContext[writeContext] = [...failed, id];
+      }
       debugPrint('Failed to record announcement as read: $error');
       markedReadIds = [
         for (final marked in markedReadIds)
@@ -257,7 +344,11 @@ class AnnouncementStore extends ChangeNotifier {
 
   void reset() {
     _generation++;
+    _accountGeneration++;
     _inFlight = null;
+    _failedByContext.clear();
+    _contextSynced = false;
+    _contextKey = null;
     final changed =
         pending.isNotEmpty ||
         loaded ||

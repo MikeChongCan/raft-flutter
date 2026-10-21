@@ -9,7 +9,6 @@ import '../data/user_error.dart';
 import '../data/web_error.dart';
 import '../data/workspace_controller.dart';
 import 'management_support.dart';
-import 'agent_jwt_settings.dart';
 import 'app_notifications_catalog.dart';
 import 'app_permission_review.dart';
 import 'connected_app_editor.dart';
@@ -513,12 +512,6 @@ class _IntegrationsState extends ManagementState<IntegrationsView> {
                     ),
                   ),
                 ),
-                if (installed)
-                  AgentJwtSettings(
-                    controller: w,
-                    clientId: id,
-                    canManage: canManage,
-                  ),
                 RaftConnectedAppDetailSection(
                   title: 'App permissions',
                   cream: true,
@@ -634,11 +627,6 @@ class _IntegrationsState extends ManagementState<IntegrationsView> {
                 emptyLabel: tr(
                   'No active grant scopes are currently recorded for this connection.',
                 ),
-              ),
-              AgentJwtSettings(
-                controller: w,
-                clientId: app.id,
-                canManage: canManage,
               ),
               _InstalledAppPermissions(
                 controller: w,

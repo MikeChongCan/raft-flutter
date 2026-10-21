@@ -155,7 +155,7 @@ void main() {
       await settle(t);
       expect(modal, findsNothing);
       expect(f.client.requests.where((r) => r.startsWith('POST')), [
-        'POST /announcements/a1/dismiss',
+        'POST /announcements/a1/dismiss {server_id: s1}',
       ]);
       // Foreground return: a fresh read, the row is gone locally.
       f.active = [];

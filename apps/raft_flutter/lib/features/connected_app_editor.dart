@@ -17,7 +17,6 @@ import '../platform/file_selection.dart';
 import '../data/user_error.dart';
 import '../data/workspace_controller.dart';
 import '../platform/content_links.dart';
-import 'agent_jwt_settings.dart';
 import 'app_notifications_catalog.dart';
 import 'app_when_to_use.dart';
 import 'integrations_views.dart';
@@ -1030,11 +1029,6 @@ class _ConnectedAppEditorState extends State<ConnectedAppEditor> {
             ? 'Existing agent:read login access is preserved. Configure App permissions separately.'
             : null,
         resourceNote: 'The user chooses the target agent when authorizing.',
-      ),
-      AgentJwtSettings(
-        controller: w,
-        clientId: editing?['id'] as String?,
-        canManage: w.can('manageIntegrations'),
       ),
     ],
   );

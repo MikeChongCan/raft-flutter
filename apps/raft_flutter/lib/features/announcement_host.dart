@@ -132,6 +132,9 @@ class _AnnouncementHostState extends State<AnnouncementHost>
       final previous = _serverId;
       _serverId = serverId;
       if (previous != null) gate.clearForServer(previous);
+      // Web registerServerReset: a switch of server re-reads the queue, which
+      // is delivered per server since v1.21.23.
+      if (serverId != null && store.needsReload) unawaited(store.load());
     }
     if (serverId != null &&
         gate.stateFor(serverId) == AnnouncementGateState.pending &&

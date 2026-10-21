@@ -1,5 +1,6 @@
-// WP5 (Web v1.21.12): Agent access JWT card, permission-update review,
-// "When to use" counter and "Update Slack authorization".
+// WP5 (Web v1.21.12): permission-update review, "When to use" counter and
+// "Update Slack authorization". (The Agent access JWT card was removed again
+// for Web v1.21.23; see agent_jwt_removed_test.dart.)
 import 'dart:async';
 import 'dart:convert';
 
@@ -71,20 +72,6 @@ Widget _host(Widget child) => MaterialApp(
   home: Scaffold(body: SingleChildScrollView(child: child)),
 );
 
-Map<String, dynamic> _jwt({
-  String scope = 'installation',
-  bool enabled = false,
-  bool canEnable = true,
-}) => {
-  'scope': scope,
-  'enabled': enabled,
-  'appEnabled': true,
-  'effectiveEnabled': enabled,
-  'canEnable': canEnable,
-  'audience': 'https://app.example/aud',
-  'expiresIn': 300,
-};
-
 Map<String, dynamic> _listing(
   String id, {
   String? installedAt,
@@ -135,104 +122,6 @@ Future<(WorkspaceController, _Adapter)> _mountApps(
 }
 
 void main() {
-  group('Agent access JWT card', () {
-    testWidgets('installed app detail loads, saves and re-reads the settings', (
-      t,
-    ) async {
-      final (_, a) = await _mountApps(
-        t,
-        () => [_listing('inst', installedAt: '2026-06-18T00:00:00.000Z')],
-      );
-      var saved = _jwt();
-      a.routes['GET /integrations/clients/inst/agent-jwt'] = (_) => saved;
-      a.routes['PUT /integrations/clients/inst/agent-jwt'] = (o) {
-        saved = _jwt(enabled: (o.data as Map)['enabled'] == true);
-        return saved;
-      };
-      await t.tap(find.byKey(const ValueKey('connected-apps-tab-installed')));
-      await t.pumpAndSettle();
-      await t.tap(find.byKey(const ValueKey('connected-app-installed-inst')));
-      await t.pumpAndSettle();
-      expect(find.text('Agent access JWT'), findsOneWidget);
-      expect(find.text('Allow Agent JWTs on this Server'), findsOneWidget);
-      expect(
-        find.textContaining('Audience: https://app.example/aud.'),
-        findsOneWidget,
-      );
-      final save = find.byKey(const ValueKey('agent-jwt-save'));
-      // Unchanged draft: nothing to save yet.
-      expect(t.widget<RaftSettingsRecipeButton>(save).onPressed, isNull);
-      await t.tap(find.byKey(const ValueKey('agent-jwt-switch')));
-      await t.pumpAndSettle();
-      expect(t.widget<RaftSettingsRecipeButton>(save).onPressed, isNotNull);
-      await t.tap(save);
-      await t.pumpAndSettle();
-      final puts = a.of('PUT', '/integrations/clients/inst/agent-jwt');
-      expect(puts, hasLength(1));
-      expect(puts.single.data, {'enabled': true});
-      expect(t.widget<RaftSettingsRecipeButton>(save).onPressed, isNull);
-      expect(
-        t
-            .widget<RaftSwitch>(find.byKey(const ValueKey('agent-jwt-switch')))
-            .value,
-        isTrue,
-      );
-    });
-
-    testWidgets('canEnable false keeps the switch off with the reason', (
-      t,
-    ) async {
-      final (_, a) = await _mountApps(
-        t,
-        () => [_listing('inst', installedAt: '2026-06-18T00:00:00.000Z')],
-      );
-      a.routes['GET /integrations/clients/inst/agent-jwt'] = (_) =>
-          _jwt(scope: 'app', canEnable: false);
-      await t.tap(find.byKey(const ValueKey('connected-app-inst')));
-      await t.pumpAndSettle();
-      expect(find.text('Enable Agent JWT support'), findsOneWidget);
-      expect(
-        find.text(
-          'Enable the App and its openid/profile login scopes before turning on JWT access.',
-        ),
-        findsOneWidget,
-      );
-      expect(
-        t
-            .widget<RaftSwitch>(find.byKey(const ValueKey('agent-jwt-switch')))
-            .enabled,
-        isFalse,
-      );
-    });
-
-    testWidgets(
-      'a failed load shows the retry warning; not installed hides it',
-      (t) async {
-        final (_, a) = await _mountApps(
-          t,
-          () => [
-            _listing('inst', installedAt: '2026-06-18T00:00:00.000Z'),
-            _listing('new'),
-          ],
-        );
-        a.statuses['GET /integrations/clients/inst/agent-jwt'] = 500;
-        await t.tap(find.byKey(const ValueKey('connected-app-inst')));
-        await t.pumpAndSettle();
-        expect(
-          find.text(
-            'Could not load or save JWT settings. Retry before relying on this change.',
-          ),
-          findsOneWidget,
-        );
-        await t.tap(find.text('Cancel').last);
-        await t.pumpAndSettle();
-        await t.tap(find.byKey(const ValueKey('connected-app-new')));
-        await t.pumpAndSettle();
-        expect(find.text('Agent access JWT'), findsNothing);
-      },
-    );
-  });
-
   group('Permission update review', () {
     Map<String, dynamic> pending({bool reviewer = true}) => _listing(
       'rev',

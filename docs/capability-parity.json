@@ -16350,19 +16350,14 @@
    "kind": "endpoint",
    "id": "GET /integrations/clients/:id/agent-jwt",
    "area": "integrations-apps-mcp",
-   "capability": "Load an app's Agent access JWT settings",
+   "capability": "Load an app's Agent access JWT settings (removed upstream)",
    "background": false,
-   "status": "covered",
-   "webEntry": "AgentJwtSettings (installed app detail, installed marketplace detail, app editor)",
-   "gate": "Visible to all; changing needs manageIntegrations",
-   "flutterEntry": "agent_jwt_settings.dart AgentJwtSettings._load()",
-   "flutterRefs": [
-    {
-     "file": "apps/raft_flutter/lib/features/agent_jwt_settings.dart",
-     "needle": "/agent-jwt"
-    }
-   ],
-   "justification": "",
+   "status": "na",
+   "webEntry": "Removed in v1.21.23 (was AgentJwtSettings in installed app detail, installed marketplace detail and app editor)",
+   "gate": "none",
+   "flutterEntry": "",
+   "flutterRefs": [],
+   "justification": "Removed upstream in Web v1.21.23: the Agent access JWT card is gone from the installed app detail, the installed marketplace detail and the app editor. Agent JWT is built in for every App, so there is no setting to read. The server still answers GET only for the previous Web bundle and drops it in a later release.",
    "impact": "",
    "size": ""
   },
@@ -16370,19 +16365,14 @@
    "kind": "endpoint",
    "id": "PUT /integrations/clients/:id/agent-jwt",
    "area": "integrations-apps-mcp",
-   "capability": "Turn Agent access JWT on or off for an app or its installation",
+   "capability": "Turn Agent access JWT on or off for an app or its installation (removed upstream)",
    "background": false,
-   "status": "covered",
-   "webEntry": "AgentJwtSettings > 'Save JWT settings'",
-   "gate": "Visible to all; changing needs manageIntegrations",
-   "flutterEntry": "agent_jwt_settings.dart AgentJwtSettings._save()",
-   "flutterRefs": [
-    {
-     "file": "apps/raft_flutter/lib/features/agent_jwt_settings.dart",
-     "needle": "'PUT'"
-    }
-   ],
-   "justification": "",
+   "status": "na",
+   "webEntry": "Removed in v1.21.23 (was AgentJwtSettings > 'Save JWT settings')",
+   "gate": "none",
+   "flutterEntry": "",
+   "flutterRefs": [],
+   "justification": "Removed upstream in Web v1.21.23: the server answers PUT with 410 and changes nothing. Agent JWT is built in for every App, so Flutter removed the card (agent_jwt_settings.dart, raft_ui settings_agent_jwt.dart) and never calls it.",
    "impact": "",
    "size": ""
   },

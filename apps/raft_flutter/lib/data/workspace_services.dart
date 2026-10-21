@@ -108,8 +108,10 @@ class WorkspaceServices {
       source?.announcements ??
       (_announcements ??= AnnouncementStore(
         get: (path, {query}) => authority.client.get(path, query: query),
-        post: (path) => authority.client.post(path),
+        post: (path, {query}) =>
+            authority.client.request('POST', path, query: query),
         principal: () => authority.client.user?.id,
+        serverId: () => authority.client.serverId,
       ));
   AnnouncementStore? _announcements;
 

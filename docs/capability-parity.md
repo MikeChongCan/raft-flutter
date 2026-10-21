@@ -11,10 +11,10 @@ Total capabilities: 750 (334 endpoint/network keys, 416 client-side).
 
 | Status | Count |
 | --- | ---: |
-| ✅ covered | 551 |
+| ✅ covered | 549 |
 | ⚠️ partial | 69 |
 | ❌ missing | 67 |
-| ➖ na | 63 |
+| ➖ na | 65 |
 
 | Area | ✅ | ⚠️ | ❌ | ➖ |
 | --- | ---: | ---: | ---: | ---: |
@@ -26,7 +26,7 @@ Total capabilities: 750 (334 endpoint/network keys, 416 client-side).
 | Server settings and admin | 50 | 0 | 0 | 0 |
 | Billing | 7 | 0 | 0 | 0 |
 | Agents, computers, runtimes | 80 | 20 | 28 | 2 |
-| Integrations, apps, MCP | 74 | 4 | 4 | 7 |
+| Integrations, apps, MCP | 72 | 4 | 4 | 9 |
 | Tasks | 30 | 4 | 1 | 5 |
 | Files and attachments | 15 | 8 | 7 | 0 |
 | Search | 17 | 1 | 0 | 1 |
@@ -464,7 +464,7 @@ Legend: ✅ covered (endpoint called and a reachable entry point with equivalent
 | ⚠️ | Open one app event sent to an agent and read its payload | `GET /integrations/agents/:id/events/:id` | AgentAppAccessTab (Agent detail > Apps tab) > App events list > click event row to expand payload (AppEventRow)[gate: Any member who can inspect the agent (server loadInspectableAgent); not limited to managers] | agent_apps_view.dart AgentAppAccessView (Agent detail > Apps tab) event row onTap -> eventDetail() dialog; list is shown only when manager | Impact: Non-manager members who can open an agent's Apps tab cannot see app events or payloads on mobile; low frequency. Flutter renders the App events section only for manager (agent creator / manageIntegrations); Web shows it to every viewer of the Apps tab. Size S |
 | ✅ | List apps that can still be granted to an agent (feeds the Grant access form) | `GET /integrations/agents/:id/grantable-apps` | AgentAppAccessTab (Agent detail > Apps tab) > 'Grant access' > GrantAccessForm app list[gate: Only rendered when canManageAgentAccess (agent creator or server owner/admin (canManageAgentAccess = manageExternalAuth on that agent))] | agent_apps_view.dart AgentAppAccessView (Agent detail > Apps tab) 'Grant access' button -> grant() app chooser; only fetched when manager |  |
 | ✅ | Load the server's registered (My apps) OAuth clients | `GET /integrations/clients` | Settings > Applications loads clients, marketplace, overview in parallel[gate: Tab hidden for guests] | integrations_views.dart IntegrationsView._loadData |  |
-| ✅ | Load an app's Agent access JWT settings | `GET /integrations/clients/:id/agent-jwt` | AgentJwtSettings (installed app detail, installed marketplace detail, app editor)[gate: Visible to all; changing needs manageIntegrations] | agent_jwt_settings.dart AgentJwtSettings._load() |  |
+| ➖ | Load an app's Agent access JWT settings (removed upstream) | `GET /integrations/clients/:id/agent-jwt` | Removed in v1.21.23 (was AgentJwtSettings in installed app detail, installed marketplace detail and app editor)[gate: none] |  | N/A: Removed upstream in Web v1.21.23: the Agent access JWT card is gone from the installed app detail, the installed marketplace detail and the app editor. Agent JWT is built in for every App, so there is no setting to read. The server still answers GET only for the previous Web bundle and drops it in a later release. |
 | ✅ | Load a registered app's App Notifications state (permissions, webhook, pending revision) | `GET /integrations/clients/:id/app-notifications` | AppNotificationsControls/SettingsPanel editor sections 'App permissions' + 'Webhook' (loaded when editing an app)[gate: manageIntegrations (Edit only for owners/admins)] | connected_app_editor.dart loadNotifications() for the edit dialog |  |
 | ✅ | Load the active private share link of an app | `GET /integrations/clients/:id/share-link` | Editor > Distribution > 'Private share link' card (state load)[gate: manageIntegrations; app status private or rejected] | connected_app_editor.dart loadShare() |  |
 | ✅ | Load marketplace listings and installed state | `GET /integrations/marketplace` | Settings > Applications > Marketplace / Installed tabs[gate: Tab hidden for guests] | integrations_views.dart _loadData marketplace |  |
@@ -502,7 +502,7 @@ Legend: ✅ covered (endpoint called and a reachable entry point with equivalent
 | ✅ | Disconnect the Slack bridge (confirm) | `POST /slack-bridge/provisioning/disconnect` | IMBridgesSettingsSection / SlackBridgeSetupWizard (Settings > IM Bridges) > 'Disconnect' + confirm[gate: Settings tab only when slack_bridge feature flag allows; mutations need manageIntegrations (read-only note otherwise)] | im_bridges_view.dart IMBridgesView (Settings > 'IM Bridges', shown only when slack_bridge_v0 flag on; manageIntegrations for actions) disconnect() |  |
 | ✅ | Enable the Slack bridge after preflight passes | `POST /slack-bridge/provisioning/enable` | IMBridgesSettingsSection / SlackBridgeSetupWizard (Settings > IM Bridges) > 'Retry and finish setup' / enable[gate: Settings tab only when slack_bridge feature flag allows; mutations need manageIntegrations (read-only note otherwise)] | im_bridges_view.dart IMBridgesView (Settings > 'IM Bridges', shown only when slack_bridge_v0 flag on; manageIntegrations for actions) enable() |  |
 | ✅ | Run Slack bridge preflight checks ('Retry and finish setup') | `POST /slack-bridge/provisioning/preflight` | IMBridgesSettingsSection / SlackBridgeSetupWizard (Settings > IM Bridges) > preflight step[gate: Settings tab only when slack_bridge feature flag allows; mutations need manageIntegrations (read-only note otherwise)] | im_bridges_view.dart IMBridgesView (Settings > 'IM Bridges', shown only when slack_bridge_v0 flag on; manageIntegrations for actions) verifyAndEnable()/verify() |  |
-| ✅ | Turn Agent access JWT on or off for an app or its installation | `PUT /integrations/clients/:id/agent-jwt` | AgentJwtSettings > 'Save JWT settings'[gate: Visible to all; changing needs manageIntegrations] | agent_jwt_settings.dart AgentJwtSettings._save() |  |
+| ➖ | Turn Agent access JWT on or off for an app or its installation (removed upstream) | `PUT /integrations/clients/:id/agent-jwt` | Removed in v1.21.23 (was AgentJwtSettings > 'Save JWT settings')[gate: none] |  | N/A: Removed upstream in Web v1.21.23: the server answers PUT with 410 and changes nothing. Agent JWT is built in for every App, so Flutter removed the card (agent_jwt_settings.dart, raft_ui settings_agent_jwt.dart) and never calls it. |
 | ✅ | Save the app's requested App permissions (data groups and events) with the app form | `PUT /integrations/clients/:id/app-notifications/permissions` | Editor > App permissions picker + Webhook events checkboxes, saved with 'Save' / 'Register app'[gate: manageIntegrations] | connected_app_editor.dart savePermissions() |  |
 | ✅ | Save/enable the app's HTTPS webhook endpoint | `PUT /integrations/clients/:id/app-notifications/webhook` | Editor > Webhook > 'Enable Webhook' switch, 'HTTPS endpoint' field, 'Save endpoint'[gate: manageIntegrations; app must be saved first] | connected_app_editor.dart saveEndpoint() via 'Save endpoint' |  |
 | ✅ | Approve new data access requested by an installed marketplace app ('Approve update') | `PUT /integrations/marketplace/:id/install/app-notifications/grant` | InstalledAppNotifications > 'Approve update' when approval_required[gate: manageIntegrations] | integrations_views.dart _InstalledAppPermissions.approve() -> 'Approve update' (string-built '$path/grant') |  |
