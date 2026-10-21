@@ -64,6 +64,11 @@ enum SessionRestoreFailureKind {
   /// The server could not be reached, timed out, or answered 5xx/429.
   network,
 
+  /// Android withholds local network access from the app, so a saved session
+  /// for a self-hosted server on a private address cannot connect at all (the
+  /// system lets those connections time out). The person can grant it.
+  localNetwork,
+
   /// The server or something in front of it answered something that is not a
   /// definitive credential rejection (403, 404, a captive portal body).
   unexpected,
@@ -80,6 +85,8 @@ class SessionRestoreException implements Exception {
       'Secure storage is not available right now.',
     SessionRestoreFailureKind.network =>
       'Cannot reach the Raft server right now.',
+    SessionRestoreFailureKind.localNetwork =>
+      'Local network access is not allowed for Raft.',
     SessionRestoreFailureKind.unexpected =>
       'The Raft server could not confirm the session right now.',
   };

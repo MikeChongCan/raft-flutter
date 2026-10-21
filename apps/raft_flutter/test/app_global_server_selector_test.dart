@@ -231,6 +231,9 @@ class RootFixture {
   final VoidCallback? onStartupReady;
   final RootCache cache;
   final engineRoutes = <Map<dynamic, dynamic>>[];
+
+  /// Replaces the fixture's local-network check (public addresses only).
+  LocalNetworkAccess network = _fixtureNetwork;
   final MemorySessionStore sessions;
   final adapter = RootAdapter(), content = RootContent();
   late RootClient client;
@@ -372,10 +375,8 @@ class RootFixture {
     await t.pumpWidget(
       RaftApp(
         services: appUpdate == null
-            ? const AppServices.updatesDisabledForTestOrPreview(
-                localNetwork: _fixtureNetwork,
-              )
-            : AppServices.withUpdates(appUpdate, localNetwork: _fixtureNetwork),
+            ? AppServices.updatesDisabledForTestOrPreview(localNetwork: network)
+            : AppServices.withUpdates(appUpdate, localNetwork: network),
         sessionStore: sessions,
         initialLocation: uri ?? Uri(path: '/'),
         nativeContent: contentOverride ?? content,

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:raft_client/raft_client.dart';
 import 'package:raft_ui/raft_ui.dart';
 
+import '../platform/app_services.dart';
+import '../platform/local_network_access.dart';
 import '../platform/system_bars.dart';
 
 /// Shown at startup when stored credentials exist but the session could not be
@@ -24,6 +26,7 @@ class SessionRecoveryView extends StatelessWidget {
     SessionRestoreFailureKind.storage =>
       'Your saved sign-in is not available yet',
     SessionRestoreFailureKind.network => 'Cannot reach Raft right now',
+    SessionRestoreFailureKind.localNetwork => 'Local network access is off',
     SessionRestoreFailureKind.unexpected =>
       'Raft could not confirm your session',
   };
@@ -34,6 +37,7 @@ class SessionRecoveryView extends StatelessWidget {
           'It is still saved. This usually clears after the device is unlocked.',
     SessionRestoreFailureKind.network =>
       'You are still signed in. Raft will keep trying to reconnect.',
+    SessionRestoreFailureKind.localNetwork => 'Android blocks Raft from reaching this server on your local network until you allow nearby devices access. You are still signed in.',
     SessionRestoreFailureKind.unexpected =>
       'You are still signed in. Raft will keep trying to confirm your session.',
   };
@@ -42,6 +46,10 @@ class SessionRecoveryView extends StatelessWidget {
   Widget build(BuildContext context) {
     String tr(String s) => raftText(context, s);
     final t = RaftTokens.of(context);
+    final network = failure.kind == SessionRestoreFailureKind.localNetwork;
+    final access =
+        AppServicesScope.maybeReadOf(context)?.localNetwork ??
+        const LocalNetworkAccess();
     return RaftSystemBarSurface(
       statusBarFallback: t.canvas,
       child: RaftAuthResultPage(
@@ -50,8 +58,17 @@ class SessionRecoveryView extends StatelessWidget {
         description: tr(explanation),
         gapBeforeButton: 4,
         buttonKey: const Key('session-recovery-retry'),
-        buttonLabel: tr('Try again'),
-        onButton: busy ? null : onRetry,
+        buttonLabel: tr(network ? 'Allow local network access' : 'Try again'),
+        // The system prompt (or, once it stops asking, the app's settings),
+        // then the same retry the resume path runs.
+        onButton: busy
+            ? null
+            : network
+            ? () async {
+                await access.allow();
+                onRetry();
+              }
+            : onRetry,
         below: [
           RaftAuthTextLink(
             key: const Key('session-recovery-sign-in'),

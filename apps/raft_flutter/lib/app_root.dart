@@ -731,9 +731,9 @@ class _RaftAppState extends State<RaftApp> with WidgetsBindingObserver {
       if (previous != null && !identical(previous, created)) {
         unawaited(previous.dispose());
       }
-      // Cache-first: a stored account record paints the on-device workspace
-      // at once; the session is revalidated in the background and a
-      // rejected or replaced account ends through the session events below.
+      // Cache-first: a stored account record paints the workspace at once;
+      // the session is revalidated in the background (events end it below).
+      await widget.services.localNetwork.gateRestore(created);
       restored = await created.restore(
         cachedFirst: true,
         credentialsReady: guestSettled,
