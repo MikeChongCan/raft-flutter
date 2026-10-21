@@ -6,6 +6,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'android_permissions.dart';
 import 'background_inbox.dart';
 import 'background_notifications.dart'
     show
@@ -41,6 +42,7 @@ class NativeNotificationService extends ChangeNotifier {
     WindowsNotifications? windows,
     this.linuxDetails,
     LinuxActivationTokens? activationTokens,
+    this.androidPermissions = const AndroidPermissions(),
   }) : // Only the production plugin listens on the member's real session bus.
        _activationTokens =
            activationTokens ??
@@ -50,6 +52,9 @@ class NativeNotificationService extends ChangeNotifier {
        _preferences = preferences ?? NotificationPreferenceStore(),
        _windows = windows ?? WindowsNotifications();
   final WindowsNotifications _windows;
+
+  /// Android runtime-permission facts (whether a system prompt can still show).
+  final AndroidPermissions androidPermissions;
 
   final LinuxActivationTokens? _activationTokens;
 
@@ -122,10 +127,12 @@ class NativeNotificationService extends ChangeNotifier {
   bool Function()? deliveryAllowed;
   TargetPlatform get platform => _platform;
 
-  /// True once the latest permission request returned "denied" without the
-  /// system having had time to show a prompt: the OS no longer asks (Android
-  /// after two refusals, iOS after the first), so the only way forward is the
-  /// system notification settings.
+  /// True once the latest permission request could not put a prompt on screen:
+  /// the OS no longer asks (Android after two refusals or before Android 13,
+  /// or while the message channel is blocked; iOS after the first refusal), so
+  /// the only way forward is the system notification settings. Android knows
+  /// this exactly (see [_promptBlocked]); iOS/macOS infer it from a denial that
+  /// came back too fast for a person to have answered.
   bool permissionPromptSkipped = false;
   bool get receivesMessages =>
       _platform == TargetPlatform.android ||
@@ -189,10 +196,48 @@ class NativeNotificationService extends ChangeNotifier {
         .resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin
         >();
-    return (request
+    final allowed =
+        (request
             ? await android?.requestNotificationsPermission()
             : await android?.areNotificationsEnabled()) ??
         false;
+    return allowed && !await _messageChannelBlocked(android);
+  }
+
+  /// The person blocked the alert channel in the system's per-app settings:
+  /// the app-level switch stays on, yet every message alert is dropped. The
+  /// channel exists once the first alert was posted.
+  Future<bool> _messageChannelBlocked(
+    AndroidFlutterLocalNotificationsPlugin? android,
+  ) async {
+    try {
+      final channels = await android?.getNotificationChannels();
+      return channels?.any(
+            (c) => c.id == messageChannelId && c.importance == Importance.none,
+          ) ??
+          false;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Android: a request would show nothing, so asking is pointless and the
+  /// system settings are the only way on. Exact, not timed: before Android 13
+  /// there is no prompt at all; from 13 the platform stops asking after the
+  /// second refusal, which [AndroidPermissionStatus.canPrompt] reads together
+  /// with this app's record that it asked. A granted permission with a blocked
+  /// channel is settings-only as well. Unknown (no bridge) means "ask".
+  Future<bool> _promptBlocked() async {
+    if (_platform != TargetPlatform.android) return false;
+    if (await _permission()) return false;
+    final status = await androidPermissions.status(
+      AndroidPermissions.postNotifications,
+    );
+    if (status == null) return false;
+    if (status.sdk < 33 || status.granted) return true;
+    return !status.canPrompt(
+      asked: await _preferences.read(_permissionKey) == true,
+    );
   }
 
   Future<void> initialize() => _initializing ??= _initialize();
@@ -377,7 +422,10 @@ class NativeNotificationService extends ChangeNotifier {
     if (value && available && canOpenSettings) {
       try {
         final asked = Stopwatch()..start();
-        final request = hasPermissionPrompt
+        final blocked = await _promptBlocked();
+        final request = blocked
+            ? Future.value(false)
+            : hasPermissionPrompt
             ? (_permissionRequest ??= _askPermission(scope, epoch))
             : _permission(request: true);
         final bool permission;
@@ -390,7 +438,10 @@ class NativeNotificationService extends ChangeNotifier {
         permitted = permission;
         // A person cannot answer a system prompt within this window.
         permissionPromptSkipped =
-            !permission && asked.elapsed < const Duration(milliseconds: 400);
+            !permission &&
+            (_platform == TargetPlatform.android
+                ? blocked
+                : asked.elapsed < const Duration(milliseconds: 400));
       } catch (_) {
         if (!current()) return;
         permitted = false;

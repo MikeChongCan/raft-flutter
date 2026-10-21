@@ -114,6 +114,7 @@ class MainActivity : FlutterActivity() {
         systemFonts = NativeSystemFontsBridge(this, flutterEngine)
         systemProxy = NativeProxyBridge(this, flutterEngine)
         NativeBatteryBridge(this, flutterEngine)
+        NativePermissionBridge(this, flutterEngine)
         LaunchTheme.register(this, flutterEngine)
         NativePdfPreviewBridge(this, flutterEngine)
         NativeVideoFrameBridge(flutterEngine)

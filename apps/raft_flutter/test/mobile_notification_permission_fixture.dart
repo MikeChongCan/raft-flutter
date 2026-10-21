@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:raft_flutter/platform/android_permissions.dart';
 import 'package:raft_flutter/platform/native_notifications.dart';
 import 'package:raft_flutter/platform/background_inbox.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -29,6 +30,14 @@ class IOSPermission extends IOSFlutterLocalNotificationsPlugin {
   }) => permission.requestPermissions(sound: sound, alert: alert, badge: badge);
 }
 
+/// The unit tests have no `app.raft/permissions` bridge: "unknown" answers at
+/// once, so the service asks as it did before the bridge existed.
+class NoPermissionBridge extends AndroidPermissions {
+  const NoPermissionBridge();
+  @override
+  Future<AndroidPermissionStatus?> status(String permission) async => null;
+}
+
 class AndroidPermission extends AndroidFlutterLocalNotificationsPlugin {
   AndroidPermission(this.permission);
   final MacPermissionFixture permission;
@@ -51,6 +60,7 @@ void mobilePermissionTests(TargetPlatform platform) {
     final service = NativeNotificationService(
       plugin: plugin,
       platform: platform,
+      androidPermissions: const NoPermissionBridge(),
     );
     addTearDown(service.dispose);
     return (service, plugin);
