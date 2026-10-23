@@ -1987,3 +1987,13 @@ Not owner decisions yet; each is listed so a reviewer can accept or send it back
 * The Chinese community page opens from the Help menu only; Web's redirect of a direct `/s/community-cn` link and the `community_cn_qr_page_view` event are not ported. The page has a Back control (a browser page has the browser's).
 * A native window has no per-page title: Web sets the document title of the Chinese community page; the app title bar keeps the app name.
 * The globe after the server name shows in the phone server selector only; the desktop top bar that carries it in Web is the shell package.
+
+## Live sequence jumps do not trigger a gap fetch: intended difference from Web (owner decision 2026-10-23)
+
+Web treats a live `message:new` whose `seq` is past the open window's tail as a
+gap: it holds the message in a pending-gap list, calls `syncGap` and stitches
+the window when the gap fills (BP-READ-021, BP-RT-030). Owner decision
+2026-10-23 (Kevin, after the v1.21.23 read-path port): **keep the difference**.
+Channel `seq` is sparse in the sync core, so a jump does not prove a missing
+message; the client heals real gaps through the heartbeat, `rooms:joined` and
+resume reads instead.
