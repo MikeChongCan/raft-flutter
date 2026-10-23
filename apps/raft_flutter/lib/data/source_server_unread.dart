@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:raft_client/raft_client.dart' show RaftEvent;
 import 'package:raft_sync/raft_sync.dart' show readNotificationPrefsUpdate;
+import 'package:raft_ui/raft_ui.dart' show RaftForegroundPeriodic;
 
 import 'workspace_controller.dart';
 
@@ -47,7 +48,7 @@ class SourceServerUnreadStore extends ChangeNotifier {
   /// selected server about the other servers, so their badges are re-read on
   /// this interval (live edges refresh sooner).
   static const sweepInterval = Duration(minutes: 2);
-  Timer? _sweep;
+  RaftForegroundPeriodic? _sweep;
   StreamSubscription<RaftEvent>? _prefsEvents;
 
   /// Armed by the first read, which the shell starts once the member and
@@ -57,8 +58,12 @@ class SourceServerUnreadStore extends ChangeNotifier {
   /// touch the summary).
   void _keepFresh() {
     if (_disposed) return;
-    // ignore: raft_lints/avoid_unreviewed_idle_work -- Web's 120 s catch-all sweep of the other servers' unread badges: one coalesced GET, no UI work, cancelled in dispose.
-    _sweep ??= Timer.periodic(sweepInterval, (_) => unawaited(refresh()));
+    // Stops while the app is hidden or paused, like every other poll; the
+    // resume refresh and live edges catch up.
+    _sweep ??= RaftForegroundPeriodic(
+      sweepInterval,
+      () => unawaited(refresh()),
+    );
     _prefsEvents ??= workspace.client.events.listen((event) {
       if (event.name != 'notification_prefs:updated') return;
       final update = readNotificationPrefsUpdate(event.payload);
@@ -144,7 +149,7 @@ class SourceServerUnreadStore extends ChangeNotifier {
   void dispose() {
     _disposed = true;
     ++_request;
-    _sweep?.cancel();
+    _sweep?.dispose();
     unawaited(_prefsEvents?.cancel());
     super.dispose();
   }
