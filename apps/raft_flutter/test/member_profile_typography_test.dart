@@ -87,7 +87,8 @@ void main() {
       matching: find.byType(RaftCssText),
     );
     expect(tester.getRect(name).top, 20);
-    expect(tester.getRect(name).height, 22.5);
+    // PanelTitle uses 17px / 1.25; its 22.5px row still reserves the handle below.
+    expect(tester.getRect(name).height, 21.25);
     expect(tester.getRect(handle).top, 42.5);
   });
 

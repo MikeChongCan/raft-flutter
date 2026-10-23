@@ -26,7 +26,10 @@ const _families = <String, String>{
 
 /// Raft plus both families, keyed by id, so `extends: "raft"` resolves.
 Map<String, RaftThemePack> _registry() => {
-  raftThemePackId: RaftThemePack.parse(raftThemePackJson, origin: raftThemePackId),
+  raftThemePackId: RaftThemePack.parse(
+    raftThemePackJson,
+    origin: raftThemePackId,
+  ),
   for (final entry in _families.entries)
     entry.key: RaftThemePack.parse(_readPack(entry.value), origin: entry.key),
 };
@@ -81,8 +84,11 @@ void main() {
           // Assert against the contract's own vocabulary rather than a count:
           // a hardcoded 20 would need editing whenever an option is added, and
           // silently pass if one were dropped.
-          expect(options.keys.toSet(), raftStructuralOptions.keys.toSet(),
-              reason: '$id ${dark ? 'dark' : 'light'} options');
+          expect(
+            options.keys.toSet(),
+            raftStructuralOptions.keys.toSet(),
+            reason: '$id ${dark ? 'dark' : 'light'} options',
+          );
         }
       });
     }
@@ -98,44 +104,50 @@ void main() {
       final brutalLight = brutal.resolveIn(registry, dark: false);
 
       // The whole point of the packs: they must not resolve back to Raft.
-      expect(elegantLight.colors['foreground'],
-          isNot(raftLight.colors['foreground']));
+      expect(
+        elegantLight.colors['foreground'],
+        isNot(raftLight.colors['foreground']),
+      );
       expect(elegantLight.options['avatar.shape'], 'circle');
       expect(brutalLight.options['avatar.shape'], 'square');
       expect(elegantLight.options['control.edge'], 'ring');
       expect(brutalLight.options['control.edge'], 'inkBorder');
       // Rounded vs square is the clearest geometric tell between the families.
-      expect(elegantLight.geometry['radius.control'],
-          greaterThan(brutalLight.geometry['radius.control']!));
+      expect(
+        elegantLight.geometry['radius.control'],
+        greaterThan(brutalLight.geometry['radius.control']!),
+      );
     });
 
-    test('brutal dark is the whole Elegant dark look, not its light reskinned',
-        () {
-      // The old app forced the family to Elegant whenever dark was on
-      // (a57b9dab theme.dart:102), so Brutal at night was Elegant: colours,
-      // radii, strokes and options together. Rendering Brutal+dark on that
-      // commit returns exactly the Elegant+dark tokens, which is what this
-      // pins. A pack that merely darkened Brutal's light values would pass a
-      // colour-only check and fail here.
-      final registry = _registry();
-      final brutal = registry['brutal']!;
-      final elegant = registry['elegant']!;
+    test(
+      'brutal dark is the whole Elegant dark look, not its light reskinned',
+      () {
+        // The old app forced the family to Elegant whenever dark was on
+        // (a57b9dab theme.dart:102), so Brutal at night was Elegant: colours,
+        // radii, strokes and options together. Rendering Brutal+dark on that
+        // commit returns exactly the Elegant+dark tokens, which is what this
+        // pins. A pack that merely darkened Brutal's light values would pass a
+        // colour-only check and fail here.
+        final registry = _registry();
+        final brutal = registry['brutal']!;
+        final elegant = registry['elegant']!;
 
-      final brutalDark = brutal.resolveIn(registry, dark: true);
-      final elegantDark = elegant.resolveIn(registry, dark: true);
+        final brutalDark = brutal.resolveIn(registry, dark: true);
+        final elegantDark = elegant.resolveIn(registry, dark: true);
 
-      expect(brutalDark.colors, elegantDark.colors);
-      expect(brutalDark.geometry, elegantDark.geometry);
-      expect(brutalDark.options, elegantDark.options);
+        expect(brutalDark.colors, elegantDark.colors);
+        expect(brutalDark.geometry, elegantDark.geometry);
+        expect(brutalDark.options, elegantDark.options);
 
-      // And it is genuinely not Brutal's light look.
-      final brutalLight = brutal.resolveIn(registry, dark: false);
-      expect(brutalDark.colors, isNot(brutalLight.colors));
-      expect(brutalDark.options, isNot(brutalLight.options));
-      // Radius is the clearest structural tell: Brutal light is square (0),
-      // Elegant dark is rounded (6).
-      expect(brutalLight.geometry['radius.control'], 0);
-      expect(brutalDark.geometry['radius.control'], 6);
-    });
+        // And it is genuinely not Brutal's light look.
+        final brutalLight = brutal.resolveIn(registry, dark: false);
+        expect(brutalDark.colors, isNot(brutalLight.colors));
+        expect(brutalDark.options, isNot(brutalLight.options));
+        // Radius is the clearest structural tell: Brutal light is square (0),
+        // Elegant dark is rounded (6).
+        expect(brutalLight.geometry['radius.control'], 0);
+        expect(brutalDark.geometry['radius.control'], 6);
+      },
+    );
   });
 }

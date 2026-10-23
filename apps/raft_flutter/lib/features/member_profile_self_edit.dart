@@ -32,7 +32,7 @@ Widget ownDescriptionDialog(
   required String initial,
   required Future<void> Function() onSaved,
 }) => RaftFormDialog(
-  title: raftText(context, 'Edit description'),
+  title: raftText(context, 'Edit Description'),
   fields: [
     RaftFormField(
       'description',

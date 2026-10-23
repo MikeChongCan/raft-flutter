@@ -55,10 +55,14 @@ void main() {
   }
 }
 ''');
-      expect(raftRecipeTheme(RaftTokens.theme(pack: squared)),
-          RaftRecipeTheme.brutal);
-      expect(raftRecipeTheme(RaftTokens.theme(pack: rounded)),
-          RaftRecipeTheme.elegant);
+      expect(
+        raftRecipeTheme(RaftTokens.theme(pack: squared)),
+        RaftRecipeTheme.brutal,
+      );
+      expect(
+        raftRecipeTheme(RaftTokens.theme(pack: rounded)),
+        RaftRecipeTheme.elegant,
+      );
     });
 
     test('a token-less token set falls back to the elegant set', () {

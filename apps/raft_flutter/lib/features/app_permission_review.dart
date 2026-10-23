@@ -87,7 +87,7 @@ class AppPermissionRequestSummary extends StatelessWidget {
           groups: const [],
           action: RaftSettingsRecipeButton(
             key: const ValueKey('app-notifications-review-approve'),
-            label: reviewing ? tr('Approving...') : tr('Approve update'),
+            label: reviewing ? tr('Approving...') : tr('Approve Update'),
             variant: RaftButtonRecipeVariant.accent,
             size: RaftButtonRecipeSize.sm,
             // Without the displayed revision id the approval cannot be bound

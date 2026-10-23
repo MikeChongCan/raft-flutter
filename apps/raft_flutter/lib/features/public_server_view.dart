@@ -1474,7 +1474,7 @@ class _PublicServerViewState extends State<PublicServerView> {
                 'You are viewing public channels without signing in. Sign in or create an account to continue in Raft.',
               ),
               action: RaftSettingsRecipeButton(
-                label: tr('Sign in'),
+                label: tr('Sign In'),
                 size: RaftButtonRecipeSize.xs,
                 onPressed: widget.onSignIn,
               ),

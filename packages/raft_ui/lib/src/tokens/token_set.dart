@@ -90,10 +90,12 @@ class RaftTokenSet {
     final headingStack = spec('heading')?.stack.isNotEmpty == true
         ? spec('heading')!.stack
         : raftSansFontStack;
-    final sansStack =
-        spec('sans')?.stack.isNotEmpty == true ? spec('sans')!.stack : raftSansFontStack;
-    final monoStack =
-        spec('mono')?.stack.isNotEmpty == true ? spec('mono')!.stack : raftMonoFontStack;
+    final sansStack = spec('sans')?.stack.isNotEmpty == true
+        ? spec('sans')!.stack
+        : raftSansFontStack;
+    final monoStack = spec('mono')?.stack.isNotEmpty == true
+        ? spec('mono')!.stack
+        : raftMonoFontStack;
     final headingFamily = spec('heading')?.family ?? raftSansFontFamily;
     final sansFamily = spec('sans')?.family ?? raftSansFontFamily;
     final monoFamily = spec('mono')?.family ?? raftMonoFontFamily;

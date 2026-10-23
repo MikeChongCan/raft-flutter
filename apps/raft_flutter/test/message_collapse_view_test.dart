@@ -107,7 +107,7 @@ void main() {
       );
       await mountChat(tester, w);
       for (final id in ['p1', 'a1']) {
-        expect(toggle(id, 'Show more'), findsOneWidget, reason: id);
+        expect(toggle(id, 'Show More'), findsOneWidget, reason: id);
         expect(toggle(id, 'Collapse'), findsNothing, reason: id);
       }
     });
@@ -123,9 +123,9 @@ void main() {
         ],
       );
       await mountChat(tester, w);
-      expect(toggle('p1', 'Show more'), findsOneWidget);
+      expect(toggle('p1', 'Show More'), findsOneWidget);
       expect(toggle('a1', 'Collapse'), findsOneWidget);
-      expect(toggle('a1', 'Show more'), findsNothing);
+      expect(toggle('a1', 'Show More'), findsNothing);
     });
   }
 
@@ -133,26 +133,29 @@ void main() {
     tester,
   ) async {
     final handle = tester.ensureSemantics();
-    final w = await prepare(
-      tester,
-      width: 390,
-      maxRead: 9999,
-      rows: [row(id: 'm1', agent: true)],
-    );
-    await mountChat(tester, w);
-    bool? expanded(String label) => tester
-        .getSemantics(toggle('m1', label))
-        .getSemanticsData()
-        .flagsCollection
-        .isExpanded
-        .toBoolOrNull();
-    expect(expanded('Show more'), isFalse);
-    await tester.ensureVisible(toggle('m1', 'Show more'));
-    await tester.pumpAndSettle();
-    await tester.tap(toggle('m1', 'Show more'));
-    await tester.pumpAndSettle();
-    expect(expanded('Collapse'), isTrue);
-    handle.dispose();
+    try {
+      final w = await prepare(
+        tester,
+        width: 390,
+        maxRead: 9999,
+        rows: [row(id: 'm1', agent: true)],
+      );
+      await mountChat(tester, w);
+      bool? expanded(String label) => tester
+          .getSemantics(toggle('m1', label))
+          .getSemanticsData()
+          .flagsCollection
+          .isExpanded
+          .toBoolOrNull();
+      expect(expanded('Show More'), isFalse);
+      await tester.ensureVisible(toggle('m1', 'Show More'));
+      await tester.pumpAndSettle();
+      await tester.tap(toggle('m1', 'Show More'));
+      await tester.pumpAndSettle();
+      expect(expanded('Collapse'), isTrue);
+    } finally {
+      handle.dispose();
+    }
   });
 
   testWidgets('expanding at the live tail keeps the message where it is', (
@@ -170,7 +173,7 @@ void main() {
     final tile = find.byKey(const ValueKey('message-m1'));
     final top = tester.getTopLeft(tile).dy;
     final bottom = tester.getBottomLeft(tile).dy;
-    await tester.tap(toggle('m1', 'Show more'));
+    await tester.tap(toggle('m1', 'Show More'));
     await tester.pumpAndSettle();
     // Web `preserveTimelineViewport`: the message grows downward from where
     // the reader sees it; the latest end is not followed.
@@ -192,7 +195,7 @@ void main() {
       rows: [row(id: 'm1', agent: true, lines: 3)],
     );
     await mountChat(tester, w);
-    expect(toggle('m1', 'Show more'), findsNothing);
+    expect(toggle('m1', 'Show More'), findsNothing);
     expect(toggle('m1', 'Collapse'), findsNothing);
   });
 
@@ -206,7 +209,7 @@ void main() {
       collapse: false,
     );
     await mountChat(tester, w);
-    expect(toggle('m1', 'Show more'), findsNothing);
+    expect(toggle('m1', 'Show More'), findsNothing);
     expect(toggle('m1', 'Collapse'), findsNothing);
   });
 

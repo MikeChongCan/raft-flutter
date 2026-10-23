@@ -648,7 +648,7 @@ class _MemberProfileViewState extends ManagementState<MemberProfileView> {
             ? viewAvatar
             : null,
         avatarLabel: editOwn
-            ? (avatarSaving ? 'Uploading avatar' : 'Upload image')
+            ? (avatarSaving ? 'Uploading avatar' : 'Upload Image')
             : 'View avatar',
       ),
       if (editOwn && avatarError != null)

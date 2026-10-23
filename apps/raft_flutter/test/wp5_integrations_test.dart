@@ -154,7 +154,7 @@ void main() {
       await t.pumpAndSettle();
       expect(find.text('Permission update pending review'), findsOneWidget);
       expect(find.text('Requested data groups'), findsOneWidget);
-      expect(find.text('REQUESTED NOTIFICATION EVENTS'), findsOneWidget);
+      expect(find.text('Requested notification events'), findsOneWidget);
       expect(
         find.text('A marketplace reviewer can approve this permission update.'),
         findsOneWidget,
@@ -173,8 +173,8 @@ void main() {
       });
       // The listing reloaded: no pending state left.
       expect(find.text('Permission update pending review'), findsNothing);
-      expect(find.text('DATA GROUPS'), findsOneWidget);
-      expect(find.text('Approve update'), findsNothing);
+      expect(find.text('Data groups'), findsOneWidget);
+      expect(find.text('Approve Update'), findsNothing);
     });
 
     testWidgets('a stale revision (409) surfaces the server message', (
@@ -209,7 +209,7 @@ void main() {
       await t.pumpAndSettle();
       expect(find.text('Permission update pending review'), findsOneWidget);
       expect(find.text('Requested data groups'), findsOneWidget);
-      expect(find.text('Approve update'), findsNothing);
+      expect(find.text('Approve Update'), findsNothing);
     });
 
     testWidgets('without a displayed revision id the action stays disabled', (
@@ -340,7 +340,7 @@ void main() {
       final (a, launched) = await mount(t);
       final button = find.byKey(const ValueKey('slack-bridge-reauthorize'));
       expect(find.text('Update Slack authorization'), findsOneWidget);
-      expect(find.text('Disconnect Slack workspace'), findsOneWidget);
+      expect(find.text('Disconnect Slack Workspace'), findsOneWidget);
       final before = a.of('GET', '/slack-bridge/provisioning').length;
       await t.ensureVisible(button);
       await t.tap(button);

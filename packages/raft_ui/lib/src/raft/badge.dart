@@ -249,7 +249,8 @@ class RaftBadge extends StatelessWidget {
     // mapping: a solid badge is `rounded-sticker` (4 for Raft) and an outline
     // badge `rounded-chip` (6). Elegant and Brutal then square or soften them.
     final box = RaftCssBox(
-      radius: radius ??
+      radius:
+          radius ??
           (solid
               ? t.size('radius.sticker', fallback: 4)
               : t.size('radius.chip', fallback: 6)),

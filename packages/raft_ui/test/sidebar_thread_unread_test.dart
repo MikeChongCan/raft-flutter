@@ -7,14 +7,14 @@ import 'package:raft_ui/test_themes.dart';
 /// as quiet text; only the thread segment when the channel itself is read.
 void main() {
   for (final (family, dark) in raftThemeMatrix([
-    (RaftFamily.brutal, false),
-    (RaftFamily.elegant, false),
-    (RaftFamily.elegant, true),
+    (brutalThemePackId, false),
+    (elegantThemePackId, false),
+    (elegantThemePackId, true),
   ])) {
     testWidgets('$family/$dark thread unread joins the badge', (t) async {
       await t.pumpWidget(
         MaterialApp(
-          theme: raftTheme(family, dark: dark),
+          theme: raftTheme(pack: packForThemeId(family), dark: dark),
           home: Scaffold(
             body: Align(
               alignment: Alignment.topLeft,
@@ -108,7 +108,7 @@ void main() {
       final handle = t.ensureSemantics();
       await t.pumpWidget(
         MaterialApp(
-          theme: raftTheme(family, dark: dark),
+          theme: raftTheme(pack: packForThemeId(family), dark: dark),
           home: Scaffold(
             body: SizedBox(
               width: 240,

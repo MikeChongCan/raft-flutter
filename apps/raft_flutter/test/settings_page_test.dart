@@ -105,13 +105,19 @@ void main() {
       await tester.tap(find.text('Brutal').first);
       await tester.pumpAndSettle();
       expect(accepted?.themeId, brutalThemePackId);
-      expect(accepted?.mode, ThemeMode.light,
-          reason: 'choosing a theme must not change the mode');
+      expect(
+        accepted?.mode,
+        ThemeMode.light,
+        reason: 'choosing a theme must not change the mode',
+      );
       await tester.tap(find.text('Dark').first);
       await tester.pumpAndSettle();
       expect(accepted?.mode, ThemeMode.dark);
-      expect(accepted?.themeId, raftThemePackId,
-          reason: 'choosing a mode must not change the theme');
+      expect(
+        accepted?.themeId,
+        raftThemePackId,
+        reason: 'choosing a mode must not change the theme',
+      );
       expect(tester.takeException(), isNull);
     },
   );

@@ -14,17 +14,19 @@ Widget _host(String id, Widget child) => MaterialApp(
   home: Scaffold(body: Center(child: child)),
 );
 
-
 /// Paints one avatar in its own tree and reads back the outer and inner radii.
 ///
 /// Each call gets a fresh widget, because reusing one across themes leaves the
 /// previous theme's values in the element.
 Future<(double, double)> _paintedRadii(WidgetTester tester, String id) async {
   await tester.pumpWidget(
-    _host(id, RaftStickerAvatar(
-      size: RaftAvatarSize.md,
-      child: const SizedBox.expand(),
-    )),
+    _host(
+      id,
+      RaftStickerAvatar(
+        size: RaftAvatarSize.md,
+        child: const SizedBox.expand(),
+      ),
+    ),
   );
   await tester.pump();
   final box = tester.widgetList<RaftCssBox>(find.byType(RaftCssBox)).first;
@@ -70,8 +72,9 @@ void main() {
       expect(radii, (4.0, 2.0));
     });
 
-    testWidgets('Elegant paints a full circle outside and inside',
-        (tester) async {
+    testWidgets('Elegant paints a full circle outside and inside', (
+      tester,
+    ) async {
       expect(await _paintedRadii(tester, elegantThemePackId), (999.0, 999.0));
     });
 

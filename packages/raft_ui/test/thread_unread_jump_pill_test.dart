@@ -7,16 +7,16 @@ import 'package:raft_ui/test_themes.dart';
 /// actions of one pill with the height of the "Back to bottom" button.
 void main() {
   for (final (family, dark) in raftThemeMatrix([
-    (RaftFamily.brutal, false),
-    (RaftFamily.elegant, false),
-    (RaftFamily.elegant, true),
+    (brutalThemePackId, false),
+    (elegantThemePackId, false),
+    (elegantThemePackId, true),
   ])) {
     testWidgets('$family/$dark the pill jumps, dismisses and lines up with '
         'Back to bottom', (t) async {
       var jumps = 0, dismissals = 0, backs = 0;
       await t.pumpWidget(
         MaterialApp(
-          theme: raftTheme(family, dark: dark),
+          theme: raftTheme(pack: packForThemeId(family), dark: dark),
           home: Scaffold(
             body: SizedBox(
               width: 600,

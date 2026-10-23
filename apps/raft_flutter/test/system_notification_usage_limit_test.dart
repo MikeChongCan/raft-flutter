@@ -181,7 +181,7 @@ void main() {
   }
 
   Finder active(String count) =>
-      find.bySemanticsLabel(RegExp('Notification center \\($count active\\)'));
+      find.bySemanticsLabel(RegExp('Notification Center \\($count active\\)'));
 
   testWidgets(
     'unread incident lights the bell; opening the center marks it seen',

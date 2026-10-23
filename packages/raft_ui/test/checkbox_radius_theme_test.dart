@@ -49,8 +49,9 @@ void main() {
       expect(await _painted(tester, brutalThemePackId), (0.0, 0.0));
     });
 
-    testWidgets('the circle form stays a true circle in every theme',
-        (tester) async {
+    testWidgets('the circle form stays a true circle in every theme', (
+      tester,
+    ) async {
       // `rounded-full` is size/2 regardless of theme, so the three looks agree
       // here. If this started varying by theme it would mean the circle had been
       // wrongly routed through the sticker token.

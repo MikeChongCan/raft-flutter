@@ -524,7 +524,7 @@ class _MigrationReferenceState extends State<MigrationReference> {
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
-    final label = copied ? 'Migration ID copied' : 'Copy migration ID';
+    final label = copied ? 'Migration ID Copied' : 'Copy Migration ID';
     return Row(
       children: [
         Text(

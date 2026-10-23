@@ -585,7 +585,7 @@ class _PublicPdfPreviewState extends State<_PublicPdfPreview> {
                     error!,
                     actions: [
                       RaftLoadErrorAction(
-                        label: 'Download original',
+                        label: 'Download Original',
                         glyph: RaftGlyph.download,
                         onPressed: widget.onDownload,
                       ),

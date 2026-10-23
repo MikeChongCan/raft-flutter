@@ -781,7 +781,7 @@ class RaftProfileIdentity extends StatelessWidget {
                               key: const ValueKey('agent-edit-display-name'),
                               glyph: RaftGlyph.pencil,
                               size: 14,
-                              tooltip: raftText(context, 'Edit display name'),
+                              tooltip: raftText(context, 'Edit Display Name'),
                               onPressed: onEditName,
                             ),
                           ),

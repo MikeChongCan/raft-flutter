@@ -137,7 +137,7 @@ Widget? publicTranslationStatus(
       tone: RaftMessageTranslationTone.normal,
       actionLabel: raftText(
         context,
-        original ? 'Show translation' : 'Show original',
+        original ? 'Show Translation' : 'Show Original',
       ),
       tooltip: raftText(
         context,

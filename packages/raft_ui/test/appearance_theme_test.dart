@@ -43,8 +43,11 @@ void main() {
       final light = {
         for (final theme in builtInAppearanceThemes) theme.id: ink(theme.id),
       };
-      expect(light.values.toSet(), hasLength(3),
-          reason: 'light inks collide: $light');
+      expect(
+        light.values.toSet(),
+        hasLength(3),
+        reason: 'light inks collide: $light',
+      );
 
       final raftDark = ink(raftThemePackId, dark: true);
       final elegantDarkInk = ink(elegantThemePackId, dark: true);
@@ -55,7 +58,9 @@ void main() {
 
     test('the chosen pack supplies the values, not the default pack', () {
       final raft = RaftTokens.theme(pack: packForThemeId(raftThemePackId));
-      final elegant = RaftTokens.theme(pack: packForThemeId(elegantThemePackId));
+      final elegant = RaftTokens.theme(
+        pack: packForThemeId(elegantThemePackId),
+      );
       final brutal = RaftTokens.theme(pack: packForThemeId(brutalThemePackId));
 
       // Values taken from the contract tables for each family.
@@ -71,8 +76,9 @@ void main() {
       expect(brutal.border, 2);
     });
 
-    testWidgets('Brutal dark renders identically to Elegant dark',
-        (tester) async {
+    testWidgets('Brutal dark renders identically to Elegant dark', (
+      tester,
+    ) async {
       // Kevin's decision, and what the old app actually did: selecting Brutal
       // at night painted the whole Elegant dark look. Pinning it by pixels
       // rather than by token comparison catches a pack that gets the colours
@@ -88,15 +94,21 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          theme: raftTheme(dark: true, pack: packForThemeId(elegantThemePackId)),
+          theme: raftTheme(
+            dark: true,
+            pack: packForThemeId(elegantThemePackId),
+          ),
           home: const Scaffold(body: Text('same either way')),
         ),
       );
       await tester.pumpAndSettle();
       final elegantDarkShot = await _capture(tester);
 
-      expect(brutalShot, elegantDarkShot,
-          reason: 'Brutal dark must paint exactly the Elegant dark look');
+      expect(
+        brutalShot,
+        elegantDarkShot,
+        reason: 'Brutal dark must paint exactly the Elegant dark look',
+      );
 
       // Sanity: Brutal light is a different look, so the comparison above is
       // not passing because nothing varies.
@@ -123,10 +135,14 @@ void main() {
         mode: ThemeMode.dark,
         themeId: elegantThemePackId,
       );
-      expect(appearance.copyWith(mode: ThemeMode.light).themeId,
-          elegantThemePackId);
-      expect(appearance.copyWith(themeId: brutalThemePackId).mode,
-          ThemeMode.dark);
+      expect(
+        appearance.copyWith(mode: ThemeMode.light).themeId,
+        elegantThemePackId,
+      );
+      expect(
+        appearance.copyWith(themeId: brutalThemePackId).mode,
+        ThemeMode.dark,
+      );
       // The default is the Raft look in System mode, so existing call sites and
       // every stored profile from before this change keep their appearance.
       const defaults = RaftAppearance();
@@ -136,8 +152,9 @@ void main() {
   });
 
   group('switching themes keeps the session intact', () {
-    testWidgets('an open route and its entered text survive a theme change',
-        (tester) async {
+    testWidgets('an open route and its entered text survive a theme change', (
+      tester,
+    ) async {
       // MaterialApp swaps `theme`/`darkTheme` in place; the Navigator and the
       // fields under it must not be rebuilt from scratch, or a user changing
       // the theme mid-message would lose the draft and the page behind it.
@@ -175,7 +192,10 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('composer page'), findsOneWidget);
 
-      await tester.enterText(find.byKey(const Key('draft-field')), 'half a message');
+      await tester.enterText(
+        find.byKey(const Key('draft-field')),
+        'half a message',
+      );
       await tester.pump();
 
       // Change the theme while the composer is open.

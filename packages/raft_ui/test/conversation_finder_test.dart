@@ -6,9 +6,9 @@ import 'package:raft_ui/test_themes.dart';
 
 void main() {
   for (final (family, dark) in raftThemeMatrix([
-    (RaftFamily.brutal, false),
-    (RaftFamily.elegant, false),
-    (RaftFamily.elegant, true),
+    (brutalThemePackId, false),
+    (elegantThemePackId, false),
+    (elegantThemePackId, true),
   ])) {
     testWidgets('finder field, list and rows render in $family/$dark', (
       t,
@@ -25,7 +25,7 @@ void main() {
       addTearDown(t.view.reset);
       await t.pumpWidget(
         MaterialApp(
-          theme: raftTheme(family, dark: dark),
+          theme: raftTheme(pack: packForThemeId(family), dark: dark),
           home: Material(
             child: Column(
               children: [

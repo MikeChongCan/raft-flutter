@@ -154,6 +154,7 @@ class _ConnectedAppEditorState extends State<ConnectedAppEditor> {
   bool get live => mounted && generation == w.client.generation;
   String get base => '/integrations/clients/${editing?['id']}';
   String tr(String s) => raftText(context, s);
+
   /// Web `err.response?.data?.error || formatMessage(fallback)`; the English
   /// source string, localized by the banner.
   String failure(Object e, String fallback) =>
@@ -620,7 +621,7 @@ class _ConnectedAppEditorState extends State<ConnectedAppEditor> {
             ' stays listed, installable, and usable by existing connections. If approved, the source Server keeps its installation and access. Other Servers lose their installations, and their grants and tokens are revoked.',
           ),
         ),
-        confirmLabel: tr('Request offline review'),
+        confirmLabel: tr('Request Offline Review'),
         loadingLabel: tr('Requesting...'),
         confirmGlyph: RaftGlyph.upload,
         confirmVariant: RaftButtonRecipeVariant.danger,
@@ -852,8 +853,7 @@ class _ConnectedAppEditorState extends State<ConnectedAppEditor> {
         glyph: RaftGlyph.alertTriangle,
         railLabel: 'Danger zone',
         title: 'Danger zone',
-        description:
-            'Credential rotation, offline review, and deletion stay separate from routine configuration.',
+        description: 'Credential rotation, offline review, and deletion stay separate from routine configuration.',
         status: tr(app == null ? 'Available after save' : 'Restricted'),
         warning: true,
         child: dangerSection(),
@@ -1254,8 +1254,7 @@ class _ConnectedAppEditorState extends State<ConnectedAppEditor> {
         if (configOpen && app != null)
           RaftAppEditorPanel(
             title: 'Webhook events',
-            description:
-                'Choose events for the resources selected in App permissions. Each installation controls its subscriptions separately.',
+            description: 'Choose events for the resources selected in App permissions. Each installation controls its subscriptions separately.',
             child: RaftAppEditorStack(
               gap: RaftSpace.x3,
               children: [
@@ -1322,10 +1321,8 @@ class _ConnectedAppEditorState extends State<ConnectedAppEditor> {
     final app = editing;
     final status = publishStatus;
     final hint = switch (status) {
-      'publish_requested' || 'in_review' =>
-        'Marketplace review is pending. You can edit this app while it waits, or delete it to withdraw the request.',
-      'unpublish_requested' =>
-        'Marketplace offline review is pending. The app stays listed and installable until App Admin approves removal. Approval preserves the source Server’s installation and access, but removes them on other Servers.',
+      'publish_requested' || 'in_review' => 'Marketplace review is pending. You can edit this app while it waits, or delete it to withdraw the request.',
+      'unpublish_requested' => 'Marketplace offline review is pending. The app stays listed and installable until App Admin approves removal. Approval preserves the source Server’s installation and access, but removes them on other Servers.',
       _ => null,
     };
     final shareable = status == 'private' || status == 'rejected';
@@ -1347,8 +1344,7 @@ class _ConnectedAppEditorState extends State<ConnectedAppEditor> {
               children: [
                 RaftAppEditorActionRow(
                   title: 'Private share link',
-                  description:
-                      'Invite another server owner or admin to install this app without listing it in the public marketplace.',
+                  description: 'Invite another server owner or admin to install this app without listing it in the public marketplace.',
                   extra: shareLink == null
                       ? null
                       : raftFormat(context, 'Active link expires {when}.', {
@@ -1401,8 +1397,7 @@ class _ConnectedAppEditorState extends State<ConnectedAppEditor> {
             cream: true,
             child: RaftAppEditorActionRow(
               title: 'Marketplace publish request',
-              description:
-                  'Category and data access come from the app metadata and declared scopes above. Requesting review saves those changes first.',
+              description: 'Category and data access come from the app metadata and declared scopes above. Requesting review saves those changes first.',
               action: RaftSettingsRecipeButton(
                 label: savingId == '${app['id']}'
                     ? 'Requesting…'
@@ -1443,8 +1438,7 @@ class _ConnectedAppEditorState extends State<ConnectedAppEditor> {
           shadow: false,
           child: RaftAppEditorActionRow(
             title: 'Client secret',
-            description:
-                'Regenerating invalidates the previous secret for this app. The new secret is shown once.',
+            description: 'Regenerating invalidates the previous secret for this app. The new secret is shown once.',
             action: RaftSettingsRecipeButton(
               key: const ValueKey('connected-app-regenerate-secret-button'),
               label: regenerating
@@ -1462,10 +1456,9 @@ class _ConnectedAppEditorState extends State<ConnectedAppEditor> {
             shadow: false,
             child: RaftAppEditorActionRow(
               title: 'Marketplace lifecycle',
-              description:
-                  'Requesting offline review keeps the app live until App Admin approves removal.',
+              description: 'Requesting offline review keeps the app live until App Admin approves removal.',
               action: RaftSettingsRecipeButton(
-                label: 'Request offline review',
+                label: 'Request Offline Review',
                 size: small,
                 onPressed: confirmOffline,
               ),

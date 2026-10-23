@@ -150,7 +150,7 @@ void main() {
         expect(find.text('Hello everyone'), findsOneWidget);
         expect(find.text('Bonjour tout le monde'), findsNothing);
         // The indicator offers the original back.
-        expect(find.text('Show original'), findsOneWidget);
+        expect(find.text('Show Original'), findsOneWidget);
       },
     );
 

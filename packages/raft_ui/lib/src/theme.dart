@@ -269,7 +269,8 @@ class RaftTokens extends ThemeExtension<RaftTokens> {
   /// `userErrorText`), and the zh-catalog scanner treats every literal after it
   /// as translation text. Reusing the name made a theme option value look like
   /// UI copy and failed the catalog test.
-  String option(String name, {required String or}) => _mode?.options[name] ?? or;
+  String option(String name, {required String or}) =>
+      _mode?.options[name] ?? or;
 
   /// The hyperlink underline every underlined run shares (Web `underline
   /// decoration-2 underline-offset-2`; no theme overrides it, so Brutal and

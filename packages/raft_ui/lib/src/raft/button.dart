@@ -212,17 +212,17 @@ class RaftButtonMetrics {
 
     RaftButtonMetrics sized(double height, RaftButtonMetrics base) =>
         height == base.height
-            ? base
-            : RaftButtonMetrics(
-                height: height,
-                paddingX: base.paddingX,
-                iconStartPaddingLeft: base.iconStartPaddingLeft,
-                iconEndPaddingRight: base.iconEndPaddingRight,
-                text: base.text,
-                icon: base.icon,
-                gap: base.gap,
-                square: base.square,
-              );
+        ? base
+        : RaftButtonMetrics(
+            height: height,
+            paddingX: base.paddingX,
+            iconStartPaddingLeft: base.iconStartPaddingLeft,
+            iconEndPaddingRight: base.iconEndPaddingRight,
+            text: base.text,
+            icon: base.icon,
+            gap: base.gap,
+            square: base.square,
+          );
 
     return switch (size) {
       // xs and sm read the small token; md reads the medium one. Raft renders
@@ -240,9 +240,7 @@ class RaftButtonMetrics {
       // old tree painted at that position. Deliberately NOT derived from lg.
       RaftButtonSize.xl => _xl,
       RaftButtonSize.inline => _md,
-      RaftButtonSize.iconXs ||
-      RaftButtonSize.iconSm ||
-      RaftButtonSize.iconMd =>
+      RaftButtonSize.iconXs || RaftButtonSize.iconSm || RaftButtonSize.iconMd =>
         onFrame ? sized(frame, _iconOnFrame) : sized(md, _iconMd),
       RaftButtonSize.iconLg => sized(lg, _iconLg),
     };

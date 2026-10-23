@@ -1466,7 +1466,7 @@ class RaftMessageTile extends StatelessWidget {
                         border: Border.all(color: t.colors['line-muted']!),
                       ),
                       child: RaftCssText(
-                        departureLabel!.toUpperCase(),
+                        departureLabel!,
                         maxLines: 1,
                         softWrap: false,
                         overflow: TextOverflow.clip,

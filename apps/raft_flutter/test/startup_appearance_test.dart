@@ -132,34 +132,37 @@ void main() {
     expect(storedThemeMode(null), isNull);
   });
 
-  test('storedAppearance reads the theme id independently of the mode', () async {
-    // The theme and the mode are separate choices stored under separate keys:
-    // picking Elegant must not disturb Light/Dark/System, and vice versa.
-    SharedPreferences.setMockInitialValues({
-      'raft.mode': 'dark',
-      'raft.theme': 'brutal',
-    });
-    final p = await SharedPreferences.getInstance();
-    final stored = storedAppearance(p);
-    expect(stored.themeId, 'brutal');
-    expect(stored.mode, ThemeMode.dark);
+  test(
+    'storedAppearance reads the theme id independently of the mode',
+    () async {
+      // The theme and the mode are separate choices stored under separate keys:
+      // picking Elegant must not disturb Light/Dark/System, and vice versa.
+      SharedPreferences.setMockInitialValues({
+        'raft.mode': 'dark',
+        'raft.theme': 'brutal',
+      });
+      final p = await SharedPreferences.getInstance();
+      final stored = storedAppearance(p);
+      expect(stored.themeId, 'brutal');
+      expect(stored.mode, ThemeMode.dark);
 
-    // No stored theme means the default look, not an empty id.
-    SharedPreferences.setMockInitialValues({'raft.mode': 'light'});
-    expect(
-      storedAppearance(await SharedPreferences.getInstance()).themeId,
-      raftThemePackId,
-    );
+      // No stored theme means the default look, not an empty id.
+      SharedPreferences.setMockInitialValues({'raft.mode': 'light'});
+      expect(
+        storedAppearance(await SharedPreferences.getInstance()).themeId,
+        raftThemePackId,
+      );
 
-    // An id naming no built-in theme is preserved as written: the user's
-    // choice is not silently rewritten, it is resolved to the fallback look
-    // when painted.
-    SharedPreferences.setMockInitialValues({'raft.theme': 'my-own-pack'});
-    expect(
-      storedAppearance(await SharedPreferences.getInstance()).themeId,
-      'my-own-pack',
-    );
-  });
+      // An id naming no built-in theme is preserved as written: the user's
+      // choice is not silently rewritten, it is resolved to the fallback look
+      // when painted.
+      SharedPreferences.setMockInitialValues({'raft.theme': 'my-own-pack'});
+      expect(
+        storedAppearance(await SharedPreferences.getInstance()).themeId,
+        'my-own-pack',
+      );
+    },
+  );
 
   test('choosing a theme persists it without touching the mode', () async {
     // The theme id gets its own key, so setting one never rewrites the other.

@@ -65,8 +65,9 @@ void main() {
       expect(t.metrics.monoFontStack.first, 'Geist Mono');
     });
 
-    testWidgets('the first painted frame already uses the theme font',
-        (tester) async {
+    testWidgets('the first painted frame already uses the theme font', (
+      tester,
+    ) async {
       // docs/theme-flash.md: a frame painted in the previous look is a flash.
       // Reading the pack fonts synchronously is what prevents it, so the very
       // first frame -- one pump, no settle -- must carry the right family.
@@ -77,12 +78,14 @@ void main() {
         ),
       );
       final text = tester.widget<Text>(find.text('Settings'));
-      final style = DefaultTextStyle.of(
-        tester.element(find.text('Settings')),
-      ).style.merge(text.style);
+      final style = DefaultTextStyle.of(tester.element(find.text('Settings')))
+          .style
+          .merge(text.style);
       expect(style.fontFamily, isNot('Space Grotesk'));
       expect(
-        tester.widget<MaterialApp>(find.byType(MaterialApp)).theme!
+        tester
+            .widget<MaterialApp>(find.byType(MaterialApp))
+            .theme!
             .textTheme
             .titleLarge!
             .fontFamily,

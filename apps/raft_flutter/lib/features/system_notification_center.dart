@@ -628,10 +628,10 @@ class _SystemNotificationBellState extends State<SystemNotificationBell>
                 RaftMobileNotificationButton(
                   open: popup != null,
                   semanticLabel: store.unreadCount == 0
-                      ? raftText(context, 'Notification center')
+                      ? raftText(context, 'Notification Center')
                       : raftFormat(
                           context,
-                          'Notification center ({count} active)',
+                          'Notification Center ({count} active)',
                           {'count': store.unreadCount},
                         ),
                   visualSize: widget.mobile ? 32 : 40,

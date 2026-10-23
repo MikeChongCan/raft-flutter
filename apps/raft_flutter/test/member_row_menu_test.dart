@@ -81,9 +81,9 @@ class _Client extends RaftClient {
 /// may control.
 void main() {
   for (final (family, dark) in raftThemeMatrix([
-    (RaftFamily.brutal, false),
-    (RaftFamily.elegant, false),
-    (RaftFamily.elegant, true),
+    (brutalThemePackId, false),
+    (elegantThemePackId, false),
+    (elegantThemePackId, true),
   ])) {
     Future<(WorkspaceController, _Client, List<DesktopContentTarget>)> mount(
       WidgetTester t, {
@@ -101,7 +101,7 @@ void main() {
       });
       await t.pumpWidget(
         MaterialApp(
-          theme: raftTheme(family, dark: dark),
+          theme: raftTheme(pack: packForThemeId(family), dark: dark),
           home: Scaffold(
             body: SizedBox(
               width: 260,

@@ -23,9 +23,9 @@ import 'flutter_test_config.dart' show leakDebt;
 /// shows its final content) from what is already local while the network
 /// never answers.
 
-Future<void> push(BuildContext context, Widget page) => Navigator.of(
-  context,
-).push(MaterialPageRoute<void>(builder: (_) => Scaffold(body: page)));
+Future<void> push(BuildContext context, Widget page) =>
+    Navigator.of(context)
+        .push(MaterialPageRoute<void>(builder: (_) => Scaffold(body: page)));
 
 const machine = {
   'id': 'm1',
@@ -85,7 +85,12 @@ Future<(WorkspaceController, MessageAdapter)> mount(WidgetTester t) async {
 
 void main() {
   // Leak debt (dialog notifier): see docs/development.md, Leak tracking.
-  leakDebt(const ['ValueNotifier<(Object?)?>', 'ValueNotifier<Map<String, dynamic>>', 'ValueNotifier<Object?>', 'ValueNotifier<String?>']);
+  leakDebt(const [
+    'ValueNotifier<(Object?)?>',
+    'ValueNotifier<Map<String, dynamic>>',
+    'ValueNotifier<Object?>',
+    'ValueNotifier<String?>',
+  ]);
   testWidgets('agent detail opened with an id-only row renders the directory '
       'agent at the first frame', (t) async {
     final (w, api) = await mount(t);
@@ -365,7 +370,7 @@ void main() {
     await t.tap(event.first);
     await frames(t, 6);
     expect(find.byType(AlertDialog), findsNothing);
-    expect(find.text('Loading…'), findsOneWidget);
+    expect(find.text('Refreshing…'), findsOneWidget);
     api.hangAll = false;
   });
 }

@@ -63,7 +63,9 @@ void main() {
       expect(_segmentRadius(tester), 8);
     });
 
-    testWidgets('Elegant draws separate segments with no track', (tester) async {
+    testWidgets('Elegant draws separate segments with no track', (
+      tester,
+    ) async {
       await _pump(tester, elegantThemePackId);
       // Two segments only: no third rounded box means no track.
       expect(_roundedBoxes(tester), 2);
@@ -73,8 +75,9 @@ void main() {
       expect(_gap(tester), 6);
     });
 
-    testWidgets('Brutal draws square separate segments with no track',
-        (tester) async {
+    testWidgets('Brutal draws square separate segments with no track', (
+      tester,
+    ) async {
       await _pump(tester, brutalThemePackId);
       expect(_roundedBoxes(tester), 2);
       expect(_segmentRadius(tester), 0);
@@ -85,11 +88,16 @@ void main() {
     test('the frame is a structural option, not a radius coincidence', () {
       // A theme that kept the track would give Elegant three rounded boxes; the
       // option is what removes it, so pin the option values themselves.
-      expect(packForThemeId(raftThemePackId).light.options['segmented.frame'],
-          'framed');
+      expect(
+        packForThemeId(raftThemePackId).light.options['segmented.frame'],
+        'framed',
+      );
       for (final id in [elegantThemePackId, brutalThemePackId]) {
-        expect(packForThemeId(id).light.options['segmented.frame'], 'separate',
-            reason: id);
+        expect(
+          packForThemeId(id).light.options['segmented.frame'],
+          'separate',
+          reason: id,
+        );
       }
     });
   });

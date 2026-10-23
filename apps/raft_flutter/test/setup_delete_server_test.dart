@@ -106,14 +106,14 @@ void main() {
     t,
   ) async {
     await host(t, role: 'owner');
-    expect(find.text('Switch server'), findsOneWidget);
+    expect(find.text('Switch Server'), findsOneWidget);
     expect(find.text('Delete this server'), findsOneWidget);
     expect(link, findsOneWidget);
   });
 
   testWidgets('an admin does not', (t) async {
     await host(t, role: 'admin');
-    expect(find.text('Switch server'), findsOneWidget);
+    expect(find.text('Switch Server'), findsOneWidget);
     expect(find.text('Delete this server'), findsNothing);
   });
 

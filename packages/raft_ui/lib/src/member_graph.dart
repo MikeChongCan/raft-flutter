@@ -403,7 +403,7 @@ class _Sidebar extends StatelessWidget {
             tile('$links', 'Links'),
           ],
         ),
-        ranked_('Most connected members', [
+        ranked_('Most Connected Members', [
           for (final m in ranked)
             row(
               SizedBox.square(
@@ -415,7 +415,7 @@ class _Sidebar extends StatelessWidget {
               ValueKey('member-graph-ranked-${m.key}'),
             ),
         ], 'No memberships yet.'),
-        ranked_('Largest channels', [
+        ranked_('Largest Channels', [
           for (final c in channels)
             row(
               RaftIcon(RaftGlyph.hash, size: 13, color: t.ink),

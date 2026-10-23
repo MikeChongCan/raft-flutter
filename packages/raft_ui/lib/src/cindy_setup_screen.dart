@@ -241,7 +241,7 @@ class RaftCindySessionLink extends StatelessWidget {
   const RaftCindySessionLink({
     super.key,
     required this.onPressed,
-    this.label = 'Switch server',
+    this.label = 'Switch Server',
   });
   final VoidCallback? onPressed;
   final String label;
