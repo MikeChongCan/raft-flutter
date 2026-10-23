@@ -688,7 +688,8 @@ class _RaftCollapsibleSectionHeaderState
   }
 }
 
-/// Web `ui/MenuItem`: raft-ui `Button` (variant ghost, size sm) with
+/// Web `ui/MenuItem`: source action-row metrics (compact at height <= 600),
+/// with a57b9dab retaining raft-ui `Button` (variant ghost, size sm) and
 /// `flex w-full items-center gap-2 px-3 py-2 text-sm text-left
 /// font-medium text-foreground-strong hover:bg-fill-muted
 /// hover:!border-transparent disabled:text-foreground-muted` and brutal
@@ -744,6 +745,13 @@ class RaftMenuButtonItem extends StatelessWidget {
             tokens: rt,
             overflowCenter: true,
             width: double.infinity,
+            // Same max-height:600px condition as navigation compact rows.
+            height: t.size(
+              MediaQuery.sizeOf(context).height <= 600
+                  ? 'size.menuActionRowCompact'
+                  : 'size.menuActionRow',
+              fallback: s.height ?? 28,
+            ),
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decorationOverride: (d) {
               final color = topDivider ? dividerColor : Colors.transparent;

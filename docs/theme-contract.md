@@ -180,6 +180,8 @@ Elegant 的 `stroke.control = 0` 配合 `control.edge = ring`（§5 #1）与 `sh
 | `size.navRow` / `navRowCompact` | 34 / — | 34 / 30 | 40 / 32 |
 | `size.navRowWide`（桌面宽 ≥ 768，非矮屏） | 34 | 34 | 32 |
 | `size.menuRow` / `menuRowCompact` | 32 / — | 31.5 / 27.5 | 36 / 28 |
+| `size.menuActionRow` / `menuActionRowCompact`（视口高 ≤ 600） | 36 / 32 | 28 / 28 | 28 / 28 |
+| `size.menuPopupMin` | 240 | 192 | 192 |
 | `size.drawer` | 380 | 380 | 380 |
 | `space.controlX` | 12 | 6 | 8 |
 | `space.itemX` | 10 | 10 | 12 |
@@ -615,3 +617,7 @@ Select 数值（Cindy 511917e6）：`size.selectTrigger` 的 Raft 值由生成�
 行高20、占位字重500均为常量。当前 Web select.trigger 的 h-11、text-subhead
 和 font-semibold，以及旧版实际触发框／继承文字探测，是数值来源。
 调用方的显式高度继续优先。
+
+菜单操作行数值由 Cindy 4e51e70c 批准：当前 Web MenuItem 的常规／矮屏行高与
+消息 ContextMenu 最小宽度。它们与选择菜单的 menuRow 分开；矮屏同 navRowCompact
+使用视口高度 ≤ 600，行为、权限和调用方显式尺寸保持原样。

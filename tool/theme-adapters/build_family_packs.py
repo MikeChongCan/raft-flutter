@@ -79,6 +79,8 @@ GEOMETRY_ELEGANT = {
     'radius.settingsCard': 0,
     # Original Select trigger measurement: 32px, 14/20 medium in both families.
     'size.selectTrigger': 32, 'type.selectValue.size': 14, 'type.selectValue.weight': 500,
+    # Pure MenuItem action rows; separate from selection menuRow (Cindy 4e51e70c).
+    'size.menuActionRow': 28, 'size.menuActionRowCompact': 28, 'size.menuPopupMin': 192,
     # Current Web MessageInput / a57 legacy composer, approved Cindy 27a5a99c.
     'space.composerHostInline': 12, 'space.composerHostTop': 12,
     'type.composerInput.line': 20, 'type.composerInputDesktop.size': 14,
@@ -119,6 +121,8 @@ GEOMETRY_BRUTAL = {
     'radius.settingsCard': 0,
     # Original Select trigger measurement: 32px, 14/20 medium in both families.
     'size.selectTrigger': 32, 'type.selectValue.size': 14, 'type.selectValue.weight': 500,
+    # Pure MenuItem action rows; separate from selection menuRow (Cindy 4e51e70c).
+    'size.menuActionRow': 28, 'size.menuActionRowCompact': 28, 'size.menuPopupMin': 192,
     # Current Web MessageInput / a57 legacy composer, approved Cindy 27a5a99c.
     'space.composerHostInline': 12, 'space.composerHostTop': 12,
     'type.composerInput.line': 20, 'type.composerInputDesktop.size': 14,

@@ -111,8 +111,13 @@ class RaftMessageContextMenu extends StatelessWidget {
         child: Semantics(
           role: SemanticsRole.menu,
           child: ConstrainedBox(
-            // `min-w-48`; the width is otherwise the intrinsic content width.
-            constraints: BoxConstraints(minWidth: content.minWidth ?? 192),
+            // Web v1.21.23 min-w-60; a57b9dab min-w-48.
+            constraints: BoxConstraints(
+              minWidth: t.size(
+                'size.menuPopupMin',
+                fallback: content.minWidth ?? 192,
+              ),
+            ),
             child: IntrinsicWidth(
               child: RaftRecipeBox(
                 key: const ValueKey('raft-message-context-menu'),

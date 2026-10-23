@@ -153,6 +153,8 @@ GEOMETRY_RAFT = {
     'size.avatar.profileHero': 99, 'size.avatar.profileTile': 51, 'size.avatar.panelHeader': 35,
     # SettingsProfileCard source values, approved Cindy 318b1d17.
     'radius.settingsCard': 10,
+    # Web MenuItem min-h-9 / max-height:600px min-h-8; ContextMenu min-w-60.
+    'size.menuActionRow': 36, 'size.menuActionRowCompact': 32, 'size.menuPopupMin': 240,
     # Current Web MessageInput / a57 legacy composer, approved Cindy 27a5a99c.
     'space.composerHostInline': 20, 'space.composerHostTop': 8,
     'type.composerInput.line': 24, 'type.composerInputDesktop.size': 16,
