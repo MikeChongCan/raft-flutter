@@ -139,10 +139,10 @@ void main() {
           desktop: false,
           bottomSafeInset: 7,
         );
-        expect(recipe.hostInset, const EdgeInsets.fromLTRB(12, 12, 12, 23));
+        expect(recipe.hostInset, const EdgeInsets.fromLTRB(20, 8, 20, 23));
         expect(recipe.editorMinimum, 20);
         expect(recipe.editorMaximum, 128);
-        expect(recipe.shellRadius, 8);
+        expect(recipe.shellRadius, 10);
         final actualHost = tester.widget<Container>(
           find.byKey(const ValueKey('composer-host-slot')),
         );
@@ -153,7 +153,7 @@ void main() {
         expect(actualHost.decoration, recipe.hostDecoration);
         final text = tester.widget<TextField>(find.byType(TextField));
         expect(text.style!.fontSize, 16);
-        expect(text.style!.height, 20 / 16);
+        expect(text.style!.height, 24 / 16);
         final decoration =
             tester
                     .widget<Container>(
@@ -438,7 +438,7 @@ void main() {
   );
 
   testWidgets(
-    'compact host removes normal spacing/actions and desktop editor follows actual product40 override',
+    'compact host removes normal spacing/actions and desktop editor keeps its minimum and current Web body type',
     (tester) async {
       await tester.pumpWidget(
         host(
@@ -463,7 +463,7 @@ void main() {
       expect(editor.constraints.minHeight, 40);
       expect(
         tester.widget<TextField>(find.byType(TextField)).style!.fontSize,
-        14,
+        16,
       );
       await tester.pumpWidget(const SizedBox());
       await tester.pump();

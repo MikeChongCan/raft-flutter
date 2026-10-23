@@ -153,6 +153,9 @@ GEOMETRY_RAFT = {
     'size.avatar.profileHero': 99, 'size.avatar.profileTile': 51, 'size.avatar.panelHeader': 35,
     # SettingsProfileCard source values, approved Cindy 318b1d17.
     'radius.settingsCard': 10,
+    # Current Web MessageInput / a57 legacy composer, approved Cindy 27a5a99c.
+    'space.composerHostInline': 20, 'space.composerHostTop': 8,
+    'type.composerInput.line': 24, 'type.composerInputDesktop.size': 16,
     'type.settingsCardTitle.size': 17, 'type.settingsCardTitle.line': 22,
     'type.settingsCardMeta.size': 13, 'type.settingsCardMeta.line': 18,
     # 0.7.1 switchRecipe (dist/index.mjs): border 1.5 + padding 2.5.
@@ -196,6 +199,12 @@ GEOMETRY_RAFT = {
     'type.field.size': 16, 'type.field.line': 24, 'type.field.weight': 400,
     'type.cardTitle.size': 16, 'type.cardTitle.line': 22, 'type.cardTitle.weight': 500,
 }
+
+# Select uses the same h-11 tier, not an independent authored 44 (Cindy 511917e6).
+# Pack geometry stores numbers, so this alias is resolved by the generator.
+GEOMETRY_RAFT['size.selectTrigger'] = GEOMETRY_RAFT['size.control.lg']
+GEOMETRY_RAFT['type.selectValue.size'] = 15
+GEOMETRY_RAFT['type.selectValue.weight'] = 600
 
 OPTIONS_RAFT = {
     'control.edge': 'inkBorder', 'sticker.ring': 'dieCut', 'emphasis.fill': 'solid',

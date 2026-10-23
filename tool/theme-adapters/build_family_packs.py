@@ -77,6 +77,11 @@ GEOMETRY_ELEGANT = {
     'size.avatar.profileHero': 64, 'size.avatar.profileTile': 64, 'size.avatar.panelHeader': 36,
     # SettingsProfileCard source values, approved Cindy 318b1d17.
     'radius.settingsCard': 0,
+    # Original Select trigger measurement: 32px, 14/20 medium in both families.
+    'size.selectTrigger': 32, 'type.selectValue.size': 14, 'type.selectValue.weight': 500,
+    # Current Web MessageInput / a57 legacy composer, approved Cindy 27a5a99c.
+    'space.composerHostInline': 12, 'space.composerHostTop': 12,
+    'type.composerInput.line': 20, 'type.composerInputDesktop.size': 14,
     'type.settingsCardTitle.size': 18, 'type.settingsCardTitle.line': 22.5,
     'type.settingsCardMeta.size': 14, 'type.settingsCardMeta.line': 20,
     # a57b9dab switch.dart:65-81 and primitive_tokens.dart:12.
@@ -112,6 +117,11 @@ GEOMETRY_BRUTAL = {
     'size.avatar.profileHero': 64, 'size.avatar.profileTile': 64, 'size.avatar.panelHeader': 36,
     # SettingsProfileCard source values, approved Cindy 318b1d17.
     'radius.settingsCard': 0,
+    # Original Select trigger measurement: 32px, 14/20 medium in both families.
+    'size.selectTrigger': 32, 'type.selectValue.size': 14, 'type.selectValue.weight': 500,
+    # Current Web MessageInput / a57 legacy composer, approved Cindy 27a5a99c.
+    'space.composerHostInline': 12, 'space.composerHostTop': 12,
+    'type.composerInput.line': 20, 'type.composerInputDesktop.size': 14,
     'type.settingsCardTitle.size': 18, 'type.settingsCardTitle.line': 22.5,
     'type.settingsCardMeta.size': 14, 'type.settingsCardMeta.line': 20,
     # a57b9dab switch.dart:65-81 and primitive_tokens.dart:12.

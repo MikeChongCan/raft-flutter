@@ -32,7 +32,12 @@ class RaftComposerRecipe {
   // raftBottomInset (MediaQuery.paddingOf, 0 while the keyboard is up).
   EdgeInsets get hostInset => compact
       ? EdgeInsets.zero
-      : EdgeInsets.fromLTRB(12, 12, 12, 16 + bottomSafeInset);
+      : EdgeInsets.fromLTRB(
+          tokens.size('space.composerHostInline', fallback: 12),
+          tokens.size('space.composerHostTop', fallback: 12),
+          tokens.size('space.composerHostInline', fallback: 12),
+          16 + bottomSafeInset,
+        );
   BoxDecoration get hostDecoration => BoxDecoration(
     color: tokens.panel,
     border: compact
@@ -43,7 +48,7 @@ class RaftComposerRecipe {
   );
   EdgeInsets get shellInset => EdgeInsets.zero;
   double get shellGap => 8;
-  double get shellRadius => 8;
+  double get shellRadius => tokens.size('radius.container', fallback: 8);
   BoxDecoration shellDecoration({required bool focused}) => BoxDecoration(
     color: tokens.panel,
     borderRadius: BorderRadius.circular(shellRadius),
@@ -69,8 +74,10 @@ class RaftComposerRecipe {
   EdgeInsets get editorInset => const EdgeInsets.fromLTRB(12, 12, 12, 0);
   TextStyle get editorText => RaftTypography.heading(
     tokens,
-    size: desktop ? 14 : 16,
-    line: 20,
+    size: desktop
+        ? tokens.size('type.composerInputDesktop.size', fallback: 14)
+        : 16,
+    line: tokens.size('type.composerInput.line', fallback: 20),
     weight: FontWeight.w400,
   ).copyWith(color: tokens.strong);
   TextStyle get placeholder =>

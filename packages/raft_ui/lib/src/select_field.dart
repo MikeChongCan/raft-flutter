@@ -131,7 +131,20 @@ class _RaftSelectFieldState<T> extends State<RaftSelectField<T>> {
           states: states,
           tokens: rt,
         );
-        final s = raftMergeSlots(button, sel.trigger);
+        final merged = raftMergeSlots(button, sel.trigger);
+        final s = RaftSlotStyle(
+          {
+            ...merged.properties,
+            'font-size': CssNum(
+              t.size('type.selectValue.size', fallback: 14),
+              'px',
+            ),
+            'line-height': const CssNum(20, 'px'),
+          },
+          merged.targets,
+          merged.classes,
+          merged.tokens,
+        );
         final svg = s.target(
           "& [data-slot='select-trigger-content'] svg:not([class*='size-'])",
         );
@@ -144,23 +157,32 @@ class _RaftSelectFieldState<T> extends State<RaftSelectField<T>> {
           // `w-full` (brutal trigger slot); elegant stays content-sized but
           // these callers stretch it in a column.
           width: double.infinity,
-          height: widget.height,
+          height:
+              widget.height ??
+              t.size('size.selectTrigger', fallback: s.height ?? 32),
+          decorationOverride: (d) => d.copyWith(
+            borderRadius: BorderRadius.circular(
+              t.size('radius.control', fallback: 6),
+            ),
+          ),
           child: Row(
             children: [
               Expanded(
                 child: Builder(
                   builder: (context) => DefaultTextStyle.merge(
-                    style:
-                        s
-                                .target(":is(& *)[data-slot='select-value']")
-                                ?.fontWeight ==
-                            null
-                        ? null
-                        : TextStyle(
-                            fontWeight: s
-                                .target(":is(& *)[data-slot='select-value']")!
-                                .fontWeight,
-                          ),
+                    style: TextStyle(
+                      fontWeight:
+                          FontWeight.values[((selected == null
+                                          ? 500
+                                          : t.size(
+                                              'type.selectValue.weight',
+                                              fallback: 500,
+                                            )) /
+                                      100 -
+                                  1)
+                              .round()
+                              .clamp(0, 8)],
+                    ),
                     maxLines: 1,
                     softWrap: false,
                     overflow: TextOverflow.clip,

@@ -1,0 +1,46 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:raft_ui/raft_ui.dart';
+
+void main() {
+  for (final (id, height, size, weight) in [
+    (raftThemePackId, 44.0, 15.0, FontWeight.w600),
+    (elegantThemePackId, 32.0, 14.0, FontWeight.w500),
+    (brutalThemePackId, 32.0, 14.0, FontWeight.w500),
+  ]) {
+    testWidgets(
+      '$id select uses its source trigger metrics and honors caller height',
+      (t) async {
+        Future<void> mount([double? override]) => t.pumpWidget(
+          MaterialApp(
+            theme: raftTheme(pack: packForThemeId(id)),
+            home: Scaffold(
+              body: Column(
+                children: [
+                  RaftSelectField<String>(
+                    height: override,
+                    value: 'codex',
+                    items: const [
+                      DropdownMenuItem(value: 'codex', child: Text('Codex')),
+                    ],
+                    onChanged: (_) {},
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+        await mount();
+        expect(t.getSize(find.byType(RaftSelectField<String>)).height, height);
+        final style = DefaultTextStyle.of(t.element(find.text('Codex'))).style;
+        expect(style.fontSize, size);
+        expect(style.height! * size, 20);
+        expect(style.fontWeight, weight);
+        await mount(40);
+        expect(t.getSize(find.byType(RaftSelectField<String>)).height, 40);
+        expect(t.takeException(), isNull);
+        await t.pumpWidget(const SizedBox());
+      },
+    );
+  }
+}

@@ -601,3 +601,17 @@ subhead／callout／caption；徽标与按钮复用 RaftBadge／RaftButton。
 设置卡圆角及标题／副标题数值经 Cindy 318b1d17 批准；来源为当前 Web
 `SettingsProfileCard.tsx` 的 Card、text-headline、text-mono-code，
 旧两套取 a57b9dab 的 `RaftSettingsCard.decoration` 和 `RaftSettingsProfileRecipe`。
+
+共享 Composer 数值（Cindy 27a5a99c）：`space.composerHostInline` Raft20、旧两套12；
+`space.composerHostTop` 8／12；`type.composerInput.line` 24／20；
+`type.composerInputDesktop.size` 16／14。手机字号均16，底部安全区的16加系统值保持不变。
+出处为当前 Web MessageInput 的 ComposerRoot px-5／pt-2、ComposerInput text-body
+（实际 DOM16/24），a57b9dab `composer_recipe.dart` 的原值。
+主聊天、线程、转发共享这些数值，捕获须一同检查。
+
+Select 数值（Cindy 511917e6）：`size.selectTrigger` 的 Raft 值由生成器引用
+`size.control.lg`（geometry 格式只存数字，生成时展开同一 h-11 档位）；旧两套32。
+`type.selectValue.size` Raft15／旧14，`type.selectValue.weight` 600／500；
+行高20、占位字重500均为常量。当前 Web select.trigger 的 h-11、text-subhead
+和 font-semibold，以及旧版实际触发框／继承文字探测，是数值来源。
+调用方的显式高度继续优先。
