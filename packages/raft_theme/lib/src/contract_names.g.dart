@@ -244,6 +244,7 @@ const Set<String> raftGeometryTokens = {
   'radius.item',
   'radius.pill',
   'radius.rail',
+  'radius.settingsCard',
   'radius.sheet',
   'radius.sticker',
   'radius.tooltip',
@@ -288,4 +289,8 @@ const Set<String> raftGeometryTokens = {
   'type.field.line',
   'type.field.size',
   'type.field.weight',
+  'type.settingsCardMeta.line',
+  'type.settingsCardMeta.size',
+  'type.settingsCardTitle.line',
+  'type.settingsCardTitle.size',
 };

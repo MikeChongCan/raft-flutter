@@ -317,15 +317,26 @@ class _AccountSettingsState extends ManagementState<AccountSettings> {
           onTap: mediaBusy ? null : () => image(),
           child: Opacity(
             opacity: mediaBusy ? .7 : 1,
-            child: RaftAvatar(
-              key: const Key('account-profile-avatar'),
-              name: user?.name ?? '',
-              size: RaftSettingsProfileRecipe.avatarSize,
-              imageUrl: raftPublicAvatarUrl(
-                controller.client.origin,
-                user?.string('avatarUrl'),
-              ),
-            ),
+            child: t.option('sticker.ring', or: 'none') == 'dieCut'
+                ? RaftAvatarSlot(
+                    key: const Key('account-profile-avatar'),
+                    name: user?.name ?? '',
+                    agent: false,
+                    slot: RaftAvatarSlotContext.profileTile,
+                    avatarUrl: raftPublicAvatarUrl(
+                      controller.client.origin,
+                      user?.string('avatarUrl'),
+                    ),
+                  )
+                : RaftAvatar(
+                    key: const Key('account-profile-avatar'),
+                    name: user?.name ?? '',
+                    size: RaftSettingsProfileRecipe.avatarSize,
+                    imageUrl: raftPublicAvatarUrl(
+                      controller.client.origin,
+                      user?.string('avatarUrl'),
+                    ),
+                  ),
           ),
         ),
       ),

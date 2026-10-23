@@ -82,16 +82,16 @@ class RaftSettingsProfileRecipe {
   // `text-lg font-bold leading-tight text-foreground-strong theme-brutal:text-black`
   TextStyle get title => RaftTypography.body(
     t,
-    size: 18,
-    line: 22.5,
+    size: t.size('type.settingsCardTitle.size', fallback: 18),
+    line: t.size('type.settingsCardTitle.line', fallback: 22.5),
     weight: FontWeight.w700,
     color: RaftSettingsText(t).strong,
   );
   // `font-mono text-sm text-foreground-muted theme-brutal:text-black/50`
   TextStyle get subtitle => RaftTypography.mono(
     t,
-    size: 14,
-    line: 20,
+    size: t.size('type.settingsCardMeta.size', fallback: 14),
+    line: t.size('type.settingsCardMeta.line', fallback: 20),
     color: RaftSettingsText(t).faint,
   );
   // `border-t border-line-muted`
@@ -131,7 +131,7 @@ class RaftSettingsProfileCard extends StatelessWidget {
               children: [
                 SizedBox.square(
                   dimension: RaftSettingsProfileRecipe.avatarSize,
-                  child: avatar,
+                  child: Center(child: avatar),
                 ),
                 const SizedBox(width: RaftSettingsProfileRecipe.gap),
                 Expanded(

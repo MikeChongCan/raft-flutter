@@ -151,6 +151,10 @@ GEOMETRY_RAFT = {
     'size.touchLayoutMin': 0,
     # Actual Web v1.21.23 AvatarSlot DOM (profile-hero / profile-tile / panel-header).
     'size.avatar.profileHero': 99, 'size.avatar.profileTile': 51, 'size.avatar.panelHeader': 35,
+    # SettingsProfileCard source values, approved Cindy 318b1d17.
+    'radius.settingsCard': 10,
+    'type.settingsCardTitle.size': 17, 'type.settingsCardTitle.line': 22,
+    'type.settingsCardMeta.size': 13, 'type.settingsCardMeta.line': 18,
     # 0.7.1 switchRecipe (dist/index.mjs): border 1.5 + padding 2.5.
     'size.switch.width.sm': 50, 'size.switch.width.md': 50,
     'size.switch.height.sm': 30, 'size.switch.height.md': 30,

@@ -550,6 +550,9 @@ class RaftSettingsCard extends StatelessWidget {
   );
   static BoxDecoration decoration(RaftTokens t) => BoxDecoration(
     color: t.panel,
+    borderRadius: BorderRadius.circular(
+      t.size('radius.settingsCard', fallback: 0),
+    ),
     border: Border.all(color: t.colors['line-muted']!, width: 1),
     boxShadow: t.themeShadows.sm.outer,
   );
@@ -577,6 +580,9 @@ class RaftSettingsCard extends StatelessWidget {
         ? null
         : BoxConstraints(minHeight: minHeight);
     final base = decoration(t).copyWith(color: color, borderRadius: radius);
+    final effectiveRadius = (base.borderRadius ?? BorderRadius.zero).resolve(
+      TextDirection.ltr,
+    );
     final inset = t.themeShadows.sm.inset;
     if (inset.isEmpty) {
       return Container(
@@ -591,7 +597,7 @@ class RaftSettingsCard extends StatelessWidget {
     return CustomPaint(
       painter: RaftOuterShadowPainter(
         base.boxShadow ?? const [],
-        radius ?? BorderRadius.zero,
+        effectiveRadius,
       ),
       child: Container(
         height: height,
@@ -602,10 +608,10 @@ class RaftSettingsCard extends StatelessWidget {
           BoxDecoration(
             color: base.color,
             border: base.border,
-            borderRadius: radius,
+            borderRadius: effectiveRadius,
           ),
           inset,
-          radius ?? BorderRadius.zero,
+          effectiveRadius,
           null,
           const EdgeInsets.all(RaftSpace.hairline),
         ),

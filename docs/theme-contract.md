@@ -168,6 +168,9 @@ Elegant 的 `stroke.control = 0` 配合 `control.edge = ring`（§5 #1）与 `sh
 | `size.control.xl` | 52 | — | — |
 | `size.control.onFrame` | 36 | 32 † | 32 † |
 | `size.field` | 44 | 36 † | 40 † |
+| `radius.settingsCard` | 10 | 0 | 0 |
+| `type.settingsCardTitle.size/line` | 17 / 22 | 18 / 22.5 | 18 / 22.5 |
+| `type.settingsCardMeta.size/line` | 13 / 18 | 14 / 20 | 14 / 20 |
 | `size.avatar.profileHero` | 99 | 64 | 64 |
 | `size.avatar.profileTile` | 51 | 64 | 64 |
 | `size.avatar.panelHeader` | 35 | 36 | 36 |
@@ -594,3 +597,7 @@ subhead／callout／caption；徽标与按钮复用 RaftBadge／RaftButton。
 `profileHero` 与 `profileTile` 分开，形状和贴纸继续读已有选项，
 不会用尺寸判断主题。页头的无框按钮复用现有 ghost Button；
 现有24px小图标的 generic／raised 不足以表达旧32px有框 PanelAction。
+
+设置卡圆角及标题／副标题数值经 Cindy 318b1d17 批准；来源为当前 Web
+`SettingsProfileCard.tsx` 的 Card、text-headline、text-mono-code，
+旧两套取 a57b9dab 的 `RaftSettingsCard.decoration` 和 `RaftSettingsProfileRecipe`。

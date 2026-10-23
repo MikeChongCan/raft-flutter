@@ -75,6 +75,10 @@ GEOMETRY_ELEGANT = {
     'size.touchLayoutMin': 48,
     # a57b9dab AvatarSlot profileTile and panelHeader.
     'size.avatar.profileHero': 64, 'size.avatar.profileTile': 64, 'size.avatar.panelHeader': 36,
+    # SettingsProfileCard source values, approved Cindy 318b1d17.
+    'radius.settingsCard': 0,
+    'type.settingsCardTitle.size': 18, 'type.settingsCardTitle.line': 22.5,
+    'type.settingsCardMeta.size': 14, 'type.settingsCardMeta.line': 20,
     # a57b9dab switch.dart:65-81 and primitive_tokens.dart:12.
     'size.switch.width.sm': 28, 'size.switch.width.md': 36,
     'size.switch.height.sm': 16, 'size.switch.height.md': 20,
@@ -106,6 +110,10 @@ GEOMETRY_BRUTAL = {
     'size.touchLayoutMin': 48,
     # a57b9dab AvatarSlot profileTile and panelHeader.
     'size.avatar.profileHero': 64, 'size.avatar.profileTile': 64, 'size.avatar.panelHeader': 36,
+    # SettingsProfileCard source values, approved Cindy 318b1d17.
+    'radius.settingsCard': 0,
+    'type.settingsCardTitle.size': 18, 'type.settingsCardTitle.line': 22.5,
+    'type.settingsCardMeta.size': 14, 'type.settingsCardMeta.line': 20,
     # a57b9dab switch.dart:65-81 and primitive_tokens.dart:12.
     'size.switch.width.sm': 28, 'size.switch.width.md': 36,
     'size.switch.height.sm': 16, 'size.switch.height.md': 20,
