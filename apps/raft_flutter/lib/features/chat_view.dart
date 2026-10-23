@@ -1999,12 +1999,10 @@ class _RaftChatViewState extends PhonePageState<RaftChatView> {
     final identity = senderAgent(message);
     return identity == null
         ? null
-        : agentPresentationModelLabel(
+        : messageAgentModelLabel(
+            context,
             scope: agentPresentation.currentScope,
             identity: identity,
-            showModelName:
-                PersonalPresentationScope.maybeOf(context)?.value.modelName ??
-                true,
           );
   }
 

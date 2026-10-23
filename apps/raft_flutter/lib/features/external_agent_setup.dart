@@ -10,8 +10,10 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:raft_ui/raft_ui.dart';
 
+import '../data/agent_hosted_runtime.dart';
 import '../data/workspace_controller.dart';
 import 'agent_detail_view.dart' show agentTimeFormatter;
+import 'agent_hosted_status.dart';
 
 /// `externalProfileSlug`.
 String externalProfileSlug(String name, String id) {
@@ -34,8 +36,16 @@ class ExternalAgentSetup extends StatefulWidget {
     this.setupState,
     this.credentialLastUsedAt,
     this.statusError,
+    this.hostedRuntime,
+    this.onStatus,
   });
   final WorkspaceController controller;
+
+  /// A cloud agent's provisioning summary: its status replaces the token
+  /// manager and the setup steps. [onStatus] adopts a fresher external status
+  /// (a poll while the provider works, the read after Retry).
+  final HostedRuntimeSummary? hostedRuntime;
+  final void Function(Map<String, dynamic> status)? onStatus;
   final Map<String, dynamic> agent;
 
   /// GET /agents/:id/external-status as the profile read it (null while in
@@ -86,7 +96,8 @@ class _ExternalAgentSetupState extends State<ExternalAgentSetup> {
   void initState() {
     super.initState();
     w.addListener(scopeChanged);
-    unawaited(loadCredentials());
+    // A cloud agent has no token manager.
+    if (widget.hostedRuntime == null) unawaited(loadCredentials());
   }
 
   @override
@@ -112,7 +123,7 @@ class _ExternalAgentSetupState extends State<ExternalAgentSetup> {
     loading = _cachedCredentials == null;
     hasList = _cachedCredentials != null;
     listRevision++;
-    unawaited(loadCredentials());
+    if (widget.hostedRuntime == null) unawaited(loadCredentials());
     if (mounted) setState(() {});
   }
 
@@ -367,6 +378,16 @@ class _ExternalAgentSetupState extends State<ExternalAgentSetup> {
               'time': formatter.shortDateTime(widget.credentialLastUsedAt),
             }),
       statusError: widget.statusError,
+      hosted: switch (widget.hostedRuntime) {
+        final summary? => AgentHostedRuntimeStatus(
+          key: ValueKey('hosted-status-$agentId'),
+          controller: w,
+          agentId: agentId,
+          summary: summary,
+          onStatus: widget.onStatus ?? (_) {},
+        ),
+        null => null,
+      },
       tab: tab,
       onTab: (value) => setState(() {
         tab = value;

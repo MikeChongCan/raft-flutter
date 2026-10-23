@@ -1,8 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart' show BuildContext;
 import 'package:raft_client/raft_client.dart';
+import 'package:raft_ui/raft_ui.dart' show raftText;
 
+import '../data/personal_presentation.dart';
 import '../data/workspace_controller.dart';
 import 'agent_metadata_projection.dart';
 import 'message_reference_directory.dart';
@@ -75,6 +78,7 @@ class MessageAgentPresentation extends ChangeNotifier {
       description: row['description'] as String?,
       external: row['external'] == true || row['runtime'] == 'external',
       deleted: row['deletedAt'] != null,
+      hosted: row['hostedRuntime'] != null,
       lastSeenAt: row['lastSeenAt'] is String
           ? DateTime.tryParse(row['lastSeenAt'] as String)
           : null,
@@ -97,6 +101,7 @@ class MessageAgentPresentation extends ChangeNotifier {
       value.description,
       value.lastSeenAt,
       value.deleted,
+      value.hosted,
       ambient.activity,
       ambient.detailKind,
       ambient.detail,
@@ -174,4 +179,25 @@ class MessageAgentPresentation extends ChangeNotifier {
 
 class _PresenceSignal extends ChangeNotifier {
   void ping() => notifyListeners();
+}
+
+/// Web `MessageItem` `agentModelLabelText`: next to an agent sender's name a
+/// cloud agent reads "Cloud agent · Free for a limited time" (its runtime and
+/// model are the external placeholders); every other agent its model name.
+/// Null when the viewer hides model names.
+String? messageAgentModelLabel(
+  BuildContext context, {
+  required AgentPresentationScope scope,
+  required AgentPresentationIdentity identity,
+}) {
+  final show =
+      PersonalPresentationScope.maybeOf(context)?.value.modelName ?? true;
+  if (show && identity.hosted) {
+    return raftText(context, 'Cloud agent · Free for a limited time');
+  }
+  return agentPresentationModelLabel(
+    scope: scope,
+    identity: identity,
+    showModelName: show,
+  );
 }

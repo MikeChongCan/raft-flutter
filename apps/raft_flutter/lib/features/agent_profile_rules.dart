@@ -60,12 +60,18 @@ class AgentProfileAccess {
     required this.canViewPrivate,
     required this.canControlRuntime,
     required this.sourceServerLabel,
+    this.canStopHostedTurn = false,
   });
 
   final bool boundedPublic;
   final bool canManage;
   final bool canViewPrivate;
   final bool canControlRuntime;
+
+  /// A cloud agent, for a viewer who may control runtimes (or its creator):
+  /// the one command "Stop current turn" (the profile offers it while the
+  /// agent is up, by the status it just read).
+  final bool canStopHostedTurn;
   final String? sourceServerLabel;
 }
 
@@ -86,11 +92,17 @@ AgentProfileAccess agentProfileAccess({
       !bounded &&
       !external &&
       canViewAgentPrivateSurfaces(agent, currentUserId, controlAgentRuntime);
+  final hosted = agent['hostedRuntime'];
   return AgentProfileAccess(
     boundedPublic: bounded,
     canManage: canManage,
     canViewPrivate: canViewPrivate,
     canControlRuntime: canControl,
+    canStopHostedTurn:
+        !bounded &&
+        external &&
+        hosted is Map &&
+        canViewAgentPrivateSurfaces(agent, currentUserId, controlAgentRuntime),
     sourceServerLabel: agentSourceServerLabel(agent, currentServerId),
   );
 }

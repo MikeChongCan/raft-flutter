@@ -13,6 +13,7 @@ import 'package:intl/intl.dart';
 import 'package:raft_client/raft_client.dart';
 import 'package:raft_ui/raft_ui.dart';
 
+import '../data/agent_hosted_runtime.dart';
 import '../data/runtime_config.dart';
 import '../data/source_time_formatter.dart';
 import '../data/runtime_error.dart';
@@ -26,6 +27,7 @@ import 'agent_diagnostic_info.dart';
 import 'feedback_attachment_preview.dart' show showFeedbackImage;
 import 'agent_archive_section.dart';
 import 'agent_hosted_model.dart';
+import 'agent_hosted_usage.dart';
 import 'agent_migration_section.dart';
 import 'agent_profile_rules.dart';
 import 'external_agent_setup.dart';
@@ -108,6 +110,7 @@ class AgentDetailActions {
     this.onEditRuntime,
     this.onStartStop,
     this.onRestartReset,
+    this.onStopHostedTurn,
     this.onDelete,
     this.canArchive = false,
     this.onOpenComputer,
@@ -147,6 +150,8 @@ class AgentDetailActions {
       onEditRuntime,
       onStartStop,
       onRestartReset,
+      /// A cloud agent: stop the running turn (the agent stays).
+      onStopHostedTurn,
       onDelete,
       onMessage,
       onPermissions,
@@ -247,6 +252,12 @@ class _AgentDetailPanelState extends State<AgentDetailPanel> {
     final value = fromStatus is Map ? fromStatus : a['hostedRuntime'];
     return value is Map ? value : null;
   }
+
+  /// "Stop current turn": only a cloud agent that is up has a turn to stop;
+  /// the state is the freshest one the profile has read.
+  bool get _canStopHostedTurn =>
+      widget.actions.onStopHostedTurn != null &&
+      _hostedRuntime?['state'] == 'active';
   AgentAmbientDisplay get _display => agentRowAmbientDisplay(
     a,
     live: widget.liveActivity,
@@ -374,6 +385,16 @@ class _AgentDetailPanelState extends State<AgentDetailPanel> {
     }
     unawaited(loadArchivedMachine());
     unawaited(loadExternalDiagnostics());
+  }
+
+  /// A fresher external status from the cloud agent's status panel (its poll
+  /// while the provider works, the read after Retry).
+  void adoptExternalStatus(Map<String, dynamic> status) {
+    widget.controller.agentTabCache.put('external-status/${a['id']}', status);
+    setState(() {
+      externalStatus = status;
+      externalStatusError = null;
+    });
   }
 
   Future<void> loadExternalStatus() async {
@@ -518,6 +539,12 @@ class _AgentDetailPanelState extends State<AgentDetailPanel> {
           onPressed: widget.actions.onRestartReset,
         ),
       ],
+      if (_canStopHostedTurn)
+        RaftMenuEntry(
+          label: raftText(context, 'Stop current turn'),
+          glyph: RaftGlyph.square,
+          onPressed: widget.actions.onStopHostedTurn,
+        ),
     ];
     return LayoutBuilder(
       builder: (context, box) =>
@@ -654,6 +681,13 @@ class _AgentDetailPanelState extends State<AgentDetailPanel> {
         onPressed: widget.actions.onRestartReset,
       ),
     ],
+    if (_canStopHostedTurn)
+      RaftPanelIconButton(
+        key: const Key('agent-profile-inline-stop-hosted-turn'),
+        glyph: RaftGlyph.square,
+        tooltip: raftText(context, 'Stop current turn'),
+        onPressed: widget.actions.onStopHostedTurn,
+      ),
   ];
 
   RaftPanelTab<AgentDetailTab> _tabSpec(
@@ -1086,15 +1120,23 @@ class _AgentDetailPanelState extends State<AgentDetailPanel> {
             credentialLastUsedAt:
                 externalStatus?['credentialLastUsedAt'] as String?,
             statusError: externalStatusError,
+            hostedRuntime: HostedRuntimeSummary.parse(_hostedRuntime),
+            onStatus: adoptExternalStatus,
           ),
         // `showOperationalInfo && isExternalAgent && canManageAgent &&
         // hostedRuntime?.state === "active"`.
-        if (external && _canManage && _hostedRuntime?['state'] == 'active')
+        if (external && _canManage && _hostedRuntime?['state'] == 'active') ...[
           AgentHostedRuntimeModel(
             key: ValueKey('model-$agentId'),
             controller: widget.controller,
             agentId: agentId,
           ),
+          AgentHostedRuntimeUsage(
+            key: ValueKey('usage-$agentId'),
+            controller: widget.controller,
+            agentId: agentId,
+          ),
+        ],
         if (!_bounded)
           RaftPanelSection(
             children: [

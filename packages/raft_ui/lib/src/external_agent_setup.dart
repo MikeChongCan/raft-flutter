@@ -388,7 +388,12 @@ class RaftExternalSetupSection extends StatelessWidget {
     this.statusError,
     this.tokenManager,
     this.copiedTarget,
+    this.hosted,
   });
+
+  /// A cloud agent: its provisioning status replaces the token manager and
+  /// the setup steps (Web `hostedRuntime ? <HostedRuntimeStatus/> : ...`).
+  final Widget? hosted;
 
   /// `waiting_for_login`, `credential_minted` or `connected` (null while the
   /// status read is in flight).
@@ -502,29 +507,35 @@ class RaftExternalSetupSection extends StatelessWidget {
                       ),
                   ],
                 ),
-                ?tokenManager,
-                RaftRecipeSegmentedControl<RaftExternalSetupTab>(
-                  value: tab,
-                  label: tr('External agent setup path'),
-                  items: const [
-                    (RaftExternalSetupTab.hermes, null, 'Hermes'),
-                    (RaftExternalSetupTab.claudeCode, null, 'Claude Code'),
-                    (RaftExternalSetupTab.otherAgents, null, 'Other agents'),
-                  ],
-                  onChanged: onTab,
-                ),
-                if (stepList != null)
-                  _steps(context, t, stepList)
-                else
-                  _other(context, t),
-                if (tab == RaftExternalSetupTab.otherAgents ||
+                if (hosted != null)
+                  hosted!
+                else ...[
+                  ?tokenManager,
+                  RaftRecipeSegmentedControl<RaftExternalSetupTab>(
+                    value: tab,
+                    label: tr('External agent setup path'),
+                    items: const [
+                      (RaftExternalSetupTab.hermes, null, 'Hermes'),
+                      (RaftExternalSetupTab.claudeCode, null, 'Claude Code'),
+                      (RaftExternalSetupTab.otherAgents, null, 'Other agents'),
+                    ],
+                    onChanged: onTab,
+                  ),
+                  if (stepList != null)
+                    _steps(context, t, stepList)
+                  else
+                    _other(context, t),
+                ],
+                if ((hosted == null &&
+                        tab == RaftExternalSetupTab.otherAgents) ||
                     statusError != null)
                   Wrap(
                     crossAxisAlignment: WrapCrossAlignment.center,
                     spacing: 8,
                     runSpacing: 8,
                     children: [
-                      if (tab == RaftExternalSetupTab.otherAgents)
+                      if (hosted == null &&
+                          tab == RaftExternalSetupTab.otherAgents)
                         _smOutline(
                           context,
                           copiedTarget == 'setup' ? 'Copied' : 'Copy setup',

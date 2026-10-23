@@ -5185,14 +5185,23 @@
    "area": "agents-computers-runtimes",
    "capability": "Check whether the hosted runtime provider (antiproton) is available for creating external agents",
    "background": true,
-   "status": "missing",
+   "status": "covered",
    "webEntry": "CreateAgentDialog (external mode) > 'Run on antiproton' checkbox availability (useAgentRuntimeProvider)",
    "gate": "external create flow + feature available",
-   "flutterEntry": "",
-   "flutterRefs": [],
-   "justification": "No Flutter call; the hosted-runtime checkbox does not exist in Flutter's external-agent create form.",
-   "impact": "Users cannot create hosted (provider-run) external agents from the app.",
-   "size": "S"
+   "flutterEntry": "agent_hosted_provider.dart HostedRuntimeAvailability.load() (flag, then the probe; create dialog and migration start)",
+   "flutterRefs": [
+    {
+     "file": "apps/raft_flutter/lib/features/agent_hosted_provider.dart",
+     "needle": "hostedRuntimeProviderPath("
+    },
+    {
+     "file": "apps/raft_flutter/lib/features/agent_hosted_create.dart",
+     "needle": "HostedRuntimeAvailability("
+    }
+   ],
+   "justification": "",
+   "impact": "",
+   "size": ""
   },
   {
    "kind": "endpoint",
@@ -5432,14 +5441,23 @@
    "area": "agents-computers-runtimes",
    "capability": "Hosted-runtime 7-day token/tool-call/top-model usage block",
    "background": false,
-   "status": "missing",
+   "status": "covered",
    "webEntry": "AgentDetailPanel > Profile > External setup > 'Usage (last 7 days)' (AgentHostedRuntimeUsage.tsx)",
    "gate": "external agent + canManageAgent + hostedRuntime active; hidden on 4xx",
-   "flutterEntry": "",
-   "flutterRefs": [],
-   "justification": "No Flutter call or UI; docs/field-parity.md line 66 records hosted external runtime as a Web-only feature awaiting product decision.",
-   "impact": "Owners of hosted agents cannot see usage in the app.",
-   "size": "S"
+   "flutterEntry": "agent_hosted_usage.dart AgentHostedRuntimeUsage (Profile > Usage (last 7 days), cost by UTC day)",
+   "flutterRefs": [
+    {
+     "file": "apps/raft_flutter/lib/features/agent_hosted_usage.dart",
+     "needle": "hostedRuntimeUsagePath("
+    },
+    {
+     "file": "apps/raft_flutter/lib/features/agent_detail_view.dart",
+     "needle": "AgentHostedRuntimeUsage("
+    }
+   ],
+   "justification": "",
+   "impact": "",
+   "size": ""
   },
   {
    "kind": "endpoint",
@@ -6006,8 +6024,8 @@
      "needle": "Create external agent"
     }
    ],
-   "justification": "Managed create covers computer/name/description/runtime/model/effort/mode/env/capacity/onboarding/action-card, the remembered last computer/runtime/model, a suggested name with the dice button, the random pixel avatar and the dialog side of the channel Add members entry (autoJoinChannelName context line, prefilledNameNote). Gaps: the external create form has no 'Run on antiproton' hosted option; the Add members entry that opens the dialog and joins the channel is not wired yet; Web's legacy (non-v2) runtime fields are not used, Flutter renders the server's v2 runtime form (saved provider, built-in provider, Pi provider, local plugins are fields of that form).",
-   "impact": "Hosted agents and in-channel create unavailable.",
+   "justification": "Managed create covers computer/name/description/runtime/model/effort/mode/env/capacity/onboarding/action-card, the remembered last computer/runtime/model, a suggested name with the dice button, the random pixel avatar and the dialog side of the channel Add members entry (autoJoinChannelName context line, prefilledNameNote). A cloud agent is the 'Cloud agent' choice of the Computer picker (flag antiproton_hosted_runtime + the provider probe). Gaps: the Add members entry that opens the dialog and joins the channel is not wired yet; Web's legacy (non-v2) runtime fields are not used, Flutter renders the server's v2 runtime form (saved provider, built-in provider, Pi provider, local plugins are fields of that form).",
+   "impact": "In-channel create unavailable.",
    "size": "M"
   },
   {
@@ -6094,14 +6112,19 @@
    "area": "agents-computers-runtimes",
    "capability": "Retry hosted-runtime provisioning ('Retry' in the hosted runtime status panel)",
    "background": false,
-   "status": "missing",
+   "status": "covered",
    "webEntry": "Profile > External setup > HostedRuntimeStatus 'Retry' (shown for failed/last-error states)",
    "gate": "external agent + canManageAgent + hostedRuntime state",
-   "flutterEntry": "",
-   "flutterRefs": [],
-   "justification": "No Flutter call or UI (docs/field-parity.md line 66: hosted external runtime and retry are Web-only).",
-   "impact": "Owners of hosted agents with a failed provision cannot retry from the app.",
-   "size": "S"
+   "flutterEntry": "agent_hosted_status.dart AgentHostedRuntimeStatus._retry() (names the model again when retryNeedsModel)",
+   "flutterRefs": [
+    {
+     "file": "apps/raft_flutter/lib/features/agent_hosted_status.dart",
+     "needle": "hostedRuntimeRetryPath("
+    }
+   ],
+   "justification": "",
+   "impact": "",
+   "size": ""
   },
   {
    "kind": "endpoint",
@@ -6232,9 +6255,13 @@
     {
      "file": "apps/raft_flutter/lib/features/fleet_views.dart",
      "needle": "Are you sure you want to stop"
+    },
+    {
+     "file": "apps/raft_flutter/lib/features/agent_hosted_actions.dart",
+     "needle": "stopHostedTurnWithFeedback("
     }
    ],
-   "justification": "",
+   "justification": "Same as start: Members sidebar context-menu entry missing. A cloud agent has one command instead, 'Stop current turn' on its profile (agent_hosted_actions.dart stopHostedTurnWithFeedback), which stops the running turn and keeps the agent.",
    "impact": "",
    "size": ""
   },
@@ -6774,14 +6801,23 @@
    "area": "agents-computers-runtimes",
    "capability": "External agent create: 'Run on antiproton' hosted runtime checkbox",
    "background": false,
-   "status": "missing",
+   "status": "covered",
    "webEntry": "CreateAgentDialog external mode checkbox",
    "gate": "external + provider available",
-   "flutterEntry": "",
-   "flutterRefs": [],
-   "justification": "See GET /agent-runtime-providers/:id.",
-   "impact": "Users cannot create hosted-runtime external agents from the app (same cause as GET /agent-runtime-providers/:id).",
-   "size": "S"
+   "flutterEntry": "create_agent_dialog.dart Computer picker: 'Cloud agent' option (agent_hosted_create.dart HostedCreateChoice), also preselected by an agent:create card",
+   "flutterRefs": [
+    {
+     "file": "apps/raft_flutter/lib/features/agent_hosted_create.dart",
+     "needle": "hostedComputerChoice"
+    },
+    {
+     "file": "apps/raft_flutter/lib/features/create_agent_dialog.dart",
+     "needle": "hosted.option(context)"
+    }
+   ],
+   "justification": "",
+   "impact": "",
+   "size": ""
   },
   {
    "kind": "ui",
@@ -7147,14 +7183,23 @@
    "area": "agents-computers-runtimes",
    "capability": "Hosted runtime status panel (Provisioning/Active/Syncing/Failed state, push-not-registered note, last error, Retry) replacing the manual setup steps",
    "background": false,
-   "status": "missing",
+   "status": "covered",
    "webEntry": "Profile > External setup > HostedRuntimeStatus",
    "gate": "external agent + canManageAgent + hostedRuntime summary",
-   "flutterEntry": "",
-   "flutterRefs": [],
-   "justification": "Hosted runtime is recorded as Web-only in docs/field-parity.md line 66.",
-   "impact": "Owners of hosted agents see manual CLI setup steps instead of provisioning state.",
-   "size": "M"
+   "flutterEntry": "external_agent_setup.dart hosted: AgentHostedRuntimeStatus (state chip, location, free-for-now, push note, last error, Retry; 5 s re-read while the provider works)",
+   "flutterRefs": [
+    {
+     "file": "apps/raft_flutter/lib/features/agent_hosted_status.dart",
+     "needle": "class AgentHostedRuntimeStatus"
+    },
+    {
+     "file": "apps/raft_flutter/lib/features/external_agent_setup.dart",
+     "needle": "AgentHostedRuntimeStatus("
+    }
+   ],
+   "justification": "",
+   "impact": "",
+   "size": ""
   },
   {
    "kind": "ui",
@@ -17284,14 +17329,23 @@
    "area": "agents-computers-runtimes",
    "capability": "List the models a hosted (cloud) agent runtime provider offers",
    "background": false,
-   "status": "missing",
+   "status": "covered",
    "webEntry": "useAgentRuntimeProvider / create-agent \"Cloud agent\" option (picker=false hides the selector, locked fixes the model)",
    "gate": "none",
-   "flutterEntry": "",
-   "flutterRefs": [],
-   "justification": "New in Web v1.21.23 (pin move). Planned in the cloud-agent work (WP-CLOUD / WP-NEW), gated by the server flags.",
-   "impact": "No Cloud agent option in Create Agent; servers without the flags do not show it on Web either.",
-   "size": "M"
+   "flutterEntry": "agent_hosted_provider.dart HostedModelsLoader (create form, retry after a refused model, migration start)",
+   "flutterRefs": [
+    {
+     "file": "apps/raft_flutter/lib/features/agent_hosted_provider.dart",
+     "needle": "hostedRuntimeModelsListPath("
+    },
+    {
+     "file": "apps/raft_flutter/lib/features/agent_hosted_model_choice.dart",
+     "needle": "HostedModelChoice("
+    }
+   ],
+   "justification": "",
+   "impact": "",
+   "size": ""
   },
   {
    "kind": "endpoint",

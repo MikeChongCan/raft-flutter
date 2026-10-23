@@ -13,6 +13,7 @@ import '../data/raft_location.dart';
 import '../data/raft_permalink.dart';
 import '../platform/content_links.dart';
 import 'agent_archive_requests.dart';
+import 'agent_hosted_actions.dart';
 import '../data/user_error.dart';
 import '../data/web_error.dart';
 import '../data/workspace_controller.dart';
@@ -1496,6 +1497,9 @@ class _FleetDetailState extends State<FleetDetail> {
           );
         },
         onRestartReset: () => action(restartReset),
+        onStopHostedTurn: access.canStopHostedTurn && !busy
+            ? () => unawaited(stopHostedTurnWithFeedback(context, w, id))
+            : null,
         onDelete: access.canManage && allowed('deleteAgents') ? remove : null,
         canArchive: !access.boundedPublic && allowed('deleteAgents'),
         onOpenChannel: (id) => unawaited(openChannel(id)),

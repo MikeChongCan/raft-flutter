@@ -380,7 +380,13 @@ class _DesktopDirectoryViewState extends State<DesktopDirectoryView> {
     final groups = <String, List<Map<String, dynamic>>>{};
     for (final value in rows) {
       final machine = value['machineId'];
-      final id = machine is String ? machine : '__no_machine__';
+      // A cloud agent has no computer by design: its own group instead of
+      // "no computer" (`hostedRuntime` reaches managers only).
+      final id = machine is String
+          ? machine
+          : value['hostedRuntime'] != null
+          ? '__cloud__'
+          : '__no_machine__';
       groups.putIfAbsent(id, () => []).add(value);
     }
     final names = {
@@ -398,7 +404,8 @@ class _DesktopDirectoryViewState extends State<DesktopDirectoryView> {
             disclosureKey: ValueKey(
               'directory-machine-disclosure-${entry.key}',
             ),
-            name: '${names[entry.key] ?? raftText(context, 'No computer')}',
+            name:
+                '${names[entry.key] ?? raftText(context, entry.key == '__cloud__' ? 'cloud' : 'No computer')}',
             count: entry.value.length,
             expanded: collapsedMachineGroups[entry.key] != true,
             onExpandedChanged: (expanded) =>

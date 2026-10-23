@@ -378,6 +378,8 @@ class _MessageActionCardState extends State<MessageActionCard> {
           initialDescription: snapshot['description'],
           suggestedComputer: snapshot['suggestedComputer'],
           requiredComputer: snapshot['requiredComputer'],
+          initialHosting: snapshot['hosting'],
+          initialHostedModel: snapshot['model'],
           actionCardMessageId: widget.message.id,
           actionCardConfirmationVersion: version,
         );
@@ -737,6 +739,15 @@ class _MessageActionCardState extends State<MessageActionCard> {
                   ? 'Required computer:'
                   : 'Suggested computer:',
               '${machine?['name'] ?? _short(computer)}',
+            ),
+          if (action['hosting'] == 'antiproton')
+            field(
+              'Runs on:',
+              action['model'] is String && '${action['model']}'.isNotEmpty
+                  ? raftFormat(context, 'Cloud agent, model {model}', {
+                      'model': action['model'],
+                    })
+                  : raftText(context, 'Cloud agent'),
             ),
         ];
       }(),

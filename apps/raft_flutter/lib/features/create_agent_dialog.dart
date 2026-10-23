@@ -16,6 +16,7 @@ import '../data/user_error.dart';
 import '../data/workspace_controller.dart';
 import '../data/workspace_entity_directory.dart' show WorkspaceEntityKind;
 import 'agent_metadata_catalog.dart';
+import 'agent_hosted_create.dart';
 import 'agent_runtime_labels.dart' show creatableRuntimeIds;
 import 'delete_server_confirm.dart';
 import 'private_route_guard.dart';
@@ -106,6 +107,8 @@ class CreateAgentDialog extends StatefulWidget {
     this.autoJoinChannelName,
     this.prefilledNameNote,
     this.random,
+    this.initialHosting,
+    this.initialHostedModel,
   });
   final WorkspaceController controller;
   final bool onboarding, onboardingModal, closeOnCreated;
@@ -122,6 +125,9 @@ class CreateAgentDialog extends StatefulWidget {
   /// Already localized note under the name field about what the caller did to
   /// the prefilled [initialName] (Web `prefilledNameNote`).
   final String? prefilledNameNote;
+
+  /// An `agent:create` card's `hosting` / `model`: preselects the cloud.
+  final String? initialHosting, initialHostedModel;
 
   /// Source of the suggested name and the random pixel avatar (tests pin it).
   final math.Random? random;
@@ -151,6 +157,15 @@ class _CreateAgentDialogState extends State<CreateAgentDialog> {
   final name = TextEditingController(), description = TextEditingController();
   final preAdmissionEnv = TextEditingController();
   late final math.Random random = widget.random ?? math.Random();
+
+  /// The "Cloud agent" choice of the Computer picker.
+  late final HostedCreateChoice hosted = HostedCreateChoice(
+    w,
+    enabled: !widget.onboarding && widget.requiredMachineId == null,
+    noComputers: widget.machines.isEmpty,
+    prefilledHosting: widget.initialHosting,
+    prefilledModel: widget.initialHostedModel,
+  );
 
   /// The last computer, runtime and model created with on this server (Web
   /// `rememberedConfig`); null for onboarding, which never uses it.
@@ -209,6 +224,9 @@ class _CreateAgentDialogState extends State<CreateAgentDialog> {
             ? remembered?.machineId
             : online.firstOrNull ?? ids.firstOrNull);
     w.addListener(authorityChanged);
+    hosted
+      ..addListener(authorityChanged)
+      ..start();
     loadBilling();
     if (machineId != null) selectMachine(machineId!);
   }
@@ -246,6 +264,7 @@ class _CreateAgentDialogState extends State<CreateAgentDialog> {
   @override
   void dispose() {
     w.removeListener(authorityChanged);
+    hosted.dispose();
     form?.dispose();
     name.dispose();
     description.dispose();
@@ -527,6 +546,12 @@ class _CreateAgentDialogState extends State<CreateAgentDialog> {
 
   bool get createDisabled {
     final f = form;
+    if (hosted.active) {
+      // A cloud agent needs a name and, while it loads, the model list.
+      return capacityReached != null ||
+          hosted.loading ||
+          name.text.trim().isEmpty;
+    }
     return runtimesRescanning ||
         capacityReached != null ||
         machine == null ||
@@ -543,9 +568,12 @@ class _CreateAgentDialogState extends State<CreateAgentDialog> {
 
   Future<void> submit() async {
     final f = form;
-    if (busy || createDisabled || f == null || !currentAuthority) return;
+    final cloud = hosted.active;
+    if (busy || createDisabled || (f == null && !cloud) || !currentAuthority) {
+      return;
+    }
     setState(() => validationAttempted = true);
-    final problems = f.validate();
+    final Map<String, String> problems = cloud ? const {} : f!.validate();
     if (createAgentNameError(context, name.text) != null ||
         problems.isNotEmpty) {
       return;
@@ -561,8 +589,7 @@ class _CreateAgentDialogState extends State<CreateAgentDialog> {
         data: {
           'name': name.text.trim(),
           'description': description.text.trim(),
-          'machineId': machineId,
-          'runtime': runtime,
+          if (!cloud) ...{'machineId': machineId, 'runtime': runtime},
           if (widget.onboarding) 'onboarding': true,
           // Web: Cindy gets the mug, every other new agent a random preset.
           'avatarUrl': widget.onboarding
@@ -573,11 +600,11 @@ class _CreateAgentDialogState extends State<CreateAgentDialog> {
           if (widget.actionCardConfirmationVersion != null)
             'actionCardConfirmationVersion':
                 widget.actionCardConfirmationVersion,
-          ...f.submission,
+          if (cloud) ...hosted.submission else ...f!.submission,
         },
       );
       if (mounted && currentAuthority) {
-        rememberConfig(f);
+        if (!cloud) rememberConfig(f!);
         if (created is Map) {
           widget.onCreated?.call(Map<String, dynamic>.from(created));
         }
@@ -591,7 +618,7 @@ class _CreateAgentDialogState extends State<CreateAgentDialog> {
         // Web: `data.error || agent.create.failedCreate`, and each `issues`
         // pointer marks its runtime-form field.
         setState(() {
-          f.serverErrors = runtimeFormIssueErrors(
+          f?.serverErrors = runtimeFormIssueErrors(
             e,
             fallback: 'Failed to create agent',
           );
@@ -711,9 +738,12 @@ class _CreateAgentDialogState extends State<CreateAgentDialog> {
         onClose: widget.onboardingModal ? close : null,
       );
     }
-    if (widget.machines.isEmpty) {
+    hosted.noComputers = widget.machines.isEmpty;
+    // With no computer, the cloud (where offered) is the place to run.
+    if (widget.machines.isEmpty && !hosted.offered) {
       return PopScope(canPop: !busy, child: needsComputer(context));
     }
+    final cloud = hosted.active;
     final capacity = capacityReached;
     final tokens = RaftTokens.of(context);
     final nameError = validationAttempted
@@ -773,9 +803,9 @@ class _CreateAgentDialogState extends State<CreateAgentDialog> {
                 }
               : null,
         ),
-      if (runtimeOptionsLoading)
+      if (!cloud && runtimeOptionsLoading)
         const Center(key: Key('runtime-options-loading'), child: RaftSpinner())
-      else if (runtimeOptionsError.message case final message?)
+      else if (runtimeOptionsError.message case final message? when !cloud)
         RaftAgentBanner(
           status: RaftAgentBannerStatus.warning,
           description: message,
@@ -786,8 +816,11 @@ class _CreateAgentDialogState extends State<CreateAgentDialog> {
         RaftStableField(
           label: 'Computer',
           required: true,
+          hint: cloud
+              ? 'Raft creates the agent in the cloud and connects it for you. No command line needed.'
+              : null,
           child: RaftAgentSelect<String>(
-            value: machineId,
+            value: cloud ? hostedComputerChoice : machineId,
             semanticLabel: raftText(context, 'Computer'),
             options: [
               for (final m in widget.machines)
@@ -798,10 +831,16 @@ class _CreateAgentDialogState extends State<CreateAgentDialog> {
                       widget.requiredMachineId == null ||
                       m['id'] == widget.requiredMachineId,
                 ),
+              if (hosted.offered) hosted.option(context),
             ],
             onChanged: busy || widget.requiredMachineId != null
                 ? null
-                : (id) => id == machineId ? null : selectMachine(id),
+                : (id) {
+                    hosted.select(id == hostedComputerChoice);
+                    if (id != hostedComputerChoice && id != machineId) {
+                      selectMachine(id);
+                    }
+                  },
           ),
         ),
       if (!widget.onboarding)
@@ -880,6 +919,8 @@ class _CreateAgentDialogState extends State<CreateAgentDialog> {
         ),
       ),
     ];
+    // A cloud agent has no runtime: that field is the last row.
+    if (cloud) leading.removeLast();
     if (widget.onboarding) {
       Widget fields() => f == null
           ? Column(
@@ -965,14 +1006,16 @@ class _CreateAgentDialogState extends State<CreateAgentDialog> {
           ),
         ),
         children: [
-          if (f == null)
+          if (f == null || cloud)
             Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisSize: MainAxisSize.min,
               children: [
                 for (final (i, row) in [
                   ...leading,
-                  ...preAdmissionFields(context),
+                  ...(cloud
+                      ? hosted.fields(context, busy: busy)
+                      : preAdmissionFields(context)),
                 ].indexed) ...[
                   if (i > 0) const SizedBox(height: raftAgentFormGap),
                   row,

@@ -2718,6 +2718,59 @@ class RaftButtonWrap extends StatelessWidget {
       Wrap(spacing: 6, runSpacing: 6, children: children);
 }
 
+/// Wrapping row of badges, captions and buttons (`flex flex-wrap items-center
+/// gap-x-* gap-y-*`).
+class RaftFlowRow extends StatelessWidget {
+  const RaftFlowRow({
+    super.key,
+    required this.children,
+    this.gapX = 8,
+    this.gapY = 8,
+  });
+  final List<Widget> children;
+  final double gapX, gapY;
+  @override
+  Widget build(BuildContext context) => Wrap(
+    crossAxisAlignment: WrapCrossAlignment.center,
+    spacing: gapX,
+    runSpacing: gapY,
+    children: children,
+  );
+}
+
+/// A non-wrapping row with a fixed gap (`flex items-baseline gap-*`).
+class RaftGapRow extends StatelessWidget {
+  const RaftGapRow({
+    super.key,
+    required this.children,
+    this.gap = 8,
+    this.baseline = false,
+    this.shrinkWrap = false,
+  });
+  final List<Widget> children;
+  final double gap;
+
+  /// Align children on the alphabetic baseline (else centred).
+  final bool baseline;
+
+  /// Take only the width the children need.
+  final bool shrinkWrap;
+  @override
+  Widget build(BuildContext context) => Row(
+    mainAxisSize: shrinkWrap ? MainAxisSize.min : MainAxisSize.max,
+    crossAxisAlignment: baseline
+        ? CrossAxisAlignment.baseline
+        : CrossAxisAlignment.center,
+    textBaseline: baseline ? TextBaseline.alphabetic : null,
+    children: [
+      for (var i = 0; i < children.length; i++) ...[
+        if (i > 0) SizedBox(width: gap),
+        children[i],
+      ],
+    ],
+  );
+}
+
 /// AgentDetailPanel `startError` strip: `border-b bg-warning-soft px-5 py-2`
 /// (brutal `border-b-2 border-black bg-brutal-orange/20`) with the message
 /// (`text-sm font-bold`, truncated) and a dismiss `X`.

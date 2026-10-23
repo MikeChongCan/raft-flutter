@@ -24,10 +24,13 @@ class AgentPresentationIdentity {
     this.external = false,
     this.lastSeenAt,
     this.deleted = false,
+    this.hosted = false,
   });
   final String id, status;
   final String? runtime, machineId, model, description;
-  final bool external, deleted;
+
+  /// A cloud agent (`hostedRuntime` reaches managers only, like Web).
+  final bool external, deleted, hosted;
   final DateTime? lastSeenAt;
 }
 
