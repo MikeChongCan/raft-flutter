@@ -648,6 +648,23 @@ String? migrationFailureCopyCode(
       : failureReason;
 }
 
+/// errors.ts `targetRuntimeDetectionMessage` (task #1268): the target computer
+/// is still detecting its runtimes (`pending`) or its last detection never
+/// probed the agent's runtime (`incomplete`); both are retryable.
+MigrationText _targetDetection(Object? details) {
+  final map = details is Map ? details : const {};
+  if (map['detectionStatus'] == 'incomplete') {
+    final runtime = map['runtime'];
+    return MigrationText(
+      "The target computer's last runtime detection did not finish for {runtime}. Rescan its runtimes on the Computer page, then try again.",
+      {'runtime': runtime is String ? runtime : ''},
+    );
+  }
+  return const MigrationText(
+    'The target computer is still detecting its runtimes. Try again in a moment.',
+  );
+}
+
 /// errors.ts `migrationErrorPresentation`. [details] is the response's
 /// `details` (capability codes), [rawMessage] its `transportErrorMessage` /
 /// message (the size codes carry their numbers there).
@@ -686,6 +703,7 @@ MigrationPresentation migrationErrorPresentation({
       context,
       agentWorkspacePath,
     ),
+    'TARGET_RUNTIME_DETECTION_PENDING' => _targetDetection(details),
     'MIGRATION_OBJECT_STORE_BUNDLE_TOO_LARGE' => _bundleTooLarge(rawMessage),
     'MIGRATION_OBJECT_STORE_MANIFEST_TOO_LARGE' => _manifestTooLarge(
       rawMessage,

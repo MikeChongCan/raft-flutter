@@ -75,6 +75,8 @@ const _copy = <String, String>{
       'Both computers must run a compatible Raft Computer version and support this agent\'s runtime. Update or reconnect them, or choose another computer, then try again.',
   'MIGRATION_RESUMABLE_CAPABILITY_REQUIRED':
       'One of these computers needs a Raft Computer update before it can move agents. Update Raft Computer on both to the latest version, restart them, wait for them to reconnect, then try again.',
+  'TARGET_RUNTIME_DETECTION_PENDING':
+      'The target computer is still detecting its runtimes. Try again in a moment.',
   'TARGET_COMPUTER_OFFLINE':
       'The target computer is offline. Start Raft Computer on it and try again.',
   'MIGRATION_ALREADY_IN_PROGRESS':
