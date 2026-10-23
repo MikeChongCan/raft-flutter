@@ -42,6 +42,7 @@ OPTIONS_ELEGANT = {
     # a57b9dab design_primitives.dart:141-145; resource_view.dart:2385,2393.
     'sidebar.mobileSurface': 'sidebar', 'resource.surface': 'sidebar',
     'resource.rows': 'cards', 'resource.badge': 'pill', 'resource.markRead': 'outline',
+    'listGroup.frame': 'framed', 'task.status': 'symbol', 'searchResult.selection': 'card',
     'press.effect': 'scale', 'control.sheen': 'gradient', 'avatar.shape': 'circle',
     'indicator.border': 'none', 'switch.shape': 'pill', 'checkbox.mark': 'strokeCheck',
     'field.style': 'inset', 'tabs.selected': 'tint', 'segmented.selected': 'tint',
@@ -56,6 +57,7 @@ OPTIONS_BRUTAL = {
     'iconButton.surface': 'raised',
     'sidebar.mobileSurface': 'canvas', 'resource.surface': 'canvas',
     'resource.rows': 'cards', 'resource.badge': 'pill', 'resource.markRead': 'outline',
+    'listGroup.frame': 'framed', 'task.status': 'symbol', 'searchResult.selection': 'card',
     'press.effect': 'offsetShadow', 'control.sheen': 'none', 'avatar.shape': 'square',
     'indicator.border': 'ink', 'switch.shape': 'square', 'checkbox.mark': 'thickStroke',
     'field.style': 'border', 'tabs.selected': 'sticker', 'segmented.selected': 'sticker',
@@ -271,6 +273,9 @@ def pack(pack_id: str, name_en: str, name_zh: str, values: dict,
         colors['layer-sidebar'] = (colors['brutal-cream']
                                    if spec['column'] == 'brutal'
                                    else colors['layer-canvas-muted'])
+        colors['layer-section-header-mobile'] = (colors['color-soft-signal']
+                                   if spec['column'] == 'brutal'
+                                   else colors['layer-panel'])
         # a57b9dab component_colors.g.dart stores this subtle dark switch
         # shadow in float sRGB. values.json's display-rounded .04 / #f3f3f7
         # changes antialiased switch-edge pixels, so retain the source precision.

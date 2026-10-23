@@ -217,7 +217,8 @@ const String elegantThemePackJson = r'''{
         "switch-thumb-disabled": "#d8d8d5",
         "switch-thumb-checked-disabled": "#d8d8d5",
         "switch-shadow-bottom": "rgb(0 0 0 / 0)",
-        "layer-sidebar": "#f8f8f7"
+        "layer-sidebar": "#f8f8f7",
+        "layer-section-header-mobile": "#ffffff"
       },
       "geometry": {
         "size.touchLayoutMin": 48,
@@ -299,6 +300,9 @@ const String elegantThemePackJson = r'''{
         "resource.rows": "cards",
         "resource.badge": "pill",
         "resource.markRead": "outline",
+        "listGroup.frame": "framed",
+        "task.status": "symbol",
+        "searchResult.selection": "card",
         "press.effect": "scale",
         "control.sheen": "gradient",
         "avatar.shape": "circle",
@@ -480,7 +484,8 @@ const String elegantThemePackJson = r'''{
         "switch-thumb-disabled": "#424241",
         "switch-thumb-checked-disabled": "#292928",
         "switch-shadow-bottom": "rgb(243.444675 243.444675 247.22862 / 0.039203)",
-        "layer-sidebar": "#0d0d0b"
+        "layer-sidebar": "#0d0d0b",
+        "layer-section-header-mobile": "#242422"
       },
       "geometry": {
         "size.touchLayoutMin": 48,
@@ -562,6 +567,9 @@ const String elegantThemePackJson = r'''{
         "resource.rows": "cards",
         "resource.badge": "pill",
         "resource.markRead": "outline",
+        "listGroup.frame": "framed",
+        "task.status": "symbol",
+        "searchResult.selection": "card",
         "press.effect": "scale",
         "control.sheen": "gradient",
         "avatar.shape": "circle",

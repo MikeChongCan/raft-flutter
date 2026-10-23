@@ -145,6 +145,7 @@ const Set<String> raftColorRoles = {
   'layer-inset',
   'layer-panel',
   'layer-popover',
+  'layer-section-header-mobile',
   'layer-sidebar',
   'line',
   'line-field',

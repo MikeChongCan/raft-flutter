@@ -44,6 +44,7 @@ class RaftTaskStatusBadge extends StatelessWidget {
     final inherited = DefaultTextStyle.of(context).style;
     final style = recipe.textStyle.copyWith(
       fontFamily: inherited.fontFamily,
+      decoration: TextDecoration.none,
       fontFamilyFallback: inherited.fontFamilyFallback,
     );
     return Container(

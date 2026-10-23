@@ -102,6 +102,11 @@ class _RaftSearchInputState extends State<RaftSearchInput> {
         clip: true,
         child: Row(
           children: [
+            if (t.option('listGroup.frame', or: 'framed') == 'plain')
+              const Padding(
+                padding: EdgeInsets.only(left: 12),
+                child: RaftIcon(RaftGlyph.search, size: 16),
+              ),
             Expanded(
               child: Padding(
                 padding: g.control.padding,

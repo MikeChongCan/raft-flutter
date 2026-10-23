@@ -94,7 +94,7 @@ class RaftPageHeader extends StatelessWidget implements PreferredSizeWidget {
         inset: RaftLayoutMetrics.panelInset,
       );
       return RaftMobilePageHeader(
-        background: root.background,
+        background: t.colors['layer-section-header-mobile'],
         border: root.border,
         headerHeight: root.height,
         inset: root.inset,
@@ -106,14 +106,25 @@ class RaftPageHeader extends StatelessWidget implements PreferredSizeWidget {
               title,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: RaftTypography.heading(t, size: 16, line: 20),
+              style: t.option('listGroup.frame', or: 'framed') == 'plain'
+                  ? t.scale(
+                      RaftTypeScale.headline,
+                      color: t.colors['foreground-on-frame'],
+                    )
+                  : RaftTypography.heading(t, size: 16, line: 20),
             ),
             if (subtitle?.isNotEmpty == true)
               Text(
                 subtitle!,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: RaftTypography.mono(t, color: t.muted),
+                style: t.option('listGroup.frame', or: 'framed') == 'plain'
+                    ? t.scale(
+                        RaftTypeScale.caption,
+                        weight: FontWeight.w500,
+                        color: t.colors['foreground-on-frame-muted'],
+                      )
+                    : RaftTypography.mono(t, color: t.muted),
               ),
           ],
         ),

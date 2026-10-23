@@ -14,6 +14,7 @@ import 'recipe_surface.dart';
 import 'panel_layout.dart' show RaftCssText, raftCssBaseline;
 import '../recipes.dart';
 import 'theme.dart';
+import 'raft/ui_tokens.dart';
 
 /// One option of a [RaftInlineBadgeEditor] menu.
 @immutable
@@ -197,7 +198,9 @@ class _RaftInlineBadgeEditorState extends State<RaftInlineBadgeEditor> {
               RaftTaskStatusBadge(
                 status: status,
                 label: widget.label,
-                trailing: RaftBadgeEditPencil(color: chip.iconForeground),
+                trailing: t.option('task.status', or: 'symbol') == 'square'
+                    ? const RaftIcon(RaftGlyph.chevronDown, size: 12)
+                    : RaftBadgeEditPencil(color: chip.iconForeground),
               ),
               if (state.hovered && widget.enabled)
                 Positioned.fill(
@@ -506,6 +509,7 @@ class _RaftInlineBadgeMenuState extends State<RaftInlineBadgeMenu> {
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
     final rt = RaftRecipeTokens(t);
+    final plain = t.option('listGroup.frame', or: 'framed') == 'plain';
     final content = RaftDropdownMenuRecipe.resolve(
       theme: RaftRecipeTheme.elegant,
       states: RaftRecipeStates({if (t.dark) RaftRecipeStates.dark}),
@@ -517,7 +521,19 @@ class _RaftInlineBadgeMenuState extends State<RaftInlineBadgeMenu> {
         role: SemanticsRole.menu,
         child: Container(
           constraints: BoxConstraints(minWidth: widget.minWidth),
-          decoration: content.decoration(rt),
+          decoration: plain
+              ? BoxDecoration(
+                  color: t.popover,
+                  borderRadius: BorderRadius.circular(
+                    t.size('radius.container', fallback: 10),
+                  ),
+                  boxShadow: [
+                    ...t.themeShadows.xl.paintOrder,
+                    BoxShadow(color: t.ui.lineSeam, spreadRadius: 1),
+                  ],
+                )
+              : content.decoration(rt),
+          padding: plain ? const EdgeInsets.all(6) : null,
           clipBehavior: Clip.hardEdge,
           child: IntrinsicWidth(
             child: Column(
@@ -596,6 +612,7 @@ class _InlineBadgeMenuRowState extends State<_InlineBadgeMenuRow> {
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
     final rt = RaftRecipeTokens(t);
+    final plain = t.option('listGroup.frame', or: 'framed') == 'plain';
     return RaftInteractive(
       focusNode: widget.focusNode,
       button: false,
@@ -613,6 +630,20 @@ class _InlineBadgeMenuRowState extends State<_InlineBadgeMenuRow> {
           ),
           tokens: rt,
         ).root;
+        final rowStyle = plain
+            ? RaftSlotStyle(
+                {
+                  ...button.properties,
+                  'min-height': CssNum(
+                    MediaQuery.sizeOf(context).height <= 600 ? 32 : 36,
+                    'px',
+                  ),
+                }..remove('height'),
+                button.targets,
+                button.classes,
+                rt,
+              )
+            : button;
         final foreground = widget.option.disabled ? t.muted : t.strong;
         final hoverFill = t.colors['fill-muted']!;
         return Semantics(
@@ -624,11 +655,19 @@ class _InlineBadgeMenuRowState extends State<_InlineBadgeMenuRow> {
           focused: widget.option.disabled ? null : widget.focusNode.hasFocus,
           excludeSemantics: true,
           child: RaftRecipeBox(
-            style: button,
+            style: rowStyle,
             tokens: rt,
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            decorationOverride: (d) =>
-                d.copyWith(color: state.hovered ? hoverFill : null),
+            padding: plain
+                ? const EdgeInsets.symmetric(horizontal: 10, vertical: 6)
+                : const EdgeInsets.symmetric(horizontal: 12),
+            decorationOverride: (d) => d.copyWith(
+              color: state.hovered || state.focusVisible
+                  ? (plain ? t.ui['brand-soft'] : hoverFill)
+                  : null,
+              borderRadius: plain
+                  ? BorderRadius.circular(t.size('radius.control', fallback: 8))
+                  : d.borderRadius,
+            ),
             child: DefaultTextStyle.merge(
               style: button
                   .textStyle(rt)
@@ -636,7 +675,9 @@ class _InlineBadgeMenuRowState extends State<_InlineBadgeMenuRow> {
                     fontFamily: t.bodyFont,
                     fontSize: 14,
                     height: 20 / 14,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: plain && widget.selected
+                        ? FontWeight.w700
+                        : FontWeight.w500,
                     color: foreground,
                     decoration: TextDecoration.none,
                   ),
@@ -654,7 +695,7 @@ class _InlineBadgeMenuRowState extends State<_InlineBadgeMenuRow> {
                     opacity: widget.selected ? 1 : 0,
                     child: RaftIcon(
                       RaftGlyph.check,
-                      size: 14,
+                      size: plain ? 16 : 14,
                       color: foreground,
                     ),
                   ),

@@ -100,6 +100,11 @@ void main() {
         final decoration = _pillOf(tester, badge);
         expect(decoration.color, t.colors['$token-soft']);
         final side = (decoration.border! as Border).top;
+        final square = t.option('task.status', or: 'symbol') == 'square';
+        if (square) {
+          expect(side, BorderSide.none);
+          return;
+        }
         expect(
           side.color,
           t.colors['$token-strong']!.withValues(
@@ -108,7 +113,7 @@ void main() {
         );
       });
 
-      testWidgets('$dark $id editor trigger shows icon, label, pencil', (
+      testWidgets('$dark $id editor trigger shows icon, label and disclosure', (
         tester,
       ) async {
         await _pump(
@@ -124,14 +129,19 @@ void main() {
         expect(badge, findsOneWidget);
         expect(tester.widget<RaftTaskStatusBadge>(badge).status, status);
         expect(find.text(label), findsOneWidget);
+        final t = _tokens(tester);
+        final square = t.option('task.status', or: 'symbol') == 'square';
         expect(
           find.descendant(
             of: badge,
-            matching: find.byType(RaftBadgeEditPencil),
+            matching: square
+                ? find.byWidgetPredicate(
+                    (w) => w is RaftIcon && w.glyph == RaftGlyph.chevronDown,
+                  )
+                : find.byType(RaftBadgeEditPencil),
           ),
           findsOneWidget,
         );
-        final t = _tokens(tester);
         final token = RaftMessageTaskChipRecipe.tokenOf(status);
         expect(_pillOf(tester, badge).color, t.colors['$token-soft']);
       });

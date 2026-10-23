@@ -104,6 +104,7 @@ dd6c1674 开始，交给 DeepDesign）。
 | `primary*` / `accent*` | 保留，标注 deprecated alias | 0.7.1 已改名为 brand/attention，1.0 才删。契约两种都接受，写出时用新名 |
 | `sticker-ink` / `sticker-paper` / `sticker-edge` / `sticker-pressed` | 保留 | “贴纸”是材质概念，不是主题名；Elegant 用不到就填 transparent 或与邻近角色同值 |
 | `layer-frame` / `foreground-on-frame*` / `fill-frame-pressed` | 保留 | Raft 深色框的中性层，Elegant/Brutal 填成与 `layer-canvas` / `foreground` 同值 |
+| `layer-section-header-mobile` | Flutter 新增（Cindy b1ba932f） | 窄布局的分节页头：Raft 同 `layer-frame`；Elegant 同 `layer-panel`；Brutal 浅色同 a57b9dab 的 `color-soft-signal`，深色沿用 Elegant。桌面不读此角色。 |
 
 附录给出了 159 个角色在三套主题下的全部取值，以及每个角色对到哪个 0.7.1 token。
 
@@ -362,6 +363,9 @@ RGB0.954685/0.954685/0.969524）；展示表中的0.04和整数RGB不作为绘�
 | `resource.rows` | `flat` / `cards` | flat | cards | cards | Web v1.21.23 `ThreadsInbox.tsx:103-108`、`SavedPanel.tsx:269` 的实际排列；a57b9dab 的资源卡片排列。 |
 | `resource.badge` | `sticker` / `pill` | sticker | pill | pill | Web v1.21.23 的 `Badge` 实际调用；a57b9dab `resource_rows.dart` 的胶囊 recipe。 |
 | `resource.markRead` | `ghost` / `outline` | ghost | outline | outline | Web v1.21.23 `ThreadsInbox.tsx:1059-1069` 的 Button sm ghost；a57b9dab 的 outline 操作。 |
+| `listGroup.frame` | `plain` / `framed` | plain | framed | framed | 共用列表分组容器；Web v1.21.23 taskListSection、search 分组实际无框，a57b9dab 保留旧分组。 |
+| `task.status` | `square` / `symbol` | square | symbol | symbol | Web v1.21.23 TaskStatusPixel，9px状态色方块；a57b9dab 状态符号。 |
+| `searchResult.selection` | `flat` / `card` | flat | card | card | Web v1.21.23 SearchEntityResult／SearchMessageResult，整行 brand-soft；a57b9dab 选中卡片。 |
 
 原版实测值（390／1280宽，字体与其他内容不决定取色）：Elegant浅色侧栏与资源页均为 `#f8f8f7`，深色均为 `#0d0d0b`，不按宽度区分。Brutal浅色手机侧栏为 `#ffffff`、桌面为 `#fffaef`；资源页在两种宽度均为 `#ffffff`。Brutal深色按 a57b9dab `theme.dart:100-102` 沿用Elegant深色。桌面的 `layer-sidebar` 家族包投影只复原该专用角色，旧 `layer-canvas-muted` 值不改。
 

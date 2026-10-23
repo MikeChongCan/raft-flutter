@@ -2683,8 +2683,10 @@ class _ResourceViewState extends State<ResourceView> {
     final results = resourceResultsPager(context);
     if (widget.section != 'search') return results;
     // SearchShellViewport: `bg-layer-panel` (transparent in dark, Brutal white).
-    final fill = searchSlots(context).viewport
-        .decoration(rui.RaftRecipeTokens(RaftTokens.of(context)));
+    final t = RaftTokens.of(context);
+    final fill = t.option('listGroup.frame', or: 'framed') == 'plain'
+        ? BoxDecoration(color: t.canvas)
+        : searchSlots(context).viewport.decoration(rui.RaftRecipeTokens(t));
     return DecoratedBox(decoration: fill, child: results);
   }
 
@@ -3117,19 +3119,21 @@ class _ResourceViewState extends State<ResourceView> {
       viewportHeight: MediaQuery.sizeOf(context).height,
       mobile: mobile,
     );
+    final plain = t.option('listGroup.frame', or: 'framed') == 'plain';
     final row = Row(
       children: [
-        Container(
-          width: RaftLayoutMetrics.panelIcon,
-          height: RaftLayoutMetrics.panelIcon,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: recipe.iconBackground,
-            border: Border.all(color: t.line, width: t.border),
+        if (!plain)
+          Container(
+            width: RaftLayoutMetrics.panelIcon,
+            height: RaftLayoutMetrics.panelIcon,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: recipe.iconBackground,
+              border: Border.all(color: t.line, width: t.border),
+            ),
+            child: const RaftIcon(RaftGlyph.search, size: 18),
           ),
-          child: const RaftIcon(RaftGlyph.search, size: 18),
-        ),
-        const SizedBox(width: RaftLayoutMetrics.panelGap),
+        if (!plain) const SizedBox(width: RaftLayoutMetrics.panelGap),
         Expanded(
           child: RaftSearchInput(
             controller: query,
@@ -3171,6 +3175,7 @@ class _ResourceViewState extends State<ResourceView> {
     return mobile
         ? RaftPanelHeaderBar(
             title: raftText(context, 'Search'),
+            background: plain ? t.canvas : null,
             titleSlot: row,
             onBack: widget.onBack ?? () {},
             backTooltip: raftText(context, 'Back'),
@@ -3205,13 +3210,27 @@ class _ResourceViewState extends State<ResourceView> {
     // SearchShellFilters (raft-ui search `filtersRow`): brutal `px-4 py-3
     // border-b-2 border-black bg-white`, elegant `border-b bg-layer-panel px-3
     // py-2 max-md:pl-5 max-md:pr-3.5` (transparent in dark).
+    final plain =
+        RaftTokens.of(context).option('listGroup.frame', or: 'framed') ==
+        'plain';
     final row = searchSlots(context).filtersRow;
     final rowDecoration = row.decoration(
       rui.RaftRecipeTokens(RaftTokens.of(context)),
     );
     return Container(
-      padding: row.padding,
-      decoration: rowDecoration,
+      padding: plain
+          ? const EdgeInsets.symmetric(horizontal: 16, vertical: 12)
+          : row.padding,
+      decoration: plain
+          ? BoxDecoration(
+              color: RaftTokens.of(context).canvas,
+              border: Border(
+                bottom: BorderSide(
+                  color: RaftTokens.of(context).colors['line-seam']!,
+                ),
+              ),
+            )
+          : rowDecoration,
       child: SizedBox(
         width: double.infinity,
         child: SearchFilterBar(
@@ -4253,7 +4272,8 @@ class _ResourceViewState extends State<ResourceView> {
             // of `p-4` (Brutal resets it).
             padding: raftScrollPadding(
               context,
-              MediaQuery.sizeOf(context).width < 768
+              MediaQuery.sizeOf(context).width < 768 &&
+                      t.option('listGroup.frame', or: 'framed') != 'plain'
                   ? const EdgeInsets.fromLTRB(20, 16, 14, 16)
                   : RaftTaskSectionRecipe(t).viewportInset,
             ),
@@ -5227,7 +5247,9 @@ class _ResourceViewState extends State<ResourceView> {
   /// TasksPanelViewport `bg-layer-canvas-muted theme-brutal:bg-white
   /// dark:bg-transparent`: dark shows the ancestor surface (see build).
   Color taskViewportFill(RaftTokens t) =>
-      (t.dark ? t.sidebar.withAlpha(0) : t.sidebar);
+      t.option('listGroup.frame', or: 'framed') == 'plain'
+      ? t.canvas
+      : (t.dark ? t.sidebar.withAlpha(0) : t.sidebar);
 
   /// TasksPanel channel mode with no task at all: the centred EmptyState
   /// (`sortedTasks.length === 0 && isChannelMode`) instead of empty lanes.

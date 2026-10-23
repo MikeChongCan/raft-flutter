@@ -196,6 +196,7 @@ OPTIONS_RAFT = {
     'iconButton.surface': 'generic',
     'sidebar.mobileSurface': 'canvas', 'resource.surface': 'canvas',
     'resource.rows': 'flat', 'resource.badge': 'sticker', 'resource.markRead': 'ghost',
+    'listGroup.frame': 'plain', 'task.status': 'square', 'searchResult.selection': 'flat',
     'press.effect': 'overlay', 'control.sheen': 'none', 'avatar.shape': 'square',
     'indicator.border': 'none', 'switch.shape': 'pill', 'checkbox.mark': 'fillCheck',
     'field.style': 'border', 'tabs.selected': 'sticker', 'segmented.selected': 'sticker',

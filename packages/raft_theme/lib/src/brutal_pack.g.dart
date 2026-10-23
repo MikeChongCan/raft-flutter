@@ -217,7 +217,8 @@ const String brutalThemePackJson = r'''{
         "switch-thumb-disabled": "#141110",
         "switch-thumb-checked-disabled": "#141110",
         "switch-shadow-bottom": "rgb(0 0 0 / 0)",
-        "layer-sidebar": "#fffaef"
+        "layer-sidebar": "#fffaef",
+        "layer-section-header-mobile": "#ffd440"
       },
       "geometry": {
         "size.touchLayoutMin": 48,
@@ -299,6 +300,9 @@ const String brutalThemePackJson = r'''{
         "resource.rows": "cards",
         "resource.badge": "pill",
         "resource.markRead": "outline",
+        "listGroup.frame": "framed",
+        "task.status": "symbol",
+        "searchResult.selection": "card",
         "press.effect": "offsetShadow",
         "control.sheen": "none",
         "avatar.shape": "square",
@@ -480,7 +484,8 @@ const String brutalThemePackJson = r'''{
         "switch-thumb-disabled": "#424241",
         "switch-thumb-checked-disabled": "#292928",
         "switch-shadow-bottom": "rgb(243.444675 243.444675 247.22862 / 0.039203)",
-        "layer-sidebar": "#0d0d0b"
+        "layer-sidebar": "#0d0d0b",
+        "layer-section-header-mobile": "#242422"
       },
       "geometry": {
         "size.touchLayoutMin": 48,
@@ -562,6 +567,9 @@ const String brutalThemePackJson = r'''{
         "resource.rows": "cards",
         "resource.badge": "pill",
         "resource.markRead": "outline",
+        "listGroup.frame": "framed",
+        "task.status": "symbol",
+        "searchResult.selection": "card",
         "press.effect": "scale",
         "control.sheen": "gradient",
         "avatar.shape": "circle",

@@ -452,6 +452,7 @@ class ResourceSearchResults extends StatelessWidget {
           MediaQuery.sizeOf(context).width <
           RaftLayoutMetrics.desktopBreakpoint,
     );
+    final plain = t.option('listGroup.frame', or: 'framed') == 'plain';
     // raft-ui search recipe: SearchResultsSummary / SearchResultsSection /
     // SearchResultsSectionHeading / SearchResultsList (MessageSearchPage.tsx).
     final rt = rui.RaftRecipeTokens(t);
@@ -463,7 +464,15 @@ class ResourceSearchResults extends StatelessWidget {
       tokens: rt,
     );
     Widget slotText(String text, rui.RaftSlotStyle slot) {
-      final base = slot.textStyle(rt);
+      final base = plain
+          ? t.scale(
+              RaftTypeScale.footnote,
+              color: t.colors['foreground-hint'],
+              weight: identical(slot, slots.sectionHeading)
+                  ? FontWeight.w700
+                  : FontWeight.w400,
+            )
+          : slot.textStyle(rt);
       return Text(
         text,
         style: base.copyWith(
@@ -475,18 +484,24 @@ class ResourceSearchResults extends StatelessWidget {
     }
 
     Widget section(String title, List<WidgetBuilder> children) {
-      final decoration = slots.section.decoration(rt);
+      final decoration = plain
+          ? const BoxDecoration()
+          : slots.section.decoration(rt);
       return SliverPadding(
-        padding: slots.section.margin,
+        padding: plain ? EdgeInsets.zero : slots.section.margin,
         sliver: DecoratedSliver(
           decoration: decoration,
           sliver: SliverPadding(
-            padding: slots.section.padding.add(decoration.padding),
+            padding: plain
+                ? EdgeInsets.zero
+                : slots.section.padding.add(decoration.padding),
             sliver: SliverMainAxisGroup(
               slivers: [
                 SliverToBoxAdapter(
                   child: Padding(
-                    padding: slots.sectionHeading.padding,
+                    padding: plain
+                        ? const EdgeInsets.fromLTRB(16, 20, 16, 8)
+                        : slots.sectionHeading.padding,
                     child: slotText(
                       raftText(context, title),
                       slots.sectionHeading,
@@ -497,7 +512,9 @@ class ResourceSearchResults extends StatelessWidget {
                   itemCount: children.length,
                   itemBuilder: (context, index) => children[index](context),
                   separatorBuilder: (_, _) => SizedBox(
-                    height: slots.list.rowGap ?? RaftResourceMetrics.gap2,
+                    height: plain
+                        ? 0
+                        : slots.list.rowGap ?? RaftResourceMetrics.gap2,
                   ),
                 ),
               ],
@@ -611,7 +628,11 @@ class ResourceSearchResults extends StatelessWidget {
         SliverPadding(
           padding: raftScrollPadding(
             context,
-            slots.viewport.padding.add(RaftResourceMetrics.searchResultsInset),
+            plain
+                ? const EdgeInsets.only(bottom: 16)
+                : slots.viewport.padding.add(
+                    RaftResourceMetrics.searchResultsInset,
+                  ),
           ),
           sliver: SliverMainAxisGroup(
             slivers: [
@@ -619,11 +640,17 @@ class ResourceSearchResults extends StatelessWidget {
               // mb-3 collapses into the wrapper's.
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: RaftResourceMetrics.searchSummaryInset,
+                  padding: plain
+                      ? EdgeInsets.zero
+                      : RaftResourceMetrics.searchSummaryInset,
                   child: Padding(
-                    padding: slots.summary.padding.add(
-                      EdgeInsets.only(bottom: slots.summary.margin.bottom),
-                    ),
+                    padding: plain
+                        ? const EdgeInsets.fromLTRB(16, 8, 16, 0)
+                        : slots.summary.padding.add(
+                            EdgeInsets.only(
+                              bottom: slots.summary.margin.bottom,
+                            ),
+                          ),
                     child: slotText(
                       loading
                           ? raftText(context, 'Searching…')
@@ -644,14 +671,21 @@ class ResourceSearchResults extends StatelessWidget {
                       Row(
                         children: [
                           Container(
-                            width: 32,
-                            height: 32,
+                            width: plain ? 27 : 32,
+                            height: plain ? 27 : 32,
                             alignment: Alignment.center,
                             // SearchEntityResultIcon (searchEntity entityIcon).
-                            decoration: rui.RaftSearchEntityRecipe.resolve(
-                              theme: rui.RaftRecipeTheme.elegant,
-                              tokens: rt,
-                            ).entityIcon.decoration(rt),
+                            decoration: plain
+                                ? BoxDecoration(
+                                    color: t.colors['fill-muted'],
+                                    borderRadius: BorderRadius.circular(
+                                      t.size('radius.sticker', fallback: 4),
+                                    ),
+                                  )
+                                : rui.RaftSearchEntityRecipe.resolve(
+                                    theme: rui.RaftRecipeTheme.elegant,
+                                    tokens: rt,
+                                  ).entityIcon.decoration(rt),
                             child: RaftIcon(
                               entity.kind == 'channel'
                                   ? RaftGlyph.hash
@@ -660,7 +694,7 @@ class ResourceSearchResults extends StatelessWidget {
                                   : entity.kind == 'agent'
                                   ? RaftGlyph.bot
                                   : RaftGlyph.user,
-                              size: 16,
+                              size: plain ? 14 : 16,
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -675,9 +709,14 @@ class ResourceSearchResults extends StatelessWidget {
                                         entity.title,
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
-                                        style: recipe.entityTitle.copyWith(
-                                          fontWeight: FontWeight.w700,
-                                        ),
+                                        style: plain
+                                            ? t.scale(
+                                                RaftTypeScale.body,
+                                                weight: FontWeight.w600,
+                                              )
+                                            : recipe.entityTitle.copyWith(
+                                                fontWeight: FontWeight.w700,
+                                              ),
                                       ),
                                     ),
                                     const SizedBox(width: 8),
@@ -692,9 +731,14 @@ class ResourceSearchResults extends StatelessWidget {
                                   raftText(context, entity.subtitle),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: recipe.metadata.copyWith(
-                                    fontWeight: FontWeight.w400,
-                                  ),
+                                  style: plain
+                                      ? t.scale(
+                                          RaftTypeScale.callout,
+                                          color: t.colors['foreground-muted'],
+                                        )
+                                      : recipe.metadata.copyWith(
+                                          fontWeight: FontWeight.w400,
+                                        ),
                                 ),
                               ],
                             ),

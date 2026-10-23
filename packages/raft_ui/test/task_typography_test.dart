@@ -78,7 +78,9 @@ void main() {
         );
         expect(
           tester.widget<Text>(find.text('#210')).style!.fontFamily,
-          tokens.bodyFont,
+          tokens.option('listGroup.frame', or: 'framed') == 'plain'
+              ? tokens.monoFont
+              : tokens.bodyFont,
         );
         await tester.tap(find.text('Review the thread header strip baselines'));
         expect(opened, 1);
@@ -119,9 +121,12 @@ void main() {
         tester.widget<Text>(find.text('In Progress')).style!.fontFamily,
         tokens.headingFont,
       );
-      // Web v1.21.12: the status trigger is the TaskChip (h18.25 Brutal, h19
-      // Elegant, `mt-0.5`); both fit the document's h24 strut line.
-      expect(tester.getSize(find.byType(RaftInlineLineBox)).height, 24);
+      // Legacy chips fit the 24px document strut; the current 22px chip plus
+      // mt-0.5 and the host baseline expands this Flutter line to 25px.
+      expect(
+        tester.getSize(find.byType(RaftInlineLineBox)).height,
+        tokens.option('task.status', or: 'symbol') == 'square' ? 25 : 24,
+      );
 
       expect(tester.takeException(), isNull);
     });
@@ -160,9 +165,10 @@ void main() {
       of: find.text('#210'),
       matching: find.byType(RaftCssText),
     );
-    expect(tester.getSize(number).height, 14);
-    // Raft token metrics, 358px card, one title line, editable status.
-    expect(tester.getSize(find.byType(RaftTaskCard)).height, 102);
+    expect(tester.getSize(number).height, 16);
+    // Updated body/mono-meta scale and 22px status, at 358px in the host raster.
+    // Pixel comparison remains separate; this is not a browser-height assertion.
+    expect(tester.getSize(find.byType(RaftTaskCard)).height, 109);
     expect(tester.takeException(), isNull);
   });
 }

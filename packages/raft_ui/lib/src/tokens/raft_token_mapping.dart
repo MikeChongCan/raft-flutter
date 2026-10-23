@@ -43,6 +43,8 @@ const Map<String, String> raftSemanticMapping = {
   'foreground-hover': 'foreground-hover',
   // Layers. Both old canvas and old panel are the new content paper (see above).
   'layer-canvas': 'layer-canvas',
+  // Flutter-added role: section headers on narrow layouts (Cindy b1ba932f).
+  'layer-section-header-mobile': 'layer-frame',
   'layer-canvas-muted': 'layer-sidebar',
   'layer-panel': 'layer-canvas',
   'layer-popover': 'layer-popover',

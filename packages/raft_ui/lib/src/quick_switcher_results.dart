@@ -10,6 +10,9 @@ import 'recipes/search_message.g.dart';
 import 'recipes/search_thread.g.dart';
 import 'search_result_surface.dart';
 import 'theme.dart';
+import 'flex_shrink_row.dart';
+import 'raft/ui_tokens.dart';
+import 'tokens/tokens.dart';
 
 /// Filter chips laid out like MessageSearchPage's `flex flex-wrap items-center
 /// gap-2` row; the Search page and the quick switcher both use it.
@@ -178,6 +181,7 @@ class RaftQuickSwitcherHit extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context), rt = t.recipeTokens;
+    final plain = t.option('listGroup.frame', or: 'framed') == 'plain';
     final m = RaftSearchMessageRecipe.resolve(
       theme: t.recipeTheme,
       states: t.recipeStates(),
@@ -204,58 +208,143 @@ class RaftQuickSwitcherHit extends StatelessWidget {
           Padding(
             // Nested hits drop the header padding and keep `mb-1`
             // (`group-data-[nested=true]` variants).
-            padding: nested
+            padding: plain
+                ? const EdgeInsets.only(bottom: 2)
+                : nested
                 ? const EdgeInsets.only(bottom: 4)
                 : m.messageHeader.padding.add(
                     EdgeInsets.only(bottom: m.messageHeader.margin.bottom),
                   ),
-            child: Wrap(
-              spacing: m.messageHeader.columnGap ?? 8,
-              runSpacing: m.messageHeader.rowGap ?? 8,
-              crossAxisAlignment: WrapCrossAlignment.center,
-              children: [
-                Text(where, style: meta(m.messageMeta)),
-                if (threadLabel != null)
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    spacing: m.messageThreadMeta.columnGap ?? 0,
+            child: plain
+                ? Row(
                     children: [
-                      RaftThreadIcon(
-                        size: 10,
-                        color: meta(m.messageThreadMeta).color,
-                      ),
-                      Text(threadLabel!, style: meta(m.messageThreadMeta)),
-                    ],
-                  ),
-                for (final warning in warnings)
-                  RaftBadge(
-                    label: warning,
-                    appearance: RaftBadgeRecipeAppearance.soft,
-                    variant: RaftBadgeRecipeVariant.warning,
-                  ),
-                if (sender.isNotEmpty)
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    spacing: m.messageSender.columnGap ?? 4,
-                    children: [
-                      ?avatar,
-                      Flexible(
-                        child: Text(
-                          sender,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: meta(m.messageSender),
+                      Expanded(
+                        child: RaftFlexShrinkRow(
+                          gap: 6,
+                          truncating: true,
+                          children: [
+                            if (sender.isNotEmpty)
+                              RaftFlexShrinkRow(
+                                gap: 6,
+                                truncating: true,
+                                fixed: avatar != null ? const {0} : const {},
+                                children: [
+                                  ?avatar,
+                                  Text(
+                                    sender,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: t.scale(
+                                      RaftTypeScale.callout,
+                                      weight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            Text(
+                              where,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: t.scale(
+                                RaftTypeScale.monoMeta,
+                                mono: true,
+                                color: t.ui.foregroundHint,
+                              ),
+                            ),
+                            if (threadLabel != null)
+                              RaftFlexShrinkRow(
+                                gap: 4,
+                                truncating: true,
+                                fixed: const {0},
+                                children: [
+                                  RaftThreadIcon(
+                                    size: 12,
+                                    color: t.ui.foregroundHint,
+                                  ),
+                                  Text(
+                                    threadLabel!,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: t.scale(
+                                      RaftTypeScale.monoMeta,
+                                      mono: true,
+                                      color: t.ui.foregroundHint,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            for (final warning in warnings)
+                              RaftBadge(
+                                label: warning,
+                                appearance: RaftBadgeRecipeAppearance.soft,
+                                variant: RaftBadgeRecipeVariant.warning,
+                              ),
+                          ],
                         ),
                       ),
+                      if (time.isNotEmpty) ...[
+                        const SizedBox(width: 6),
+                        Text(
+                          time,
+                          style: t.scale(
+                            RaftTypeScale.monoMeta,
+                            mono: true,
+                            color: t.ui.foregroundHint,
+                          ),
+                        ),
+                      ],
+                    ],
+                  )
+                : Wrap(
+                    spacing: m.messageHeader.columnGap ?? 8,
+                    runSpacing: m.messageHeader.rowGap ?? 8,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      Text(where, style: meta(m.messageMeta)),
+                      if (threadLabel != null)
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          spacing: m.messageThreadMeta.columnGap ?? 0,
+                          children: [
+                            RaftThreadIcon(
+                              size: 10,
+                              color: meta(m.messageThreadMeta).color,
+                            ),
+                            Text(
+                              threadLabel!,
+                              style: meta(m.messageThreadMeta),
+                            ),
+                          ],
+                        ),
+                      for (final warning in warnings)
+                        RaftBadge(
+                          label: warning,
+                          appearance: RaftBadgeRecipeAppearance.soft,
+                          variant: RaftBadgeRecipeVariant.warning,
+                        ),
+                      if (sender.isNotEmpty)
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          spacing: m.messageSender.columnGap ?? 4,
+                          children: [
+                            ?avatar,
+                            Flexible(
+                              child: Text(
+                                sender,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: meta(m.messageSender),
+                              ),
+                            ),
+                          ],
+                        ),
+                      if (time.isNotEmpty)
+                        Text(time, style: meta(m.messageTimestamp)),
                     ],
                   ),
-                if (time.isNotEmpty)
-                  Text(time, style: meta(m.messageTimestamp)),
-              ],
-            ),
           ),
           Padding(
-            padding: nested ? EdgeInsets.zero : m.messageBody.padding,
+            padding: plain || nested ? EdgeInsets.zero : m.messageBody.padding,
             child: DefaultTextStyle.merge(
               style: m.messageBody
                   .textStyle(rt)
@@ -270,6 +359,8 @@ class RaftQuickSwitcherHit extends StatelessWidget {
 
   /// Style of the highlighted snippet.
   static TextStyle snippetStyle(RaftTokens t) {
+    if (t.option('listGroup.frame', or: 'framed') == 'plain')
+      return t.scale(RaftTypeScale.callout, color: t.ui.foregroundMuted);
     final rt = t.recipeTokens;
     return RaftSearchMessageRecipe.resolve(
       theme: t.recipeTheme,

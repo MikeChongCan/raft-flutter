@@ -6,6 +6,7 @@ import 'design_primitives.dart';
 import 'icons.dart';
 import 'panel_layout.dart' show RaftCssText;
 import 'theme.dart';
+import 'raft/ui_tokens.dart';
 
 /// The status vocabulary is intentionally closed. The app must omit unknown
 /// projections rather than render an invented Todo state.
@@ -18,7 +19,9 @@ class RaftMessageTaskChipRecipe extends RaftControlRecipe {
   const RaftMessageTaskChipRecipe(super.tokens, this.status)
     : super(variant: RaftControlVariant.ghost);
   final RaftMessageTaskStatus status;
-  double get chipHeight => 19;
+  bool get squareStatus =>
+      tokens.option('task.status', or: 'symbol') == 'square';
+  double get chipHeight => squareStatus ? 22 : 19;
   double get gap => 6;
   double get borderWidth => .5;
   double get hoverBrightness => .96;
@@ -33,9 +36,13 @@ class RaftMessageTaskChipRecipe extends RaftControlRecipe {
   @override
   Color get focusRing => tokens.colors['line-strong']!;
   @override
-  BorderRadius get radius => BorderRadius.circular(999);
+  BorderRadius get radius => BorderRadius.circular(
+    squareStatus ? tokens.size('radius.chip', fallback: 5) : 999,
+  );
   @override
-  EdgeInsets get padding => EdgeInsets.symmetric(horizontal: 8);
+  EdgeInsets get padding => squareStatus
+      ? const EdgeInsets.only(left: 6, right: 8)
+      : const EdgeInsets.symmetric(horizontal: 8);
   String get _token => tokenOf(status);
 
   /// The `--task-status-*` token a status paints with. The one place a task
@@ -56,7 +63,8 @@ class RaftMessageTaskChipRecipe extends RaftControlRecipe {
 
   /// Brutal `text-black`; elegant the status' strong ink.
   @override
-  Color get foreground => tokens.colors['$_token-strong']!;
+  Color get foreground =>
+      squareStatus ? tokens.ui.foreground : tokens.colors['$_token-strong']!;
 
   /// `TaskStatusIcon`: the strong token (elegant); brutal paints `currentColor`.
   Color get iconForeground => foreground;
@@ -72,10 +80,12 @@ class RaftMessageTaskChipRecipe extends RaftControlRecipe {
 
   /// Brutal `border-black`; elegant the strong token at 35% (`color-mix`).
   @override
-  BorderSide side({bool hovered = false}) => BorderSide(
-    width: borderWidth,
-    color: _opacity(tokens.colors['$_token-strong']!, .35),
-  );
+  BorderSide side({bool hovered = false}) => squareStatus
+      ? BorderSide.none
+      : BorderSide(
+          width: borderWidth,
+          color: _opacity(tokens.colors['$_token-strong']!, .35),
+        );
   @override
   Gradient? get overlayGradient => null;
   @override
@@ -89,9 +99,9 @@ class RaftMessageTaskChipRecipe extends RaftControlRecipe {
   @override
   TextStyle get textStyle => RaftTypography.body(
     tokens,
-    size: 13,
-    line: 13,
-    weight: FontWeight.w400,
+    size: squareStatus ? 12 : 13,
+    line: squareStatus ? 16 : 13,
+    weight: squareStatus ? FontWeight.w600 : FontWeight.w400,
     color: foreground,
   ).copyWith(letterSpacing: 0);
   static Color _opacity(Color color, double factor) =>
@@ -265,7 +275,24 @@ class RaftMessageTaskStatusIcon extends StatelessWidget {
   Widget build(BuildContext context) => ExcludeSemantics(
     child: SizedBox.square(
       dimension: size,
-      child: RaftIcon(glyphOf(status), size: size, color: color),
+      child:
+          RaftTokens.of(context).option('task.status', or: 'symbol') == 'square'
+          ? Center(
+              child: Container(
+                width: 9,
+                height: 9,
+                decoration: BoxDecoration(
+                  color: RaftTokens.of(context)
+                      .colors[RaftMessageTaskChipRecipe.tokenOf(status)],
+                  border: Border.all(
+                    color: RaftTokens.of(context).ui.stickerInk,
+                    width: 1.5,
+                  ),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            )
+          : RaftIcon(glyphOf(status), size: size, color: color),
     ),
   );
 }
