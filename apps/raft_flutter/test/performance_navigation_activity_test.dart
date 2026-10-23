@@ -43,6 +43,8 @@ void main() {
       api.routes['GET /channels/public'] = (_) => [];
       api.routes['GET /announcements/active'] = (_) => {'announcements': []};
       api.routes['GET /servers/unread-summary'] = (_) => [];
+      // An owner reads the pending joint invites (Web usePendingJointInvites).
+      api.routes['GET /channels/joint-invites'] = (_) => {'invites': []};
       api.routes['GET /product-feedback/tickets'] = (_) => {
         'unread_total': 0,
         'tickets': [],
