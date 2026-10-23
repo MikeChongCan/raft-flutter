@@ -29,6 +29,68 @@ const _extraValuePlaceholders = <String, Set<String>>{
   'A computer you added is low on disk space': {'count'},
 };
 
+/// The argument names of an ICU message: `{name}` and the `name` of
+/// `{name, plural|select|selectordinal, ...}`, including arguments nested in
+/// plural/select arms. Arm selectors and arm text (`one {# step}`, `{once}`)
+/// are not arguments.
+Set<String> _icuArguments(String message) =>
+    (_IcuArguments(message)..text(0)).out;
+
+class _IcuArguments {
+  _IcuArguments(this.message);
+  final String message;
+  final out = <String>{};
+  var i = 0;
+  static final _ident = RegExp(r'^\s*([a-zA-Z0-9_]+)\s*([,}])');
+
+  /// Message text up to an unmatched `}` (or the end); returns its index.
+  int text(int from) {
+    i = from;
+    while (i < message.length) {
+      final c = message[i];
+      if (c == '}') return i;
+      if (c == '{') {
+        argument();
+      } else {
+        i++;
+      }
+    }
+    return i;
+  }
+
+  /// A `{...}` that is not an argument (an arm body or `{# step}`): its text
+  /// may still hold arguments.
+  void block() => i = text(i + 1) + 1;
+
+  void argument() {
+    final m = _ident.firstMatch(message.substring(i + 1));
+    if (m == null) return block();
+    out.add(m[1]!);
+    i += 1 + m.end;
+    if (m[2] == '}') return;
+    // `{name, type}` or `{name, type, selector {arm} ...}`.
+    final comma = message.indexOf(',', i);
+    final close = message.indexOf('}', i);
+    if (comma < 0 || (close >= 0 && close < comma)) {
+      i = close < 0 ? message.length : close + 1;
+      return;
+    }
+    i = comma + 1;
+    while (i < message.length) {
+      final c = message[i];
+      if (c == '}') {
+        i++;
+        return;
+      }
+      if (c == '{') {
+        block();
+      } else {
+        i++;
+      }
+    }
+  }
+}
+
 void main() {
   test('every catalog file is merged and no key is declared twice', () {
     final owner = <String, String>{};
@@ -81,9 +143,7 @@ void main() {
   });
 
   test('a Chinese value uses the placeholders of its key', () {
-    final placeholder = RegExp(r'\{([a-zA-Z0-9_]+)\}');
-    Set<String> names(String s) =>
-        placeholder.allMatches(s).map((m) => m[1]!).toSet();
+    Set<String> names(String s) => _icuArguments(s);
     final broken = <String>[];
     final used = <String>{};
     for (final e in raftChinese.entries) {
