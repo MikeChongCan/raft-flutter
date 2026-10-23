@@ -123,6 +123,13 @@ void main() {
         await t.tap(find.bySemanticsLabel('Back to members'));
         await t.tap(find.bySemanticsLabel('Close profile'));
         expect([back, close], [1, 1]);
+        if (platform == TargetPlatform.android) {
+          // Wide touch layout: keep the Web's 32px visual while the shared
+          // interactive target still accepts a tap inside Android's 48px area.
+          final rect = t.getRect(find.byType(RaftPanelAction).first);
+          await t.tapAt(Offset(rect.center.dx, rect.bottom + 4));
+          expect(back, 2);
+        }
         expect(t.takeException(), isNull);
         await t.pumpWidget(const SizedBox());
       },

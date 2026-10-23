@@ -61,7 +61,11 @@ class RaftThreadCompositionRecipe {
   /// The thread column's header container adds
   /// `in-data-[theme=elegant]:bg-layer-canvas-muted` at every width (Web
   /// v1.21.12 `THREAD_HEADER_CONTAINER_CLASS_NAME`).
-  Color get headerBackground => tokens.colors['layer-canvas-muted']!;
+  Color get headerBackground =>
+      tokens.colors[tokens.option('panelAction.surface', or: 'outline') ==
+              'ghost'
+          ? 'layer-panel-header'
+          : 'layer-canvas-muted']!;
   BorderSide get headerBorder =>
       BorderSide(color: tokens.colors['line-muted']!);
   Color get parentBackground =>
@@ -175,6 +179,18 @@ class RaftThreadHeader extends StatelessWidget {
       overflow: grows ? TextOverflow.clip : TextOverflow.ellipsis,
     );
     final hasFollowers = followers != null && followersVisible;
+    final headerInset =
+        tokens.option('panelAction.surface', or: 'outline') == 'ghost'
+        ? raftPanelHeaderEdges(
+            context,
+            hasBack: recipe.showBack && onBack != null,
+            hasActions:
+                hasFollowers ||
+                actions.isNotEmpty ||
+                recipe.showClose && onClose != null,
+          )
+        : recipe.headerInset;
+
     // CSS border-box: the bottom rule is inside the header height and the
     // row is centred in the remaining content box.
     return RaftStatusBarSource(
@@ -195,10 +211,8 @@ class RaftThreadHeader extends StatelessWidget {
               : recipe.headerHeight - recipe.headerBorder.width,
           child: Padding(
             padding: grows
-                ? recipe.headerInset.add(
-                    const EdgeInsets.symmetric(vertical: 6),
-                  )
-                : recipe.headerInset,
+                ? headerInset.add(const EdgeInsets.symmetric(vertical: 6))
+                : headerInset,
             child: Row(
               children: [
                 if (recipe.showBack && onBack != null) ...[

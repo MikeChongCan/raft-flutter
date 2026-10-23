@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_ui/raft_ui.dart';
-import 'package:raft_ui/test_themes.dart';
 
 void main() {
-  for (final theme in raftThemeMatrix([raftTheme(), raftTheme(dark: true)])) {
+  for (final (ghost, theme) in [
+    (true, raftTheme()),
+    (true, raftTheme(dark: true)),
+    (false, raftTheme(pack: packForThemeId(elegantThemePackId))),
+    (false, raftTheme(pack: packForThemeId(elegantThemePackId), dark: true)),
+  ]) {
     testWidgets(
-      'Mobile headers align navigation and accept keyboard in ${theme.brightness}',
+      'Mobile headers ghost=$ghost align navigation and accept keyboard in ${theme.brightness}',
       (tester) async {
         tester.view.physicalSize = const Size(390, 844);
         tester.view.devicePixelRatio = 1;
@@ -63,36 +67,38 @@ void main() {
           find.descendant(of: root, matching: find.byType(Container)).first,
         );
         final rootDecoration = rootBox.decoration! as BoxDecoration;
-        expect(rootDecoration.color, tokens.panel);
+        expect(
+          rootDecoration.color,
+          tokens.colors['layer-section-header-mobile'],
+        );
         final rootEdge = (rootDecoration.border! as Border).bottom;
         expect(rootEdge.width, 1);
         expect(rootEdge.color, tokens.colors['line-muted']);
         expect(tester.getTopLeft(find.text('Settings')).dx, 16);
         final backs = find.byType(RaftPanelAction);
         expect(backs, findsNWidgets(3));
-        // PanelAction: `px-2 py-2` + 16px icon = 32x32.
-        const actionSize = Size(32, 32);
+        // Current Web ghost action is 44px; a57 Elegant outline stays32.
+        final actionSize = Size.square(ghost ? 44 : 32);
         for (var index = 0; index < 3; index++) {
           expect(tester.getSize(backs.at(index)), actionSize);
-          // The settings Panel's left edge is desktop-only (owner decision
-          // 2026-10-12): none on the phone; then max-md:pl-5, then half the
-          // action width.
+          // Current Web ghost overhang places the box at3px; legacy stays20.
           expect(
             tester.getCenter(backs.at(index)).dx,
-            20 + actionSize.width / 2,
+            (ghost ? 3 : 20) + actionSize.width / 2,
           );
           // The visual is Web's size; the touch target is still >= 48.
-          expect(
-            tester
-                .getSize(
-                  find.descendant(
-                    of: backs.at(index),
-                    matching: find.byType(RaftTouchTargetExpander),
-                  ),
-                )
-                .shortestSide,
-            actionSize.shortestSide,
-          );
+          if (!ghost)
+            expect(
+              tester
+                  .getSize(
+                    find.descendant(
+                      of: backs.at(index),
+                      matching: find.byType(RaftTouchTargetExpander),
+                    ),
+                  )
+                  .shortestSide,
+              actionSize.shortestSide,
+            );
         }
         final channelHeader = find.byType(RaftChannelHeader);
         expect(tester.getSize(channelHeader).height, webHeight);

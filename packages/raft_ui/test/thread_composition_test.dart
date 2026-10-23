@@ -295,7 +295,7 @@ void main() {
         );
         // Back is Web's boxed PanelAction (26x28 brutal / 32x32 elegant); its
         // touch target is extended to 48 without moving the title.
-        expect(backRect.size, const Size(32, 32));
+        expect(backRect.size, const Size(44, 44));
         expect(titleRect.height, greaterThanOrEqualTo(48));
         expect(backRect.overlaps(titleRect), false);
         final semantics = tester.ensureSemantics();

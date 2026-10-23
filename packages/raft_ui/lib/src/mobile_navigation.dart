@@ -609,9 +609,12 @@ class RaftMobileRootHeaderRecipe {
   final double inset;
   double get height =>
       RaftLayoutMetrics.shellHeaderHeight(tokens, viewportHeight);
-  Color get background => tokens.panel;
-  BorderSide get border =>
-      BorderSide(color: tokens.colors['line-muted']!, width: 1);
+  // Web PanelSectionHeader; old theme packs preserve a57's root fill.
+  Color get background => tokens.colors['layer-section-header-mobile']!;
+  BorderSide get border => BorderSide(
+    color: tokens.colors['line-muted']!,
+    width: tokens.size('stroke.rule', fallback: 1),
+  );
   TextStyle get title => RaftTypography.heading(
     tokens,
     size: 16,

@@ -395,6 +395,25 @@ class RaftPanelHeaderContent extends StatelessWidget {
 /// raft-ui PanelHeader as composed by Web `components/ui/PanelHeader.tsx`
 /// (AppPanelHeader): back action, identity icon slot, title (+ suffix) and
 /// subtitle, right-aligned actions.
+/// Web panelHeadEdges plus PanelActions' overhang, shared by every native head.
+EdgeInsets raftPanelHeaderEdges(
+  BuildContext context, {
+  bool hasBack = false,
+  bool hasActions = false,
+  double? leftPadding,
+}) {
+  final narrow =
+      MediaQuery.sizeOf(context).width < RaftLayoutMetrics.desktopBreakpoint;
+  return EdgeInsets.fromLTRB(
+    // ignore: raft_lints/off_grid_spacing -- Web mobile pl-4 plus leading -ml-[13px].
+    narrow && hasBack ? 3 : leftPadding ?? (narrow ? 16 : 20),
+    0,
+    // ignore: raft_lints/off_grid_spacing -- Web pr-1.5 plus mr-[-3px], desktop pr-3 plus md:mr-px.
+    narrow ? (hasActions ? 3 : 6) : 13,
+    0,
+  );
+}
+
 class RaftPanelHeaderBar extends StatelessWidget {
   const RaftPanelHeaderBar({
     super.key,
@@ -500,19 +519,12 @@ class RaftPanelHeaderBar extends StatelessWidget {
       child: Container(
         height: grows ? null : height,
         constraints: BoxConstraints(minHeight: height),
-        padding: EdgeInsets.fromLTRB(
-          // ignore: raft_lints/off_grid_spacing -- Web panelHeadEdges: phone pl-4 plus leading -ml-[13px] gives 3px.
-          narrow && onBack != null ? 3 : leftPadding ?? (narrow ? 16 : 20),
-          grows ? 8 : 0,
-          narrow && actions.isNotEmpty
-              // ignore: raft_lints/off_grid_spacing -- Web panelHeadActions mr-[-3px] over 6px right padding.
-              ? 3
-              : narrow
-              ? 6
-              // ignore: raft_lints/off_grid_spacing -- Web desktop pr-3 plus PanelActions md:mr-px.
-              : 13,
-          grows ? 8 : 0,
-        ),
+        padding: raftPanelHeaderEdges(
+          context,
+          hasBack: onBack != null,
+          hasActions: actions.isNotEmpty,
+          leftPadding: leftPadding,
+        ).copyWith(top: grows ? 8 : 0, bottom: grows ? 8 : 0),
         decoration: BoxDecoration(
           color: fill,
           border: Border(bottom: BorderSide(color: t.ui.lineSeam)),

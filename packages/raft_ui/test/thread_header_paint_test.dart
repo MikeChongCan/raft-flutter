@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_ui/raft_ui.dart';
-import 'package:raft_ui/src/recipes/token_binding.dart';
 import 'package:raft_ui/test_themes.dart';
 
 // Legacy measured geometry is retained; paint now follows the Raft token roles.
@@ -50,14 +49,8 @@ void main() {
         final height = 56;
         expect(t.getSize(header).height, height);
         final tokens = RaftTokens.of(t.element(header));
-        final recipe = RaftConversationHeader.recipeOf(
-          t.element(header),
-          hasMeta: false,
-        );
-        final fill = recipe.header.decoration(RaftRecipeTokens(tokens)).color;
-        final surface = fill == null || fill.a == 0
-            ? tokens.colors['layer-canvas-muted']!
-            : fill;
+        // Current Web PanelHeader's paper fill is the shared named role.
+        final surface = tokens.colors['layer-panel-header']!;
         List<int> rgbOf(Color c) => [
           (c.r * 255).round(),
           (c.g * 255).round(),

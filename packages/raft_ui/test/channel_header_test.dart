@@ -35,15 +35,15 @@ void main() {
         );
         expect(find.text('首页专修'), findsOneWidget);
         // Below md Web renders the same PanelHeader recipe (`max-md:` variants
-        // resolved at 390px): h-56, boxed PanelAction
-        // Back, identity icon cell, title + meta.
+        // resolved at 390px): h-56, 44px ghost Back,
+        // identity icon cell, title + meta.
         final header = find.byType(RaftConversationHeader);
         expect(t.getSize(header).height, 56);
         expect(find.byType(RaftMobilePageHeader), findsNothing);
         final back = find.byType(RaftPanelAction);
-        expect(t.getSize(back), const Size(32, 32));
-        // `max-md:pl-5`.
-        expect(t.getTopLeft(back).dx, 20);
+        expect(t.getSize(back), const Size(44, 44));
+        // panelHeadEdges: pl-4 plus the leading -ml-[13px].
+        expect(t.getTopLeft(back).dx, 3);
         for (final label in ['Search This Channel', 'Channel Settings']) {
           expect(t.getSize(find.bySemanticsLabel(label)), const Size(28, 28));
         }
