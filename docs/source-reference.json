@@ -1,10 +1,10 @@
 {
   "repository": "https://github.com/botiverse/raft-source",
-  "commit": "a98ae003246a0360872a77d76dec2fccd0347ef7",
-  "webVersion": "1.21.12",
-  "raftUiNpmVersion": "0.5.52",
+  "commit": "db5e399f017d584e49597e3a28757645d6807893",
+  "webVersion": "1.21.23",
+  "raftUiNpmVersion": "0.7.0",
   "flutterChatUiCandidate": "2.12.0",
-  "verifiedOn": "2026-10-21",
+  "verifiedOn": "2026-10-22",
   "status": "implemented client; extended Linux and Android native validation in progress; see feature-parity.csv for verified boundaries",
   "localReferencePatches": [
     {

@@ -45,11 +45,13 @@ BASE_URL = os.environ.get('PARITY_BASE_URL', 'http://100.109.192.23:18931')
 WEB_PORT = os.environ.get('PARITY_WEB_PORT', '4391')
 PAIR = 'react__android'
 FONT_CACHE = root / 'tool/parity-fonts'
-RAFT_UI_FONT_CSS_URL = ('https://fonts.googleapis.com/css2?family=Geist:wght@400..700&family=Geist+Mono:wght@300..700'
-                        '&family=Hanken+Grotesk:wght@300..700&family=Inter:wght@400;500;600;700&display=swap')
-# UA of the pinned Playwright Chromium headless shell (156 for the v1.21.12 reference's
-# @playwright/test 1.64; it was 147 under 1.59). Google serves the byte-identical CSS to
-# both UAs (sha256 b66bcc6f..., checked 2026-10-21), so the committed cache stays valid.
+# raft-ui 0.7.0 (Web v1.21.23) imports Space Grotesk and Space Mono; 0.5.52 (v1.21.12) imported
+# Geist, Geist Mono, Hanken Grotesk and Inter.
+RAFT_UI_FONT_CSS_URL = ('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700'
+                        '&family=Space+Mono:wght@400;700&display=swap')
+# UA of the pinned Playwright Chromium headless shell (156 for @playwright/test 1.64, the
+# version of the v1.21.12 and v1.21.23 references; 147 under 1.59). The cache was refreshed
+# for it on 2026-10-23 when raft-ui moved to Space Grotesk / Space Mono.
 FONT_FETCH_UA = ('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) '
                  'HeadlessChrome/156.0.8078.4 Safari/537.36')
 PASS_STATUSES = {'same', 'pass', 'basic-pass'}
@@ -99,15 +101,14 @@ def git(cwd, *args):
 
 # --- React provider with production fonts --------------------------------
 # Owner decision: the React baseline must render what the production Web
-# renders. The upstream spec fulfils raft-ui's Google Fonts URL with a local
-# Space Grotesk/Space Mono stub, so raft-ui's Hanken Grotesk/Geist/Geist
-# Mono/Inter fall back to Chromium's system-ui. We run a GENERATED copy of the
-# official spec + Playwright config (raft-source stays untouched) whose only
-# changes are: path wiring, the documented owner-authorized task fixture
-# repair, serving the cached production Google Fonts
-# response for raft-ui's URL, font assertions retargeted to the production
-# families, and font provenance (document.fonts + CDP platform fonts) added to
-# each capture's metadata. Every patch anchor must match exactly once.
+# renders. The upstream spec fulfils raft-ui's Google Fonts URL with local
+# Space Grotesk/Space Mono TTF subsets (an offline copy of an older response), not
+# the bytes Google serves. We run a GENERATED copy of the official spec + Playwright
+# config (raft-source stays untouched) whose only changes are: path wiring, the
+# documented owner-authorized task fixture repair, serving the cached production
+# Google Fonts response for raft-ui's URL, and font provenance (document.fonts + CDP
+# platform fonts) added to each capture's metadata. Every patch anchor must match
+# exactly once.
 REACT_GEN = OUT / 'react-provider'
 
 SPEC_PATCHES = [
@@ -148,23 +149,11 @@ const webFontRoot = resolve(packageRoot, "../web/src/assets/fonts");"""),
       return;
     }
     if (GOOGLE_FONT_CSS_URLS.has(requestUrl)) {"""),
-    ("""      { family: "Space Grotesk", descriptor: "400 16px 'Space Grotesk'", text: "Raft" },
-      { family: "Space Grotesk", descriptor: "700 16px 'Space Grotesk'", text: "Raft" },
-      { family: "Space Mono", descriptor: "400 16px 'Space Mono'", text: "Raft" },
-      { family: "Space Mono", descriptor: "700 16px 'Space Mono'", text: "Raft" },""",
-     """      { family: "Hanken Grotesk", descriptor: "400 16px 'Hanken Grotesk'", text: "Raft" },
-      { family: "Hanken Grotesk", descriptor: "700 16px 'Hanken Grotesk'", text: "Raft" },
-      { family: "Geist", descriptor: "400 16px 'Geist'", text: "Raft" },
-      { family: "Geist", descriptor: "700 16px 'Geist'", text: "Raft" },
-      { family: "Geist Mono", descriptor: "400 16px 'Geist Mono'", text: "Raft" },
-      { family: "Geist Mono", descriptor: "700 16px 'Geist Mono'", text: "Raft" },
-      { family: "Inter", descriptor: "400 16px 'Inter'", text: "Raft" },
-      { family: "Inter", descriptor: "700 16px 'Inter'", text: "Raft" },"""),
     ('  expect(visualFonts.unexpectedExternalUrls).toEqual([]);',
      """  (globalThis as any).__parityFontFaces = faces;
   expect(visualFonts.unexpectedExternalUrls).toEqual([]);
   // raft-flutter parity: every production family's latin subset must be served.
-  for (const family of ["geist/", "geistmono/", "hankengrotesk/", "inter/"]) {
+  for (const family of ["spacegrotesk/", "spacemono/"]) {
     expect([...visualFonts.served].some((url) => url.startsWith(`https://fonts.gstatic.com/s/${family}`))).toBe(true);
   }"""),
     ('  for (const assetUrl of VISUAL_FONT_ASSETS.keys()) {',

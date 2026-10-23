@@ -1,5 +1,5 @@
 // Supplemental test host only: extend the pinned VisualTestingRoot's public
-// ThemeProvider/AppThemeContext inputs without editing the Source checkout.
+// ThemeProvider/AppThemeContext inputs (v1.21.23: light or dark) without editing the Source checkout.
 import { createRequire } from 'node:module';
 import { pathToFileURL } from 'node:url';
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
@@ -19,31 +19,20 @@ function once(code, before, after) {
   return code.replace(before, after);
 }
 let code = once(original,
-  '  return (\n    <ThemeProvider defaultTheme={defaultTheme} defaultMode="light">\n'
-  + '      <AppThemeContext.Provider value={FIXED_THEME_CONTEXTS[defaultTheme]}>',
+  '  return (\n    <ThemeProvider mode={mode}>\n'
+  + '      <AppThemeContext.Provider value={FIXED_THEME_CONTEXTS[mode]}>',
   `  const override = new URLSearchParams(window.location.search).get('parityTheme');
   if (override && !['brutal-light', 'elegant-light', 'elegant-dark'].includes(override)) {
     throw new Error('Unknown supplemental parity theme');
   }
-  const selectedTheme = override ? (override === 'brutal-light' ? 'brutal' : 'elegant') : defaultTheme;
-  const dark = override === 'elegant-dark';
-  const preset: AppThemePreset = dark ? 'elegant-dark' : selectedTheme === 'elegant' ? 'elegant-light' : 'brutal';
-  const themeContext: AppThemeContextValue = {
-    ...fixedThemeContext(preset),
-    resolvedMode: dark ? "dark" as const : "light" as const,
-  };
+  // v1.21.23 has one "Raft" appearance: the two light names render the same page and
+  // elegant-dark selects the dark mode.
+  const dark = override ? override === 'elegant-dark' : mode === 'dark';
+  const effectiveMode: AppResolvedMode = dark ? 'dark' : 'light';
+  const themeContext: AppThemeContextValue = FIXED_THEME_CONTEXTS[effectiveMode];
   return (
-    <ThemeProvider defaultTheme={selectedTheme} defaultMode={dark ? "dark" : "light"}>
+    <ThemeProvider mode={effectiveMode}>
       <AppThemeContext.Provider value={themeContext}>`);
-// The official host wraps every case in `<main className="min-h-screen bg-white">`. A
-// screen is a full-height panel in the app, but the React fixture keeps it at content
-// height, so in elegant-dark the uncovered part of the 390x844 frame stays white while
-// the Flutter screen paints the panel colour. Paint that frame in the panel colour
-// (screens only; component cases keep the host's white).
-code = once(code,
-  '      <AppThemeContext.Provider value={themeContext}>',
-  `      <AppThemeContext.Provider value={themeContext}>
-      {dark ? <style>{"main.bg-white:has([data-visual-case^='screens.']) { background-color: var(--layer-panel) !important; }"}</style> : null}`);
 mkdirSync(out, { recursive: true });
 // Apply the same owner-authorized fixture repair as the original 99 runner.
 // Theme overrides still affect only the fixture root; no product code edits.

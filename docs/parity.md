@@ -375,30 +375,33 @@ production Web shows. (Production `index.css` imports only raft-ui's URL plus
 the `Raft Quote Glyphs` woff2; the Space Grotesk URLs are not requested by the
 product.)
 
+**v1.21.23 (raft-ui 0.7.0):** raft-ui now imports Space Grotesk and Space Mono
+(`css2?family=Space+Grotesk:wght@300..700&family=Space+Mono:wght@400;700`), so
+the cache below holds that response (fetched 2026-10-23 for the Chrome 156
+headless-shell UA, 9 woff2 files) and the older Geist / Hanken Grotesk / Inter
+description in this section is the v1.21.12 state. The upstream spec still fulfils
+that URL with its own offline TTF subsets, so the production-fonts patch stays.
+The Flutter app does not bundle Space Grotesk or Space Mono yet (the Raft look
+work), so React captures from the v1.21.23 render host differ from the Flutter
+ones by typeface until it does.
+
 What `tool/parity run` does now (raft-source untouched):
 
-* `tool/parity-fonts/` (committed, 492 KB, OFL): the exact CSS Google returns
-  for raft-ui's URL to the Chromium 147 UA (identical to the headed
-  Chrome 147 response, and byte-identical for the Chrome 156 UA of the v1.21.12 reference, checked 2026-10-21) and all 22 woff2 files it references, sha256-pinned in
+* `tool/parity-fonts/` (committed, OFL): the exact CSS Google returns for raft-ui's
+  URL to the Chromium 156 UA and every woff2 file it references, sha256-pinned in
   `manifest.json`. `tool/parity fonts` verifies, `--refresh` refetches.
 * The official spec and Playwright config are copied into
   `build/parity/react-provider/` and patched; every patch anchor must match
   exactly once or the run stops. Changes: path wiring (spec runs outside its
   package); raft-ui's URL and its gstatic files are fulfilled from the cache
   (the legacy Space Grotesk URL mapping and the Quote Glyphs file stay as
-  upstream); the font-readiness assertions probe Hanken Grotesk, Geist, Geist
-  Mono, Inter (400/700) + Raft Quote Glyphs and require each family's files to
-  be served; every capture's metadata gains `fontFaces` (document.fonts
+  upstream); the font-readiness check requires the Space Grotesk and Space Mono
+  files to be served; every capture's metadata gains `fontFaces` (document.fonts
   status) and `platformFonts` (the faces Chromium actually drew, via CDP
   `CSS.getPlatformFontsForNode`). Everything else is the official spec,
   invoked with the same env as the CLI's `runReactProvider`.
-* Verified across all 99 captures (glyphs drawn): Hanken Grotesk 45,327,
-  Geist Mono 16,262, Inter 521, Geist 45; system fonts only for glyphs outside
-  the served subsets (Noto Sans CJK 1,060 for Chinese text, plus 32 symbol
-  glyphs from Noto Sans Mongolian/DejaVu Sans Mono) — the same fallback the
-  production page gets on this host. E.g. `components.ui.card.states` →
-  Hanken Grotesk only; `components.ui.card.states.elegant` → Inter + Geist;
-  `message-row.long-inline-code` → Hanken Grotesk + Geist Mono.
+* The v1.21.12 verification (Hanken Grotesk, Geist, Geist Mono, Inter glyph
+  counts over the 99 captures) is not repeated for Space Grotesk / Space Mono.
 
 Flutter side: `packages/raft_ui/assets/fonts` were compared with Google's
 served files (fontTools, every Google-served codepoint, wght 300–700,
