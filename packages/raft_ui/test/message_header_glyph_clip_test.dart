@@ -81,16 +81,17 @@ void main() {
     for (final (label, author, timestamp, cjk) in const [
       ('latin descenders', 'tygg', '23:16 gypq', false),
       ('cjk author', '张三丰丽', '23:16', true),
+      ('tall latin descenders', 'Cindy gy', '23:16 gypq', true),
     ]) {
       testWidgets(
         'header glyph ink is not clipped $label ${dark ? 'dark' : 'light'}',
         (t) async {
           if (cjk && !_cjkFont.existsSync()) return;
           await t.runAsync(_loadFonts);
-          // Flutter's test engine has no system font fallback, so the CJK case
-          // names the proxy face the way the app names PingFang on macOS: as the
-          // theme's fallback, which every control hands to its text.
-          final primary = 'Geist';
+          // Flutter's test engine has no system font fallback. The CJK cases
+          // use the taller proxy face for all glyphs, including Latin, and
+          // retain it as fallback for every control's text.
+          final primary = cjk ? 'ProxyCJK' : 'Geist';
           final theme = raftTheme(
             dark: dark,
             systemFonts: cjk,
@@ -236,6 +237,43 @@ void main() {
             rowWidth,
             find.text(timestamp).first,
           );
+          // Paint-clip metadata also governs semantics visibility and the
+          // text-fit audit. It must contain the reference glyph ink, even
+          // when a short CSS line box has taller fallback-font descenders.
+          for (final (text, ink) in [
+            (find.byKey(const ValueKey('message-author')), refAuthor),
+            (find.text(timestamp).first, refTime),
+          ]) {
+            final paragraph = t.renderObject<RenderParagraph>(
+              find.descendant(of: text, matching: find.byType(RichText)).first,
+            );
+            final origin = paragraph.localToGlobal(Offset.zero);
+            // ignore: invalid_use_of_protected_member
+            final baseline =
+                origin.dy +
+                paragraph.computeDistanceToActualBaseline(
+                  TextBaseline.alphabetic,
+                );
+            RenderObject child = paragraph;
+            for (
+              var parent = child.parent;
+              parent != null;
+              child = parent, parent = parent.parent
+            ) {
+              if (parent is! RenderClipRect) continue;
+              final clip = parent.describeApproximatePaintClip(child);
+              if (clip == null) continue;
+              final global = MatrixUtils.transformRect(
+                parent.getTransformTo(null),
+                clip,
+              );
+              expect(global.top, lessThanOrEqualTo(baseline - ink.$1 + .14));
+              expect(
+                global.bottom,
+                greaterThanOrEqualTo(baseline + ink.$2 - .14),
+              );
+            }
+          }
           // ignore: avoid_print
           print(
             '${dark ? 'dark' : 'light'} $label author ref=$refAuthor row=$rowAuthor | '

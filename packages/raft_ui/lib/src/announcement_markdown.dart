@@ -20,6 +20,7 @@ import 'recipes/inline_code.g.dart';
 import 'recipes/recipe_runtime.dart';
 import 'recipes/token_binding.dart';
 import 'theme.dart';
+import 'text_scaling.dart' show RaftScaled;
 
 /// A CSS block box for [RaftAnnouncementMarkdown]: its vertical margins
 /// collapse with adjacent siblings (and through padding-less parents).
@@ -439,6 +440,12 @@ class _MarkdownBlocks {
         // the floored half-leading above the rounded ascent.
         child: Builder(
           builder: (context) {
+            // The CSS baseline snap is for the reference size. Larger text
+            // needs its natural line box; rounded ascent/descent can otherwise
+            // push the label outside the fixed box under nonlinear scaling.
+            if (RaftScaled.grows(context)) {
+              return Text(text, style: style, softWrap: false);
+            }
             final scaled = style.copyWith(
               fontSize: MediaQuery.textScalerOf(context).scale(size),
             );

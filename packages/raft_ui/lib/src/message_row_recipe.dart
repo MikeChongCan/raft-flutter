@@ -1331,6 +1331,12 @@ class _HeaderInlineClip extends CustomClipper<Rect> {
   Rect getClip(Size size) =>
       Rect.fromLTRB(0, -bleed, size.width, size.height + bleed);
 
+  // Flutter uses this rectangle for semantics and paint-clip inspection.
+  // CustomClipper defaults to the layout box, which is shorter than the
+  // glyphs; report the same vertical bleed that getClip actually paints.
+  @override
+  Rect getApproximateClipRect(Size size) => getClip(size);
+
   @override
   bool shouldReclip(covariant _HeaderInlineClip oldClipper) => false;
 }
