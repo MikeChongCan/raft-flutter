@@ -6,7 +6,7 @@ void main() {
   for (final (id, height, size, weight) in [
     (raftThemePackId, 44.0, 15.0, FontWeight.w600),
     (elegantThemePackId, 32.0, 14.0, FontWeight.w500),
-    (brutalThemePackId, 32.0, 14.0, FontWeight.w500),
+    (brutalThemePackId, 32.0, 14.0, FontWeight.w700),
   ]) {
     testWidgets(
       '$id select uses its source trigger metrics and honors caller height',

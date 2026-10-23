@@ -106,6 +106,11 @@ dd6c1674 开始，交给 DeepDesign）。
 | `layer-frame` / `foreground-on-frame*` / `fill-frame-pressed` | 保留 | Raft 深色框的中性层，Elegant/Brutal 填成与 `layer-canvas` / `foreground` 同值 |
 | `layer-panel-header` | Flutter 新增（Cindy be3134a7） | 共享面板页头：Raft 同 `layer-canvas`；旧两套沿用 a57b9dab 的原页头绘制，保留手机底色和桌面透明层。 |
 | `layer-section-header-mobile` | Flutter 新增（Cindy b1ba932f） | 窄布局的分节页头：Raft 同 `layer-frame`；Elegant 同 `layer-panel`；Brutal 浅色同 a57b9dab 的 `color-soft-signal`，深色沿用 Elegant。桌面不读此角色。 |
+| `foreground-select` / `foreground-select-placeholder` | Flutter 新增（Cindy 50cb5231） | Raft：foreground / foreground-hint；Elegant 明暗：均 foreground-muted；Brutal 浅色：均 foreground-strong，深色沿 Elegant。 |
+| `foreground-select-disabled` | Flutter 新增（Cindy 50cb5231） | Raft：foreground-disabled；Elegant 明暗：foreground-muted；Brutal 浅色：foreground-strong，深色沿 Elegant。 |
+| `layer-select` / `layer-select-disabled` | Flutter 新增（Cindy 50cb5231） | Raft：layer-card / fill-muted；Elegant 浅色：均 layer-panel，深色：均 fill-muted；Brutal 浅色：均 layer-panel，深色沿 Elegant。 |
+| `line-select` / `line-select-disabled` | Flutter 新增（Cindy 50cb5231） | Raft：line-strong / line-hairline；Elegant 明暗：均 line-muted（原环/阴影）；Brutal 浅色：均 foreground-strong，深色沿 Elegant。 |
+
 
 附录给出了 159 个角色在三套主题下的全部取值，以及每个角色对到哪个 0.7.1 token。
 
@@ -614,10 +619,21 @@ subhead／callout／caption；徽标与按钮复用 RaftBadge／RaftButton。
 Select 数值（Cindy 511917e6）：`size.selectTrigger` 的 Raft 值由生成器引用
 `size.control.lg`（geometry 格式只存数字，生成时展开同一 h-11 档位）；旧两套32。
 `type.selectValue.size` Raft15／旧14，`type.selectValue.weight` 600／500；
-行高20、占位字重500均为常量。当前 Web select.trigger 的 h-11、text-subhead
+行高20为常量；占位字重按下述原版配对更正。当前 Web select.trigger 的 h-11、text-subhead
 和 font-semibold，以及旧版实际触发框／继承文字探测，是数值来源。
 调用方的显式高度继续优先。
 
 菜单操作行数值由 Cindy 4e51e70c 批准：当前 Web MenuItem 的常规／矮屏行高与
 消息 ContextMenu 最小宽度。它们与选择菜单的 menuRow 分开；矮屏同 navRowCompact
 使用视口高度 ≤ 600，行为、权限和调用方显式尺寸保持原样。
+
+Select 后续数值（Cindy 5c5b2a85）：`opacity.selectDisabled` Raft1／旧0.4（a57 原控件实测更正）；
+`space.selectTriggerStart` 14／旧12；`size.selectChevron` 16／旧14；
+`stroke.selectChevron` 2／旧1.5。末端12三套相同，作常量。
+七个 Select 颜色角色均有至少一套与 field 对应角色不同；旧禁用态保留原颜色再乘0.4，
+Raft禁用态读独立的淡底、淡边和禁用文字，整体不降低透明度。
+
+Select 原版配对更正（Cindy 91d3ac48）：`type.selectValue.weight` 的 Brutal 浅色为700；
+`type.selectPlaceholder.weight` Raft／Elegant500、Brutal浅色700，深色沿Elegant500。
+原a57实际recipe证明先前统一500错误，不能据已经丢失主题分支的当前组件反推原版。
+Elegant暗色xs阴影保留a57源alpha0.045，避免导出表显示精度0.04改变边缘像素。

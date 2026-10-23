@@ -280,7 +280,14 @@ const String raftThemePackJson = r'''{
         "presence-busy": "#ffd440",
         "presence-error": "#f8a16f",
         "presence-offline": "#c0b9b1",
-        "presence-external": "#27ccf3"
+        "presence-external": "#27ccf3",
+        "foreground-select": "#141111",
+        "foreground-select-placeholder": "rgba(20 17 17 / 0.62)",
+        "foreground-select-disabled": "rgba(20 17 17 / 0.302)",
+        "layer-select": "#ffffff",
+        "layer-select-disabled": "#f3f3f3",
+        "line-select": "#141111",
+        "line-select-disabled": "rgba(20 17 17 / 0.149)"
       },
       "palette": {
         "palette-yellow-50": "#fff9ed",
@@ -455,7 +462,12 @@ const String raftThemePackJson = r'''{
         "type.cardTitle.weight": 500,
         "size.selectTrigger": 44,
         "type.selectValue.size": 15,
-        "type.selectValue.weight": 600
+        "type.selectValue.weight": 600,
+        "type.selectPlaceholder.weight": 500,
+        "opacity.selectDisabled": 1,
+        "space.selectTriggerStart": 14,
+        "size.selectChevron": 16,
+        "stroke.selectChevron": 2
       },
       "type": {
         "hero": [
@@ -799,7 +811,14 @@ const String raftThemePackJson = r'''{
         "presence-busy": "#ffd440",
         "presence-error": "#f8a16f",
         "presence-offline": "#c0b9b1",
-        "presence-external": "#27ccf3"
+        "presence-external": "#27ccf3",
+        "foreground-select": "#e5e5e2",
+        "foreground-select-placeholder": "#9e9e9b",
+        "foreground-select-disabled": "#636360",
+        "layer-select": "#242422",
+        "layer-select-disabled": "#32322f",
+        "line-select": "#e5e5e2",
+        "line-select-disabled": "rgba(250 250 247 / 0.102)"
       },
       "palette": {
         "palette-yellow-50": "#fff9ed",
@@ -974,7 +993,12 @@ const String raftThemePackJson = r'''{
         "type.cardTitle.weight": 500,
         "size.selectTrigger": 44,
         "type.selectValue.size": 15,
-        "type.selectValue.weight": 600
+        "type.selectValue.weight": 600,
+        "type.selectPlaceholder.weight": 500,
+        "opacity.selectDisabled": 1,
+        "space.selectTriggerStart": 14,
+        "size.selectChevron": 16,
+        "stroke.selectChevron": 2
       },
       "type": {
         "hero": [

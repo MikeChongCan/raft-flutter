@@ -219,7 +219,14 @@ const String elegantThemePackJson = r'''{
         "switch-shadow-bottom": "rgb(0 0 0 / 0)",
         "layer-sidebar": "#f8f8f7",
         "layer-panel-header": "#f8f8f7",
-        "layer-section-header-mobile": "#ffffff"
+        "layer-section-header-mobile": "#ffffff",
+        "foreground-select": "#3d3d3a",
+        "foreground-select-placeholder": "#3d3d3a",
+        "foreground-select-disabled": "#3d3d3a",
+        "layer-select": "#ffffff",
+        "layer-select-disabled": "#ffffff",
+        "line-select": "#e5e5e2",
+        "line-select-disabled": "#e5e5e2"
       },
       "geometry": {
         "size.touchLayoutMin": 48,
@@ -230,6 +237,11 @@ const String elegantThemePackJson = r'''{
         "size.selectTrigger": 32,
         "type.selectValue.size": 14,
         "type.selectValue.weight": 500,
+        "type.selectPlaceholder.weight": 500,
+        "opacity.selectDisabled": 0.4,
+        "space.selectTriggerStart": 12,
+        "size.selectChevron": 14,
+        "stroke.selectChevron": 1.5,
         "size.menuActionRow": 28,
         "size.menuActionRowCompact": 28,
         "size.menuPopupMin": 192,
@@ -506,7 +518,14 @@ const String elegantThemePackJson = r'''{
         "switch-shadow-bottom": "rgb(243.444675 243.444675 247.22862 / 0.039203)",
         "layer-sidebar": "#0d0d0b",
         "layer-panel-header": "#0d0d0b",
-        "layer-section-header-mobile": "#242422"
+        "layer-section-header-mobile": "#242422",
+        "foreground-select": "#c4c4c1",
+        "foreground-select-placeholder": "#c4c4c1",
+        "foreground-select-disabled": "#c4c4c1",
+        "layer-select": "#32322f",
+        "layer-select-disabled": "#32322f",
+        "line-select": "rgb(241 241 241 / 0.1)",
+        "line-select-disabled": "rgb(241 241 241 / 0.1)"
       },
       "geometry": {
         "size.touchLayoutMin": 48,
@@ -517,6 +536,11 @@ const String elegantThemePackJson = r'''{
         "size.selectTrigger": 32,
         "type.selectValue.size": 14,
         "type.selectValue.weight": 500,
+        "type.selectPlaceholder.weight": 500,
+        "opacity.selectDisabled": 0.4,
+        "space.selectTriggerStart": 12,
+        "size.selectChevron": 14,
+        "stroke.selectChevron": 1.5,
         "size.menuActionRow": 28,
         "size.menuActionRowCompact": 28,
         "size.menuPopupMin": 192,
@@ -582,7 +606,7 @@ const String elegantThemePackJson = r'''{
         "type.cardTitle.weight": 500.0
       },
       "shadows": {
-        "xs": "inset 0px 1px 0px 0px rgba(250 250 247 / 0.04) , 0px 0px 0px 1px rgba(0 0 0 / 0.4) , 0px 1px 3px 0px rgba(0 0 0 / 0.22)",
+        "xs": "inset 0px 1px 0px 0px rgba(250 250 247 / 0.045) , 0px 0px 0px 1px rgba(0 0 0 / 0.4) , 0px 1px 3px 0px rgba(0 0 0 / 0.22)",
         "sm": "inset 0px 1px 0px 0px rgba(250 250 247 / 0.05) , inset 0px 0px 0px 1px rgba(250 250 247 / 0.03) , 0px 0px 0px 1px rgba(0 0 0 / 0.45) , 0px 6px 6px -2px rgba(0 0 0 / 0.15) , 0px 2px 4px 0px rgba(0 0 0 / 0.25)",
         "md": "inset 0px 1px 0px 0px rgba(250 250 247 / 0.05) , inset 0px 0px 0px 1px rgba(250 250 247 / 0.03) , 0px 0px 0px 1px rgba(0 0 0 / 0.45) , 0px 10px 10px -4px rgba(0 0 0 / 0.16) , 0px 4px 6px -2px rgba(0 0 0 / 0.2) , 0px 1px 2px 0px rgba(0 0 0 / 0.25)",
         "lg": "inset 0px 1px 0px 0px rgba(250 250 247 / 0.06) , inset 0px 0px 0px 1px rgba(250 250 247 / 0.04) , 0px 0px 0px 1px rgba(0 0 0 / 0.55) , 0px 10px 20px -6px rgba(0 0 0 / 0.45) , 0px 4px 8px -3px rgba(0 0 0 / 0.35)",

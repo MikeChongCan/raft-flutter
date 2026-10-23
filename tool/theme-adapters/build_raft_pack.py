@@ -207,6 +207,11 @@ GEOMETRY_RAFT = {
 GEOMETRY_RAFT['size.selectTrigger'] = GEOMETRY_RAFT['size.control.lg']
 GEOMETRY_RAFT['type.selectValue.size'] = 15
 GEOMETRY_RAFT['type.selectValue.weight'] = 600
+GEOMETRY_RAFT['type.selectPlaceholder.weight'] = 500
+GEOMETRY_RAFT.update({
+    'opacity.selectDisabled': 1, 'space.selectTriggerStart': 14,
+    'size.selectChevron': 16, 'stroke.selectChevron': 2,
+})
 
 OPTIONS_RAFT = {
     'control.edge': 'inkBorder', 'sticker.ring': 'dieCut', 'emphasis.fill': 'solid',
@@ -253,6 +258,15 @@ def build() -> dict:
             if token.startswith(('palette-', 'deprecated-', 'color-')):
                 continue
             out.setdefault(token, value)
+        # Component aliases: values are existing roles, never new palette colors.
+        for target, source in {
+            'foreground-select': 'foreground',
+            'foreground-select-placeholder': 'foreground-hint',
+            'foreground-select-disabled': 'foreground-disabled',
+            'layer-select': 'layer-card', 'layer-select-disabled': 'fill-muted',
+            'line-select': 'line-strong', 'line-select-disabled': 'line-hairline',
+        }.items():
+            out[target] = out[source]
         return out
 
     def stack(prefix: str) -> list[str]:

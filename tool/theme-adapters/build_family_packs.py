@@ -78,7 +78,10 @@ GEOMETRY_ELEGANT = {
     # SettingsProfileCard source values, approved Cindy 318b1d17.
     'radius.settingsCard': 0,
     # Original Select trigger measurement: 32px, 14/20 medium in both families.
-    'size.selectTrigger': 32, 'type.selectValue.size': 14, 'type.selectValue.weight': 500,
+    'size.selectTrigger': 32, 'type.selectValue.size': 14, 'type.selectValue.weight': 500, 'type.selectPlaceholder.weight': 500,
+    # a57b9dab measured Select values; disabled:opacity-40 (not .5).
+    'opacity.selectDisabled': .4, 'space.selectTriggerStart': 12,
+    'size.selectChevron': 14, 'stroke.selectChevron': 1.5,
     # Pure MenuItem action rows; separate from selection menuRow (Cindy 4e51e70c).
     'size.menuActionRow': 28, 'size.menuActionRowCompact': 28, 'size.menuPopupMin': 192,
     # Current Web MessageInput / a57 legacy composer, approved Cindy 27a5a99c.
@@ -120,7 +123,10 @@ GEOMETRY_BRUTAL = {
     # SettingsProfileCard source values, approved Cindy 318b1d17.
     'radius.settingsCard': 0,
     # Original Select trigger measurement: 32px, 14/20 medium in both families.
-    'size.selectTrigger': 32, 'type.selectValue.size': 14, 'type.selectValue.weight': 500,
+    'size.selectTrigger': 32, 'type.selectValue.size': 14, 'type.selectValue.weight': 700, 'type.selectPlaceholder.weight': 700,
+    # a57b9dab measured Select values; disabled:opacity-40 (not .5).
+    'opacity.selectDisabled': .4, 'space.selectTriggerStart': 12,
+    'size.selectChevron': 14, 'stroke.selectChevron': 1.5,
     # Pure MenuItem action rows; separate from selection menuRow (Cindy 4e51e70c).
     'size.menuActionRow': 28, 'size.menuActionRowCompact': 28, 'size.menuPopupMin': 192,
     # Current Web MessageInput / a57 legacy composer, approved Cindy 27a5a99c.
@@ -303,10 +309,24 @@ def pack(pack_id: str, name_en: str, name_zh: str, values: dict,
         colors['layer-section-header-mobile'] = (colors['color-soft-signal']
                                    if spec['column'] == 'brutal'
                                    else colors['layer-panel'])
+        # Actual a57b9dab Select: muted Elegant text, solid Brutal text;
+        # disabled keeps the same colors under the 0.4 group opacity.
+        select_ink = 'foreground-strong' if spec['column'] == 'brutal' else 'foreground-muted'
+        select_fill = 'fill-muted' if spec['column'] == 'elegantDark' else 'layer-panel'
+        select_line = 'foreground-strong' if spec['column'] == 'brutal' else 'line-muted'
+        for target, source in {
+            'foreground-select': select_ink, 'foreground-select-placeholder': select_ink,
+            'foreground-select-disabled': select_ink,
+            'layer-select': select_fill, 'layer-select-disabled': select_fill,
+            'line-select': select_line, 'line-select-disabled': select_line,
+        }.items():
+            colors[target] = colors[source]
         # a57b9dab component_colors.g.dart stores this subtle dark switch
         # shadow in float sRGB. values.json's display-rounded .04 / #f3f3f7
         # changes antialiased switch-edge pixels, so retain the source precision.
         if spec['column'] == 'elegantDark':
+            # a57b9dab shadows.g.dart xs: preserve authored alpha 0.045.
+            shadows['xs'] = shadows['xs'].replace('/ 0.04)', '/ 0.045)', 1)
             colors['switch-shadow-bottom'] = (
                 'rgb(243.444675 243.444675 247.22862 / 0.039203)')
             # semantic_colors.g.dart:1111 uses the same calibrated float for

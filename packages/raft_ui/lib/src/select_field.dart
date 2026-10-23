@@ -12,6 +12,7 @@ import 'dismiss_scope.dart';
 import 'icons.dart';
 import 'localization.dart';
 import 'recipe_surface.dart';
+import 'raft/ui_tokens.dart';
 import 'recipes/button_variants.g.dart';
 import 'recipes/recipe_runtime.dart';
 import 'recipes/select.g.dart';
@@ -119,15 +120,20 @@ class _RaftSelectFieldState<T> extends State<RaftSelectField<T>> {
             if (widget.invalid) 'data-invalid',
           ],
         );
+        // The offset-shadow structure uses the original raised recipe; the
+        // other control structures retain its ring base before token binding.
+        final raised =
+            t.option('press.effect', or: 'overlay') == 'offsetShadow';
+        final recipeTheme = raised ? RaftRecipeTheme.brutal : t.recipeTheme;
         final button = RaftButtonRecipe.resolve(
-          theme: t.recipeTheme,
+          theme: recipeTheme,
           variant: RaftButtonRecipeVariant.outline,
           size: RaftButtonRecipeSize.md,
           states: states,
           tokens: rt,
         ).root;
         final sel = RaftSelectRecipe.resolve(
-          theme: t.recipeTheme,
+          theme: recipeTheme,
           states: states,
           tokens: rt,
         );
@@ -140,16 +146,30 @@ class _RaftSelectFieldState<T> extends State<RaftSelectField<T>> {
               'px',
             ),
             'line-height': const CssNum(20, 'px'),
+            'color': CssVar(
+              '--foreground-select',
+              null,
+              selected == null
+                  ? 'foregroundSelectPlaceholder'
+                  : !enabled
+                  ? 'foregroundSelectDisabled'
+                  : 'foregroundSelect',
+            ),
+            'background-color': CssVar(
+              '--layer-select',
+              null,
+              enabled ? 'layerSelect' : 'layerSelectDisabled',
+            ),
+            if (!enabled)
+              'opacity': CssNum(t.size('opacity.selectDisabled', fallback: .4)),
+            // Flat controls have no inherited inset sheen / outer ring. Raised
+            // controls keep their original shadow, independently of color.
+            if (!raised && t.option('control.sheen', or: 'none') == 'none')
+              'box-shadow': const CssKeyword('none'),
           },
           merged.targets,
           merged.classes,
           merged.tokens,
-        );
-        final svg = s.target(
-          "& [data-slot='select-trigger-content'] svg:not([class*='size-'])",
-        );
-        final stroke = s.target(
-          "& [data-slot='select-trigger-content'] svg:not([class*='stroke-'])",
         );
         return RaftRecipeBox(
           style: s,
@@ -160,7 +180,36 @@ class _RaftSelectFieldState<T> extends State<RaftSelectField<T>> {
           height:
               widget.height ??
               t.size('size.selectTrigger', fallback: s.height ?? 32),
+          padding: EdgeInsets.fromLTRB(
+            t.size('space.selectTriggerStart', fallback: 12),
+            0,
+            12,
+            0,
+          ),
           decorationOverride: (d) => d.copyWith(
+            boxShadow:
+                !raised &&
+                    t.option('control.sheen', or: 'none') == 'none' &&
+                    st.focusVisible
+                ? [
+                    for (final layer in t.ui.focusRing.layers)
+                      BoxShadow(color: layer.color, spreadRadius: layer.spread),
+                  ]
+                : d.boxShadow,
+            border: t.option('control.edge', or: 'ring') == 'inkBorder'
+                ? Border.all(
+                    color:
+                        t.colors[widget.invalid
+                            ? 'danger-strong'
+                            : enabled
+                            ? 'line-select'
+                            : 'line-select-disabled']!,
+                    // CSS at the source capture DPR floors its authored 1.5.
+                    width: t
+                        .size('stroke.control', fallback: 1)
+                        .floorToDouble(),
+                  )
+                : d.border,
             borderRadius: BorderRadius.circular(
               t.size('radius.control', fallback: 6),
             ),
@@ -173,7 +222,10 @@ class _RaftSelectFieldState<T> extends State<RaftSelectField<T>> {
                     style: TextStyle(
                       fontWeight:
                           FontWeight.values[((selected == null
-                                          ? 500
+                                          ? t.size(
+                                              'type.selectPlaceholder.weight',
+                                              fallback: 500,
+                                            )
                                           : t.size(
                                               'type.selectValue.weight',
                                               fallback: 500,
@@ -196,10 +248,8 @@ class _RaftSelectFieldState<T> extends State<RaftSelectField<T>> {
                 child: Builder(
                   builder: (context) => RaftIcon(
                     RaftGlyph.chevronDown,
-                    size: svg?.width ?? 14,
-                    strokeWidth: (stroke?['stroke-width'] is CssNum)
-                        ? (stroke!['stroke-width'] as CssNum).value
-                        : 1.5,
+                    size: t.size('size.selectChevron', fallback: 14),
+                    strokeWidth: t.size('stroke.selectChevron', fallback: 1.5),
                     color: DefaultTextStyle.of(context).style.color,
                   ),
                 ),
