@@ -2,6 +2,7 @@
 const Map<String, String> zhCatalogMessageHistory = <String, String>{
   'Local changes could not be saved on this device.': '本地更改无法保存到此设备。',
   'Local history changed while loading. Try again.': '加载期间本地历史记录已变化，请重试。',
+  'Message history could not be synced.': '无法同步消息历史记录。',
   'Copy diagnostics': '复制诊断信息',
   'Diagnostics copied': '诊断信息已复制',
   'Could not copy diagnostics. Try again.': '无法复制诊断信息，请重试。',
