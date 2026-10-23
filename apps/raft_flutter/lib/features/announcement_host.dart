@@ -151,10 +151,13 @@ class _AnnouncementHostState extends State<AnnouncementHost>
       }
     }
     final current = store.current;
+    // AnnouncementModal: a row delivered for another server is not presented.
     final visible =
         current != null &&
             current.pages.isNotEmpty &&
-            !gate.suppressed(serverId)
+            !gate.suppressed(serverId) &&
+            (current.deliveryServerId == null ||
+                current.deliveryServerId == serverId)
         ? current
         : null;
     if (visible?.id == _routeId) return;
