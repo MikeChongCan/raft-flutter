@@ -45,7 +45,7 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        final button = find.byType(RaftTimelineBottomButton);
+        final button = find.byType(RaftTimelineBottomButtonBody);
         expect(button, findsOneWidget);
         expect(find.text('Back to bottom'), findsOneWidget);
         final timeline = tester.getRect(
@@ -78,7 +78,7 @@ void main() {
         expect(w.messageDomain.state.hasNewer, false);
         expect(paintedMessage(tester, 'latest-7'), isNotNull);
         expect(find.text('Back to bottom'), findsNothing);
-        expect(find.byType(RaftTimelineBottomButton), findsNothing);
+        expect(find.byType(RaftTimelineBottomButtonBody), findsNothing);
         expect(tester.takeException(), isNull);
         await tester.pumpWidget(const SizedBox());
         await tester.pump();
@@ -131,7 +131,7 @@ void main() {
         final ScrollController viewport = state.viewport;
         // At the end of the thread there is no button.
         expect(state.distanceFromLatest(viewport.position), 0);
-        expect(find.byType(RaftTimelineBottomButton), findsNothing);
+        expect(find.byType(RaftTimelineBottomButtonBody), findsNothing);
 
         viewport.jumpTo(viewport.offset - 600);
         await tester.pumpAndSettle();
@@ -169,7 +169,7 @@ void main() {
         await tester.tap(find.text('1 new'));
         await tester.pumpAndSettle();
         expect(state.distanceFromLatest(viewport.position), 0);
-        expect(find.byType(RaftTimelineBottomButton), findsNothing);
+        expect(find.byType(RaftTimelineBottomButtonBody), findsNothing);
         expect(
           api.calls.skip(channelCalls).where((c) => c.path.contains('/c1')),
           isEmpty,

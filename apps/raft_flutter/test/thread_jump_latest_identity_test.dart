@@ -68,7 +68,7 @@ void main() {
       await tester.runAsync(() => Future<void>.delayed(Duration.zero));
       await tester.pumpAndSettle();
 
-      expect(find.byType(RaftTimelineBottomButton), findsNothing);
+      expect(find.byType(RaftTimelineBottomButtonBody), findsNothing);
       // Header: the parent label is built from these.
       expect(w.messageDomain.threadIdentity, isNotNull);
       expect(w.messageDomain.threadParentChannelId, 'c1');

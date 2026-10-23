@@ -85,7 +85,7 @@ void main() {
         viewport.jumpTo(viewport.offset - 2400);
         await tester.pumpAndSettle();
         final (anchor, before) = _anchor(tester, rows)!;
-        expect(find.byType(RaftTimelineBottomButton), findsOneWidget);
+        expect(find.byType(RaftTimelineBottomButtonBody), findsOneWidget);
         expect(find.text('Back to bottom'), findsOneWidget);
 
         Future<void> arrive(String id, int seq, String sender) async {
@@ -144,7 +144,7 @@ void main() {
         await tester.pumpAndSettle();
         expect(state.distanceFromLatest(viewport.position), 0);
         expect(find.text('My own message'), findsOneWidget);
-        expect(find.byType(RaftTimelineBottomButton), findsNothing);
+        expect(find.byType(RaftTimelineBottomButtonBody), findsNothing);
         expect(tester.takeException(), isNull);
         await tester.pumpWidget(const SizedBox());
         await tester.pump();
