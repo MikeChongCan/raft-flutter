@@ -703,7 +703,7 @@ class _ChannelSettingsState extends State<ChannelSettings> {
                 ),
         if (showStopAgents)
           RaftSheetAction(
-            'Stop Agents',
+            'Stop All Agents',
             RaftGlyph.circleStop,
             RaftButtonRecipeVariant.outline,
             stopAgents,
@@ -986,7 +986,7 @@ class _ChannelSettingsState extends State<ChannelSettings> {
             ),
       confirmLabel: all
           ? (toPublic ? 'Restore #all' : 'Hide #all')
-          : (toPublic ? 'Public' : 'Private'),
+          : (toPublic ? 'Make Public' : 'Make Private'),
       loadingLabel: 'Updating…',
       action: () async {
         setState(() {
@@ -1318,7 +1318,7 @@ class _ChannelSettingsState extends State<ChannelSettings> {
       if (showStopAgents)
         RaftOverflowAction(
           id: 'channel-overflow-stop-agents',
-          label: 'Stop Agents',
+          label: 'Stop All Agents',
           semanticLabel: 'Stop all agents in this channel',
           glyph: RaftGlyph.circleStop,
           onPressed: stopAgents,
@@ -1399,7 +1399,7 @@ class _ChannelSettingsState extends State<ChannelSettings> {
                                 'channel-settings-guest-visible-switch',
                               ),
                               title: 'Visible to Guests',
-                              description: 'Guests can discover and read this channel without joining.',
+                              description: 'Guests can read this channel without joining. If this server is public, it also appears on the public page.',
                               value: c.flag('guestVisible'),
                               onChanged: (v) => updateGuestPolicy(
                                 v
@@ -1415,8 +1415,8 @@ class _ChannelSettingsState extends State<ChannelSettings> {
                                 key: const ValueKey(
                                   'channel-settings-guest-joinable-switch',
                                 ),
-                                title: 'Guests can join',
-                                description: 'Guests can join to keep this channel in their sidebar and follow updates. Guest access remains read-only.',
+                                title: 'Allow Guests to join',
+                                description: 'Guests can join this channel themselves. It then stays in their sidebar, new messages show as unread, and they appear in its member list.',
                                 value: c.flag('guestJoinable'),
                                 onChanged: (v) => updateGuestPolicy(
                                   v

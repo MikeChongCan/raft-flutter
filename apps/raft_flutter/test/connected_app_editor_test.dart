@@ -225,7 +225,7 @@ void main() {
     await t.pumpAndSettle();
     expect(find.byKey(editor), findsOneWidget);
     expect(find.text('Client ID already exists'), findsOneWidget);
-    expect(find.text('Register app'), findsWidgets);
+    expect(find.text('Register App'), findsWidgets);
   });
 
   testWidgets('editing prefills the app, saves with PATCH and closes', (t) async {
@@ -288,7 +288,7 @@ void main() {
     await t.ensureVisible(button);
     await t.tap(button);
     await t.pumpAndSettle();
-    expect(find.text('REGENERATE SECRET FOR DB9 DRIVE?'), findsOneWidget);
+    expect(find.text('REGENERATE CLIENT SECRET FOR DB9 DRIVE?'), findsOneWidget);
     await t.tap(
       find.byKey(const ValueKey('connected-app-regenerate-secret-confirm-button')),
     );

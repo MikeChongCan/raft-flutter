@@ -367,7 +367,7 @@ void main() {
     expect(_field(tester), 'p/x');
     expect(
       find.text(
-        'Set by the hosting administrator for now. Pick a model to use another one.',
+        "Set by the cloud provider's administrator for now. Pick a model to use another one.",
       ),
       findsOneWidget,
     );

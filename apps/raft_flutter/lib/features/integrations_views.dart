@@ -118,7 +118,7 @@ String? _statusHint(String? status) => switch (status) {
   'publish_requested' || 'in_review' =>
     'Marketplace review is pending. You can edit this app while it waits, or delete it to withdraw the request.',
   'unpublish_requested' =>
-    'Marketplace offline review is pending. The app stays listed and installable until App Admin approves removal; approval revokes existing server installs and access.',
+    'Marketplace offline review is pending. The app stays listed and installable until App Admin approves removal. Approval preserves the source Server’s installation and access, but removes them on other Servers.',
   _ => null,
 };
 

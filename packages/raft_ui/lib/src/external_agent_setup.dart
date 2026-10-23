@@ -201,7 +201,7 @@ class RaftExternalAgentToken extends StatelessWidget {
             alignment: Alignment.centerLeft,
             child: _smOutline(
               context,
-              state.copied ? 'Copied' : 'Copy token',
+              state.copied ? 'Copied' : 'Copy Token',
               actions.onCopy,
               key: const ValueKey('external-token-copy'),
             ),
@@ -211,7 +211,7 @@ class RaftExternalAgentToken extends StatelessWidget {
             alignment: Alignment.centerLeft,
             child: _smOutline(
               context,
-              state.pending ? 'Generating token…' : 'Generate login token',
+              state.pending ? 'Generating token…' : 'Generate Login Token',
               busy ? null : actions.onGenerate,
               key: const ValueKey('external-token-generate'),
             ),
@@ -246,7 +246,7 @@ class RaftExternalAgentToken extends StatelessWidget {
                   ),
                   _smOutline(
                     context,
-                    'Refresh tokens',
+                    'Refresh Tokens',
                     state.loading || busy ? null : actions.onRefresh,
                     key: const ValueKey('external-token-refresh'),
                   ),
@@ -346,7 +346,7 @@ class RaftExternalAgentToken extends StatelessWidget {
                 children: [
                   _smOutline(
                     context,
-                    'Confirm revocation',
+                    'Confirm Revocation',
                     busy ? null : () => actions.onConfirmRevoke(c.id),
                     key: const ValueKey('external-token-confirm-revoke'),
                   ),
@@ -363,7 +363,7 @@ class RaftExternalAgentToken extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 child: _smOutline(
                   context,
-                  'Revoke token',
+                  'Revoke Token',
                   busy ? null : () => actions.onRevoke(c.id),
                   key: ValueKey('external-token-revoke-${c.id}'),
                 ),

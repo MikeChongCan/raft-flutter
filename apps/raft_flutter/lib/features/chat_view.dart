@@ -2172,7 +2172,7 @@ class _RaftChatViewState extends PhonePageState<RaftChatView> {
         if (!parent && !widget.thread)
           RaftMessageToolbarAction(
             key: ValueKey('message-thread-${message.id}'),
-            label: raftText(context, 'Reply in thread'),
+            label: raftText(context, 'Reply in Thread'),
             icon: const RaftMessageThreadGlyph(),
             onPressed: presentationActive
                 ? () => _messages.threads.openThread(message)
@@ -2214,7 +2214,7 @@ class _RaftChatViewState extends PhonePageState<RaftChatView> {
     return [
       if (!parent && !widget.thread && presentationActive)
         RaftMessageSemanticsAction(
-          raftText(context, 'Reply in thread'),
+          raftText(context, 'Reply in Thread'),
           (_) => _messages.threads.openThread(message),
         ),
       if (canReact)

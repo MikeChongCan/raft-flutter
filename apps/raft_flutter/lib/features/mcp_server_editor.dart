@@ -398,7 +398,7 @@ class _McpServerEditorState extends State<McpServerEditor> {
       child: RaftDialogCard(
         key: const ValueKey('mcp-server-editor'),
         title: creating
-            ? 'New MCP server'
+            ? 'Add MCP server'
             : name.text.isEmpty
             ? 'MCP server'
             : name.text,

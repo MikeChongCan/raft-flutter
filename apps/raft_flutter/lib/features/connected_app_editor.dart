@@ -562,7 +562,7 @@ class _ConnectedAppEditorState extends State<ConnectedAppEditor> {
     final confirmed = await RaftConfirmDialog.show(
       context,
       RaftConfirmDialog(
-        title: raftFormat(context, 'Regenerate secret for {name}?', {
+        title: raftFormat(context, 'Regenerate client secret for {name}?', {
           'name': app['name'],
         }),
         content: RaftInlineCodeMessage(
@@ -572,7 +572,7 @@ class _ConnectedAppEditorState extends State<ConnectedAppEditor> {
             ' will stop working immediately. The new secret is shown once after regeneration.',
           ),
         ),
-        confirmLabel: tr('Regenerate secret'),
+        confirmLabel: tr('Regenerate client secret'),
         loadingLabel: tr('Regenerating...'),
         confirmGlyph: RaftGlyph.alertTriangle,
         confirmVariant: RaftButtonRecipeVariant.primary,
@@ -620,10 +620,10 @@ class _ConnectedAppEditorState extends State<ConnectedAppEditor> {
           ),
           code: '${app['clientId']}',
           suffix: tr(
-            ' stays listed, installable, and usable by existing connections. If approved, every installed server will lose access and existing grants and tokens will be revoked.',
+            ' stays listed, installable, and usable by existing connections. If approved, the source Server keeps its installation and access. Other Servers lose their installations, and their grants and tokens are revoked.',
           ),
         ),
-        confirmLabel: tr('Request offline'),
+        confirmLabel: tr('Request offline review'),
         loadingLabel: tr('Requesting...'),
         confirmGlyph: RaftGlyph.upload,
         confirmVariant: RaftButtonRecipeVariant.danger,
@@ -864,7 +864,7 @@ class _ConnectedAppEditorState extends State<ConnectedAppEditor> {
     ];
     final showSecret = secret != null;
     return RaftConnectedAppEditorCard(
-      eyebrow: app == null ? 'Register app' : 'Edit app',
+      eyebrow: app == null ? 'Register App' : 'Edit app',
       name: app == null ? tr('New connected app') : '${app['name']}',
       description: 'Configure login, permissions, and events.',
       initials: integrationInitials(
@@ -879,7 +879,7 @@ class _ConnectedAppEditorState extends State<ConnectedAppEditor> {
         submitting
             ? 'Saving…'
             : app == null
-            ? 'Register app'
+            ? 'Register App'
             : 'Save',
       ),
       onSubmit:
@@ -1329,7 +1329,7 @@ class _ConnectedAppEditorState extends State<ConnectedAppEditor> {
       'publish_requested' || 'in_review' =>
         'Marketplace review is pending. You can edit this app while it waits, or delete it to withdraw the request.',
       'unpublish_requested' =>
-        'Marketplace offline review is pending. The app stays listed and installable until App Admin approves removal; approval revokes existing server installs and access.',
+        'Marketplace offline review is pending. The app stays listed and installable until App Admin approves removal. Approval preserves the source Server’s installation and access, but removes them on other Servers.',
       _ => null,
     };
     final shareable = status == 'private' || status == 'rejected';
@@ -1370,7 +1370,7 @@ class _ConnectedAppEditorState extends State<ConnectedAppEditor> {
                             ? 'Working...'
                             : shareLink != null
                             ? 'Regenerate'
-                            : 'Create link',
+                            : 'Create Link',
                         size: small,
                         onPressed: shareLoading ? null : createShare,
                       ),
@@ -1410,7 +1410,7 @@ class _ConnectedAppEditorState extends State<ConnectedAppEditor> {
               action: RaftSettingsRecipeButton(
                 label: savingId == '${app['id']}'
                     ? 'Requesting…'
-                    : 'Request publish',
+                    : 'Request Publish',
                 variant: RaftButtonRecipeVariant.accent,
                 size: small,
                 onPressed: whenToUseTooLong || savingId == '${app['id']}'
@@ -1421,7 +1421,7 @@ class _ConnectedAppEditorState extends State<ConnectedAppEditor> {
           ),
         if (status == 'published')
           RaftAppEditorCallout(
-            'This app is published in the Marketplace. Offline review is kept in Danger zone because approval revokes active installs and access.',
+            'This app is published in the Marketplace. Offline approval preserves the source Server’s installation and access, but removes installations and access on other Servers.',
             tone: RaftAppEditorCalloutTone.success,
           ),
       ],
@@ -1453,7 +1453,7 @@ class _ConnectedAppEditorState extends State<ConnectedAppEditor> {
               key: const ValueKey('connected-app-regenerate-secret-button'),
               label: regenerating
                   ? 'Regenerating...'
-                  : 'Regenerate client secret',
+                  : 'Regenerate Client Secret',
               variant: RaftButtonRecipeVariant.primary,
               size: small,
               onPressed: submitting || regenerating ? null : confirmRegenerate,
@@ -1469,7 +1469,7 @@ class _ConnectedAppEditorState extends State<ConnectedAppEditor> {
               description:
                   'Requesting offline review keeps the app live until App Admin approves removal.',
               action: RaftSettingsRecipeButton(
-                label: 'Request offline',
+                label: 'Request offline review',
                 size: small,
                 onPressed: confirmOffline,
               ),

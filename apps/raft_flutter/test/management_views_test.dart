@@ -82,7 +82,7 @@ void _appRoutes(
 }
 
 Future<void> register(WidgetTester tester) async {
-  await tester.tap(find.text('Register app'));
+  await tester.tap(find.text('Register App'));
   await tester.pumpAndSettle();
   await tester.enterText(
     find.byKey(const ValueKey('connected-app-name')),
@@ -496,7 +496,7 @@ void main() {
       host(SingleChildScrollView(child: IntegrationsView(controller: w))),
     );
     await tester.pumpAndSettle();
-    expect(find.text('Register app'), findsOneWidget);
+    expect(find.text('Register App'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('connected-apps-tab-my-apps')),
       findsOneWidget,
@@ -818,7 +818,7 @@ void main() {
       await tester.pumpAndSettle();
       // ProviderConnectionsSettings renders nothing while the flag is off.
       expect(find.byType(RaftProviderConnectionsFrame), findsNothing);
-      expect(find.text('Add connection'), findsNothing);
+      expect(find.text('Add provider connection'), findsNothing);
       expect(a.calls.any((c) => c.path == '/provider-connections'), false);
       expect(a.calls.any((c) => c.path == '/feature-flags/evaluate'), true);
     },
@@ -1035,7 +1035,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(w.client.generation, generation);
       expect(find.text('private-one-time'), findsNothing);
-      expect(find.text('Register app'), findsNothing);
+      expect(find.text('Register App'), findsNothing);
     },
   );
   testWidgets(

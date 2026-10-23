@@ -674,7 +674,7 @@ extension _SidebarContextMenus on _WorkspaceViewState {
         if (custom != null)
           RaftSidebarMenuItem(
             itemKey: const ValueKey('sidebar-menu-rename-section'),
-            label: tr('Rename / change icon…'),
+            label: tr('Edit section…'),
             glyph: RaftGlyph.pencil,
             onPressed: () {
               close();

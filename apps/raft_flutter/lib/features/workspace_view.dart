@@ -2927,7 +2927,7 @@ class _WorkspaceViewState extends State<WorkspaceView>
         if (w.can('inviteMembers'))
           RaftServerMenuAction(
             tone: RaftServerMenuActionTone.invite,
-            label: tr('Invite human'),
+            label: tr('Invite Human'),
             glyph: RaftGlyph.userPlus,
             onPressed: () => unawaited(inviteFromServerMenu(scope)),
           ),

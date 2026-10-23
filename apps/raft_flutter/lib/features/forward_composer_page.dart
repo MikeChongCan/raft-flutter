@@ -577,7 +577,7 @@ class _ForwardComposerPageState extends State<ForwardComposerPage> {
       return [
         RaftForwardSearchStatus(
           message: raftText(context, "Couldn't search destinations."),
-          retryLabel: raftText(context, 'Try again'),
+          retryLabel: raftText(context, 'Try Again'),
           onRetry: () => changedSearch(search.text),
         ),
       ];

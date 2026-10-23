@@ -498,7 +498,7 @@ class _CreateAgentDialogState extends State<CreateAgentDialog> {
         children: [
           RaftAgentDialogButton(label: 'Cancel', onPressed: close),
           RaftAgentDialogButton(
-            label: 'Connect a Computer',
+            label: 'Add Computer',
             primary: true,
             onPressed: () {
               Navigator.pop(context);
@@ -577,7 +577,7 @@ class _CreateAgentDialogState extends State<CreateAgentDialog> {
           status: RaftAgentBannerStatus.info,
           title: 'Connect a computer first',
           description: 'Cindy runs on your computer, and there is none connected yet. Once one is online, Raft detects the runtimes on it and this step fills itself in.',
-          action: 'Connect a Computer',
+          action: 'Add Computer',
           onAction: widget.onConnectComputer,
         ),
         onCreate: null,

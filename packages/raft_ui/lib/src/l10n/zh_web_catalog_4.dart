@@ -102,7 +102,7 @@ const Map<String, String> zhCatalogWeb4 = <String, String>{
   "Generate a token for this agent, then use it with Raft CLI login or pass it as the credential to the Raft SDK.":
       "为此 Agent 生成 token，然后用于 Raft CLI 登录，或作为 credential 传给 Raft SDK。",
   "Generate image": "生成图片",
-  "Generate login token": "生成登录 token",
+  "Generate Login Token": "生成登录 token",
   "Generating token…": "正在生成 token…",
   "Generating…": "生成中…",
   "Get notified when they finish or need you.": "完成或需要你时接收通知。",
@@ -140,11 +140,11 @@ const Map<String, String> zhCatalogWeb4 = <String, String>{
       "访客权限为只读。你可以阅读并关注此讨论串，但不能回复或添加回应。",
   "Guest access is read-only. You can read and follow updates, but you cannot post or react.":
       "访客权限为只读。你可以阅读并关注更新，但不能发言或添加回应。",
-  "Guests can discover and read this channel without joining.":
-      "访客无需加入即可发现并阅读此频道。",
-  "Guests can join": "访客可加入",
-  "Guests can join to keep this channel in their sidebar and follow updates. Guest access remains read-only.":
-      "访客可通过加入将频道保留在侧栏并关注更新；访客权限仍为只读。",
+  "Guests can read this channel without joining. If this server is public, it also appears on the public page.":
+      "访客无需加入即可阅读此频道。服务器公开时，它也会出现在公开页上。",
+  "Allow Guests to join": "允许访客加入",
+  "Guests can join this channel themselves. It then stays in their sidebar, new messages show as unread, and they appear in its member list.":
+      "访客可以自行加入此频道。加入后频道会留在他们的侧栏，新消息显示为未读，他们也会出现在频道成员里。",
   "Guests can't run channel actions.": "访客不能执行频道里的操作。",
   "HTML preview": "HTML 预览",
   "HTML region": "HTML 区域",
@@ -277,7 +277,6 @@ const Map<String, String> zhCatalogWeb4 = <String, String>{
   "Invite by Email": "通过邮箱邀请",
   "Invite error": "邀请出错",
   "Invite expiry": "邀请有效期",
-  "Invite human": "邀请成员",
   "Invite link unavailable": "邀请链接不可用",
   "Invite resent": "已重新发送",
   "Invite server slug is required": "请填写受邀服务器的 slug",
@@ -396,7 +395,7 @@ const Map<String, String> zhCatalogWeb4 = <String, String>{
   "Language & Region": "语言与区域",
   "Large": "大",
   "Large · 16 px": "大 · 16 像素",
-  "Largest Channels": "最大的频道",
+  "Largest channels": "最大的频道",
   "Last 30 Days": "最近 30 天",
   "Last 7 Days": "最近 7 天",
   "Last lines of this machine's runner log — free text, including lines from other agents on it. Size-bounded; visible to everyone who can read this report, including agents. Secret masking covers known credential shapes only — a floor, not a guarantee. Requires the runtime transcript above.":
@@ -408,7 +407,7 @@ const Map<String, String> zhCatalogWeb4 = <String, String>{
       "以更高的单 token 成本换取更快速度启动此运行时。",
   "Learn more": "了解更多",
   "Leave": "离开",
-  "Leave Channel": "退出频道",
+  "Leave Channel": "离开频道",
   "Leave Server": "离开服务器",
   "Leave a channel the agent has joined (slock channel leave).":
       "离开 Agent 已加入的频道（slock channel leave）。",
@@ -533,8 +532,8 @@ const Map<String, String> zhCatalogWeb4 = <String, String>{
   "Markdown preview": "Markdown 预览",
   "Marketplace": "市场",
   "Marketplace lifecycle": "市场生命周期",
-  "Marketplace offline review is pending. The app stays listed and installable until App Admin approves removal; approval revokes existing server installs and access.":
-      "市场下架审核进行中。在应用管理员批准移除之前，应用会保持在列表中且可安装；一旦批准，现有服务器的安装和访问权限都会被撤销。",
+  "Marketplace offline review is pending. The app stays listed and installable until App Admin approves removal. Approval preserves the source Server’s installation and access, but removes them on other Servers.":
+      "市场下架审核进行中。在应用管理员批准移除之前，应用会保持在列表中且可安装。批准后保留来源 Server 的安装和访问权限，撤销其他 Server 的安装和访问权限。",
   "Marketplace publish request": "市场发布申请",
   "Marketplace review is pending. You can edit this app while it waits, or delete it to withdraw the request.":
       "市场审核进行中。等待期间你仍可编辑此应用，也可以删除它以撤回申请。",

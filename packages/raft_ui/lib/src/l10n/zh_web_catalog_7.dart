@@ -24,7 +24,6 @@ const Map<String, String> zhCatalogWeb7 = <String, String>{
   "Start": "启动",
   "Start Agent": "启动 Agent",
   "Start Claude Code with the Raft channel": "启动带 Raft 频道的 Claude Code",
-  "Migrate": "迁移",
   "Start building with agents.": "开始与 Agent 一起构建。",
   "Start on new computer": "在新计算机上启动",
   "Start one of your computers": "启动其中任意一台计算机",
@@ -341,8 +340,8 @@ const Map<String, String> zhCatalogWeb7 = <String, String>{
       "此应用不能：以你的身份发消息 · 以该 Agent 的身份发言 · 读取你的消息 · 代你执行操作。它只能向你选定的那一个 Agent 投递事件/通知负载。",
   "This app is not registered for any Raft Server you can access.":
       "该 App 未在你可访问的任何 Raft Server 上注册。",
-  "This app is published in the Marketplace. Offline review is kept in Danger zone because approval revokes active installs and access.":
-      "此应用已发布到市场。下架审核放在危险区，因为一旦批准会撤销正在使用的安装和访问权限。",
+  "This app is published in the Marketplace. Offline approval preserves the source Server’s installation and access, but removes installations and access on other Servers.":
+      "此应用已发布到市场。下架批准后，来源 Server 的安装和访问权限会保留，其他 Server 的安装和访问权限会被撤销。",
   "This app requests access to the agent directory in your selected Server, along with the other permissions listed below.":
       "此应用请求读取所选 Server 的 Agent 列表，以及下方列出的其他权限。",
   "This app requests new data access. Review the new data groups before approving the update.":

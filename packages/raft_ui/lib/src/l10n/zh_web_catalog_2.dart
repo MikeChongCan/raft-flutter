@@ -30,7 +30,7 @@ const Map<String, String> zhCatalogWeb2 = <String, String>{
       "允许 Agent 为你准备快速提交卡片。提交权限始终属于 human，Agent 不会自行执行该操作。",
   "Allow this agent to prepare quick-commit action cards (channel / agent / member additions) for you to click and commit.":
       "允许此 Agent 准备快速提交 action cards（频道 / Agent / 成员添加），供你点击并提交。",
-  "Allow visitors to join as Guest": "允许访客以 Guest 身份加入",
+  "Allow visitors to join as Guest": "允许已登录的用户以访客身份加入",
   "Allowed channels, DMs, and tasks. No server-level settings, channels, or membership management.":
       "允许的频道、私信与任务。无服务器级设置、频道或成员管理权限。",
   "Already have an account? <signin>Sign in</signin>":
@@ -320,7 +320,6 @@ const Map<String, String> zhCatalogWeb2 = <String, String>{
   "Checking…": "检查中…",
   "Checkout summary": "结账摘要",
   "Choose": "选择",
-  "Choose Avatar": "选择头像",
   "Choose a Raft Server where this app is available.":
       "请选择一个可使用该 App 的 Raft Server。",
   "Choose a computer other than the agent's current computer.":
@@ -484,7 +483,7 @@ const Map<String, String> zhCatalogWeb2 = <String, String>{
   "Confirm disconnect": "确认解绑",
   "Confirm new password": "确认新密码",
   "Confirm password": "确认密码",
-  "Confirm revocation": "确认撤销",
+  "Confirm Revocation": "确认撤销",
   "Confirm sign-in": "确认登录",
   "Confirm your identity": "确认你的身份",
   "Confirming the GitHub connection…": "正在确认 GitHub 连接…",
@@ -493,7 +492,6 @@ const Map<String, String> zhCatalogWeb2 = <String, String>{
   "Connect Slack": "连接 Slack",
   "Connect Slack and choose channel mappings. Raft verifies the bridge and enables delivery for you.":
       "连接 Slack 并选择频道映射；Raft 会自动验证桥接并启用消息传递。",
-  "Connect a Computer": "连接 Computer",
   "Connect a Slack workspace": "连接 Slack 工作区",
   "Connect a computer": "连接一台计算机",
   "Connect a computer first": "请先连接一台 Computer",

@@ -729,7 +729,7 @@ void main() {
     expect(client.calls.where((c) => c.$1 == 'PATCH'), isEmpty);
   });
 
-  group('Move to another computer', () {
+  group('Move to another Computer', () {
     Future<_Client> profile(
       WidgetTester tester, {
       required bool flag,
@@ -769,7 +769,9 @@ void main() {
 
     bool moveEnabled(WidgetTester tester) =>
         tester
-            .widget<RaftButton>(find.widgetWithText(RaftButton, 'Migrate'))
+            .widget<RaftButton>(
+              find.widgetWithText(RaftButton, 'Move to another Computer'),
+            )
             .onPressed !=
         null;
 
@@ -788,7 +790,10 @@ void main() {
       expect(find.text('Migrating to m2'), findsOneWidget);
       expect(find.text('Transferring workspace to m2.'), findsOneWidget);
       // Web: the progress block owns the only action (Cancel) while it runs.
-      expect(find.widgetWithText(RaftButton, 'Migrate'), findsNothing);
+      expect(
+        find.widgetWithText(RaftButton, 'Move to another Computer'),
+        findsNothing,
+      );
       expect(find.widgetWithText(RaftButton, 'Cancel'), findsOneWidget);
     });
 

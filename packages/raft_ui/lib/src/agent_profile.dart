@@ -2731,7 +2731,7 @@ class RaftRoleField extends StatelessWidget {
             RaftInlineIconButton(
               key: helpKey,
               glyph: RaftGlyph.circleHelp,
-              tooltip: raftText(context, 'Role permissions'),
+              tooltip: raftText(context, 'Human roles'),
               onPressed: onHelp,
             ),
             if (onEdit != null && editor == null) ...[
@@ -2879,7 +2879,7 @@ class _ProfileAvatarActionState extends State<_ProfileAvatarAction> {
   bool hovered = false;
   @override
   Widget build(BuildContext context) => RaftTooltip(
-    message: raftText(context, widget.label ?? 'Choose Avatar'),
+    message: raftText(context, widget.label ?? 'Change avatar'),
     child: FocusableActionDetector(
       mouseCursor: SystemMouseCursors.click,
       actions: {
@@ -2892,7 +2892,7 @@ class _ProfileAvatarActionState extends State<_ProfileAvatarAction> {
       },
       child: Semantics(
         button: true,
-        label: raftText(context, widget.label ?? 'Choose Avatar'),
+        label: raftText(context, widget.label ?? 'Change avatar'),
         child: RaftHoverRegion(
           onEnter: (_) => setState(() => hovered = true),
           onExit: (_) => setState(() => hovered = false),

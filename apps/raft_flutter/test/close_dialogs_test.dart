@@ -831,7 +831,7 @@ void registerCloseDialogTests(TestPart part) {
     'sos-dialog': (t, size) => fromChannelSettings(
       t,
       size,
-      'Stop Agents',
+      'Stop All Agents',
       const ValueKey('channel-sos-dialog'),
     ),
     'add-members': (t, size) => inWorkspace(

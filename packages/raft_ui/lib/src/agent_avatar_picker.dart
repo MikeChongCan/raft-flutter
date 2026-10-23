@@ -81,8 +81,8 @@ class RaftAgentAvatarPicker extends StatelessWidget {
                       Expanded(
                         child: RaftCssText(
                           t.brutal
-                              ? raftText(context, 'Choose Avatar').toUpperCase()
-                              : raftText(context, 'Choose Avatar'),
+                              ? raftText(context, 'Change avatar').toUpperCase()
+                              : raftText(context, 'Change avatar'),
                           style: slots.title.textStyle(rt),
                         ),
                       ),

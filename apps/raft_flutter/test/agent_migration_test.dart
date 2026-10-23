@@ -222,10 +222,13 @@ Widget _host(
   ),
 );
 
-final _migrateButton = find.widgetWithText(RaftButton, 'Migrate');
+final _migrateButton = find.widgetWithText(
+  RaftButton,
+  'Move to another Computer',
+);
 final _dialogMigrate = find.descendant(
   of: find.byType(RaftFormDialog),
-  matching: find.widgetWithText(RaftButton, 'Migrate'),
+  matching: find.widgetWithText(RaftButton, 'Move to another Computer'),
 );
 
 void main() {
@@ -406,7 +409,7 @@ void main() {
         now: () => after,
         locale: const Locale('zh'),
       );
-      await tester.tap(find.widgetWithText(RaftButton, '迁移'));
+      await tester.tap(find.widgetWithText(RaftButton, '迁移到另一台计算机'));
       await tester.pumpAndSettle();
       expect(find.text('升级至 PRO 以迁移 AGENT'), findsOneWidget);
       expect(find.textContaining('升级后，可以把 Agent 连同工作区'), findsOneWidget);
@@ -623,7 +626,7 @@ void main() {
       );
       expect(find.text('Migration ID'), findsNothing);
       expect(find.text('Cancel'), findsNothing);
-      expect(find.text('Migrate'), findsNothing);
+      expect(find.text('Move to another Computer'), findsNothing);
     });
 
     testWidgets('cancellation attention shows the title, code and reference', (
@@ -656,7 +659,7 @@ void main() {
         findsOneWidget,
       );
       expect(find.text('Migration ID'), findsNothing);
-      expect(find.text('Migrate'), findsOneWidget);
+      expect(find.text('Move to another Computer'), findsOneWidget);
     });
 
     testWidgets('the panel uses the Web zh-cn copy', (tester) async {
@@ -852,7 +855,7 @@ void main() {
       );
       expect(find.text('Open computer settings'), findsOneWidget);
       // The submit action now reads Try again.
-      expect(find.widgetWithText(RaftButton, 'Try again'), findsOneWidget);
+      expect(find.widgetWithText(RaftButton, 'Try Again'), findsOneWidget);
       expect(_dialogMigrate, findsNothing);
     });
 
@@ -897,7 +900,7 @@ void main() {
       tester,
     ) async {
       await mount(tester);
-      expect(find.text('Migrate'), findsNothing);
+      expect(find.text('Move to another Computer'), findsNothing);
       await tester.pumpWidget(const SizedBox());
       await mount(tester, state: 'failed');
       expect(find.text('Try migration again'), findsOneWidget);
@@ -915,7 +918,7 @@ void main() {
         findsOneWidget,
       );
       expect(find.textContaining('Boom internal detail'), findsNothing);
-      expect(find.text('Migrate'), findsOneWidget);
+      expect(find.text('Move to another Computer'), findsOneWidget);
     });
   });
 }

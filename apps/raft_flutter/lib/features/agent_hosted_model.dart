@@ -343,7 +343,7 @@ class _AgentHostedRuntimeModelState extends State<AgentHostedRuntimeModel> {
           RaftCssText(
             raftText(
               context,
-              'Set by the hosting administrator for now. Pick a model to use another one.',
+              "Set by the cloud provider's administrator for now. Pick a model to use another one.",
             ),
             style: muted,
           ),

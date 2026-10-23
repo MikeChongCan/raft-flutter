@@ -130,7 +130,9 @@ class _RaftResetAgentDialogState extends State<RaftResetAgentDialog> {
     final strong = t.brutal ? Colors.black : t.strong;
     return RaftConfirmDialog(
       surfaceKey: const ValueKey('agent-dialog'),
-      title: raftFormat(context, 'Restart {name}', {'name': widget.agentName}),
+      title: raftFormat(context, 'Restart or reset {name}', {
+        'name': widget.agentName,
+      }),
       maxWidth: 448,
       confirmLabel: raftText(context, selected.$2),
       loadingLabel: raftText(context, 'Restarting…'),

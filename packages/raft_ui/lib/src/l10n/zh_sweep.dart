@@ -42,7 +42,7 @@ const Map<String, String> zhCatalogSweep = <String, String>{
   "Are you sure you want to stop \"{name}\"? The agent will stop processing messages.": "确定要停止“{name}”吗？该 Agent 将停止处理消息。",
   "Connected as {email}": "已连接为 {email}",
   "Remove invitee {index}": "移除第 {index} 位受邀人",
-  "Restart {name}": "重新启动 {name}",
+  "Restart or reset {name}": "重新启动或重置 {name}",
   "Description must be {count} characters or fewer.": "描述不能超过 {count} 个字符。",
   "I am getting {serverName} ready.": "正在为你准备 {serverName}。",
   "Message #{channel}": "发消息到 #{channel}",

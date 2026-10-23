@@ -57,11 +57,11 @@ class _AgentMigrationStartDialogState extends State<AgentMigrationStartDialog> {
       color: t.strong,
     );
     return RaftFormDialog(
-      title: 'Move to another computer',
+      title: 'Move to another Computer',
       fields: const [],
       submitLabel: failure?.recoveryOpenComputers == true
-          ? 'Try again'
-          : 'Migrate',
+          ? 'Try Again'
+          : 'Move to another Computer',
       busyLabel: 'Starting migration…',
       submitEnabled: target.isNotEmpty,
       extra: Column(

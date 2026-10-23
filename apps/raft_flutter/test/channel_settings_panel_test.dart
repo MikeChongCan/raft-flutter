@@ -443,7 +443,7 @@ void main() {
       api.routes['PATCH /channels/c1'] = (_) => _row(type: 'private');
       await press(t, 'channel-settings-visibility-action');
       expect(find.text('MAKE CHANNEL PRIVATE'), findsOneWidget);
-      await confirm(t, 'Private');
+      await confirm(t, 'Make Private');
       final patch = _writes(api).single;
       expect(patch.path, '/channels/c1');
       expect(patch.data, {'visibility': 'private'});

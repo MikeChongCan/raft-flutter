@@ -189,7 +189,12 @@ void main() {
         expect(tester.getSize(_key('mcp-server-editor')).width, 672);
       }
       expect(
-        find.textContaining(RegExp(r'^New MCP server$', caseSensitive: false)),
+        find.descendant(
+          of: _key('mcp-server-editor'),
+          matching: find.textContaining(
+            RegExp(r'^Add MCP server$', caseSensitive: false),
+          ),
+        ),
         findsOneWidget,
       );
     }

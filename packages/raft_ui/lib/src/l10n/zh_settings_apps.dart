@@ -2,7 +2,7 @@
 // English source text is the key. Part of `raftChinese` (merged by the generated zh_index.g.dart).
 const Map<String, String> zhCatalogSettingsApps = <String, String>{
   // Settings > Applications > app editor (SettingsPanel.tsx IntegrationsSection).
-  "Regenerate secret for {name}?": "确定要为 {name} 重新生成密钥吗？",
+  "Regenerate client secret for {name}?": "确定要为 {name} 重新生成客户端密钥吗？",
   "Request offline review for {name}?": "确定要为 {name} 申请下架审核吗？",
   "Delete {name}?": "删除 {name}？",
   "{resource} · read": "{resource} · 只读",
@@ -17,8 +17,7 @@ const Map<String, String> zhCatalogSettingsApps = <String, String>{
       " 现有的客户端密钥将立即失效。新密钥只会在重新生成后显示一次。",
   "App Admin must approve before this app is removed from the public marketplace. Until then ":
       "需经应用管理员批准，此应用才会从公开市场移除。在此之前，",
-  " stays listed, installable, and usable by existing connections. If approved, every installed server will lose access and existing grants and tokens will be revoked.":
-      " 仍会保持在列表中、可安装，并可被现有连接使用。一旦批准，所有已安装的服务器都会失去访问权限，现有授权和令牌也会被撤销。",
+  " stays listed, installable, and usable by existing connections. If approved, the source Server keeps its installation and access. Other Servers lose their installations, and their grants and tokens are revoked.": " 仍会保持在列表中、可安装，并可被现有连接使用。批准后，来源 Server 的安装和访问权限会保留；其他 Server 的安装会被移除，其授权和令牌会被撤销。",
   "{count} task update": "{count} 条任务更新",
   "{count} task updates": "{count} 条任务更新",
   "{count} reminder update": "{count} 条提醒更新",

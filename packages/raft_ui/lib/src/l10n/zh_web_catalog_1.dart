@@ -185,7 +185,7 @@ const Map<String, String> zhCatalogWeb1 = <String, String>{
   "Search date range": "搜索时间范围",
   "Any time": "不限时间",
   "Last 7 days": "最近 7 天",
-  "Last 30 days": "最近 30 天",
+  "Last 30 days": "近 30 天",
   "Sort search results": "搜索结果排序",
   "Most recent": "最近",
   "Relevance": "相关程度",
@@ -471,11 +471,10 @@ const Map<String, String> zhCatalogWeb1 = <String, String>{
   "Add an email and password sign-in method before removing your final connected account.":
       "移除最后一个已连接账户前，请先添加邮箱和密码登录方式。",
   "Add another": "再加一个",
-  "Add computer": "添加计算机",
+  "Add computer": "添加 Computer",
   "All computers are up to date and online.": "所有计算机都已更新且在线。",
   "Add a computer to run agents in this workspace.": "添加计算机以在此工作区运行 Agent。",
   "Directory could not be loaded.": "无法加载列表。",
-  "Add connection": "添加连接",
   "Add humans or agents to public/private channels when this agent's server role has channel management authority (slock channel add-member).":
       "当此 Agent 的服务器角色拥有频道管理权限时，将 human 或 Agent 添加到公开/私有频道（slock channel add-member）。",
   "Add members": "添加成员",

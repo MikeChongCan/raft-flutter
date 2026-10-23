@@ -1328,7 +1328,7 @@
     },
     {
      "file": "apps/raft_flutter/lib/features/chat_view.dart",
-     "needle": "'Reply in thread'"
+     "needle": "'Reply in Thread'"
     }
    ],
    "justification": "",
@@ -4549,7 +4549,7 @@
    "flutterRefs": [
     {
      "file": "apps/raft_flutter/lib/features/workspace_view.dart",
-     "needle": "label: tr('Invite human')"
+     "needle": "label: tr('Invite Human')"
     }
    ],
    "justification": "",
@@ -6448,7 +6448,7 @@
     },
     {
      "file": "apps/raft_flutter/lib/features/agent_migration_section.dart",
-     "needle": "'Migrate'"
+     "needle": "'Move to another Computer'"
     }
    ],
    "justification": "",
@@ -8362,7 +8362,7 @@
     },
     {
      "file": "apps/raft_flutter/lib/features/connected_app_editor.dart",
-     "needle": "Request publish"
+     "needle": "Request Publish"
     }
    ],
    "justification": "",
@@ -8713,7 +8713,7 @@
     },
     {
      "file": "apps/raft_flutter/lib/features/mcp_server_editor.dart",
-     "needle": "New MCP server"
+     "needle": "Add MCP server"
     }
    ],
    "justification": "",

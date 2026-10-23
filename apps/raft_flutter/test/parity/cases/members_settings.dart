@@ -341,7 +341,7 @@ final ParityCase _noComputer = ParityCase(
   notes:
       'showManagedAgentForm with zero computers → CreateAgentDialog '
       'needs-computer branch: DialogCard, info Banner "Connect a computer '
-      'first", Cancel / Connect a Computer.',
+      'first", Cancel / Add Computer.',
   settle: const Duration(milliseconds: 400),
   build: (ctx) {
     final fixture = MsFixture(ctx);

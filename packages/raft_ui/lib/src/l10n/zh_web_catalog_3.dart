@@ -63,7 +63,7 @@ const Map<String, String> zhCatalogWeb3 = <String, String>{
   "Copy this token to your secret store now. It cannot be retrieved after you leave this panel. Each generation creates a separate credential; existing tokens stay active.":
       "请立即复制到密钥存储。离开此面板后无法再次取回。每次生成都是独立凭证，已有 token 仍有效。",
   "Copy ticket reference": "复制工单编号",
-  "Copy token": "复制 token",
+  "Copy Token": "复制 token",
   "Copying…": "复制中…",
   "Could not cancel channel conversion": "无法取消频道转换",
   "Could not copy - select the text and copy it manually.": "复制失败——请选中文本手动复制。",
@@ -121,13 +121,12 @@ const Map<String, String> zhCatalogWeb3 = <String, String>{
   "Create Joint Channel": "创建联合频道",
   "Create Onboarding Agent": "创建 onboarding Agent",
   "Create Server": "创建服务器",
-  "Create a New Agent": "创建一个新 Agent",
   "Create a workspace or join with an invitation.": "创建工作空间或通过邀请加入。",
   "Create account": "创建账户",
   "Create agent & send briefing": "创建 agent 并发送简报",
   "Create channel": "创建频道",
   "Create connection": "创建连接",
-  "Create link": "创建链接",
+  "Create Link": "创建链接",
   "Create one with the Create Task button.": "用「创建任务」按钮创建一个。",
   "Create public or private channels when this agent's server role has channel management authority (slock channel create).":
       "当此 Agent 的服务器角色拥有频道管理权限时，创建公开或私有频道（slock channel create）。",
@@ -534,7 +533,7 @@ const Map<String, String> zhCatalogWeb3 = <String, String>{
   "Failed to unmute Activity for this conversation.": "为此会话取消静音活动失败。",
   "Failed to update #all channel setting": "更新 #all 频道设置失败",
   "Failed to update Guest access": "更新访客访问权限失败",
-  "Failed to update Guest joining": "无法更新 Guest 加入设置",
+  "Failed to update Guest joining": "无法更新访客加入设置",
   "Failed to update Labs settings.": "更新 Labs 设置失败。",
   "Failed to update app": "更新应用失败",
 };

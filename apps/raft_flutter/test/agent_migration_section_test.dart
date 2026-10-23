@@ -124,10 +124,10 @@ void main() {
     opened = [];
   });
 
-  final migrate = find.widgetWithText(RaftButton, 'Migrate');
+  final migrate = find.widgetWithText(RaftButton, 'Move to another Computer');
   final dialogMigrate = find.descendant(
     of: find.byType(RaftFormDialog),
-    matching: find.widgetWithText(RaftButton, 'Migrate'),
+    matching: find.widgetWithText(RaftButton, 'Move to another Computer'),
   );
   final target = find.byKey(const ValueKey('migration-target-computer'));
 
@@ -171,7 +171,14 @@ void main() {
     await mount(tester);
     await tester.tap(migrate);
     await tester.pumpAndSettle();
-    expect(find.text('Move to another computer'), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(RaftFormDialog),
+        matching: find.text('Move to another Computer'),
+      ),
+      findsNWidgets(2),
+      reason: 'the dialog title and its confirm button',
+    );
     expect(
       find.text(
         'Your agent will stop while it migrates, then start again on the new computer.',
@@ -230,7 +237,11 @@ void main() {
     await tester.tap(dialogMigrate);
     await tester.pump(const Duration(milliseconds: 50));
     expect(find.text('Starting migration…'), findsOneWidget);
-    expect(find.text('Migrate'), findsOneWidget, reason: 'the section action');
+    expect(
+      find.text('Move to another Computer'),
+      findsNWidgets(2),
+      reason: 'the section action and the dialog title',
+    );
     transport.gate!.complete();
     await tester.pumpAndSettle();
     expect(transport.posted, ['c2']);

@@ -916,7 +916,7 @@ class _AgentDetailPanelState extends State<AgentDetailPanel> {
                 RaftInlineIconButton(
                   key: const ValueKey('agent-role-help'),
                   glyph: RaftGlyph.circleHelp,
-                  tooltip: raftText(context, 'Role permissions'),
+                  tooltip: raftText(context, 'Agent roles'),
                   onPressed: () =>
                       showRaftRolePermissionHelp(context, agent: true),
                 ),

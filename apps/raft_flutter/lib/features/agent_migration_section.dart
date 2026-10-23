@@ -493,7 +493,7 @@ class _AgentMigrationSectionState
             child: RaftButton(
               label: raftText(
                 context,
-                canRetry ? 'Try migration again' : 'Migrate',
+                canRetry ? 'Try migration again' : 'Move to another Computer',
               ),
               tone: RaftButtonRecipeVariant.outline,
               size: RaftButtonRecipeSize.sm,

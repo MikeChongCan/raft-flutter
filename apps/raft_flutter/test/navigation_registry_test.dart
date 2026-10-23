@@ -634,9 +634,8 @@ void main() {
     Finder? opens(String label) => switch (label) {
       'Create Channel' => find.byType(CreateChannelDialog),
       'Create Joint Channel' => find.byType(CreateJointChannelDialog),
-      'New section…' || 'Rename / change icon…' => find.byKey(
-        const ValueKey('sidebar-section-dialog'),
-      ),
+      'New section…' ||
+      'Edit section…' => find.byKey(const ValueKey('sidebar-section-dialog')),
       'Archive' ||
       'Delete section' => find.byKey(const ValueKey('shell-dialog')),
       _ => null,

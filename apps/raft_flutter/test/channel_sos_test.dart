@@ -50,7 +50,7 @@ Future<void> _open(
   }
 }
 
-Finder get _stopAgents => find.text('Stop Agents');
+Finder get _stopAgents => find.text('Stop All Agents');
 
 Iterable<RequestOptions> _sos(MessageAdapter api) =>
     api.calls.where((c) => c.path.endsWith('-all-agents'));

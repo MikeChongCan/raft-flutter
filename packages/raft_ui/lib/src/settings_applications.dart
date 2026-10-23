@@ -458,7 +458,7 @@ class RaftConnectedAppsSection extends StatelessWidget {
             ? null
             : RaftSettingsRecipeButton(
                 key: const ValueKey('connected-apps-register'),
-                label: 'Register app',
+                label: 'Register App',
                 glyph: RaftGlyph.plus,
                 glyphSize: 14,
                 variant: RaftButtonRecipeVariant.accent,

@@ -454,7 +454,7 @@ class _DesktopDirectoryViewState extends State<DesktopDirectoryView> {
               : kind == DesktopContentKind.human && w.can('inviteMembers')
               ? [
                   RaftSidebarSectionAction(
-                    label: raftText(context, 'Invite human'),
+                    label: raftText(context, 'Invite Human'),
                     key: const ValueKey('desktop-directory-invite-human'),
                     glyph: RaftGlyph.plus,
                     onPressed: () => showWorkspaceMenuInvite(context, w),

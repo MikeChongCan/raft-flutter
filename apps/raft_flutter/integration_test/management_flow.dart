@@ -89,9 +89,9 @@ Future<void> verifyManagementFlow(
       tester,
       () =>
           find.byType(IntegrationsView).evaluate().isNotEmpty &&
-          find.text('Register app').evaluate().isNotEmpty,
+          find.text('Register App').evaluate().isNotEmpty,
     );
-    await _tap(tester, find.text('Register app'));
+    await _tap(tester, find.text('Register App'));
     await tester.enterText(
       find.byKey(const ValueKey('connected-app-name')),
       'Native app $marker',
@@ -159,7 +159,7 @@ Future<void> verifyManagementFlow(
     appId = null;
     await _tap(tester, find.text('MCP'));
     await _until(tester, () => find.byType(AgentMcpView).evaluate().isNotEmpty);
-    await _tap(tester, find.text('Add connection'));
+    await _tap(tester, find.text('Add provider connection'));
     await _formText(tester, 'name', 'Native MCP $marker');
     await _formText(tester, 'endpointUrl', 'https://example.com/mcp');
     await _tap(tester, find.text('Add'));

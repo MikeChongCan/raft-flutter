@@ -187,7 +187,7 @@ void main() {
     _captureClipboard(t);
     var row = _rowNode(t, 'Act on me');
     expect(_customActions(row), [
-      'Reply in thread',
+      'Reply in Thread',
       'Add reaction',
       'Save message',
       'Copy Markdown',

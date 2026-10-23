@@ -40,7 +40,7 @@ class RaftMembersTrigger extends StatelessWidget {
       size: RaftButtonRecipeSize.sm,
       padding: const EdgeInsets.symmetric(horizontal: 6),
       gap: 4,
-      tooltip: raftText(context, 'View participants'),
+      tooltip: raftText(context, 'Members'),
       onPressed: onPressed,
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -669,7 +669,7 @@ class _CreateAgentEntry extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    raftText(context, 'Create a New Agent'),
+                    raftText(context, 'Create Agent'),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: raftCssTextStyle(

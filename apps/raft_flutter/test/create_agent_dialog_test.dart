@@ -200,7 +200,7 @@ void main() {
     await open(t);
     expect(find.text('CREATE AGENT'), findsOneWidget);
     expect(find.text('Connect a computer first'), findsOneWidget);
-    expect(find.text('Connect a Computer'), findsOneWidget);
+    expect(find.text('Add Computer'), findsOneWidget);
     expect(find.text('COMPUTER'), findsNothing);
   });
 

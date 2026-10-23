@@ -1890,7 +1890,7 @@ void main() {
       await tester.tap(find.text('Create invitation link'));
       await tester.pumpAndSettle();
       await tester.enterText(field('Maximum uses'), '1');
-      await tester.tap(find.widgetWithText(RaftButton, 'Create link'));
+      await tester.tap(find.widgetWithText(RaftButton, 'Create Link'));
       await until(
         tester,
         () => find.text('Invitation link').evaluate().isNotEmpty,

@@ -107,7 +107,7 @@ void main() {
       ),
     );
     expect(find.text('No provider connections yet.'), findsOneWidget);
-    expect(find.text('Add connection'), findsOneWidget);
+    expect(find.text('Add provider connection'), findsOneWidget);
   });
 
   testWidgets('Messaging bridges: failure banner replaces the body', (t) async {

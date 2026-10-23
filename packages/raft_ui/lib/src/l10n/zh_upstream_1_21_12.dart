@@ -13,8 +13,8 @@ const Map<String, String> zhCatalogUpstream12112 = <String, String>{
   "This agent's conversation no longer fits its model, and context compaction failed several times in a row, so restarting would fail again. To start a new session, open Restart / Reset and choose Reset Session & Restart (Reset Model for members). Raft messages and workspace files, including MEMORY.md, are kept":
       "这个 Agent 的对话已经超出模型能容纳的长度，上下文压缩连续失败了好几次，直接重启还会失败。要开新会话，请打开「重启 / 重置」并选择「重置会话并重启」（成员看到的是「重置模型」）。Raft 消息和工作区文件（包括 MEMORY.md）都会保留",
   // agent.*
-  "Set by the hosting administrator for now. Pick a model to use another one.":
-      "目前由托管方管理员指定。选一个模型即可改用其他模型。",
+  "Set by the cloud provider's administrator for now. Pick a model to use another one.":
+      "目前由云端服务的管理员指定。选一个模型即可改用其他模型。",
   "Default ({label})": "默认（{label}）",
   "Provider default": "服务商默认",
   "The agent uses the chosen model from its next turn; it does not restart.":
