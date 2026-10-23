@@ -76,21 +76,21 @@ void main() {
     expect(find.text('Delivered'), findsNWidgets(2));
     expect(a.calls.where((c) => c.path.endsWith('/events')), isNotEmpty);
     // Granting stays with the managers.
-    expect(find.text('Grant access'), findsNothing);
+    expect(find.text('Grant Access'), findsNothing);
     expect(find.text('Revoke'), findsNothing);
   });
 
   testWidgets('the app chips come from the events and filter them', (t) async {
     final a = await pump(t, 'member');
-    expect(find.text('All apps'), findsOneWidget);
+    expect(find.text('All Apps'), findsOneWidget);
     await t.tap(find.text('Bolt').first);
     await t.pumpAndSettle();
     expect(find.text('Event 2'), findsOneWidget);
     expect(find.text('Event 1'), findsNothing);
     expect(a.calls.last.queryParameters['clientId'], 'c2');
     // The chips survive the filtered read.
-    expect(find.text('All apps'), findsOneWidget);
-    await t.tap(find.text('All apps'));
+    expect(find.text('All Apps'), findsOneWidget);
+    await t.tap(find.text('All Apps'));
     await t.pumpAndSettle();
     expect(find.text('Event 1'), findsOneWidget);
   });

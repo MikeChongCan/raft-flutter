@@ -64,9 +64,9 @@ void main() {
     // The banner sits above the By email / By link switch, on both tabs.
     expect(
       t.getTopLeft(find.text(hint)).dy,
-      lessThan(t.getTopLeft(find.text('By email')).dy),
+      lessThan(t.getTopLeft(find.text('By Email')).dy),
     );
-    await t.tap(find.text('By link'));
+    await t.tap(find.text('By Link'));
     await t.pumpAndSettle();
     expect(find.text(hint), findsOneWidget);
   });

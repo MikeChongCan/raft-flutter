@@ -61,9 +61,9 @@ void main() {
       final ScrollController viewport = state.viewport;
       viewport.jumpTo(viewport.offset - 2400);
       await tester.pumpAndSettle();
-      expect(find.text('Back to bottom'), findsOneWidget);
+      expect(find.text('Back to Bottom'), findsOneWidget);
 
-      await tester.tap(find.text('Back to bottom'));
+      await tester.tap(find.text('Back to Bottom'));
       await tester.pump();
       await tester.runAsync(() => Future<void>.delayed(Duration.zero));
       await tester.pumpAndSettle();

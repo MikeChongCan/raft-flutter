@@ -108,7 +108,7 @@ void main() {
     expect(find.byType(RaftAttachmentLightbox), findsOneWidget);
     expect(find.text('shot.png'), findsOneWidget, reason: 'the title');
     expect(find.byTooltip('Download'), findsOneWidget);
-    await t.tap(find.byTooltip('Close preview'));
+    await t.tap(find.byTooltip('Close Preview'));
     await t.pumpAndSettle();
     expect(find.byType(RaftAttachmentLightbox), findsNothing);
   });
@@ -157,7 +157,7 @@ void main() {
     addTearDown(store.dispose);
     await _pump(t, store, load: (_, _) async => _png, picked: picked);
     await _openTicket(t);
-    await t.tap(find.byTooltip('Attach image'));
+    await t.tap(find.byTooltip('Attach Image'));
     await t.pumpAndSettle();
 
     await t.tap(find.byKey(const ValueKey('feedback-pending-open-id-1')));
@@ -165,7 +165,7 @@ void main() {
     await _settleImage(t);
     expect(find.byType(RaftAttachmentLightbox), findsOneWidget);
     expect(find.text('draft.png'), findsWidgets);
-    await t.tap(find.byTooltip('Close preview'));
+    await t.tap(find.byTooltip('Close Preview'));
     await t.pumpAndSettle();
     expect(find.byType(RaftAttachmentLightbox), findsNothing);
     expect(store.replyAttachments, hasLength(1), reason: 'still attached');

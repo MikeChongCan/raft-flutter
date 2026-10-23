@@ -100,7 +100,7 @@ void main() {
         // First item, ahead of search.
         expect(
           tester.getTopLeft(focusItem).dy,
-          lessThan(tester.getTopLeft(find.text('Search in thread')).dy),
+          lessThan(tester.getTopLeft(find.text('Search in Thread')).dy),
         );
         await tester.tap(focusItem);
         await tester.pumpAndSettle();
@@ -136,7 +136,7 @@ void main() {
     await pageFrames(tester, () {}, count: 3);
     expect(panel, findsNothing);
     await menu(tester);
-    expect(find.text('Search in thread'), findsOneWidget);
+    expect(find.text('Search in Thread'), findsOneWidget);
     expect(focusItem, findsNothing);
     expect(
       await reads(tester, api, w, 'c1'),

@@ -569,7 +569,7 @@ void registerCloseViewerTests(TestPart part) {
       await settleImage(t); // display-size decode is real async work
       return SurfaceProbe(
         isOpen: lightboxOpen,
-        x: find.byTooltip('Close preview'),
+        x: find.byTooltip('Close Preview'),
         scrim: emptyStage(size),
       );
     },
