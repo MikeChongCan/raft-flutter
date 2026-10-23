@@ -216,7 +216,8 @@ const String brutalThemePackJson = r'''{
         "switch-thumb-checked": "#141110",
         "switch-thumb-disabled": "#141110",
         "switch-thumb-checked-disabled": "#141110",
-        "switch-shadow-bottom": "rgb(0 0 0 / 0)"
+        "switch-shadow-bottom": "rgb(0 0 0 / 0)",
+        "layer-sidebar": "#fffaef"
       },
       "geometry": {
         "size.touchLayoutMin": 48,
@@ -293,6 +294,11 @@ const String brutalThemePackJson = r'''{
         "sticker.ring": "none",
         "emphasis.fill": "solid",
         "iconButton.surface": "raised",
+        "sidebar.mobileSurface": "canvas",
+        "resource.surface": "canvas",
+        "resource.rows": "cards",
+        "resource.badge": "pill",
+        "resource.markRead": "outline",
         "press.effect": "offsetShadow",
         "control.sheen": "none",
         "avatar.shape": "square",
@@ -473,7 +479,8 @@ const String brutalThemePackJson = r'''{
         "switch-thumb-checked": "#171715",
         "switch-thumb-disabled": "#424241",
         "switch-thumb-checked-disabled": "#292928",
-        "switch-shadow-bottom": "rgb(243.444675 243.444675 247.22862 / 0.039203)"
+        "switch-shadow-bottom": "rgb(243.444675 243.444675 247.22862 / 0.039203)",
+        "layer-sidebar": "#0d0d0b"
       },
       "geometry": {
         "size.touchLayoutMin": 48,
@@ -550,6 +557,11 @@ const String brutalThemePackJson = r'''{
         "sticker.ring": "none",
         "emphasis.fill": "soft",
         "iconButton.surface": "generic",
+        "sidebar.mobileSurface": "sidebar",
+        "resource.surface": "sidebar",
+        "resource.rows": "cards",
+        "resource.badge": "pill",
+        "resource.markRead": "outline",
         "press.effect": "scale",
         "control.sheen": "gradient",
         "avatar.shape": "circle",

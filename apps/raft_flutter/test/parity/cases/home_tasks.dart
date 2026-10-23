@@ -552,6 +552,7 @@ final ParityCase _createChannel = ParityCase(
       ..server = base.server
       ..channels = base.channels
       ..section = base.section;
+    ctx.onDispose(w.dispose);
     return Scaffold(
       body: CreateChannelDialog(
         controller: w,

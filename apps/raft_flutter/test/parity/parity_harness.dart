@@ -93,6 +93,15 @@ class ParityContext {
   /// The capture target. Builders wrap the element that corresponds to the
   /// React `capture.selector` with [target]; when they do not, the whole
   /// viewport is captured (correct for `body` selectors).
+  final _cleanup = <VoidCallback>[];
+  void onDispose(VoidCallback callback) => _cleanup.add(callback);
+  void dispose() {
+    for (final callback in _cleanup.reversed) {
+      callback();
+    }
+    _cleanup.clear();
+  }
+
   final GlobalKey targetKey = GlobalKey(debugLabel: 'parity-target');
   bool targetUsed = false;
 
@@ -204,12 +213,13 @@ String? missingParityFontReason() => missingTestFontReason(
 );
 
 bool _fontsLoaded = false;
+final _loadedFontFamilies = <String>{};
 
 /// Loads every font the app bundles (FontManifest.json: raft_ui families and
 /// MaterialIcons) plus the system CJK/emoji families the theme names as
 /// fallbacks, so text is never rendered with the Ahem test font.
 Future<List<String>> loadParityFonts() async {
-  if (_fontsLoaded) return const [];
+  if (_fontsLoaded) return List.unmodifiable(_loadedFontFamilies);
   final loaded = <String>[];
   final manifest =
       json.decode(await rootBundle.loadString('FontManifest.json')) as List;
@@ -232,6 +242,7 @@ Future<List<String>> loadParityFonts() async {
         alias.addFont(rootBundle.load(font['asset'] as String));
       }
       await alias.load();
+      loaded.add(bare);
     }
   }
   final systemFallbacks = paritySystemFonts();
@@ -245,8 +256,9 @@ Future<List<String>> loadParityFonts() async {
     await loader.load();
     loaded.add(family);
   }
+  _loadedFontFamilies.addAll(loaded);
   _fontsLoaded = true;
-  return loaded;
+  return List.unmodifiable(_loadedFontFamilies);
 }
 
 /// Pumps one case at its official viewport/density, captures the target rect
@@ -271,210 +283,248 @@ Future<Map<String, dynamic>> captureParityCase(
     fixtures: fixtures,
     dark: dark,
   );
-  final size = Size(ctx.width, ctx.height);
-  t.view.physicalSize = size * ctx.density;
-  t.view.devicePixelRatio = ctx.density;
-  addTearDown(t.view.reset);
+  try {
+    final size = Size(ctx.width, ctx.height);
+    t.view.physicalSize = size * ctx.density;
+    t.view.devicePixelRatio = ctx.density;
+    addTearDown(t.view.reset);
 
-  final rootKey = GlobalKey(debugLabel: 'parity-root');
-  final raft = raftTheme(dark: dark, pack: packForThemeId(selection.pack));
-  // Playwright screenshots default to caret: "hide"; hide Flutter's text
-  // caret the same way so a focused field is not a spurious diff.
-  final theme = raft.copyWith(
-    textSelectionTheme: raft.textSelectionTheme.copyWith(
-      cursorColor: const Color(0x00000000),
-    ),
-  );
-  await t.pumpWidget(
-    MaterialApp(
-      debugShowCheckedModeBanner: false,
-      locale: const Locale('en'),
-      supportedLocales: const [Locale('en'), Locale('zh', 'CN')],
-      localizationsDelegates: GlobalMaterialLocalizations.delegates,
-      theme: theme,
-      builder: (context, child) => MediaQuery(
-        // React uses Playwright animations:"disabled": infinite pulses are
-        // captured at their initial frame, finite transitions at rest. Use
-        // the product's reduced-motion contract for the same Flutter state.
-        data: MediaQuery.of(context).copyWith(disableAnimations: true),
-        child: RepaintBoundary(
-          key: rootKey,
-          child: RaftTooltipProvider(
-            delay: const Duration(milliseconds: 600),
-            child: ColoredBox(color: Colors.white, child: child),
-          ),
-        ),
-      ),
-      home: Builder(builder: (context) => mapping.build(ctx)),
-    ),
-  );
-  await t.pump(const Duration(milliseconds: 50));
-  await _androidInteractions(t, visualCase);
-  if (mapping.interact != null) await mapping.interact!(t, ctx);
-  await t.pump(mapping.settle);
-  await t.pump(const Duration(milliseconds: 16));
-  // Opt-in audit (see support/glyph_clip_scan.dart): append every clip that
-  // sits inside a paragraph's glyph ink to this JSON-lines file.
-  final scanFile = Platform.environment['PARITY_GLYPH_CLIP_SCAN'];
-  if (scanFile != null) {
-    for (final f in scanGlyphClips(t)) {
-      File(scanFile).writeAsStringSync(
-        '${json.encode({'case': visualCase['id'], ...f.toJson()})}\n',
-        mode: FileMode.append,
+    final rootKey = GlobalKey(debugLabel: 'parity-root');
+    final raft = raftTheme(dark: dark, pack: packForThemeId(selection.pack));
+    final tokens = raft.extension<RaftTokens>()!;
+    final selectedFonts = {
+      'heading': tokens.headingFont,
+      'sans': tokens.bodyFont,
+      'mono': tokens.monoFont,
+    };
+    final missingFonts = selectedFonts.values.toSet().difference(
+      _loadedFontFamilies,
+    );
+    if (missingFonts.isNotEmpty) {
+      throw StateError(
+        'Parity theme fonts were not loaded: ${missingFonts.join(', ')}',
       );
     }
-  }
-  // SVG compilation uses a real isolate. Advancing the test's fake clock
-  // cannot finish it; await the renderer's actual decode before capturing.
-  await t.runAsync(
-    () => vg.waitForPendingDecodes().timeout(const Duration(seconds: 10)),
-  );
-  await t.pump();
-  // Never write a capture of a build/layout error screen.
-  final error = t.takeException();
-  if (error != null) {
-    throw StateError('case ${ctx.id} threw while rendering: $error');
-  }
-
-  final rootBox =
-      rootKey.currentContext!.findRenderObject()! as RenderRepaintBoundary;
-  // Playwright captures with caret: "hide". Product fields may set their own
-  // cursorColor (bypassing the theme override above), so hide every caret on
-  // the render objects for this frame only; the zero-duration pump repaints
-  // without advancing the blink timer or rebuilding the fields.
-  void hideCarets(RenderObject node) {
-    if (node is RenderEditable) node.cursorColor = const Color(0x00000000);
-    node.visitChildren(hideCarets);
-  }
-
-  hideCarets(rootBox);
-  await t.pump();
-  Rect rect = Offset.zero & size;
-  String? targetNote;
-  // Extension cases name the Flutter widget that corresponds to the React
-  // capture.selector (`capture.androidKey`, a ValueKey<String>).
-  final androidKey = (visualCase['capture'] as Map?)?['androidKey'] as String?;
-  final keyed = androidKey == null
-      ? null
-      : find.byKey(ValueKey(androidKey)).evaluate().firstOrNull;
-  if (androidKey != null && keyed == null) {
-    throw StateError('case ${ctx.id}: capture.androidKey $androidKey missing');
-  }
-  final targetContext = keyed ?? ctx.targetKey.currentContext;
-  if ((keyed != null || ctx.targetUsed) && targetContext != null) {
-    final box = targetContext.findRenderObject()! as RenderBox;
-    final origin = box.localToGlobal(Offset.zero, ancestor: rootBox);
-    final raw = origin & box.size;
-    rect = raw.intersect(Offset.zero & size);
-    if (rect != raw) targetNote = 'target clamped to viewport like React';
-  }
-  // Extension element crops (`capture.androidKey`) follow Playwright's
-  // element screenshot, which captures the CSS-pixel rect enclosing a
-  // fractional box (floor / ceil in CSS px, then scaled: a card at
-  // y = 296.5 on a 3x page starts at device row 888, not 889); official
-  // crops keep their rounding.
-  final enclose = keyed != null;
-  final d = ctx.density;
-  final pixelRect = enclose
-      ? Rect.fromLTRB(
-          rect.left.floorToDouble() * d,
-          rect.top.floorToDouble() * d,
-          rect.right.ceilToDouble() * d,
-          rect.bottom.ceilToDouble() * d,
-        )
-      : Rect.fromLTRB(
-          (rect.left * d).roundToDouble(),
-          (rect.top * d).roundToDouble(),
-          (rect.right * d).roundToDouble(),
-          (rect.bottom * d).roundToDouble(),
+    // Playwright screenshots default to caret: "hide"; hide Flutter's text
+    // caret the same way so a focused field is not a spurious diff.
+    final theme = raft.copyWith(
+      textSelectionTheme: raft.textSelectionTheme.copyWith(
+        cursorColor: const Color(0x00000000),
+      ),
+    );
+    await t.pumpWidget(
+      MaterialApp(
+        debugShowCheckedModeBanner: false,
+        locale: const Locale('en'),
+        supportedLocales: const [Locale('en'), Locale('zh', 'CN')],
+        localizationsDelegates: GlobalMaterialLocalizations.delegates,
+        theme: theme,
+        builder: (context, child) => MediaQuery(
+          // React uses Playwright animations:"disabled": infinite pulses are
+          // captured at their initial frame, finite transitions at rest. Use
+          // the product's reduced-motion contract for the same Flutter state.
+          data: MediaQuery.of(context).copyWith(disableAnimations: true),
+          child: RepaintBoundary(
+            key: rootKey,
+            child: RaftTooltipProvider(
+              delay: const Duration(milliseconds: 600),
+              child: ColoredBox(color: Colors.white, child: child),
+            ),
+          ),
+        ),
+        home: Builder(builder: (context) => mapping.build(ctx)),
+      ),
+    );
+    await t.pump(const Duration(milliseconds: 50));
+    await _androidInteractions(t, visualCase);
+    if (mapping.interact != null) await mapping.interact!(t, ctx);
+    await t.pump(mapping.settle);
+    await t.pump(const Duration(milliseconds: 16));
+    // Opt-in audit (see support/glyph_clip_scan.dart): append every clip that
+    // sits inside a paragraph's glyph ink to this JSON-lines file.
+    final scanFile = Platform.environment['PARITY_GLYPH_CLIP_SCAN'];
+    if (scanFile != null) {
+      for (final f in scanGlyphClips(t)) {
+        File(scanFile).writeAsStringSync(
+          '${json.encode({'case': visualCase['id'], ...f.toJson()})}\n',
+          mode: FileMode.append,
         );
-
-  final png = await t.runAsync(() async {
-    final full = await rootBox.toImage(pixelRatio: ctx.density);
-    final recorder = ui.PictureRecorder();
-    final canvas = Canvas(recorder);
-    canvas.drawRect(
-      Offset.zero & pixelRect.size,
-      Paint()..color = Colors.white,
-    );
-    canvas.drawImageRect(
-      full,
-      pixelRect,
-      Offset.zero & pixelRect.size,
-      Paint()..filterQuality = FilterQuality.none,
-    );
-    final cropped = await recorder.endRecording().toImage(
-      pixelRect.width.toInt(),
-      pixelRect.height.toInt(),
-    );
-    final bytes = await cropped.toByteData(format: ui.ImageByteFormat.png);
-    full.dispose();
-    cropped.dispose();
-    return bytes!.buffer.asUint8List();
-  });
-
-  final id = ctx.id;
-  final imageFile = File('${outputDir.path}/$id.png');
-  final roundedRect = {
-    'x': rect.left.round(),
-    'y': rect.top.round(),
-    'width': rect.width.round(),
-    'height': rect.height.round(),
-  };
-  final metadata = <String, dynamic>{
-    'provider': 'android',
-    'providerType': 'flutter-widget-test',
-    'source': 'flutter',
-    'caseId': id,
-    'variantId': ctx.variant['id'],
-    'theme': parityThemeLabel(selection),
-    'image': 'visual-testing-results/android/$id.png',
-    'viewport': ctx.viewport,
-    'selector': (visualCase['capture'] as Map?)?['selector'],
-    'crop': {
-      'mode': (visualCase['capture'] as Map?)?['crop'] ?? 'element',
-      'contract':
-          (visualCase['capture'] as Map?)?['contract'] ?? 'component-bounds',
-      'rect': roundedRect,
-      'targetRect': roundedRect,
-      'outset': null,
-      'note': ?targetNote,
-    },
-    'flutter': {
-      'widgets': mapping.widgets,
-      if (mapping.notes.isNotEmpty) 'notes': mapping.notes,
-      'targetPlatform': defaultTargetPlatform.name,
-      // A touch host is a platform property, not a pixel-density one: phone
-      // cases can be density 1 and must still report touch.
-      'density': switch (defaultTargetPlatform) {
-        TargetPlatform.android || TargetPlatform.iOS => 'touch',
-        _ => 'desktop',
-      },
-      'renderer': 'flutter_test host raster (not a device screenshot)',
-      'animationPolicy':
-          'reduced-motion at rest; matches React animations:disabled',
-      'vectorDecodePolicy':
-          'await actual pending vector decodes before capture',
-      ...runInfo,
-    },
-    'typography': _typographyProbes(
-      ctx.targetUsed ? ctx.targetKey.currentContext : rootKey.currentContext,
-    ),
-    'styleTokens': _styleTokenProbes(
-      ctx.targetUsed ? ctx.targetKey.currentContext : rootKey.currentContext,
-    ),
-    'capturedAt': DateTime.now().toUtc().toIso8601String(),
-  };
-  await t.runAsync(() async {
-    await imageFile.writeAsBytes(png!);
-    await File('${outputDir.path}/$id.metadata.json')
-        .writeAsString(const JsonEncoder.withIndent('  ').convert(metadata));
-    if (parityGeometryDumpEnabled) {
-      await File('${outputDir.path}/$id.geometry.txt')
-          .writeAsString(parityGeometryDump(rootBox, rect, rootBox));
+      }
     }
-  });
-  return metadata;
+    // SVG compilation uses a real isolate. Advancing the test's fake clock
+    // cannot finish it; await the renderer's actual decode before capturing.
+    await t.runAsync(
+      () => vg.waitForPendingDecodes().timeout(const Duration(seconds: 10)),
+    );
+    await t.pump();
+    // Never write a capture of a build/layout error screen.
+    final error = t.takeException();
+    if (error != null) {
+      throw StateError('case ${ctx.id} threw while rendering: $error');
+    }
+
+    final rootBox =
+        rootKey.currentContext!.findRenderObject()! as RenderRepaintBoundary;
+    // Playwright captures with caret: "hide". Product fields may set their own
+    // cursorColor (bypassing the theme override above), so hide every caret on
+    // the render objects for this frame only; the zero-duration pump repaints
+    // without advancing the blink timer or rebuilding the fields.
+    void hideCarets(RenderObject node) {
+      if (node is RenderEditable) node.cursorColor = const Color(0x00000000);
+      node.visitChildren(hideCarets);
+    }
+
+    hideCarets(rootBox);
+    await t.pump();
+    Rect rect = Offset.zero & size;
+    String? targetNote;
+    // Extension cases name the Flutter widget that corresponds to the React
+    // capture.selector (`capture.androidKey`, a ValueKey<String>).
+    final androidKey =
+        (visualCase['capture'] as Map?)?['androidKey'] as String?;
+    final keyed = androidKey == null
+        ? null
+        : find.byKey(ValueKey(androidKey)).evaluate().firstOrNull;
+    if (androidKey != null && keyed == null) {
+      throw StateError(
+        'case ${ctx.id}: capture.androidKey $androidKey missing',
+      );
+    }
+    final targetContext = keyed ?? ctx.targetKey.currentContext;
+    if ((keyed != null || ctx.targetUsed) && targetContext != null) {
+      final box = targetContext.findRenderObject()! as RenderBox;
+      final origin = box.localToGlobal(Offset.zero, ancestor: rootBox);
+      final raw = origin & box.size;
+      rect = raw.intersect(Offset.zero & size);
+      if (rect != raw) targetNote = 'target clamped to viewport like React';
+    }
+    // Extension element crops (`capture.androidKey`) follow Playwright's
+    // element screenshot, which captures the CSS-pixel rect enclosing a
+    // fractional box (floor / ceil in CSS px, then scaled: a card at
+    // y = 296.5 on a 3x page starts at device row 888, not 889); official
+    // crops keep their rounding.
+    final enclose = keyed != null;
+    final d = ctx.density;
+    final pixelRect = enclose
+        ? Rect.fromLTRB(
+            rect.left.floorToDouble() * d,
+            rect.top.floorToDouble() * d,
+            rect.right.ceilToDouble() * d,
+            rect.bottom.ceilToDouble() * d,
+          )
+        : Rect.fromLTRB(
+            (rect.left * d).roundToDouble(),
+            (rect.top * d).roundToDouble(),
+            (rect.right * d).roundToDouble(),
+            (rect.bottom * d).roundToDouble(),
+          );
+
+    final png = await t.runAsync(() async {
+      final full = await rootBox.toImage(pixelRatio: ctx.density);
+      final recorder = ui.PictureRecorder();
+      final canvas = Canvas(recorder);
+      canvas.drawRect(
+        Offset.zero & pixelRect.size,
+        Paint()..color = Colors.white,
+      );
+      canvas.drawImageRect(
+        full,
+        pixelRect,
+        Offset.zero & pixelRect.size,
+        Paint()..filterQuality = FilterQuality.none,
+      );
+      final picture = recorder.endRecording();
+      final cropped = await picture.toImage(
+        pixelRect.width.toInt(),
+        pixelRect.height.toInt(),
+      );
+      picture.dispose();
+      final bytes = await cropped.toByteData(format: ui.ImageByteFormat.png);
+      full.dispose();
+      cropped.dispose();
+      return bytes!.buffer.asUint8List();
+    });
+
+    final id = ctx.id;
+    final imageFile = File('${outputDir.path}/$id.png');
+    final roundedRect = {
+      'x': rect.left.round(),
+      'y': rect.top.round(),
+      'width': rect.width.round(),
+      'height': rect.height.round(),
+    };
+    final metadata = <String, dynamic>{
+      'provider': 'android',
+      'providerType': 'flutter-widget-test',
+      'source': 'flutter',
+      'caseId': id,
+      'variantId': ctx.variant['id'],
+      'theme': parityThemeLabel(selection),
+      'image': 'visual-testing-results/android/$id.png',
+      'viewport': ctx.viewport,
+      'selector': (visualCase['capture'] as Map?)?['selector'],
+      'crop': {
+        'mode': (visualCase['capture'] as Map?)?['crop'] ?? 'element',
+        'contract':
+            (visualCase['capture'] as Map?)?['contract'] ?? 'component-bounds',
+        'rect': roundedRect,
+        'targetRect': roundedRect,
+        'outset': null,
+        'note': ?targetNote,
+      },
+      'flutter': {
+        'widgets': mapping.widgets,
+        if (mapping.notes.isNotEmpty) 'notes': mapping.notes,
+        'targetPlatform': defaultTargetPlatform.name,
+        // A touch host is a platform property, not a pixel-density one: phone
+        // cases can be density 1 and must still report touch.
+        'density': switch (defaultTargetPlatform) {
+          TargetPlatform.android || TargetPlatform.iOS => 'touch',
+          _ => 'desktop',
+        },
+        'renderer': 'flutter_test host raster (not a device screenshot)',
+        'animationPolicy':
+            'reduced-motion at rest; matches React animations:disabled',
+        'vectorDecodePolicy':
+            'await actual pending vector decodes before capture',
+        ...runInfo,
+      },
+      'fontLoading': {
+        'selected': selectedFonts,
+        'registered': _loadedFontFamilies.toList()..sort(),
+      },
+      'typography': _typographyProbes(
+        ctx.targetUsed ? ctx.targetKey.currentContext : rootKey.currentContext,
+      ),
+      'styleTokens': _styleTokenProbes(
+        ctx.targetUsed ? ctx.targetKey.currentContext : rootKey.currentContext,
+      ),
+      'capturedAt': DateTime.now().toUtc().toIso8601String(),
+    };
+    await t.runAsync(() async {
+      await imageFile.writeAsBytes(png!);
+      await File('${outputDir.path}/$id.metadata.json')
+          .writeAsString(const JsonEncoder.withIndent('  ').convert(metadata));
+      if (parityGeometryDumpEnabled) {
+        await File('${outputDir.path}/$id.geometry.txt')
+            .writeAsString(parityGeometryDump(rootBox, rect, rootBox));
+      }
+    });
+    return metadata;
+  } finally {
+    try {
+      // Complete modal route futures before removing their owners.
+      for (final nav in t.stateList<NavigatorState>(find.byType(Navigator))) {
+        nav.popUntil((route) => route.isFirst);
+      }
+      await t.pump(const Duration(seconds: 1));
+      await t.pump();
+      await t.pumpWidget(const SizedBox.shrink());
+      await t.pump();
+    } finally {
+      ctx.dispose();
+    }
+  }
 }
 
 /// Generic `capture.androidInteractions` of extension cases, the Flutter

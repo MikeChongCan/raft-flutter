@@ -38,6 +38,49 @@ double baseline(WidgetTester t, Finder finder) {
 }
 
 void main() {
+  for (final (bottomRule, profileBody) in [
+    (false, false),
+    (true, false),
+    (false, true),
+  ]) {
+    testWidgets(
+      'page surface reaches header and status bar rule=$bottomRule profile=$profileBody',
+      (t) async {
+        const surface = Color(0xff123456);
+        await t.pumpWidget(
+          MaterialApp(
+            theme: raftTheme(),
+            home: Scaffold(
+              body: RaftPanelHeaderBar(
+                title: 'Activity',
+                background: surface,
+                bottomRule: bottomRule,
+                profileBody: profileBody,
+              ),
+            ),
+          ),
+        );
+        final frame = find
+            .descendant(
+              of: find.byType(RaftPanelHeaderBar),
+              matching: find.byWidgetPredicate(
+                (w) => w is Container && w.decoration is BoxDecoration,
+              ),
+            )
+            .first;
+        expect(
+          (t.widget<Container>(frame).decoration! as BoxDecoration).color,
+          surface,
+        );
+        final status = find.descendant(
+          of: find.byType(RaftPanelHeaderBar),
+          matching: find.byType(RaftStatusBarSource),
+        );
+        expect(t.widget<RaftStatusBarSource>(status).color, surface);
+        await t.pumpWidget(const SizedBox());
+      },
+    );
+  }
   for (final dark in raftThemeMatrix([false, true])) {
     for (final width in [390.0, 1280.0]) {
       testWidgets(

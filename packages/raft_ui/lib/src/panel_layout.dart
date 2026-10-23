@@ -390,7 +390,11 @@ class RaftPanelHeaderBar extends StatelessWidget {
     this.bottomRule = false,
     this.titleSuffix,
     this.profileHandle = false,
+    this.background,
   });
+
+  /// The page surface under this header; null keeps the recipe fill.
+  final Color? background;
   final String title;
   final String? subtitle;
 
@@ -476,6 +480,7 @@ class RaftPanelHeaderBar extends StatelessWidget {
           ? s.header
                 .decoration(rt)
                 .copyWith(
+                  color: background,
                   border: Border(
                     // Brutal `border-b-2 border-black` (pure black, not ink).
                     bottom: BorderSide(
@@ -491,11 +496,12 @@ class RaftPanelHeaderBar extends StatelessWidget {
           ? s.header
                 .decoration(rt)
                 .copyWith(
+                  color: background,
                   border: Border(
                     bottom: BorderSide(color: t.colors['line-muted']!),
                   ),
                 )
-          : s.header.decoration(rt),
+          : s.header.decoration(rt).copyWith(color: background),
       child: Row(
         children: [
           if (onBack != null) ...[
@@ -588,7 +594,7 @@ class RaftPanelHeaderBar extends StatelessWidget {
     );
     // The surface the user sees: the recipe's own fill, else (transparent
     // header) the profile body it sits on.
-    final fill = s.header.decoration(rt).color;
+    final fill = background ?? s.header.decoration(rt).color;
     final shown = fill != null && fill.a != 0
         ? fill
         : profileBody && t.dark

@@ -256,6 +256,8 @@ class ChatStage {
       ..server = RaftRecord(ids.server)
       ..channels = channels.map(RaftChannel.new).toList()
       ..dms = dms.map(RaftChannel.new).toList();
+    ctx.onDispose(w.dispose);
+    ctx.onDispose(geometry.dispose);
     w.messageDomain.ledger.switchServer(ids.serverId);
     unawaited(
       w.selectChannel(

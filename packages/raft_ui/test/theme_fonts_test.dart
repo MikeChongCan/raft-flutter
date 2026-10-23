@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_ui/raft_ui.dart';
+import 'package:raft_theme/raft_theme.dart' show RaftFontSpec, builtInRaftTheme;
 
 /// Each theme paints its own typeface.
 ///
@@ -19,16 +20,16 @@ void main() {
   group('theme fonts come from the theme pack', () {
     test('Raft keeps Space Grotesk and Space Mono', () {
       final t = _tokens(raftThemePackId);
-      expect(t.headingFont, 'Space Grotesk');
-      expect(t.bodyFont, 'Space Grotesk');
-      expect(t.monoFont, 'Space Mono');
+      expect(t.headingFont, 'packages/raft_ui/SpaceGrotesk');
+      expect(t.bodyFont, 'packages/raft_ui/SpaceGrotesk');
+      expect(t.monoFont, 'packages/raft_ui/SpaceMono');
     });
 
     test('Elegant uses its own Geist / Inter families', () {
       final t = _tokens(elegantThemePackId);
-      expect(t.headingFont, 'Inter');
-      expect(t.bodyFont, 'Geist');
-      expect(t.monoFont, 'Geist Mono');
+      expect(t.headingFont, 'packages/raft_ui/Inter');
+      expect(t.bodyFont, 'packages/raft_ui/Geist');
+      expect(t.monoFont, 'packages/raft_ui/GeistMono');
     });
 
     test('Brutal uses HankenGrotesk, as a57b9dab did', () {
@@ -37,9 +38,20 @@ void main() {
       // in the P2 baseline reports exactly that family. Brutal is not Raft with a
       // dark palette -- its typeface differs too.
       final t = _tokens(brutalThemePackId);
-      expect(t.headingFont, 'HankenGrotesk');
-      expect(t.bodyFont, 'HankenGrotesk');
-      expect(t.monoFont, 'Space Mono');
+      expect(t.headingFont, 'packages/raft_ui/HankenGrotesk');
+      expect(t.bodyFont, 'packages/raft_ui/HankenGrotesk');
+      expect(t.monoFont, 'packages/raft_ui/SpaceMono');
+    });
+
+    test('unknown user font families are not rewritten', () {
+      final set = RaftTokenSet.fromPack(
+        RaftThemeId.light,
+        mode: builtInRaftTheme.light,
+        fonts: const {
+          'heading': RaftFontSpec(family: 'User Serif', stack: ['User Serif']),
+        },
+      );
+      expect(set.metrics.headingFont, 'User Serif');
     });
 
     test('the three themes do not all share one heading family', () {
@@ -89,7 +101,7 @@ void main() {
             .textTheme
             .titleLarge!
             .fontFamily,
-        'Inter',
+        'packages/raft_ui/Inter',
       );
     });
   });

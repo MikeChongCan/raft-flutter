@@ -110,18 +110,12 @@ void main() {
             p.text.toPlainText().trim().isNotEmpty)
           p.text.style,
     ];
+    expect(find.text(markAll), findsOneWidget);
     return {
       'filters': styles(find.byType(RaftSegmentedControl<String>)),
       'badges': styles(find.byType(RaftResourceBadge)),
       // The button's own text: the box wraps nothing else.
-      'mark all read': styles(
-        find
-            .ancestor(
-              of: find.text(markAll),
-              matching: find.byType(RaftRecipeBox),
-            )
-            .first,
-      ),
+      'mark all read': styles(find.byType(RaftResourceMarkReadButton)),
     };
   }
 
@@ -153,7 +147,7 @@ void main() {
       (const Locale('en'), TargetPlatform.android),
     ]) {
       await mount(t, locale: locale, platform: platform);
-      final markAll = locale.languageCode == 'zh' ? '全部已读' : 'Mark All Read';
+      final markAll = locale.languageCode == 'zh' ? '全部已读' : 'Mark all read';
       for (final entry in controlLabels(t, markAll: markAll).entries) {
         expect(entry.value, isNotEmpty, reason: entry.key);
         for (final style in entry.value) {

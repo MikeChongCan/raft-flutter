@@ -491,6 +491,7 @@ const Map<String, String> zhCatalogWeb4 = <String, String>{
   "Manual": "手动",
 
   "Mark All Read": "全部已读",
+  "Mark all read": "全部已读",
   "Mark as Done": "标记为完成",
   "Mark as Read": "标为已读",
   "Mark as Unread": "标为未读",

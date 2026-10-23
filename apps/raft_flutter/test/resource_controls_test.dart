@@ -8,6 +8,7 @@ import 'package:raft_ui/raft_ui.dart';
 import 'package:raft_flutter/data/workspace_controller.dart';
 import 'package:raft_flutter/features/resource_view.dart';
 import 'package:raft_flutter/features/task_selection_filter.dart';
+
 import 'flutter_test_config.dart' show leakDebt;
 
 class _Client extends RaftClient {
@@ -151,7 +152,7 @@ void main() {
         find.byWidgetPredicate(
           (widget) =>
               widget is RaftInteractive &&
-              widget.semanticLabel == 'Mark All Read',
+              widget.semanticLabel == 'Mark all read',
         ),
         findsOneWidget,
       );
@@ -287,7 +288,10 @@ void main() {
       },
     ];
     await mount(t, 'activity');
-    await t.tap(find.byTooltip('Mark Conversation Done'));
+    // Touch exposes Done through the real row menu.
+    await t.longPress(find.byType(RaftConversationCard));
+    await t.pumpAndSettle();
+    await t.tap(find.text('Done'));
     await t.pumpAndSettle();
     expect(c.mutations, isEmpty);
     expect(
@@ -305,8 +309,7 @@ void main() {
     w.channels = [
       RaftChannel({
         'id': 'c',
-        'name':
-            'A very long accessible conversation name for the native filter menu',
+        'name': 'A very long accessible conversation name for the native filter menu',
         'joined': true,
       }),
     ];
@@ -392,7 +395,10 @@ void main() {
       await t.pumpAndSettle();
       expect(c.mutations.last.path, '/channels/threads/follow');
       expect(c.mutations.last.data, {'parentMessageId': 'p'});
-      await t.tap(find.byTooltip('Mark Conversation Done'));
+      // Touch exposes Done through the real row menu.
+      await t.longPress(find.byType(RaftConversationCard));
+      await t.pumpAndSettle();
+      await t.tap(find.text('Done'));
       await t.pumpAndSettle();
       // Source inboxStore1427–1441 performs Done, starts a human-self read-all,
       // and owns one awaited refresh. Preserve the exact storage-domain write.

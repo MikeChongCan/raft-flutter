@@ -2381,6 +2381,13 @@ class _ResourceViewState extends State<ResourceView> {
     );
   }
 
+  Color get resourceSurface {
+    final t = RaftTokens.of(context);
+    return t.option('resource.surface', or: 'sidebar') == 'canvas'
+        ? t.canvas
+        : t.sidebar;
+  }
+
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
@@ -2392,7 +2399,7 @@ class _ResourceViewState extends State<ResourceView> {
     // when the column is on the right (it draws that line).
     final BoxDecoration? surface = activityEdge
         ? BoxDecoration(
-            color: t.sidebar,
+            color: resourceSurface,
             border: RaftPanelEdge.besideNavigation(
               context,
               RaftPanelEdgeStyle.activityInbox,
@@ -2400,7 +2407,7 @@ class _ResourceViewState extends State<ResourceView> {
           )
         // SavedPanel: `bg-layer-canvas-muted theme-brutal:bg-white`.
         : widget.section == 'saved'
-        ? BoxDecoration(color: t.sidebar)
+        ? BoxDecoration(color: resourceSurface)
         : widget.section == 'search'
         ? searchSlots(context).frame.decoration(rui.RaftRecipeTokens(t))
         // TasksPanelViewport is `dark:bg-transparent`: Elegant dark shows the
@@ -2609,7 +2616,7 @@ class _ResourceViewState extends State<ResourceView> {
                       itemBuilder: (_) => [
                         PopupMenuItem(
                           value: 'read-all',
-                          child: Text(raftText(context, 'Mark All Read')),
+                          child: Text(raftText(context, 'Mark all read')),
                         ),
                         PopupMenuItem(
                           value: 'done',
@@ -2803,7 +2810,9 @@ class _ResourceViewState extends State<ResourceView> {
         : widget.section == 'activity' && advanced.groupByChannel
         ? groupedActivity()
         : Material(
-            color: RaftTokens.of(context).sidebar,
+            color: widget.section == 'activity' || widget.section == 'saved'
+                ? resourceSurface
+                : RaftTokens.of(context).sidebar,
             child: Stack(
               children: [
                 Positioned.fill(child: resourceList()),
@@ -2843,11 +2852,18 @@ class _ResourceViewState extends State<ResourceView> {
       primary: false,
       padding: activityListLayout
           ? EdgeInsets.zero
-          : raftScrollPadding(context, RaftResourceMetrics.activityListInset),
+          : raftScrollPadding(
+              context,
+              RaftConversationCardRecipe(RaftTokens.of(context)).listInset,
+            ),
       controller: activityScrolls[value],
       itemCount: listed.length,
       separatorBuilder: (_, _) => SizedBox(
-        height: activityListLayout ? 0 : RaftConversationCardRecipe.gap,
+        height: activityListLayout
+            ? 0
+            : (widget.section == 'activity' || widget.section == 'saved'
+                  ? RaftConversationCardRecipe(RaftTokens.of(context)).listGap
+                  : RaftConversationCardRecipe.gap),
       ),
       itemBuilder: (_, i) =>
           listedActivityCard(listed, i, authority, viewFilter: value),
@@ -2873,7 +2889,12 @@ class _ResourceViewState extends State<ResourceView> {
           : null,
       padding: activityListLayout
           ? EdgeInsets.zero
-          : raftScrollPadding(context, const EdgeInsets.all(16)),
+          : raftScrollPadding(
+              context,
+              widget.section == 'activity' || widget.section == 'saved'
+                  ? RaftConversationCardRecipe(RaftTokens.of(context)).listInset
+                  : const EdgeInsets.all(16),
+            ),
       // SavedPanel loads the next page when its sentinel comes
       // within `rootMargin: 240px` of the scroller.
       scrollCacheExtent: widget.section == 'saved'
@@ -2881,7 +2902,11 @@ class _ResourceViewState extends State<ResourceView> {
           : null,
       itemCount: shown.length + (hasMore ? 1 : 0),
       separatorBuilder: (_, _) => SizedBox(
-        height: activityListLayout ? 0 : RaftConversationCardRecipe.gap,
+        height: activityListLayout
+            ? 0
+            : (widget.section == 'activity' || widget.section == 'saved'
+                  ? RaftConversationCardRecipe(RaftTokens.of(context)).listGap
+                  : RaftConversationCardRecipe.gap),
       ),
       itemBuilder: (context, index) => index == shown.length
           ? widget.section == 'saved'
@@ -2894,7 +2919,7 @@ class _ResourceViewState extends State<ResourceView> {
               key: listUpdates.keyOf(rowKey(shown[index])),
               child: widget.section == 'activity'
                   ? listedActivityCard(shown, index, authority)
-                  : item(shown[index]),
+                  : item(shown[index], topRule: index > 0),
             ),
       findItemIndexCallback: listUpdates.indexOf,
     );
@@ -3546,11 +3571,7 @@ class _ResourceViewState extends State<ResourceView> {
             )
           : null,
       markAllRead: (totalUnreadCount ?? 0) > 0 && activityScope.globalInbox
-          ? RaftTextButton(
-              label: 'Mark All Read',
-              variant: RaftControlVariant.outline,
-              visualHeight: 32,
-              minimumTargetSize: 32,
+          ? RaftResourceMarkReadButton(
               onPressed: () => command(
                 'POST',
                 '/channels/inbox/read-all',
@@ -3577,10 +3598,9 @@ class _ResourceViewState extends State<ResourceView> {
       child: Row(
         children: [
           Expanded(
-            child: SingleChildScrollView(
-              primary: false,
-              scrollDirection: Axis.horizontal,
+            child: RaftResourceFilterViewport(
               child: RaftSegmentedControl<String>(
+                shrinkFrame: t.option('resource.rows', or: 'cards') == 'flat',
                 // ThreadsInbox uses the raft-ui SegmentedControl recipe,
                 // rather than the older 11px tab-button presentation.
                 style: RaftSegmentedStyle.buttons,
@@ -3612,35 +3632,11 @@ class _ResourceViewState extends State<ResourceView> {
           // `showMarkAllRead`: only while something is unread.
           if ((totalUnreadCount ?? 0) > 0 && activityScope.globalInbox) ...[
             const SizedBox(width: RaftResourceMetrics.activityToolbarGap),
-            // Button sm outline `h-8 px-2 text-xs font-bold`.
-            RaftInteractive(
-              semanticLabel: raftText(context, 'Mark All Read'),
+            RaftResourceMarkReadButton(
               onPressed: () => command(
                 'POST',
                 '/channels/inbox/read-all',
                 sourceScope: scope,
-              ),
-              builder: (context, state) => RaftRecipeBox(
-                style: RaftButtonRecipe.resolve(
-                  theme: t.recipeTheme,
-                  variant: RaftButtonRecipeVariant.outline,
-                  size: RaftButtonRecipeSize.sm,
-                  states: t.recipeStates(
-                    hovered: state.hovered,
-                    pressed: state.pressed,
-                    focusVisible: state.focusVisible,
-                  ),
-                  tokens: t.recipeTokens,
-                ).root,
-                tokens: t.recipeTokens,
-                height: RaftResourceMetrics.activityToolbarActionHeight,
-                padding: RaftResourceMetrics.activityToolbarActionInset,
-                alignment: Alignment.center,
-                child: RaftCssText(
-                  raftText(context, 'Mark All Read'),
-                  style: RaftResourceMetrics.activityToolbarActionLabel,
-                  controlLabel: true,
-                ),
               ),
             ),
           ],
@@ -3679,6 +3675,9 @@ class _ResourceViewState extends State<ResourceView> {
       return const RaftMobileRootHeader(title: 'Activity');
     }
     final header = RaftPageHeader(
+      background: widget.section == 'activity' || widget.section == 'saved'
+          ? resourceSurface
+          : null,
       title: raftText(context, switch (widget.section) {
         'tasks' => 'Tasks',
         'saved' => 'Saved',
@@ -3917,7 +3916,11 @@ class _ResourceViewState extends State<ResourceView> {
     chinese: Localizations.localeOf(context).languageCode == 'zh',
   );
 
-  Widget savedCard(Map<String, dynamic> row, String scope) {
+  Widget savedCard(
+    Map<String, dynamic> row,
+    String scope, {
+    bool topRule = false,
+  }) {
     final recipe = RaftConversationCardRecipe(
       RaftTokens.of(context),
       saved: true,
@@ -3965,6 +3968,7 @@ class _ResourceViewState extends State<ResourceView> {
     return RaftConversationCard(
       key: ValueKey('saved-${row['messageId']}'),
       saved: true,
+      topRule: topRule,
       onOpen: () => openConversation(row, scope),
       onContextMenu: (at) => savedMenu(row, scope, at),
       popupOpen: menuRowKey == '${row['messageId']}',
@@ -4177,6 +4181,7 @@ class _ResourceViewState extends State<ResourceView> {
       viewFilter: viewFilter,
       section: section,
       separator: index > 0 && section == null,
+      topRule: index > 0,
     );
   }
 
@@ -4186,6 +4191,7 @@ class _ResourceViewState extends State<ResourceView> {
     String? viewFilter,
     ActivityListSection? section,
     bool separator = false,
+    bool topRule = false,
   }) {
     final filter = viewFilter ?? this.filter;
     final pin = activityGestureMatches(scope);
@@ -4204,6 +4210,7 @@ class _ResourceViewState extends State<ResourceView> {
             ActivityRolloutFlags.peek(w)?.activityConversationList == true,
         section: section,
         separator: separator,
+        topRule: topRule,
         open: () => openConversation(row, scope),
         activate: (detail, height, {bool pointer = false}) =>
             activateActivity(row, scope, detail, height, pointer: pointer),
@@ -5250,7 +5257,12 @@ class _ResourceViewState extends State<ResourceView> {
         controller: taskBoardScroll,
         primary: false,
         scrollDirection: Axis.horizontal,
-        padding: raftScrollPadding(context, const EdgeInsets.all(16)),
+        padding: raftScrollPadding(
+          context,
+          widget.section == 'activity' || widget.section == 'saved'
+              ? RaftConversationCardRecipe(RaftTokens.of(context)).listInset
+              : const EdgeInsets.all(16),
+        ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -5341,7 +5353,11 @@ class _ResourceViewState extends State<ResourceView> {
     );
   }
 
-  Widget item(Map<String, dynamic> row, {String? sourceScope}) {
+  Widget item(
+    Map<String, dynamic> row, {
+    String? sourceScope,
+    bool topRule = false,
+  }) {
     final section = widget.section, scope = sourceScope ?? authority;
     final name =
         (row['title'] ??
@@ -5392,8 +5408,10 @@ class _ResourceViewState extends State<ResourceView> {
               ),
       );
     }
-    if (section == 'saved') return savedCard(row, scope);
-    if (section == 'activity') return activityCard(row, scope);
+    if (section == 'saved') return savedCard(row, scope, topRule: topRule);
+    if (section == 'activity') {
+      return activityCard(row, scope, topRule: topRule);
+    }
     return const SizedBox.shrink();
   }
 

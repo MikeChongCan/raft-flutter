@@ -31,6 +31,7 @@ class ActivityRowHost {
     this.pinnedHeight,
     this.section,
     this.separator = false,
+    this.topRule = false,
   });
   final WorkspaceController controller;
 
@@ -66,6 +67,7 @@ class ActivityRowHost {
   /// between it and the row above.
   final ActivityListSection? section;
   final bool separator;
+  final bool topRule;
 }
 
 double? cardHeight(BuildContext context) =>
@@ -112,6 +114,7 @@ class ActivityCardRow extends StatelessWidget {
                   'activity-${row['kind']}-${row['channelId'] ?? row['messageId']}',
                 ),
           selected: host.selected,
+          topRule: host.topRule,
           onOpen: host.open,
           onActivate: !host.canonical
               ? null
@@ -153,13 +156,15 @@ class ActivityCardRow extends StatelessWidget {
                   padding: const EdgeInsets.only(bottom: 2),
                   child: RaftCssText(
                     activityThreadSubtitle(row, [...w.channels, ...w.dms]),
-                    style: recipe.metadata.copyWith(
-                      // ds-allow: moved unchanged from resource_view.dart; the count there dropped by the same.
-                      fontSize: 11,
-                      // ds-allow: moved unchanged from resource_view.dart; the count there dropped by the same.
-                      height: 12 / 11,
-                      color: recipe.titleIconColor,
-                    ),
+                    style: recipe.flat
+                        ? recipe.metadata
+                        : recipe.metadata.copyWith(
+                            // ds-allow: moved unchanged from resource_view.dart; the count there dropped by the same.
+                            fontSize: 11,
+                            // ds-allow: moved unchanged from resource_view.dart; the count there dropped by the same.
+                            height: 12 / 11,
+                            color: recipe.titleIconColor,
+                          ),
                   ),
                 ),
               Row(
@@ -226,7 +231,9 @@ class ActivityCardRow extends StatelessWidget {
                       TextSpan(
                         text: '$sender: ',
                         style: recipe.body.copyWith(
-                          color: recipe.senderColor,
+                          color: recipe.flat
+                              ? recipe.titleColor(unread > 0)
+                              : recipe.senderColor,
                           // ds-allow: moved unchanged from resource_view.dart; the count there dropped by the same.
                           fontWeight: FontWeight.w700,
                         ),
@@ -241,7 +248,7 @@ class ActivityCardRow extends StatelessWidget {
                 ),
               ),
               // ds-allow: moved unchanged from resource_view.dart; the count there dropped by the same.
-              const SizedBox(height: 4),
+              SizedBox(height: recipe.metadataGap),
               ConstrainedBox(
                 // ds-allow: moved unchanged from resource_view.dart; the count there dropped by the same.
                 constraints: const BoxConstraints(minHeight: 20),

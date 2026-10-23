@@ -194,6 +194,8 @@ GEOMETRY_RAFT = {
 OPTIONS_RAFT = {
     'control.edge': 'inkBorder', 'sticker.ring': 'dieCut', 'emphasis.fill': 'solid',
     'iconButton.surface': 'generic',
+    'sidebar.mobileSurface': 'canvas', 'resource.surface': 'canvas',
+    'resource.rows': 'flat', 'resource.badge': 'sticker', 'resource.markRead': 'ghost',
     'press.effect': 'overlay', 'control.sheen': 'none', 'avatar.shape': 'square',
     'indicator.border': 'none', 'switch.shape': 'pill', 'checkbox.mark': 'fillCheck',
     'field.style': 'border', 'tabs.selected': 'sticker', 'segmented.selected': 'sticker',

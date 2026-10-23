@@ -141,9 +141,13 @@ class RaftSidebarRecipe {
   bool get desktop => viewportWidth >= RaftLayoutMetrics.desktopBreakpoint;
   bool get product => variant == RaftSidebarVariant.mountedProduct;
   bool get headerOverlaysContent => !product;
-  // SidebarBody3151–3204 and mounted Sidebar3754 use the muted canvas;
-  // the Brutal mobile product explicitly replaces its cream with white.
-  Color get bodyBackground => tokens.sidebar;
+  // Mobile-inline Sidebar uses its own surface option; the desktop sidebar
+  // keeps its dedicated role. Other legacy muted surfaces stay unchanged.
+  Color get bodyBackground =>
+      !desktop &&
+          tokens.option('sidebar.mobileSurface', or: 'sidebar') == 'canvas'
+      ? tokens.canvas
+      : tokens.colors['layer-sidebar'] ?? tokens.sidebar;
   double get headerHeight => product && desktop && workspaceEnabled
       ? RaftMetrics.compactPanelHeader
       : RaftLayoutMetrics.shellHeaderHeight(tokens, viewportHeight);
@@ -2692,10 +2696,14 @@ class RaftSegmentedControl<T> extends StatefulWidget {
     this.style = RaftSegmentedStyle.buttons,
     this.minimumTargetSize,
     this.disabled = false,
+    this.shrinkFrame = false,
   });
 
   /// `SegmentedControl disabled`: every item is inert and its ink greys; the sticker stays.
   final bool disabled;
+
+  /// A flex-shrinking CSS track may be narrower than its non-shrinking items.
+  final bool shrinkFrame;
   final RaftSegmentedStyle style;
   final T value;
   final List<RaftSegmentedOption<T>> items;
@@ -2766,6 +2774,7 @@ class _RaftSegmentedControlState<T> extends State<RaftSegmentedControl<T>> {
   Widget _group(BuildContext context) => switch (widget.style) {
     // raft-ui 0.7.1 `SegmentedControl`: the fill-muted track with sticker items.
     RaftSegmentedStyle.buttons => RaftSegmentedTrack(
+      shrinkFrame: widget.shrinkFrame,
       children: [
         for (final item in widget.items)
           RaftSegmentedItem(

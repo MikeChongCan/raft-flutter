@@ -1,5 +1,15 @@
 # 主题契约（P0 定稿草案）
 
+Raft 外观的最终对照基准是 **Web v1.21.23 实际渲染**（source tag
+`v1.21.23-source.1`，提交 `db5e399f017d584e49597e3a28757645d6807893`），
+不是独立组件的官方样例。该版本 `packages/web/package.json:46` 与
+`pnpm-lock.yaml` 固定 `raft-ui` 为 `npm:@botiverse/raft-ui@0.7.0`。
+仓库中保留的 0.7.1 token 数据与 0.7.0 的 `tokens.json` 字节一致
+（SHA-256 `47e5ed2d0c4867db61f054940189db56010787b9353cbc1babfc048f6efd53fd`）；
+Badge、Card、Button（含 ghost）实现亦相同，因此不能通过更换 token 数据版本
+修复应用布局。官方样例只验证组件输入；页面的排列、变体和文案以该 Web 版本
+实际调用及渲染为准。Elegant／Brutal 的外观基准仍为 `a57b9dab`。
+
 状态：待评审（Kevin、Cindy）。本文件只定义契约，不含实现代码。
 决定来源：Kevin，#raft-flutter:4093da5f（8798cb71 目标是与 Raft UI 无关的主题中间层、100%；
 dd6c1674 开始，交给 DeepDesign）。
@@ -225,7 +235,7 @@ P2 基准确认后逐项落值。
 
 | 外观 | 权威来源 |
 | --- | --- |
-| Raft | `@botiverse/raft-ui` 0.7.1 的源码（`dist` 里的 `button.tsx` 等），并用 `tool/parity-ui/run dom-dump` 在官方 React 样例上实测复核 |
+| Raft | Web v1.21.23 实际渲染；以该版本应用的调用参数、文案和布局为准，组件为 `@botiverse/raft-ui` 0.7.0。0.7.1 官方样例仅作组件诊断，不能替代页面验收。 |
 | Elegant / Brutal | `a57b9dab` 的生成 recipe 解析结果（`RaftButtonRecipe.resolve(theme:, size:)`）或该 commit 的基准渲染 |
 
 **旧版只有两套外观**（`enum RaftFamily { brutal, elegant }`，默认浅色是 Brutal）。
@@ -342,6 +352,18 @@ RGB0.954685/0.954685/0.969524）；展示表中的0.04和整数RGB不作为绘�
 | 18 | `tooltip.arrow` | `yes` / `no` | yes | yes | no | `tooltip.dart:28,550` |
 | 19 | `code.innerBorder` | `dashed` / `solid` | dashed | dashed | solid | `copyable_code.dart:78-122` |
 | 20 | `spinner.style` | `pixel` / `ring` | pixel | ring | ring | `design_primitives.dart:1580-1690` |
+
+新增表面选项（Cindy 2026-10-23 批准；只选择已有颜色角色，不增加颜色词汇）：
+
+| 选项 | 取值 | Raft | Elegant | Brutal | 来源与适用范围 |
+| --- | --- | --- | --- | --- | --- |
+| `sidebar.mobileSurface` | `canvas` / `sidebar` | canvas | sidebar（明暗相同选择） | 浅色 canvas；深色 sidebar | Web v1.21.23 `packages/web/src/components/layout/Sidebar.tsx:3806`；a57b9dab `packages/raft_ui/lib/src/design_primitives.dart:141-145`。手机侧栏；桌面读取已有 `layer-sidebar`。 |
+| `resource.surface` | `canvas` / `sidebar` | canvas | sidebar（手机／桌面相同） | 浅色 canvas；深色 sidebar | Web v1.21.23 `packages/web/src/components/thread/ThreadsInbox.tsx:1038,1079`；a57b9dab `apps/raft_flutter/lib/features/resource_view.dart:2385,2393`。Activity／Saved 的页表面，不改变 Search／Tasks。 |
+| `resource.rows` | `flat` / `cards` | flat | cards | cards | Web v1.21.23 `ThreadsInbox.tsx:103-108`、`SavedPanel.tsx:269` 的实际排列；a57b9dab 的资源卡片排列。 |
+| `resource.badge` | `sticker` / `pill` | sticker | pill | pill | Web v1.21.23 的 `Badge` 实际调用；a57b9dab `resource_rows.dart` 的胶囊 recipe。 |
+| `resource.markRead` | `ghost` / `outline` | ghost | outline | outline | Web v1.21.23 `ThreadsInbox.tsx:1059-1069` 的 Button sm ghost；a57b9dab 的 outline 操作。 |
+
+原版实测值（390／1280宽，字体与其他内容不决定取色）：Elegant浅色侧栏与资源页均为 `#f8f8f7`，深色均为 `#0d0d0b`，不按宽度区分。Brutal浅色手机侧栏为 `#ffffff`、桌面为 `#fffaef`；资源页在两种宽度均为 `#ffffff`。Brutal深色按 a57b9dab `theme.dart:100-102` 沿用Elegant深色。桌面的 `layer-sidebar` 家族包投影只复原该专用角色，旧 `layer-canvas-muted` 值不改。
 
 次要、按需再加（P4 时若确有差异才提升为选项）：`timeline.marker`（实心/空心环）、
 `suggestion.framedIcon`、`dialog.close`、`listItem.recipeOverride`、`rail.attention`（渐变/实色）。
@@ -548,3 +570,11 @@ Raft 包已经落地，生成器一次产出三份、由同一个 `--check` 守�
    组件必须用同一个公式推导，否则用户主题自定圆角后会出现“转角夹紧”。这条要写进 P4 的实现约束。
 5. **对比度检查的假阳性**：半透明角色（`ink-*`、`/ a` 的阴影色）无法直接算对比度。
    校验时先按所在表面合成再算，合成表随契约版本走。
+
+资源列表的两种结构各自采用常量（Cindy 2026-10-23 批准），不增加间距令牌：
+flat 的外侧左右0、顶部4、底部16，行内左右16／上下12，行间0，元数据前8；
+cards 的外侧16、行内12、行间8、元数据前4。前者来自上述 Web 版本的 DOM
+计算样式与源码，后者来自 a57b9dab。两套旧外观在 cards 结构下数值相同；
+以后同一种结构内出现外观差异时再提取令牌。Raft 行的字级复用已有
+subhead／callout／caption；徽标与按钮复用 RaftBadge／RaftButton。
+“Mark all read”来自应用的 `thread.markAllRead.label` 翻译键，不属于主题数据。

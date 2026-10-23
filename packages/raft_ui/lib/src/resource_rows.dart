@@ -14,6 +14,11 @@ import 'inline_badge_editor.dart';
 import 'localization.dart';
 import 'search_result_surface.dart' show RaftTaskFilterButton;
 import 'theme.dart';
+import 'panel_layout.dart' show RaftCssText;
+import 'raft/badge.dart';
+import 'raft/button.dart';
+import 'raft/ui_tokens.dart';
+import 'text_scaling.dart' show RaftScaled;
 
 /// SavedItem metadata row (packages/web/src/components/saved/SavedPanel.tsx):
 /// `flex items-center gap-2 text-xs` with the channel label, the optional
@@ -34,15 +39,24 @@ class RaftSavedItemMeta extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
-    final muted = t.colors['foreground-muted']!;
+    final flat = t.option('resource.rows', or: 'cards') == 'flat';
+    final muted = flat ? t.ui.foregroundHint : t.colors['foreground-muted']!;
     TextStyle meta(Color color) => RaftTypography.body(
       t,
       size: 12,
       line: 16,
-      weight: FontWeight.w700,
+      weight: flat ? FontWeight.w500 : FontWeight.w700,
       color: color,
     );
     return RaftFlexShrinkRow(
+      truncating: flat,
+      fixed: flat
+          ? {
+              0,
+              if (thread) 1,
+              1 + (thread ? 1 : 0) + (sender.isNotEmpty ? 1 : 0),
+            }
+          : const {},
       gap: 8, // gap-2
       children: [
         Text(channelLabel, style: meta(muted)),
@@ -58,21 +72,39 @@ class RaftSavedItemMeta extends StatelessWidget {
             ],
           ),
         if (sender.isNotEmpty)
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            spacing: 4, // gap-1
-            children: [
-              ?avatar,
-              Flexible(
-                child: Text(
-                  sender,
-                  style: meta(t.colors['foreground-strong']!),
+          flat
+              ? RaftFlexShrinkRow(
+                  gap: 4,
+                  truncating: true,
+                  fixed: avatar != null ? const {0} : const {},
+                  children: [
+                    ?avatar,
+                    Text(
+                      sender,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: meta(t.colors['foreground-strong']!)
+                          .copyWith(fontWeight: FontWeight.w600),
+                    ),
+                  ],
+                )
+              : Row(
+                  mainAxisSize: MainAxisSize.min,
+                  spacing: 4,
+                  children: [
+                    ?avatar,
+                    Flexible(
+                      child: Text(
+                        sender,
+                        style: meta(t.colors['foreground-strong']!),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
-          ),
         Text(
           time,
+          maxLines: flat ? 1 : null,
+          softWrap: !flat,
           style: RaftTypography.mono(t, size: 12, line: 16, color: muted),
         ),
       ],
@@ -96,6 +128,28 @@ class _RaftSavedToggleState extends State<RaftSavedToggle> {
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context), rt = RaftRecipeTokens(t);
+    if (t.option('resource.rows', or: 'cards') == 'flat') {
+      // SavedPanel.tsx:149-159: pressed state is carried by the filled bookmark,
+      // with transparent surface/border and foreground ink (no pink sticker).
+      return Semantics(
+        toggled: true,
+        child: RaftButton(
+          label: '',
+          glyph: RaftGlyph.bookmarkFilled,
+          semanticLabel: raftText(
+            context,
+            widget.label ?? 'Remove Saved Message',
+          ),
+          uiVariant: RaftButtonVariant.ghost,
+          uiSize:
+              MediaQuery.sizeOf(context).width <
+                  RaftLayoutMetrics.desktopBreakpoint
+              ? RaftButtonSize.iconLg
+              : RaftButtonSize.iconMd,
+          onPressed: widget.onPressed,
+        ),
+      );
+    }
     final base = RaftPanelToggleActionRecipe.resolve(
       theme: RaftRecipeTheme.elegant,
       states: RaftRecipeStates({
@@ -207,8 +261,18 @@ class RaftResourceBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context), rt = RaftRecipeTokens(t);
+    if (t.option('resource.badge', or: 'pill') == 'sticker') {
+      return RaftBadge(
+        label: label,
+        variant: variant,
+        appearance: appearance,
+        glyph: glyph,
+      );
+    }
     final root = RaftBadgeRecipe.resolve(
-      theme: RaftRecipeTheme.elegant,
+      theme: t.option('control.edge', or: 'ring') == 'inkBorder'
+          ? RaftRecipeTheme.brutal
+          : RaftRecipeTheme.elegant,
       appearance: appearance,
       variant: variant,
       states: RaftRecipeStates({
@@ -356,4 +420,71 @@ abstract final class RaftResourceMetrics {
   static const EdgeInsets activityToolbarInset = EdgeInsets.symmetric(
     horizontal: 16,
   );
+}
+
+/// ThreadsInbox's Mark all read action: Web v1.21.23 uses Button sm ghost;
+/// a57b9dab uses its outline recipe. The caller owns the read mutation.
+class RaftResourceMarkReadButton extends StatelessWidget {
+  const RaftResourceMarkReadButton({super.key, required this.onPressed});
+  final VoidCallback onPressed;
+  @override
+  Widget build(BuildContext context) {
+    final t = RaftTokens.of(context);
+    if (t.option('resource.markRead', or: 'outline') == 'ghost') {
+      return RaftButton(
+        label: 'Mark all read',
+        semanticLabel: raftText(context, 'Mark all read'),
+        uiVariant: RaftButtonVariant.ghost,
+        uiSize: RaftButtonSize.sm,
+        onPressed: onPressed,
+      );
+    }
+    return RaftInteractive(
+      semanticLabel: raftText(context, 'Mark all read'),
+      onPressed: onPressed,
+      builder: (context, state) => ExcludeSemantics(
+        child: RaftRecipeBox(
+          style: RaftButtonRecipe.resolve(
+            theme: t.option('control.edge', or: 'ring') == 'inkBorder'
+                ? RaftRecipeTheme.brutal
+                : RaftRecipeTheme.elegant,
+            variant: RaftButtonRecipeVariant.outline,
+            size: RaftButtonRecipeSize.sm,
+            states: t.recipeStates(
+              hovered: state.hovered,
+              pressed: state.pressed,
+              focusVisible: state.focusVisible,
+            ),
+            tokens: t.recipeTokens,
+          ).root,
+          tokens: t.recipeTokens,
+          height: RaftResourceMetrics.activityToolbarActionHeight,
+          padding: RaftResourceMetrics.activityToolbarActionInset,
+          alignment: Alignment.center,
+          child: RaftCssText(
+            raftText(context, 'Mark all read'),
+            style: RaftResourceMetrics.activityToolbarActionLabel,
+            controlLabel: true,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// The Web inbox lets its flex track shrink, while the earlier themes scroll
+/// their separate filters. The child retains the product input callbacks.
+class RaftResourceFilterViewport extends StatelessWidget {
+  const RaftResourceFilterViewport({super.key, required this.child});
+  final Widget child;
+  @override
+  Widget build(BuildContext context) =>
+      RaftTokens.of(context).option('resource.rows', or: 'cards') == 'flat' &&
+          !RaftScaled.grows(context)
+      ? child
+      : SingleChildScrollView(
+          primary: false,
+          scrollDirection: Axis.horizontal,
+          child: child,
+        );
 }

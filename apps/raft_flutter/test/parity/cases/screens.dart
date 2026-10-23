@@ -120,6 +120,7 @@ WorkspaceController _workspace(
       ..server = server;
     w.messageDomain.ledger.switchServer(_serverId);
   }
+  ctx.onDispose(w.dispose);
   return w;
 }
 

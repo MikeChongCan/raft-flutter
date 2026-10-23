@@ -355,11 +355,18 @@ final ParityCase _shareSelection = ParityCase(
     for (var i = 0; i < 12; i++) {
       await t.pump(const Duration(milliseconds: 50));
     }
+    // Selection changes row height; update the visible window before tapping.
+    await stage.alignRow(t);
     await t.tap(find.byType(RaftMessageRow).at(1));
     for (var i = 0; i < 6; i++) {
       await t.pump(const Duration(milliseconds: 50));
     }
     await stage.alignRow(t);
+    expect(
+      find.byWidgetPredicate((w) => w is RaftCheckbox && w.value == true),
+      findsNWidgets(2),
+      reason: 'Both visible message rows must actually be selected.',
+    );
   },
 );
 
@@ -893,6 +900,7 @@ final ParityCase _commentAnchor = ParityCase(
     final w = WorkspaceController(client)
       ..server = RaftRecord(ids.server)
       ..channels = [RaftChannel(ids.channel('design'))];
+    ctx.onDispose(w.dispose);
     return Scaffold(
       body: ctx.target(
         SizedBox(

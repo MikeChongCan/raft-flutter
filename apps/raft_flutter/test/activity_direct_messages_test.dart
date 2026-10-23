@@ -269,7 +269,7 @@ void main() {
         expect(shown('Direct thread reply'), findsOneWidget);
         expect(shown('Preview 0'), findsNothing);
         expect(state.rows, hasLength(2));
-        expect(find.text('Mark All Read'), findsNothing);
+        expect(find.text('Mark all read'), findsNothing);
         expect(acceptedUnread.whereType<int>().toSet(), {17});
         if (compact) {
           await openViews(tester);
@@ -313,7 +313,7 @@ void main() {
           ),
           findsOneWidget,
         );
-        expect(find.text('Mark All Read'), findsNothing);
+        expect(find.text('Mark all read'), findsNothing);
         expect(tester.takeException(), isNull);
       });
     }

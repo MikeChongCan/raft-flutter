@@ -244,6 +244,7 @@ class _ComposerHostState extends State<_ComposerHost> {
   @override
   void dispose() {
     directory.dispose();
+    w.dispose();
     super.dispose();
   }
 
@@ -314,7 +315,7 @@ final ParityCase _files = ParityCase(
         width: 390,
         height: 360,
         padding: EdgeInsets.zero,
-        child: _FilesHost(fixture: fx),
+        child: _FilesHost(fixture: fx, parityContext: ctx),
       ),
     );
   },
@@ -322,7 +323,8 @@ final ParityCase _files = ParityCase(
 );
 
 class _FilesHost extends StatefulWidget {
-  const _FilesHost({required this.fixture});
+  const _FilesHost({required this.fixture, required this.parityContext});
+  final ParityContext parityContext;
   final ParityThreadFixture fixture;
   @override
   State<_FilesHost> createState() => _FilesHostState();
@@ -330,6 +332,16 @@ class _FilesHost extends StatefulWidget {
 
 class _FilesHostState extends State<_FilesHost> {
   late final WorkspaceController w = widget.fixture.composerWorkspace();
+
+  @override
+  void initState() {
+    super.initState();
+    // The cached store is retired (cleared), not disposed, by the controller.
+    // This isolated fixture owns its final lifetime after the view unmounts.
+    final store = w.channelFilesStore(widget.fixture.composerChannelId);
+    widget.parityContext.onDispose(store.dispose);
+    widget.parityContext.onDispose(w.dispose);
+  }
 
   @override
   Widget build(BuildContext context) {

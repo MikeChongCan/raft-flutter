@@ -12,6 +12,58 @@ Widget activitySelectedRowsPreview() => const ActivitySelectedRows();
 Widget activitySelectedMasterDetailPreview() =>
     const ActivitySelectedMasterDetail();
 
+@RaftPreviews('Resource toolbar', size: Size(390, 240))
+Widget resourceToolbarPreview() => const _ResourceToolbarPreview();
+
+class _ResourceToolbarPreview extends StatefulWidget {
+  const _ResourceToolbarPreview();
+  @override
+  State<_ResourceToolbarPreview> createState() =>
+      _ResourceToolbarPreviewState();
+}
+
+class _ResourceToolbarPreviewState extends State<_ResourceToolbarPreview> {
+  String filter = 'all';
+  int marked = 0;
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.all(16),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: RaftResourceFilterViewport(
+                child: RaftSegmentedControl<String>(
+                  value: filter,
+                  shrinkFrame:
+                      RaftTokens.of(context)
+                          .option('resource.rows', or: 'cards') ==
+                      'flat',
+                  minimumTargetSize: 32,
+                  items: const [
+                    RaftSegmentedOption(value: 'all', label: 'All'),
+                    RaftSegmentedOption(value: 'unread', label: 'Unread'),
+                    RaftSegmentedOption(value: 'mentions', label: 'Mentions'),
+                  ],
+                  onChanged: (value) => setState(() => filter = value),
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            RaftResourceMarkReadButton(
+              onPressed: () => setState(() => marked++),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        RaftCssText('Filter: $filter; read actions: $marked'),
+      ],
+    ),
+  );
+}
+
 class _Sample {
   const _Sample(
     this.channel,

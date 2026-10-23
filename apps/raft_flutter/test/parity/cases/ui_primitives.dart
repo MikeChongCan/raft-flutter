@@ -686,12 +686,14 @@ final ParityCase _selectionPopover = ParityCase(
           ],
           tokens.recipeTokens,
         );
+        final search = TextEditingController(text: 'des');
+        ctx.onDispose(search.dispose);
         return RaftSelectionPopover(
           surfaceStyle: surface,
           title: 'Channels',
           width: 310,
           onClear: () {},
-          searchController: TextEditingController(text: 'des'),
+          searchController: search,
           searchPlaceholder: 'Search channels',
           options: [
             RaftSelectionOption(

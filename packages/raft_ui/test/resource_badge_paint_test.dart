@@ -34,12 +34,14 @@ void main() {
         );
         await tester.pumpAndSettle();
         final rect = tester.getRect(find.byType(RaftResourceBadge));
-        expect(rect.height, 18);
-        final corner = await pixel(tester, rect.topLeft);
+        // Web v1.21.23 Badge solid is a 20px sticker (0.7.0 == 0.7.1).
+        expect(rect.height, 20);
+        // The die-cut edge extends 1.5px outside the sticker.
+        final corner = await pixel(tester, rect.topLeft - const Offset(2, 2));
         expect(
           corner,
           outside,
-          reason: 'CSS rounded-full leaves the corner clear.',
+          reason: 'Outside the die-cut edge remains transparent.',
         );
 
         expect(

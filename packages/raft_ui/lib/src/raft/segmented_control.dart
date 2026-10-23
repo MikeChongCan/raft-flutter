@@ -3,6 +3,7 @@
 // bold); the others are `foreground-muted` text that takes the `fill-pressed` wash on hover. An item holds an optional
 // 16px icon, a label and a mono count. A disabled group keeps the sticker and greys the ink.
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 import '../control_typography.dart';
 import '../design_primitives.dart';
@@ -216,8 +217,13 @@ class RaftSegmentedItem extends StatelessWidget {
 /// The `SegmentedControl` track: `bg-fill-muted rounded-[11px] p-[3px] gap-0.5`, as wide as its items. The web
 /// control is `flex-nowrap`; a track narrower than its items wraps them onto further lines instead of overflowing.
 class RaftSegmentedTrack extends StatelessWidget {
-  const RaftSegmentedTrack({super.key, required this.children});
+  const RaftSegmentedTrack({
+    super.key,
+    required this.children,
+    this.shrinkFrame = false,
+  });
   final List<Widget> children;
+  final bool shrinkFrame;
 
   @override
   Widget build(BuildContext context) {
@@ -255,16 +261,29 @@ class RaftSegmentedTrack extends StatelessWidget {
           trackRadius >= 999 ? 999 : trackRadius,
         ),
       ),
-      child: Padding(
-        // ignore: raft_lints/off_grid_spacing -- the track's `p-[3px]` is an explicit arbitrary value in the raft-ui source (3px ink-to-sticker inset), not a spacing step.
-        padding: EdgeInsets.all(inset),
-        child: Wrap(
-          spacing: 2,
-          runSpacing: 2,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: children,
-        ),
-      ),
+      child: shrinkFrame
+          ? _ShrinkingFrame(
+              child: Padding(
+                // ignore: raft_lints/off_grid_spacing -- the track's `p-[3px]` is an explicit arbitrary value in the raft-ui source (3px ink-to-sticker inset), not a spacing step.
+                padding: EdgeInsets.all(inset),
+                child: Wrap(
+                  spacing: 2,
+                  runSpacing: 2,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: children,
+                ),
+              ),
+            )
+          : Padding(
+              // ignore: raft_lints/off_grid_spacing -- the track's `p-[3px]` is an explicit arbitrary value in the raft-ui source (3px ink-to-sticker inset), not a spacing step.
+              padding: EdgeInsets.all(inset),
+              child: Wrap(
+                spacing: 2,
+                runSpacing: 2,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: children,
+              ),
+            ),
     );
   }
 }
@@ -275,4 +294,28 @@ class _Shrink extends StatelessWidget {
   final Widget child;
   @override
   Widget build(BuildContext context) => child;
+}
+
+// ThreadsInbox v1.21.23: a shrinking flex track paints its full-size items
+// outside its own rounded fill. Keep the items' intrinsic box and the track's
+// constrained box separate, without clipping their text or reporting overflow.
+class _ShrinkingFrame extends SingleChildRenderObjectWidget {
+  const _ShrinkingFrame({required super.child});
+  @override
+  RenderObject createRenderObject(BuildContext context) =>
+      _RenderShrinkingFrame();
+}
+
+class _RenderShrinkingFrame extends RenderProxyBox {
+  BoxConstraints looseWidth(BoxConstraints c) =>
+      c.copyWith(minWidth: 0, maxWidth: double.infinity);
+  @override
+  void performLayout() {
+    child!.layout(looseWidth(constraints), parentUsesSize: true);
+    size = constraints.constrain(child!.size);
+  }
+
+  @override
+  Size computeDryLayout(BoxConstraints constraints) =>
+      constraints.constrain(child!.getDryLayout(looseWidth(constraints)));
 }

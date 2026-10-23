@@ -16,6 +16,18 @@ import 'shadows.g.dart';
 const String raftSansFontFamily = 'packages/raft_ui/SpaceGrotesk';
 const String raftMonoFontFamily = 'packages/raft_ui/SpaceMono';
 
+// Theme packs carry CSS family names. Flutter assets are registered under
+// package-qualified names; unrecognised user families remain platform names.
+String _bundledFamily(String family) => switch (family) {
+  'Space Grotesk' || 'SpaceGrotesk' => raftSansFontFamily,
+  'Space Mono' || 'SpaceMono' => raftMonoFontFamily,
+  'Geist Mono' || 'GeistMono' => 'packages/raft_ui/GeistMono',
+  'Geist' => 'packages/raft_ui/Geist',
+  'Inter' => 'packages/raft_ui/Inter',
+  'Hanken Grotesk' || 'HankenGrotesk' => 'packages/raft_ui/HankenGrotesk',
+  _ => family,
+};
+
 /// raft-ui 0.7.1 `fonts.css`: `--heading-font` and `--sans-font` are the same stack.
 const List<String> raftSansFontStack = [
   'Space Grotesk',
@@ -96,9 +108,15 @@ class RaftTokenSet {
     final monoStack = spec('mono')?.stack.isNotEmpty == true
         ? spec('mono')!.stack
         : raftMonoFontStack;
-    final headingFamily = spec('heading')?.family ?? raftSansFontFamily;
-    final sansFamily = spec('sans')?.family ?? raftSansFontFamily;
-    final monoFamily = spec('mono')?.family ?? raftMonoFontFamily;
+    final headingFamily = _bundledFamily(
+      spec('heading')?.family ?? raftSansFontFamily,
+    );
+    final sansFamily = _bundledFamily(
+      spec('sans')?.family ?? raftSansFontFamily,
+    );
+    final monoFamily = _bundledFamily(
+      spec('mono')?.family ?? raftMonoFontFamily,
+    );
     final colors = {...mode.colors, ...mode.palette};
     RaftShadow shadow(String role) => RaftShadow([
       for (final layer in mode.shadows[role] ?? const <RaftShadowSpec>[])

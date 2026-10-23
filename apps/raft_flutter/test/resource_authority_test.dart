@@ -339,7 +339,7 @@ void main() {
         find.byWidgetPredicate(
           (widget) =>
               widget is RaftInteractive &&
-              widget.semanticLabel == 'Mark All Read',
+              widget.semanticLabel == 'Mark all read',
         ),
       );
       _role(w, 'member');

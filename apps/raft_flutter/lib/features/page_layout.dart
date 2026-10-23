@@ -32,6 +32,7 @@ class RaftPageHeader extends StatelessWidget implements PreferredSizeWidget {
     this.leftInset,
     this.bottomRule = false,
     this.iconBackground,
+    this.background,
   });
 
   /// Elegant desktop only: the host's own left padding (ActivityInboxPanel
@@ -41,6 +42,9 @@ class RaftPageHeader extends StatelessWidget implements PreferredSizeWidget {
 
   /// Callsite `iconBg` (SavedPanel `bg-primary-soft`); null keeps the recipe fill.
   final Color? iconBackground;
+
+  /// The containing page surface; null preserves the header recipe.
+  final Color? background;
   final String title;
   final String? subtitle;
   final Widget? icon;
@@ -72,6 +76,7 @@ class RaftPageHeader extends StatelessWidget implements PreferredSizeWidget {
       // non-identity surfaces.
       return RaftPanelHeaderBar(
         title: title,
+        background: background,
         subtitle: subtitle,
         onBack: onBack,
         backKey: backKey,
@@ -122,6 +127,7 @@ class RaftPageHeader extends StatelessWidget implements PreferredSizeWidget {
       return RaftPanelHeaderBar(
         key: const Key('page-header-surface'),
         title: title,
+        background: background,
         subtitle: subtitle,
         leftPadding: leftInset,
         bottomRule: bottomRule,
@@ -170,7 +176,7 @@ class RaftPageHeader extends StatelessWidget implements PreferredSizeWidget {
             )
           : restingPadding,
       decoration: BoxDecoration(
-        color: recipe.background,
+        color: background ?? recipe.background,
         border: Border(
           bottom: canonical && mobile
               ? BorderSide(color: t.line)

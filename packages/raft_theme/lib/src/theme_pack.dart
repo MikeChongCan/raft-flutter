@@ -116,6 +116,11 @@ const Map<String, Set<String>> raftStructuralOptions = {
   // Whether the segments sit inside a rounded, padded track (raft-ui 0.7.1) or
   // are separate segments separated by a gap (the pre-theme app).
   'segmented.frame': {'framed', 'separate'},
+  'sidebar.mobileSurface': {'canvas', 'sidebar'},
+  'resource.surface': {'canvas', 'sidebar'},
+  'resource.rows': {'flat', 'cards'},
+  'resource.badge': {'sticker', 'pill'},
+  'resource.markRead': {'ghost', 'outline'},
   'mobileNav.style': {'floatingCapsule', 'docked'},
   'mobileNav.labels': {'iconsOnly', 'withLabels'},
   'header.layout': {'overlay', 'inFlow'},

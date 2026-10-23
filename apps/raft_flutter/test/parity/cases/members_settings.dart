@@ -34,6 +34,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:image_picker_platform_interface/image_picker_platform_interface.dart'
+    show
+        ImagePickerPlatform,
+        ImageSource,
+        ImagePickerOptions; // ignore: depend_on_referenced_packages
 import 'package:raft_client/raft_client.dart';
 import 'package:raft_flutter/data/personal_presentation.dart';
 import 'package:raft_flutter/data/workspace_controller.dart';
@@ -300,7 +305,7 @@ ParityCase _createAgent(
 /// react-provider.spec.ts: provider → Custom, fill API URL / API key, open
 /// MORE, fill the Claude command, scroll the modal back to the top.
 Future<void> _fillCustomProvider(WidgetTester t, ParityContext ctx) async {
-  await t.pump(const Duration(milliseconds: 300));
+  await t.pumpAndSettle();
   await t.tap(find.byKey(const ValueKey('runtime-provider')));
   await t.pump(const Duration(milliseconds: 200));
   await t.tap(find.text('Custom').last);
@@ -322,8 +327,8 @@ Future<void> _fillCustomProvider(WidgetTester t, ParityContext ctx) async {
   FocusManager.instance.primaryFocus?.unfocus();
   await t.pump(const Duration(milliseconds: 100));
   final modal = find
-      .descendant(
-        of: find.byType(SingleChildScrollView).first,
+      .ancestor(
+        of: find.byKey(const ValueKey('runtime-provider')),
         matching: find.byType(Scrollable),
       )
       .first;
@@ -512,6 +517,19 @@ final ParityCase _channelAddMember = ParityCase(
 // Settings: RaftSettingsPage with the destination list WorkspaceView.settings()
 // builds for an owner (workspace_view.dart), mobile layout.
 
+class _AvatarPhotoPickerFixture extends ImagePickerPlatform {
+  @override
+  Future<XFile?> getImageFromSource({
+    required ImageSource source,
+    ImagePickerOptions options = const ImagePickerOptions(),
+  }) async => XFile.fromData(
+    Uint8List.fromList(const [0x89, 0x50, 0x4E, 0x47]),
+    name: 'avatar.png',
+    path: 'avatar.png',
+    mimeType: 'image/png',
+  );
+}
+
 class _AvatarPickerFixture extends FileSelectorPlatform {
   @override
   Future<XFile?> openFile({
@@ -580,12 +598,24 @@ ParityCase _settings(
       'GET /servers/visual-server': (_) => fixture.server,
       'GET /servers/visual-server/invites': (_) => [],
       'GET /servers/visual-server/join-links': (_) => [],
-      'POST /auth/me/avatar': (_) =>
-          const RaftApiException('Avatar upload failed: upload_failed'),
+      'POST /auth/me/avatar': (_) => RaftApiException.response(
+        'Avatar upload failed: upload_failed',
+        status: 500,
+        body: const {'error': 'Avatar upload failed: upload_failed'},
+      ),
     });
-    if (uploadError) FileSelectorPlatform.instance = _AvatarPickerFixture();
+    if (uploadError) {
+      final documents = FileSelectorPlatform.instance;
+      final photos = ImagePickerPlatform.instance;
+      FileSelectorPlatform.instance = _AvatarPickerFixture();
+      ImagePickerPlatform.instance = _AvatarPhotoPickerFixture();
+      ctx.onDispose(() {
+        FileSelectorPlatform.instance = documents;
+        ImagePickerPlatform.instance = photos;
+      });
+    }
     return Scaffold(
-      body: _settingsPage(w, tab: tab, root: root),
+      body: _settingsPage(ctx, w, tab: tab, root: root),
     );
   },
   interact: uploadError
@@ -616,17 +646,26 @@ ParityCase _settings(
 );
 
 Widget _settingsPage(
+  ParityContext ctx,
   WorkspaceController w, {
   required String tab,
   required bool root,
-}) => WorkspaceSettings(
-  controller: w,
-  // React fixture state: Light mode, Brutal light theme.
-  appearance: const RaftAppearance(mode: ThemeMode.light),
-  onAppearance: (_) {},
-  presentation: PersonalPresentationStore(),
-  notifications: NativeNotificationService(platform: TargetPlatform.android),
-  onLogout: () async {},
-  initialTab: tab,
-  mobileRoot: root,
-);
+}) {
+  final presentation = PersonalPresentationStore();
+  final notifications = NativeNotificationService(
+    platform: TargetPlatform.android,
+  );
+  ctx.onDispose(presentation.dispose);
+  ctx.onDispose(notifications.dispose);
+  return WorkspaceSettings(
+    controller: w,
+    // React fixture state: Light mode, Brutal light theme.
+    appearance: const RaftAppearance(mode: ThemeMode.light),
+    onAppearance: (_) {},
+    presentation: presentation,
+    notifications: notifications,
+    onLogout: () async {},
+    initialTab: tab,
+    mobileRoot: root,
+  );
+}
