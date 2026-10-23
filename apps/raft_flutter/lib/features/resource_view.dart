@@ -2104,7 +2104,11 @@ class _ResourceViewState extends State<ResourceView> {
           ? rows.length.clamp(50, 100).toInt()
           : 50;
       final params = widget.section == 'search'
-          ? advanced.search(query.text, offset: append ? rows.length : 0)
+          ? advanced.search(
+              query.text,
+              offset: append ? rows.length : 0,
+              append: append,
+            )
           : ['saved', 'activity'].contains(widget.section)
           ? advanced.list(
               query.text,
@@ -2271,7 +2275,7 @@ class _ResourceViewState extends State<ResourceView> {
           cursor = nextCursor;
           hasMore = widget.section == 'tasks'
               ? cursor != null
-              : value is Map && value['hasMore'] == true;
+              : advanced.morePages(widget.section, view, value);
           if (widget.section == 'tasks' && !append) {
             applyTaskPatches(taskTouched);
             taskTouched.clear();
@@ -2736,15 +2740,11 @@ class _ResourceViewState extends State<ResourceView> {
             onEntity: (entity) => openSearchEntity(entity, scope),
             hasMore: hasMore,
             onMore: () => load(append: true),
+            filters: advanced,
+            view: rowsView,
             loading: searching,
             failure: error == null ? null : searchFailureKind,
             onRetry: () => load(),
-            onSortRecent: advanced.searchSort == 'recent'
-                ? null
-                : () {
-                    advanced.searchSort = 'recent';
-                    load();
-                  },
           )
         : widget.section == 'tasks' &&
               widget.channelId != null &&
