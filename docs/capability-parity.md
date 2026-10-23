@@ -7,18 +7,18 @@ Pixel parity, field parity (`docs/field-parity.md`) and the page inventory (`doc
 
 ## Summary
 
-Total capabilities: 792 (362 endpoint/network keys, 430 client-side).
+Total capabilities: 793 (362 endpoint/network keys, 431 client-side).
 
 | Status | Count |
 | --- | ---: |
-| ✅ covered | 657 |
+| ✅ covered | 658 |
 | ⚠️ partial | 32 |
 | ❌ missing | 29 |
 | ➖ na | 74 |
 
 | Area | ✅ | ⚠️ | ❌ | ➖ |
 | --- | ---: | ---: | ---: | ---: |
-| Messages | 73 | 5 | 2 | 1 |
+| Messages | 74 | 5 | 2 | 1 |
 | Threads | 16 | 1 | 0 | 1 |
 | Channels | 34 | 0 | 0 | 1 |
 | DMs | 6 | 0 | 0 | 0 |
@@ -137,6 +137,7 @@ Legend: ✅ covered (endpoint called and a reachable entry point with equivalent
 | ✅ | Right-click / long-press a sender name or avatar: Copy Name, Copy Handle | `ui:messages.sender-context-menu-copy-name-handle` | MessageItem sender ctx menu ('Sender context menu')[gate: handle item only when the sender has a mention handle] | message_sender_menu.dart showMessageSenderMenu from RaftMessageRow.onAuthorMenu (right-click name or avatar, long-press name) | Copy Name always, Copy Handle when the sender has a mention handle. The avatar's long press stays reserved for inserting an @mention. |
 | ✅ | Click the sender name (or long-press the avatar) to insert @mention of the sender into the composer | `ui:messages.sender-name-mention-insert` | MessageItemSenderButton 'Mention @{name}' tooltip; avatar long-press (touch) -> dispatchSenderMentionInsert[gate: not for external, departed or deleted senders] | chat_view.dart senderMention: name tap and avatar long press (RaftAvatarButton.onLongPress, touch 500ms); Cmd/Ctrl+Z undoes the insert |  |
 | ✅ | Collapsed groups of system messages ('There are N system updates') with expand/collapse | `ui:messages.system-message-group-disclosure` | SystemMessageGroupDisclosure[gate: none] | system_message_grouping.dart + raft_ui |  |
+| ✅ | Channel-top 'Earliest unread thread (N)' / 'Next unread thread (N)' pill that scrolls to the parent of an unread followed thread and flashes it (dismissable) | `ui:messages.thread-unread-jump-pill` | components/message/ThreadUnreadJumpPill.tsx rendered by ChatPanel.tsx (channels only)[gate: flag thread_unread_badge_v0] | chat_view.dart ChatBottomControls (features/thread_unread_jump.dart): the built rows are measured against their viewport, RaftThreadUnreadJumpPill beside Back to bottom (below) or at the top (above); a click calls jumpToMessage |  |
 | ✅ | Per-message translation status line: Show original / Show translation toggle, Translating, Retry; bilingual 'Original' block | `ui:messages.translation-indicator-toggle-retry` | MessageItem TranslationIndicator + MessageItemTranslationOriginal[gate: translation enabled for the viewer] | chat_view.dart translation action rows ('Show translation' / 'Show original' / 'Retry') and bilingual body |  |
 | ✅ | Saved page row context menu: Copy link, Copy Markdown, Remove from Saved | `ui:saved.row-context-menu` | SavedPanel ContextMenu[gate: none] | resource_view.dart savedMenu() |  |
 
