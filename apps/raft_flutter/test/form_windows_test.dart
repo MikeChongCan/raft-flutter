@@ -37,12 +37,17 @@ class _Form {
     this.prepare,
     this.field,
     this.tall = false,
+    this.keyboardViewportHeight = 580,
     this.fill = const {},
     this.submit,
     this.submitted,
     this.routes,
   });
   final String id;
+
+  /// Phone viewport height of the keyboard check. A tall form must still overflow
+  /// the sheet with the keyboard up; a form with less content takes a shorter one.
+  final double keyboardViewportHeight;
 
   /// Opens the form over the workspace. Not awaited: a window's future
   /// completes when it closes.
@@ -187,6 +192,9 @@ final _forms = <_Form>[
   _Form(
     'create agent',
     tall: true,
+    // With no computer the form is one banner; Web's shorter "Add Computer"
+    // copy no longer overflows 580 dp, so the check uses a shorter phone.
+    keyboardViewportHeight: 520,
     open: (t, context, w, _) => showManagedAgentForm(context, w),
   ),
   _Form(
@@ -368,7 +376,8 @@ void registerFormWindowTests(TestPart part) {
       testWidgets('scrolls and keeps the focused field above the keyboard', (
         t,
       ) async {
-        const size = Size(390, 580), keyboard = 260.0;
+        final size = Size(390, form.keyboardViewportHeight);
+        const keyboard = 260.0;
         t.view.viewInsets = const FakeViewPadding(bottom: keyboard);
         addTearDown(t.view.resetViewInsets);
         await openForm(t, form, size);
