@@ -25,6 +25,8 @@ import 'recipes/button_variants.g.dart';
 import 'recipes/panel_action.g.dart';
 import 'recipes/panel_header.g.dart';
 import 'raft/tabs.dart';
+import 'raft/button.dart';
+import 'tokens/tokens.dart';
 import 'raft/ui_tokens.dart';
 import 'recipes/token_binding.dart';
 import 'recipe_surface.dart' show raftCssText;
@@ -224,12 +226,32 @@ class RaftPanelAction extends StatelessWidget {
   /// draws them and the hit area is extended around it.
   final double minHitExtent;
   @override
-  Widget build(BuildContext context) => RaftTouchTargetExpander(
-    minSize: Size.square(
-      minHitExtent > 0 && RaftInteraction.of(context).touch ? minHitExtent : 0,
-    ),
-    child: _interactive(context),
-  );
+  Widget build(BuildContext context) {
+    if (RaftTokens.of(context).option('panelAction.surface', or: 'outline') ==
+        'ghost') {
+      return RaftButton(
+        label: '',
+        glyph: glyph,
+        tooltip: tooltip,
+        semanticLabel: tooltip,
+        uiVariant: RaftButtonVariant.ghost,
+        uiSize:
+            MediaQuery.sizeOf(context).width <
+                RaftLayoutMetrics.desktopBreakpoint
+            ? RaftButtonSize.iconLg
+            : RaftButtonSize.iconMd,
+        onPressed: onPressed,
+      );
+    }
+    return RaftTouchTargetExpander(
+      minSize: Size.square(
+        minHitExtent > 0 && RaftInteraction.of(context).touch
+            ? minHitExtent
+            : 0,
+      ),
+      child: _interactive(context),
+    );
+  }
 
   Widget _interactive(BuildContext context) => RaftInteractive(
     onPressed: onPressed,
@@ -434,9 +456,130 @@ class RaftPanelHeaderBar extends StatelessWidget {
   final String backTooltip;
   final List<Widget> actions;
 
+  Widget _ghostHeader(BuildContext context, RaftTokens t) {
+    final narrow =
+        MediaQuery.sizeOf(context).width < RaftLayoutMetrics.desktopBreakpoint;
+    final grows = RaftScaled.grows(context);
+    final height = RaftLayoutMetrics.shellHeaderHeight(
+      t,
+      MediaQuery.sizeOf(context).height,
+    );
+    final gap = narrow ? 8.0 : 12.0;
+    final titleStyle = t.scale(RaftTypeScale.headline);
+    final metaStyle = profileHandle
+        ? t.scale(
+            RaftTypeScale.monoMeta,
+            mono: true,
+            color: t.ui.foregroundHint,
+          )
+        : t.scale(
+            RaftTypeScale.caption,
+            weight: FontWeight.w500,
+            color: t.ui.foregroundHint,
+          );
+    final heading = Row(
+      children: [
+        Flexible(
+          child: Semantics(
+            header: true,
+            child: RaftCssText(
+              title,
+              style: titleStyle,
+              maxLines: grows ? null : 1,
+              overflow: grows ? TextOverflow.visible : TextOverflow.ellipsis,
+              softWrap: grows,
+            ),
+          ),
+        ),
+        if (titleSuffix != null) ...[const SizedBox(width: 8), titleSuffix!],
+      ],
+    );
+    final fill = background ?? t.colors['layer-panel-header']!;
+    return RaftStatusBarSource(
+      color: fill,
+      child: Container(
+        height: grows ? null : height,
+        constraints: BoxConstraints(minHeight: height),
+        padding: EdgeInsets.fromLTRB(
+          // ignore: raft_lints/off_grid_spacing -- Web panelHeadEdges: phone pl-4 plus leading -ml-[13px] gives 3px.
+          narrow && onBack != null ? 3 : leftPadding ?? (narrow ? 16 : 20),
+          grows ? 8 : 0,
+          narrow && actions.isNotEmpty
+              // ignore: raft_lints/off_grid_spacing -- Web panelHeadActions mr-[-3px] over 6px right padding.
+              ? 3
+              : narrow
+              ? 6
+              // ignore: raft_lints/off_grid_spacing -- Web desktop pr-3 plus PanelActions md:mr-px.
+              : 13,
+          grows ? 8 : 0,
+        ),
+        decoration: BoxDecoration(
+          color: fill,
+          border: Border(bottom: BorderSide(color: t.ui.lineSeam)),
+        ),
+        child: Row(
+          children: [
+            if (onBack != null) ...[
+              RaftPanelAction(
+                key: backKey,
+                glyph: RaftGlyph.arrowLeft,
+                tooltip: backTooltip,
+                onPressed: onBack,
+                minHitExtent: RaftMetrics.touchTarget,
+              ),
+              SizedBox(width: gap),
+            ],
+            if (iconSlot != null && (!narrow || iconAlwaysVisible)) ...[
+              // PanelHeaderIcon[icon-kind=avatar] retains a transparent used 1px edge.
+              Padding(
+                padding: iconAlwaysVisible
+                    // ignore: raft_lints/off_grid_spacing -- Actual Web AvatarSlot header outer 37 encloses a 35px avatar with its transparent used edge.
+                    ? const EdgeInsets.all(1)
+                    : EdgeInsets.zero,
+                child: iconSlot!,
+              ),
+              SizedBox(width: gap),
+            ],
+            Expanded(
+              child:
+                  titleSlot ??
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      heading,
+                      if (subtitle != null)
+                        RaftCssText(
+                          subtitle!,
+                          style: metaStyle,
+                          maxLines: grows ? null : 1,
+                          overflow: grows
+                              ? TextOverflow.visible
+                              : TextOverflow.ellipsis,
+                          softWrap: grows,
+                        ),
+                    ],
+                  ),
+            ),
+            if (actions.isNotEmpty) ...[
+              SizedBox(width: gap),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                spacing: narrow ? 2 : 4,
+                children: actions,
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
+    if (t.option('panelAction.surface', or: 'outline') == 'ghost')
+      return _ghostHeader(context, t);
     final rt = RaftRecipeTokens(t);
     final width = MediaQuery.sizeOf(context).width;
     final s = RaftPanelHeaderRecipe.resolve(
@@ -518,7 +661,12 @@ class RaftPanelHeaderBar extends StatelessWidget {
           // identity panel (`iconAlwaysVisible`).
           if (iconSlot != null && (!narrow || iconAlwaysVisible)) ...[
             SizedBox.square(
-              dimension: s.headerIcon.width ?? 36,
+              dimension: iconAlwaysVisible
+                  ? t.size(
+                      'size.avatar.panelHeader',
+                      fallback: s.headerIcon.width ?? 36,
+                    )
+                  : s.headerIcon.width ?? 36,
               child: iconSlot,
             ),
             SizedBox(width: gap),

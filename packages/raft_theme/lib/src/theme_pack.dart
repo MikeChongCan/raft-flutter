@@ -124,6 +124,7 @@ const Map<String, Set<String>> raftStructuralOptions = {
   'listGroup.frame': {'plain', 'framed'},
   'task.status': {'square', 'symbol'},
   'searchResult.selection': {'flat', 'card'},
+  'panelAction.surface': {'ghost', 'outline'},
   'mobileNav.style': {'floatingCapsule', 'docked'},
   'mobileNav.labels': {'iconsOnly', 'withLabels'},
   'header.layout': {'overlay', 'inFlow'},

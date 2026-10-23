@@ -1,7 +1,8 @@
 import 'hover_region.dart';
 import 'space.dart';
 export 'space.dart';
-import 'panel_layout.dart' show RaftCssText, RaftPanelAction, raftRecipeTheme;
+import 'panel_layout.dart'
+    show RaftCssText, RaftPanelAction, RaftPanelHeaderBar, raftRecipeTheme;
 import 'recipe_surface.dart' show RaftLayeredDecoration, RaftOuterShadowPainter;
 export 'panel_layout.dart' show raftRecipeTheme;
 
@@ -253,6 +254,26 @@ class RaftSettingsPanelHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context), tokens = RaftRecipeTokens(t);
+    if (t.option('panelAction.surface', or: 'outline') == 'ghost') {
+      return RaftPanelHeaderBar(
+        title: raftText(context, title),
+        iconSlot: !mobile && glyph != null
+            ? Container(
+                width: 27,
+                height: 27,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: t.colors['fill-muted'],
+                  borderRadius: BorderRadius.circular(t.fieldRadius),
+                ),
+                child: RaftIcon(glyph!, size: 18, color: t.muted),
+              )
+            : null,
+        onBack: mobile ? onMobileBack : null,
+        backKey: backKey,
+        backTooltip: raftText(context, backTooltip),
+      );
+    }
     final size = MediaQuery.sizeOf(context);
     final states = RaftRecipeStates(
       {if (t.dark) RaftRecipeStates.dark},

@@ -131,6 +131,15 @@ void main() {
             expect(heading, findsOneWidget);
             expect(subtitle, findsOneWidget);
             final head = t.getRect(heading), sub = t.getRect(subtitle);
+            // Profile panels now consume the current Web headline/meta stack;
+            // channel headers still use their independently generated recipe.
+            if (title == 'Designer') {
+              expect(sub.left, head.left);
+              expect(sub.top - head.bottom, 0);
+              expect(head.height, 22);
+              expect(sub.height, 16);
+              continue;
+            }
             final inline = width >= 768;
             if (inline) {
               expect(sub.left - head.right, closeTo(8, .02));

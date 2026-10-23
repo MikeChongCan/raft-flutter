@@ -45,6 +45,8 @@ const Map<String, String> raftSemanticMapping = {
   'layer-canvas': 'layer-canvas',
   // Flutter-added role: section headers on narrow layouts (Cindy b1ba932f).
   'layer-section-header-mobile': 'layer-frame',
+  // Flutter-added header surface (Cindy be3134a7).
+  'layer-panel-header': 'layer-canvas',
   'layer-canvas-muted': 'layer-sidebar',
   'layer-panel': 'layer-canvas',
   'layer-popover': 'layer-popover',

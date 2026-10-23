@@ -38,7 +38,7 @@ PACK_FORMAT = 'raft-theme/1'
 # build_raft_pack.py's OPTIONS_RAFT; these two are the same table's other columns.
 OPTIONS_ELEGANT = {
     'control.edge': 'ring', 'sticker.ring': 'none', 'emphasis.fill': 'soft',
-    'iconButton.surface': 'generic',
+    'iconButton.surface': 'generic', 'panelAction.surface': 'outline',
     # a57b9dab design_primitives.dart:141-145; resource_view.dart:2385,2393.
     'sidebar.mobileSurface': 'sidebar', 'resource.surface': 'sidebar',
     'resource.rows': 'cards', 'resource.badge': 'pill', 'resource.markRead': 'outline',
@@ -54,7 +54,7 @@ OPTIONS_ELEGANT = {
 }
 OPTIONS_BRUTAL = {
     'control.edge': 'inkBorder', 'sticker.ring': 'none', 'emphasis.fill': 'solid',
-    'iconButton.surface': 'raised',
+    'iconButton.surface': 'raised', 'panelAction.surface': 'outline',
     'sidebar.mobileSurface': 'canvas', 'resource.surface': 'canvas',
     'resource.rows': 'cards', 'resource.badge': 'pill', 'resource.markRead': 'outline',
     'listGroup.frame': 'framed', 'task.status': 'symbol', 'searchResult.selection': 'card',
@@ -73,6 +73,8 @@ OPTIONS_BRUTAL = {
 GEOMETRY_ELEGANT = {
     # a57b9dab switch/control bounds; 0 keeps the Raft hit-only expander.
     'size.touchLayoutMin': 48,
+    # a57b9dab AvatarSlot profileTile and panelHeader.
+    'size.avatar.profileHero': 64, 'size.avatar.profileTile': 64, 'size.avatar.panelHeader': 36,
     # a57b9dab switch.dart:65-81 and primitive_tokens.dart:12.
     'size.switch.width.sm': 28, 'size.switch.width.md': 36,
     'size.switch.height.sm': 16, 'size.switch.height.md': 20,
@@ -102,6 +104,8 @@ GEOMETRY_ELEGANT = {
 GEOMETRY_BRUTAL = {
     # a57b9dab switch/control bounds; 0 keeps the Raft hit-only expander.
     'size.touchLayoutMin': 48,
+    # a57b9dab AvatarSlot profileTile and panelHeader.
+    'size.avatar.profileHero': 64, 'size.avatar.profileTile': 64, 'size.avatar.panelHeader': 36,
     # a57b9dab switch.dart:65-81 and primitive_tokens.dart:12.
     'size.switch.width.sm': 28, 'size.switch.width.md': 36,
     'size.switch.height.sm': 16, 'size.switch.height.md': 20,
@@ -273,6 +277,7 @@ def pack(pack_id: str, name_en: str, name_zh: str, values: dict,
         colors['layer-sidebar'] = (colors['brutal-cream']
                                    if spec['column'] == 'brutal'
                                    else colors['layer-canvas-muted'])
+        colors['layer-panel-header'] = (colors['layer-panel'] if spec['column'] == 'brutal' else colors['layer-canvas-muted'])
         colors['layer-section-header-mobile'] = (colors['color-soft-signal']
                                    if spec['column'] == 'brutal'
                                    else colors['layer-panel'])

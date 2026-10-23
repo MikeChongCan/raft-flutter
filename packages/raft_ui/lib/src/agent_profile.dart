@@ -41,6 +41,8 @@ import 'recipe_surface.dart'
     show RaftCssBoxDecoration, RaftCssOverflowY, RaftRecipeBox, raftCssText;
 import 'split_pane.dart';
 import 'theme.dart';
+import 'raft/avatar.dart';
+import 'raft/ui_tokens.dart';
 import 'tooltip.dart';
 import 'status_bar.dart';
 
@@ -242,6 +244,7 @@ class RaftInlineBadge extends StatelessWidget {
 
 /// Web AvatarSlot contexts (components/ui/AvatarSlot.tsx RAFT_AVATAR_SPEC).
 enum RaftAvatarSlotContext {
+  profileHero(64, 2),
   profileTile(64, 2),
   // AvatarSlot `mention-card`: `!size-12 !border-2` (hover cards).
   mentionCard(48, 2),
@@ -286,14 +289,36 @@ class RaftAvatarSlot extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
     final rt = RaftRecipeTokens(t);
+    final extent =
+        sizeOverride ??
+        switch (slot) {
+          RaftAvatarSlotContext.profileHero => t.size(
+            'size.avatar.profileHero',
+            fallback: slot.size,
+          ),
+          RaftAvatarSlotContext.profileTile => t.size(
+            'size.avatar.profileTile',
+            fallback: slot.size,
+          ),
+          RaftAvatarSlotContext.panelHeader => t.size(
+            'size.avatar.panelHeader',
+            fallback: slot.size,
+          ),
+          _ => slot.size,
+        };
+    final sticker = t.option('sticker.ring', or: 'none') == 'dieCut';
+    final square = t.option('avatar.shape', or: 'circle') == 'square';
+    final inkBorder = t.option('control.edge', or: 'ring') == 'inkBorder';
     final s = RaftAvatarRecipe.resolve(
-      theme: raftRecipeTheme(t),
+      theme: inkBorder ? RaftRecipeTheme.brutal : RaftRecipeTheme.elegant,
       type_: agent ? RaftAvatarRecipeType.agent : RaftAvatarRecipeType.human,
       size: RaftAvatarRecipeSize.xl,
       tokens: rt,
     );
     // Avatar fallback `& > svg`: 24 at xl/lg, 18 at md, 12 at xs.
-    final icon = slot == RaftAvatarSlotContext.previewMini
+    final icon = sticker
+        ? RaftAvatarSize.nearest(extent).icon
+        : slot == RaftAvatarSlotContext.previewMini
         ? 10.0
         : slot.size >= 48
         ? 24.0
@@ -302,7 +327,9 @@ class RaftAvatarSlot extends StatelessWidget {
         : 12.0;
     final key = pixelKey(avatarUrl);
     final base = s.root.decoration(rt);
-    final radius = BorderRadius.circular((sizeOverride ?? slot.size) / 2);
+    final radius = square
+        ? BorderRadius.circular(t.size('radius.avatar', fallback: 0))
+        : BorderRadius.circular(extent / 2);
     // Elegant `border-2 border-transparent bg-clip-padding`: the fill stops
     // at the padding box, so the transparent border shows the surface behind
     // (a BoxDecoration colour would also paint under the border).
@@ -321,16 +348,26 @@ class RaftAvatarSlot extends StatelessWidget {
             child: RaftIcon(
               agent ? RaftGlyph.bot : RaftGlyph.user,
               size: icon,
-              color: s.fallback.color?.resolve(rt),
+              color: sticker ? t.ui.stickerInk : s.fallback.color?.resolve(rt),
             ),
           ),
         );
+    if (sticker && !server) {
+      return RaftStickerAvatar(
+        size: RaftAvatarSize.nearest(extent),
+        extent: extent == RaftAvatarSize.nearest(extent).extent ? null : extent,
+        type: agent ? RaftAvatarType.agent : RaftAvatarType.human,
+        child: child,
+      );
+    }
     // `rounded-full bg-clip-padding border-2 border-transparent`: the circle
     // the artwork is clipped to is the padding box, `border` smaller than the
     // slot on each side (not the outer box, which would show the artwork's
     // corners cut by a circle wider than the padding box).
     final BorderRadius? inner = BorderRadius.circular(
-      math.max(0, (sizeOverride ?? slot.size) / 2 - slot.border),
+      square
+          ? t.size('radius.avatarInner', fallback: 0)
+          : math.max(0, extent / 2 - slot.border),
     );
     if (clipPadding && base.color != null) {
       child = DecoratedBox(
@@ -345,11 +382,15 @@ class RaftAvatarSlot extends StatelessWidget {
       child = ClipRRect(borderRadius: inner, child: child);
     }
     return Container(
-      width: sizeOverride ?? slot.size,
-      height: sizeOverride ?? slot.size,
+      width: extent,
+      height: extent,
       clipBehavior: Clip.antiAlias,
       decoration: base.copyWith(
-        color: clipPadding ? Colors.transparent : null,
+        color: server && inkBorder
+            ? t.product.softSignal
+            : clipPadding
+            ? Colors.transparent
+            : null,
         // `rounded-full` in Elegant at every AvatarSlot size.
         borderRadius: radius,
         border: Border.all(
@@ -713,7 +754,7 @@ class RaftProfileIdentity extends StatelessWidget {
       name: name,
       agent: agent,
       avatarUrl: avatarUrl,
-      slot: RaftAvatarSlotContext.profileTile,
+      slot: RaftAvatarSlotContext.profileHero,
     );
     if (avatarButton) {
       // `<Button variant="outline" className="size-16 !p-0">` contributes

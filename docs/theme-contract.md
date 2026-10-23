@@ -104,6 +104,7 @@ dd6c1674 开始，交给 DeepDesign）。
 | `primary*` / `accent*` | 保留，标注 deprecated alias | 0.7.1 已改名为 brand/attention，1.0 才删。契约两种都接受，写出时用新名 |
 | `sticker-ink` / `sticker-paper` / `sticker-edge` / `sticker-pressed` | 保留 | “贴纸”是材质概念，不是主题名；Elegant 用不到就填 transparent 或与邻近角色同值 |
 | `layer-frame` / `foreground-on-frame*` / `fill-frame-pressed` | 保留 | Raft 深色框的中性层，Elegant/Brutal 填成与 `layer-canvas` / `foreground` 同值 |
+| `layer-panel-header` | Flutter 新增（Cindy be3134a7） | 共享面板页头：Raft 同 `layer-canvas`；旧两套沿用 a57b9dab 的原页头绘制，保留手机底色和桌面透明层。 |
 | `layer-section-header-mobile` | Flutter 新增（Cindy b1ba932f） | 窄布局的分节页头：Raft 同 `layer-frame`；Elegant 同 `layer-panel`；Brutal 浅色同 a57b9dab 的 `color-soft-signal`，深色沿用 Elegant。桌面不读此角色。 |
 
 附录给出了 159 个角色在三套主题下的全部取值，以及每个角色对到哪个 0.7.1 token。
@@ -167,6 +168,9 @@ Elegant 的 `stroke.control = 0` 配合 `control.edge = ring`（§5 #1）与 `sh
 | `size.control.xl` | 52 | — | — |
 | `size.control.onFrame` | 36 | 32 † | 32 † |
 | `size.field` | 44 | 36 † | 40 † |
+| `size.avatar.profileHero` | 99 | 64 | 64 |
+| `size.avatar.profileTile` | 51 | 64 | 64 |
+| `size.avatar.panelHeader` | 35 | 36 | 36 |
 | `size.panelHeader` | 56 | 56 | 62 |
 | `size.rail` / `railShort`（矮屏 ≤ 600） | 56 / 56 | 56 / 56 | 64 / 50 |
 | `size.railGlyph` | 16 | 16 | 18 |
@@ -363,6 +367,7 @@ RGB0.954685/0.954685/0.969524）；展示表中的0.04和整数RGB不作为绘�
 | `resource.rows` | `flat` / `cards` | flat | cards | cards | Web v1.21.23 `ThreadsInbox.tsx:103-108`、`SavedPanel.tsx:269` 的实际排列；a57b9dab 的资源卡片排列。 |
 | `resource.badge` | `sticker` / `pill` | sticker | pill | pill | Web v1.21.23 的 `Badge` 实际调用；a57b9dab `resource_rows.dart` 的胶囊 recipe。 |
 | `resource.markRead` | `ghost` / `outline` | ghost | outline | outline | Web v1.21.23 `ThreadsInbox.tsx:1059-1069` 的 Button sm ghost；a57b9dab 的 outline 操作。 |
+| `panelAction.surface` | `ghost` / `outline` | ghost | outline | outline | 面板返回与操作按钮；独立于24px小图标的 `iconButton.surface`（Cindy be3134a7）。 |
 | `listGroup.frame` | `plain` / `framed` | plain | framed | framed | 共用列表分组容器；Web v1.21.23 taskListSection、search 分组实际无框，a57b9dab 保留旧分组。 |
 | `task.status` | `square` / `symbol` | square | symbol | symbol | Web v1.21.23 TaskStatusPixel，9px状态色方块；a57b9dab 状态符号。 |
 | `searchResult.selection` | `flat` / `card` | flat | card | card | Web v1.21.23 SearchEntityResult／SearchMessageResult，整行 brand-soft；a57b9dab 选中卡片。 |
@@ -582,3 +587,10 @@ cards 的外侧16、行内12、行间8、元数据前4。前者来自上述 Web 
 以后同一种结构内出现外观差异时再提取令牌。Raft 行的字级复用已有
 subhead／callout／caption；徽标与按钮复用 RaftBadge／RaftButton。
 “Mark all read”来自应用的 `thread.markAllRead.label` 翻译键，不属于主题数据。
+
+头像的三个上下文尺寸经当前 Web DOM 实测（Cindy 826b64bb 批准名称）：
+`HumanDetailPanel` 资料头图99、`AccountSettingsSection` 设置头像51、
+`AppPanelHeader` 内的 AvatarSlot35；a57b9dab 对应64／64／36。
+`profileHero` 与 `profileTile` 分开，形状和贴纸继续读已有选项，
+不会用尺寸判断主题。页头的无框按钮复用现有 ghost Button；
+现有24px小图标的 generic／raised 不足以表达旧32px有框 PanelAction。
