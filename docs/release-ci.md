@@ -6,6 +6,16 @@ by default. Builds use `lib/main.dart` and produce no private test fixtures or
 test feature defines. This pipeline is separate from the local native-acceptance
 packager `tool/build-deliverables`; compilation does not imply full-app acceptance.
 
+## App version follows the Raft server version
+
+Owner decision (Kevin, 2026-10-23): the app version is the Raft server version the client is aligned to, which is the
+pinned Web release in `docs/upstream-sync.json` (`v1.21.23-source.1` gives `1.21.23`). Client-only changes add a tag
+build: `v1.21.23+1`, `v1.21.23+2`, and so on. `tool/release.py plan` stops a tag whose version is not the pinned
+server version, and `apps/raft_flutter/pubspec.yaml` carries the same version for branch builds
+(`tool/tests/test_release_version_policy.py`). Moving the pin (`tool/upstream_sync.py record-decision`) therefore also
+moves the pubspec version. The installed build number still comes from the workflow run counter, so updates keep
+increasing across the switch from `0.1.0` to `1.21.x`.
+
 ## Release notes (before tagging)
 
 The app's Settings > Release Notes page shows the client's own notes, not the

@@ -78,6 +78,28 @@ def release_identity(version, number, ref='', event='', run_number=''):
     return {'version': version, 'build_number': number, 'tag': tag, 'asset_version': asset_version}
 
 
+def server_version(sync=None):
+    """The Raft server version this client follows: the pinned Web release.
+
+    Owner decision (Kevin, 2026-10-23): the app version equals the server
+    version it is aligned to (`v1.21.23-source.1` -> `1.21.23`); client-only
+    changes only add a build (`v1.21.23+2`).
+    """
+    sync = sync if sync is not None else json.loads((ROOT / 'docs/upstream-sync.json').read_text())
+    match = re.fullmatch(r'v([0-9]+\.[0-9]+\.[0-9]+)-source\.[0-9]+', sync['pinned'])
+    if not match:
+        raise ValueError('docs/upstream-sync.json pinned must look like vX.Y.Z-source.N')
+    return match[1]
+
+
+def check_server_version(version, server):
+    """A release's app version (prerelease suffix aside) must be the followed server version."""
+    if version.split('-', 1)[0] != server:
+        raise ValueError(f'App version {version} must equal the followed server version {server} '
+                         '(docs/upstream-sync.json pinned); client-only changes add a build: '
+                         f'v{server}+N')
+
+
 def current_release():
     version, number = version_info((APP / 'pubspec.yaml').read_text(encoding='utf-8'))
     return release_identity(version, number, os.environ.get('GITHUB_REF', ''),
@@ -110,6 +132,9 @@ def emit_outputs(values):
 
 def plan():
     identity = current_release()
+    # The first release job stops a tag whose version is not the followed server.
+    if identity['tag']:
+        check_server_version(identity['version'], server_version())
     matrix = release_plan(json.loads((ROOT / 'tool/release-platforms.json').read_text()),
                           os.environ.get('RELEASE_PLATFORMS', ''), os.environ.get('GITHUB_EVENT_NAME', ''))
     emit_outputs({'matrix': json.dumps(matrix, separators=(',', ':')), **identity})
