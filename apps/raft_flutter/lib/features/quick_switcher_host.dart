@@ -1,6 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+
+import 'workspace_host_scope.dart';
+
 import 'package:raft_client/raft_client.dart';
 import 'package:raft_ui/raft_ui.dart';
 
@@ -92,6 +95,21 @@ class QuickSwitcherHost {
   final railMemory = RailLocationMemory();
   final DateTime Function()? clock;
   final Rect? Function()? searchAnchor;
+
+  /// The mounted header registers its search box here. Removing that header
+  /// removes the context, so a later opening falls back to centered placement.
+  final searchKey = GlobalKey();
+  Rect? searchBarRect() {
+    final context = searchKey.currentContext;
+    if (context == null || !WorkspaceHostScope.showsTopBar(context)) {
+      return null;
+    }
+    final box = context.findRenderObject() as RenderBox?;
+    return box == null || !box.hasSize
+        ? null
+        : box.localToGlobal(Offset.zero) & box.size;
+  }
+
   RawDialogRoute<void>? route;
   String? openedAuthority, lastVisit, lastVisitScope;
   bool _disposed = false;
@@ -264,7 +282,7 @@ class QuickSwitcherHost {
           ]),
           data: data,
           clock: clock,
-          searchAnchor: searchAnchor,
+          searchAnchor: searchAnchor ?? searchBarRect,
           seed: seeded,
           authority: openedAuthority!,
           onStateChanged: saveState,

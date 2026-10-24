@@ -13,6 +13,7 @@ import 'package:raft_flutter/features/resource_view.dart';
 import 'package:raft_flutter/features/workspace_view.dart';
 import 'package:raft_ui/raft_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import 'support/app_services_fixture.dart';
 
 class _Client extends RaftClient {
@@ -238,6 +239,8 @@ Future<void> chord(
 }
 
 void main() {
+  // Unqualified cases in this suite exercise the native desktop rail. Set an
+  // explicit platform: Flutter's default Android layout has a top bar when wide.
   for (final modifier in [
     ('Ctrl', LogicalKeyboardKey.controlLeft, TargetPlatform.linux),
     ('Cmd', LogicalKeyboardKey.metaLeft, TargetPlatform.macOS),
@@ -324,6 +327,7 @@ void main() {
         ),
       );
     },
+    variant: TargetPlatformVariant.only(TargetPlatform.linux),
   );
 
   testWidgets('[N26] a person without a DM creates one and opens it', (
@@ -339,7 +343,7 @@ void main() {
     expect(client.calls, contains('POST:/channels/dm'));
     expect(w.channel!.id, 'dm-new');
     expect(find.byType(QuickSwitcher), findsNothing);
-  });
+  }, variant: TargetPlatformVariant.only(TargetPlatform.linux));
 
   testWidgets('[N26] a person with a DM opens it without a request', (t) async {
     final (client, w) = await mount(t);
@@ -352,7 +356,7 @@ void main() {
     await t.pumpAndSettle();
     expect(posts, isEmpty);
     expect(w.channel!.id, 'dm-bob');
-  });
+  }, variant: TargetPlatformVariant.only(TargetPlatform.linux));
 
   testWidgets('[N26] the Search for row opens the full page with the query', (
     t,
@@ -368,7 +372,7 @@ void main() {
     expect(w.section, 'search');
     expect(find.byType(ResourceView), findsOneWidget);
     expect(w.location.query('q'), 'quarterly');
-  });
+  }, variant: TargetPlatformVariant.only(TargetPlatform.linux));
 
   testWidgets('[N26] a message preview hit jumps to the message', (t) async {
     final (client, w) = await mount(t);
@@ -386,7 +390,7 @@ void main() {
     await t.pumpAndSettle();
     expect(w.channel!.id, 'c-ops');
     expect(find.byType(QuickSwitcher), findsNothing);
-  });
+  }, variant: TargetPlatformVariant.only(TargetPlatform.linux));
 
   testWidgets('[N26] clicking outside the card closes the switcher', (t) async {
     final (_, w) = await mount(t);
@@ -396,7 +400,7 @@ void main() {
     await t.pumpAndSettle();
     expect(find.byType(QuickSwitcher), findsNothing);
     expect(w.channel!.id, 'c-general');
-  });
+  }, variant: TargetPlatformVariant.only(TargetPlatform.linux));
 
   testWidgets('[N26] a narrow window keeps the full Search page', (t) async {
     final (_, w) = await mount(t, size: const Size(390, 844));
@@ -404,7 +408,7 @@ void main() {
     await t.pumpAndSettle();
     expect(find.byType(QuickSwitcher), findsNothing);
     expect(w.section, 'search');
-  });
+  }, variant: TargetPlatformVariant.only(TargetPlatform.linux));
 
   // Source isGlobalSearchShortcut: Cmd alone on Apple platforms, Ctrl alone
   // elsewhere. Ctrl+K on macOS is the text field's "delete to end of line".
@@ -497,7 +501,7 @@ void main() {
     w.notifyListeners();
     await t.pumpAndSettle();
     expect(find.byType(QuickSwitcher), findsNothing);
-  });
+  }, variant: TargetPlatformVariant.only(TargetPlatform.linux));
 
   testWidgets(
     '[N26] the shortcut works from inside the composer, not with extra modifiers, and not under a dialog',
@@ -521,6 +525,7 @@ void main() {
       expect(find.byType(QuickSwitcher), findsOneWidget);
       expect(w.section, 'chat');
     },
+    variant: TargetPlatformVariant.only(TargetPlatform.linux),
   );
 
   group('rail Search opens the desktop overlay', () {
@@ -566,6 +571,7 @@ void main() {
         expect(w.channel!.id, 'c-general');
         expect(find.byKey(const ValueKey('rail-search')), findsOneWidget);
       },
+      variant: TargetPlatformVariant.only(TargetPlatform.linux),
     );
 
     testWidgets(
@@ -585,6 +591,7 @@ void main() {
         await t.pumpAndSettle();
         expect(find.byType(QuickSwitcher), findsNothing);
       },
+      variant: TargetPlatformVariant.only(TargetPlatform.linux),
     );
 
     testWidgets(
@@ -622,6 +629,7 @@ void main() {
           isEmpty,
         );
       },
+      variant: TargetPlatformVariant.only(TargetPlatform.linux),
     );
 
     testWidgets(
@@ -653,6 +661,7 @@ void main() {
         expect(find.text('Last 7 Days'), findsOneWidget);
         expect(w.location.query('q'), 'quarterly');
       },
+      variant: TargetPlatformVariant.only(TargetPlatform.linux),
     );
 
     testWidgets(
@@ -671,6 +680,7 @@ void main() {
         await key(t, LogicalKeyboardKey.escape);
         expect(find.byType(QuickSwitcher), findsNothing);
       },
+      variant: TargetPlatformVariant.only(TargetPlatform.linux),
     );
 
     testWidgets(
@@ -688,6 +698,7 @@ void main() {
         // Recent rows: design, ops (general is the current page).
         expect(w.channel!.id, 'c-ops');
       },
+      variant: TargetPlatformVariant.only(TargetPlatform.linux),
     );
 
     testWidgets(
@@ -707,6 +718,7 @@ void main() {
         await t.pump();
         expect(find.byKey(const Key('quick-switcher-error')), findsNothing);
       },
+      variant: TargetPlatformVariant.only(TargetPlatform.linux),
     );
 
     testWidgets(
@@ -733,6 +745,7 @@ void main() {
         await t.pump(const Duration(milliseconds: 300));
         expect(client.searchQueries.length, requests);
       },
+      variant: TargetPlatformVariant.only(TargetPlatform.linux),
     );
 
     testWidgets(
@@ -751,6 +764,7 @@ void main() {
         expect(client.searchQueries.last['channelId'], 'c-general');
         expect(w.section, 'chat');
       },
+      variant: TargetPlatformVariant.only(TargetPlatform.linux),
     );
 
     testWidgets(
@@ -760,6 +774,7 @@ void main() {
         expect(find.byKey(const ValueKey('rail-search')), findsNothing);
         expect(w.section, 'chat');
       },
+      variant: TargetPlatformVariant.only(TargetPlatform.linux),
     );
   });
 }

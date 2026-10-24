@@ -132,7 +132,7 @@ class RaftAppearanceSection extends StatelessWidget {
             // product addition and sits after the Web sections (below).
             card([
               Padding(
-                padding: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.only(bottom: RaftSpace.x3),
                 child: title(
                   'Theme',
                   'Choose light, dark, or follow your device. Your choice is saved on this device.',
@@ -149,7 +149,7 @@ class RaftAppearanceSection extends StatelessWidget {
                 'Theme',
                 'Choose the visual style for this browser. Your choice is saved on this device.',
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: RaftSpace.x3),
               RaftAppearancePicker(
                 appearance: appearance,
                 onChanged: onAppearance,
@@ -164,7 +164,9 @@ class RaftAppearanceSection extends StatelessWidget {
               const AppIconSettingsSection(),
             ],
           ],
-          SizedBox(height: r.web ? 24 : RaftAppearanceSectionRecipe.gap),
+          SizedBox(
+            height: r.web ? RaftSpace.x6 : RaftAppearanceSectionRecipe.gap,
+          ),
           const RaftSettingsSectionHeader(
             label: 'Appearance',
             glyph: RaftGlyph.type,
@@ -304,7 +306,7 @@ class RaftAppearanceSection extends StatelessWidget {
                 'Look',
                 'Choose the visual style for this browser. Your choice is saved on this device.',
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: RaftSpace.x3),
               RaftAppearancePicker(
                 appearance: appearance,
                 onChanged: onAppearance,

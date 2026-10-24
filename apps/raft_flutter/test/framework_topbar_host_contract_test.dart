@@ -84,6 +84,29 @@ void main() {
     },
     variant: TargetPlatformVariant.only(TargetPlatform.linux),
   );
+  for (final dismiss in ['scrim', 'system back']) {
+    testWidgets('browser topbar workspace menu closes with $dismiss', (
+      t,
+    ) async {
+      final (w, _) = await pageFixture(t);
+      await mountPage(t, w, false, width: 1280, browserHost: true);
+      final uri = w.location.toString(), history = w.navigation.index;
+      await t.tap(find.byKey(const Key('topbar-workspace')));
+      await t.pumpAndSettle();
+      expect(find.byKey(const Key('server-switcher-menu')), findsOneWidget);
+      if (dismiss == 'scrim') {
+        await t.tapAt(const Offset(1274, 894));
+      } else {
+        await t.binding.handlePopRoute();
+      }
+      await t.pumpAndSettle();
+      expect(find.byKey(const Key('server-switcher-menu')), findsNothing);
+      expect(w.location.toString(), uri);
+      expect(w.navigation.index, history);
+      expect(t.takeException(), isNull);
+      await t.pumpWidget(const SizedBox.shrink());
+    }, variant: TargetPlatformVariant.only(TargetPlatform.linux));
+  }
   for (final platform in [TargetPlatform.android, TargetPlatform.linux]) {
     for (final width in [390.0, 856.0]) {
       testWidgets('$platform/$width mounted frame places global actions once', (

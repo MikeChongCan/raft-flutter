@@ -422,7 +422,13 @@ class RaftButton extends StatelessWidget {
         }
 
         final children = <Widget>[
-          if (leading != null) ...[leading!, SizedBox(width: gapValue)],
+          if (leading != null) ...[
+            // A leading-only slot can contain the whole workspace label. Pass
+            // the button's available width to it instead of laying it out
+            // unbounded, including fractional widths at non-integer DPRs.
+            if (text.isEmpty) Flexible(child: leading!) else leading!,
+            SizedBox(width: gapValue),
+          ],
           if (iconWidget != null && !iconInlineEnd) iconWidget,
           if (iconWidget != null && !iconInlineEnd && text.isNotEmpty)
             SizedBox(width: gapValue),

@@ -60,7 +60,6 @@ class _MobileWorkspaceRouteState extends State<_MobileWorkspaceRoute> {
     routeWasActive = now;
     final page = _MobileWorkspaceContent(
       controller: source,
-      browserHost: host.widget.browserHost,
       mobileHost: host,
       appearance: host.widget.appearance,
       onAppearance: host.widget.onAppearance,
@@ -73,7 +72,10 @@ class _MobileWorkspaceRouteState extends State<_MobileWorkspaceRoute> {
       onChooseServer: host.widget.onChooseServer,
       onSwitchServer: host.widget.onSwitchServer,
     );
-    final Widget paced = TickerMode(enabled: now, child: page);
+    final Widget paced = WorkspaceHostScope.inherit(
+      host.context,
+      child: TickerMode(enabled: now, child: page),
+    );
     final Widget shown = chatRoute
         ? ExcludeFocus(excluding: !now, child: paced)
         : paced;

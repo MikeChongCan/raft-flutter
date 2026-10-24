@@ -24,7 +24,6 @@ void main() {
             home: withAppServices(
               WorkspaceView(
                 controller: w,
-                browserHost: false,
                 appearance: RaftAppearance(themeId: id),
                 onAppearance: (_) async {},
                 onLogout: () async {},

@@ -61,7 +61,9 @@ void main() {
               find.descendant(
                 of: find.byKey(const ValueKey('panel')),
                 matching: find.byType(
-                  name.isEmpty ? RaftAvatarPlaceholder : RaftAvatarInitials,
+                  pack == raftThemePackId || name.isEmpty
+                      ? RaftAvatarPlaceholder
+                      : RaftAvatarInitials,
                 ),
               ),
               findsOneWidget,

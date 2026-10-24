@@ -12,6 +12,8 @@ import 'package:raft_client/raft_client.dart';
 import 'package:raft_ui/raft_ui.dart';
 
 import 'announcement_host.dart';
+import 'workspace_host_scope.dart';
+import 'workspace_browser_header.dart';
 import 'notification_activation_workspace.dart';
 import '../data/user_error.dart';
 import 'local_error_diagnostics.dart';
@@ -99,6 +101,7 @@ import 'chinese_community.dart';
 import 'public_avatar_url.dart';
 import 'public_page_live.dart';
 
+export 'workspace_host_scope.dart' show WorkspaceHostScope;
 part 'workspace_view_sidebar_menus.dart';
 part 'mobile_workspace_route.dart';
 part 'mobile_settings_route.dart';
@@ -118,13 +121,9 @@ class WorkspaceView extends StatefulWidget {
     this.onChooseServer,
     this.onSwitchServer,
     this.mobileRoutePage = false,
-    this.browserHost = kIsWeb,
     this.mobileHost,
   });
   final WorkspaceController controller;
-
-  /// Host chrome and responsive navigation follow the browser entry contract.
-  final bool browserHost;
 
   final bool mobileRoutePage;
   final Object? mobileHost;
@@ -537,7 +536,6 @@ class _WorkspaceViewState extends State<WorkspaceView>
   /// dialog route live across openings.
   late final QuickSwitcherHost quickSwitcher = QuickSwitcherHost(
     controller: w,
-    searchAnchor: workspaceSearchRect,
     actions: QuickSwitcherActions(
       openConversation: openQuickSwitcherConversation,
       openDirectory: openQuickSwitcherDirectory,
@@ -651,52 +649,23 @@ class _WorkspaceViewState extends State<WorkspaceView>
   );
   bool get wide => !RaftAdaptiveWorkspace.compactOf(context);
 
-  bool get showWorkspaceTopBar => raftShowsWorkspaceTopBar(
-    tokens: RaftTokens.of(context),
-    width: MediaQuery.sizeOf(context).width,
-    nativeWindowChrome:
-        !widget.browserHost &&
-        switch (defaultTargetPlatform) {
-          TargetPlatform.linux ||
-          TargetPlatform.macOS ||
-          TargetPlatform.windows => true,
-          _ => false,
-        },
-  );
+  bool get showWorkspaceTopBar => WorkspaceHostScope.showsTopBar(context);
 
-  final workspaceSearchAnchor = GlobalKey();
-  Rect? workspaceSearchRect() {
-    if (!mounted || !showWorkspaceTopBar) return null;
-    final box =
-        workspaceSearchAnchor.currentContext?.findRenderObject() as RenderBox?;
-    return box == null || !box.hasSize
-        ? null
-        : box.localToGlobal(Offset.zero) & box.size;
-  }
-
-  Widget workspaceTopBar() => RaftWorkspaceTopBar(
-    key: const ValueKey('workspace-top-bar'),
-    searchKey: workspaceSearchAnchor,
+  Widget workspaceTopBar() => WorkspaceBrowserHeader(
+    searchKey: quickSwitcher.searchKey,
     workspace: workspaceServerMenu(topBar: true),
+    working: workingSummary(onFrame: true),
+    controller: w,
     onSearch: openSearchFromRail,
-    trailing: [
-      workingSummary(onFrame: true),
-      SystemNotificationBell(
-        key: const Key('topbar-notifications'),
-        controller: w,
-        mobile: false,
-        topBar: true,
-        onBilling: () => select('billing'),
-        onFeedback: () => openHelpSettings('feedback'),
-      ),
-    ],
+    onBilling: () => select('billing'),
+    onFeedback: () => openHelpSettings('feedback'),
   );
 
   /// The phone layout shows the desktop left rail instead of the bottom tab
   /// bar (wide foldable, landscape phone, 600-767 dp; see [RaftWindowClass]).
   /// Held with the layout while a full-bleed overlay owns state in the tree.
   bool get railNavigation {
-    if (widget.browserHost) return false;
+    if (WorkspaceHostScope.browserOf(context)) return false;
     final live = RaftAdaptiveWorkspace.phoneRailOf(
       context,
       side: railSideStore.side,
@@ -707,20 +676,12 @@ class _WorkspaceViewState extends State<WorkspaceView>
 
   bool? heldRail;
 
-  /// The desktop layout's navigation column sits on the right: a touch device
-  /// whose side choice is the end side, with no separating fold in the column
-  /// (see [RaftWindowClass.desktopNavigationOnRight]). Always false below the
-  /// desktop cut and on computers.
-  bool get desktopNavigationOnRight =>
-      wide &&
-      RaftWindowClass.desktopNavigationOnRight(
-        MediaQuery.sizeOf(context),
-        followsSide: railSideFollowsChoice(),
-        railSide: railSideStore.side,
-        textDirection: Directionality.of(context),
-        columnWidth: RaftWindowClass.railStripWidth + sidebarWidth,
-        displayFeatures: () => MediaQuery.displayFeaturesOf(context),
-      );
+  bool get desktopNavigationOnRight => WorkspaceHostScope.navigationOnRight(
+    context,
+    followsSide: railSideFollowsChoice(),
+    railSide: railSideStore.side,
+    columnWidth: RaftWindowClass.railStripWidth + sidebarWidth,
+  );
 
   /// The rail's scrolling destination list, measured for gesture exclusion.
   final railItemArea = GlobalKey(debugLabel: 'rail-item-area');
@@ -3695,10 +3656,7 @@ class _WorkspaceViewState extends State<WorkspaceView>
 
   Widget sidebar({bool mobileHome = false}) {
     final edgeToEdgeHome =
-        mobileHome &&
-        !widget.browserHost &&
-        (defaultTargetPlatform == TargetPlatform.android ||
-            defaultTargetPlatform == TargetPlatform.iOS);
+        mobileHome && WorkspaceHostScope.nativePhoneOf(context);
     final recipe = RaftSidebarRecipe(
       RaftTokens.of(context),
       viewportWidth: MediaQuery.sizeOf(context).width,

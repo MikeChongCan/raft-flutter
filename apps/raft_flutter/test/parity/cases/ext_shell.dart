@@ -210,15 +210,17 @@ class _HostState extends State<_Host> {
 
   @override
   Widget build(BuildContext context) => withAppServices(
-    WorkspaceView(
-      browserHost: widget.ctx.props['shell'] == 'browser',
-      controller: w,
-      presentation: presentation,
-      appearance: RaftAppearance(
-        mode: widget.ctx.dark ? ThemeMode.dark : ThemeMode.light,
+    WorkspaceHostScope(
+      browser: widget.ctx.props['shell'] == 'browser',
+      child: WorkspaceView(
+        controller: w,
+        presentation: presentation,
+        appearance: RaftAppearance(
+          mode: widget.ctx.dark ? ThemeMode.dark : ThemeMode.light,
+        ),
+        onAppearance: (_) async {},
+        onLogout: () async {},
       ),
-      onAppearance: (_) async {},
-      onLogout: () async {},
     ),
   );
 }

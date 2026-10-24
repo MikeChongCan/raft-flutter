@@ -86,12 +86,14 @@ Future<void> mountPage(
     MaterialApp(
       theme: raftTheme(dark: dark),
       home: withAppServices(
-        WorkspaceView(
-          browserHost: browserHost,
-          controller: w,
-          appearance: RaftAppearance(),
-          onAppearance: (_) async {},
-          onLogout: () async {},
+        WorkspaceHostScope(
+          browser: browserHost,
+          child: WorkspaceView(
+            controller: w,
+            appearance: RaftAppearance(),
+            onAppearance: (_) async {},
+            onLogout: () async {},
+          ),
         ),
       ),
     ),

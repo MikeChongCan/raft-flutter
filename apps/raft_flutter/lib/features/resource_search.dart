@@ -431,7 +431,7 @@ class ResourceSearchResults extends StatelessWidget {
     // shared with the quick switcher (search.failure).
     if (t.option('search.failure', or: 'banner') == 'banner') {
       return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: RaftSpace.x4),
         child: RaftBanner(
           live: false,
           status: RaftBannerRecipeStatus.warning,
@@ -441,7 +441,7 @@ class ResourceSearchResults extends StatelessWidget {
           footer: action.$1 == null
               ? null
               : Padding(
-                  padding: const EdgeInsets.only(top: 8),
+                  padding: const EdgeInsets.only(top: RaftSpace.x2),
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: RaftButton(

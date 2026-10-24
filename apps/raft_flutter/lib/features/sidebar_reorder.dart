@@ -450,9 +450,8 @@ Widget sidebarListRow(
       child: index == entries.length - 1
           ? Builder(
               builder: (context) => Padding(
-                padding: EdgeInsets.only(
-                  bottom: RaftTokens.of(context)
-                      .size('space.sidebarListEnd', fallback: 0),
+                padding: RaftSidebarSectionRecipe.listEndInset(
+                  RaftTokens.of(context),
                 ),
                 child: item,
               ),

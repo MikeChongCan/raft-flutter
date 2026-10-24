@@ -78,7 +78,8 @@ BoxDecoration _brutalCard({
   // v1.21.23 preview cards: `rounded-container border-[1.5px]
   // border-line-strong shadow-sticker`; a57b9dab drew square 2px black boxes
   // with the brutal shadow (onboarding.preview).
-  final web = t != null && t.option('onboarding.preview', or: 'sticker') == 'sticker';
+  final web =
+      t != null && t.option('onboarding.preview', or: 'sticker') == 'sticker';
   return BoxDecoration(
     color: color,
     borderRadius: web

@@ -27,6 +27,10 @@ class RaftSidebarSectionRecipe {
 
   /// The title line and action face are distinct boxes in Sidebar.tsx.
   /// The host preserves their CSS centers without shrinking the action hit box.
+  /// The last conversation keeps the section's trailing CSS margin.
+  static EdgeInsets listEndInset(RaftTokens tokens) =>
+      EdgeInsets.only(bottom: tokens.size('space.sidebarListEnd', fallback: 0));
+
   double get targetSize => tokens.size('size.sidebarSectionLine', fallback: 24);
   EdgeInsets get inset => EdgeInsets.fromLTRB(
     8,
