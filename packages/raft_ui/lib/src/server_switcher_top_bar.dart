@@ -35,6 +35,7 @@ class _TopBarServerTriggerState extends State<_TopBarServerTrigger>
   static const ease = Cubic(.25, .1, .25, 1);
   final dragPortal = OverlayPortalController();
   final anchors = <String, GlobalKey>{};
+  bool escapeListening = false;
   late final AnimationController drop;
 
   @override
@@ -57,6 +58,7 @@ class _TopBarServerTriggerState extends State<_TopBarServerTrigger>
 
   @override
   void dispose() {
+    stopEscapeListener();
     drop.dispose();
     super.dispose();
   }
@@ -83,6 +85,26 @@ class _TopBarServerTriggerState extends State<_TopBarServerTrigger>
     announcement = raftFormat(context, 'Picked up {name}.', {'name': row.name});
     dragDx = 0;
     dragPortal.show();
+    if (!escapeListening) {
+      // dnd-kit PointerSensor listens on document, independent of item focus.
+      HardwareKeyboard.instance.addHandler(cancelDragOnEscape);
+      escapeListening = true;
+    }
+  }
+
+  bool cancelDragOnEscape(KeyEvent event) {
+    if (!dragging ||
+        event is! KeyDownEvent ||
+        event.logicalKey != LogicalKeyboardKey.escape)
+      return false;
+    finish(cancel: true, pointerStillDown: !keyboardDrag);
+    return true;
+  }
+
+  void stopEscapeListener() {
+    if (!escapeListening) return;
+    HardwareKeyboard.instance.removeHandler(cancelDragOnEscape);
+    escapeListening = false;
   }
 
   void clearReleaseClickNextFrame() {
@@ -93,6 +115,7 @@ class _TopBarServerTriggerState extends State<_TopBarServerTrigger>
 
   void finish({bool cancel = false, bool pointerStillDown = false}) {
     if (!mounted) return;
+    stopEscapeListener();
     final from = picked, to = over;
     final moved = dragging;
     if (moved) {

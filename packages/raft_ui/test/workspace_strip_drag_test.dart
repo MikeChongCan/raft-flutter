@@ -18,9 +18,15 @@ class Harness {
   final order = ['a', 'b', 'c'];
   final moves = <List<int>>[];
   var picks = 0;
-  Future<void> mount(WidgetTester t, {bool reducedMotion = false}) async {
+  final elsewhere = FocusNode();
+  Future<void> mount(
+    WidgetTester t, {
+    bool reducedMotion = false,
+    Size size = const Size(1280, 800),
+  }) async {
     t.view.devicePixelRatio = 1;
-    t.view.physicalSize = const Size(1280, 800);
+    t.view.physicalSize = size;
+    addTearDown(elsewhere.dispose);
     addTearDown(t.view.reset);
     final menu = RaftMenuController();
     addTearDown(menu.dispose);
@@ -28,10 +34,7 @@ class Harness {
       MaterialApp(
         theme: raftTheme(),
         home: MediaQuery(
-          data: MediaQueryData(
-            size: const Size(1280, 800),
-            disableAnimations: reducedMotion,
-          ),
+          data: MediaQueryData(size: size, disableAnimations: reducedMotion),
           child: Scaffold(
             body: StatefulBuilder(
               builder: (context, update) {
@@ -61,6 +64,7 @@ class Harness {
                       ),
                       onSearch: () {},
                     ),
+                    Focus(focusNode: elsewhere, child: const SizedBox.shrink()),
                   ],
                 );
               },
@@ -145,6 +149,48 @@ void main() {
         expect(paintRect(t, item('b')).left, closeTo(last.left, .001));
         await t.tap(item('b'));
         expect(h.picks, 1, reason: 'a later real click is accepted');
+        await t.pumpWidget(const SizedBox.shrink());
+      },
+      variant: TargetPlatformVariant.only(platform),
+    );
+  }
+  for (final platform in [TargetPlatform.android, TargetPlatform.linux]) {
+    testWidgets(
+      '$platform pointer Escape is received when focus is elsewhere',
+      (t) async {
+        final h = Harness();
+        await h.mount(
+          t,
+          size: platform == TargetPlatform.android
+              ? const Size(856, 944)
+              : const Size(1280, 800),
+        );
+        final pointer = await t.startGesture(
+          t.getCenter(item('b')),
+          kind: platform == TargetPlatform.android
+              ? PointerDeviceKind.touch
+              : PointerDeviceKind.mouse,
+        );
+        await pointer.moveBy(const Offset(30, 0));
+        await t.pump();
+        expect(floating, findsOneWidget);
+        h.elsewhere.requestFocus();
+        await t.pump();
+        expect(h.elsewhere.hasFocus, isTrue);
+        await t.sendKeyEvent(LogicalKeyboardKey.escape);
+        await t.pumpAndSettle();
+        expect(
+          floating,
+          findsNothing,
+          reason:
+              'Source PointerSensor listens on document, independent of focus',
+        );
+        await pointer.up();
+        await t.pumpAndSettle();
+        expect(h.moves, isEmpty);
+        expect(h.picks, 0);
+        await t.tap(item('b'));
+        expect(h.picks, 1);
         await t.pumpWidget(const SizedBox.shrink());
       },
       variant: TargetPlatformVariant.only(platform),
