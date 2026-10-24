@@ -56,6 +56,7 @@ OPTIONS_ELEGANT = {
     'finder.boxLayout': 'natural',
     'conversationHeader.metaFlow': 'inlineWide', 'conversationTabs.variant': 'underline',
     'shell.browserTopBar': 'hidden',
+    'mobileWorkspace.surface': 'polygon',
     'rail.attentionRendering': 'masked',
     'avatar.sidebarHumanFallback': 'identity',
     'sidebar.mobileSurface': 'sidebar', 'resource.surface': 'sidebar',
@@ -90,6 +91,7 @@ OPTIONS_BRUTAL = {
     'finder.boxLayout': 'natural',
     'conversationHeader.metaFlow': 'stacked', 'conversationTabs.variant': 'underline',
     'shell.browserTopBar': 'hidden',
+    'mobileWorkspace.surface': 'polygon',
     'rail.attentionRendering': 'masked',
     'avatar.sidebarHumanFallback': 'identity',
     'sidebar.mobileSurface': 'canvas', 'resource.surface': 'canvas',
@@ -839,6 +841,7 @@ def pack(pack_id: str, name_en: str, name_zh: str, values: dict,
             'font': {**{name: '{fonts.mono}' if spec['column'] == 'brutal' else '{fonts.sans}'
                      for name in ('font.messageTime', 'font.messageSubtitle')},
                      'font.sidebarCount': '{fonts.sans}',
+                     'font.mobileWorkspaceTitle': '{fonts.heading}',
                      'font.conversationHeaderTitle': '{fonts.heading}',
                      'font.conversationHeaderMeta': '{fonts.mono}' if spec['column'] == 'brutal' else '{fonts.sans}'},
             # Brutal dark is the complete Elegant mode, including its families.

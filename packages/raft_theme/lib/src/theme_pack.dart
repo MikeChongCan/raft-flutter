@@ -134,6 +134,7 @@ const Map<String, Set<String>> raftStructuralOptions = {
   'conversationHeader.metaFlow': {'stacked', 'inlineWide'},
   'conversationTabs.variant': {'default', 'underline'},
   'shell.browserTopBar': {'shown', 'hidden'},
+  'mobileWorkspace.surface': {'sticker', 'polygon'},
   'rail.attentionRendering': {'indicator', 'masked'},
   'resource.surface': {'canvas', 'sidebar'},
   'resource.rows': {'flat', 'cards'},
@@ -467,6 +468,7 @@ RaftModeValues? _mode(Object? raw, String where) {
         'font.messageTime',
         'font.messageSubtitle',
         'font.sidebarCount',
+        'font.mobileWorkspaceTitle',
         'font.conversationHeaderTitle',
         'font.conversationHeaderMeta',
       }.contains(token)) {

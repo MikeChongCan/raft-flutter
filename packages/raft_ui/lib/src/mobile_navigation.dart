@@ -3,6 +3,9 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import 'mobile_page_header.dart';
+import 'status_bar.dart';
+import 'tap_slop.dart';
+import 'raft/status.dart' show RaftAttentionDot;
 
 import 'design_primitives.dart';
 import 'components.dart' show RaftSidebarUnreadCount;
@@ -22,6 +25,7 @@ import 'raft/css_box.dart' show raftControlBorderPx;
 import 'panel_layout.dart' show RaftCssText, RaftCssFocusOutline;
 
 part 'mobile_navigation_docked.dart';
+part 'mobile_workspace_header.dart';
 
 @immutable
 class RaftMobileNavItem {
@@ -386,11 +390,32 @@ class RaftMobileServerSelectorRecipe {
   final double viewportHeight;
   bool get compact => viewportHeight <= 600;
   double get contentAngle => compact ? 0 : -2 * math.pi / 180;
-  double get chevronAngle => -contentAngle;
+  double get chevronAngle => _stickerWorkspace(tokens) ? 0 : -contentAngle;
+  double get controlHeight =>
+      compact ? tokens.size('size.mobileWorkspaceCompact', fallback: 24) : 36;
   EdgeInsets get contentInset => compact
       ? EdgeInsets.zero
-      : const EdgeInsets.symmetric(horizontal: 14, vertical: 6);
-  Color get foreground => tokens.colors['primary-strong']!;
+      : EdgeInsets.fromLTRB(
+          tokens.size('space.mobileWorkspaceStart', fallback: 14),
+          tokens.size('space.mobileWorkspaceBlock', fallback: 6),
+          tokens.size('space.mobileWorkspaceEnd', fallback: 14),
+          tokens.size('space.mobileWorkspaceBlock', fallback: 6),
+        );
+  Color get foreground =>
+      tokens.colors[compact
+          ? 'foreground-mobile-workspace-compact'
+          : 'foreground-mobile-workspace'] ??
+      tokens.colors['primary-strong']!;
+  TextStyle get titleStyle =>
+      RaftTypography.heading(
+        tokens,
+        size: tokens.size('type.mobileWorkspaceTitle.size', fallback: 16),
+        line: tokens.size('type.mobileWorkspaceTitle.line', fallback: 24),
+        weight: FontWeight.w700,
+      ).copyWith(
+        color: foreground,
+        fontFamily: tokens.fontFamily('font.mobileWorkspaceTitle'),
+      );
   List<Offset> polygon(Size size, {double shadowOffset = 0}) {
     final center = Offset(size.width / 2, size.height / 2);
     final cosine = math.cos(contentAngle), sine = math.sin(contentAngle);
@@ -435,6 +460,17 @@ class RaftMobileServerSelector extends StatelessWidget {
       t,
       viewportHeight: viewportHeight ?? MediaQuery.sizeOf(context).height,
     );
+    if (_stickerWorkspace(t)) {
+      return _StickerWorkspaceSelector(
+        recipe: recipe,
+        label: label,
+        onPressed: onPressed,
+        attention: attention,
+        attentionLabel: attentionLabel,
+        focusNode: focusNode,
+        publicPageLive: publicPageLive,
+      );
+    }
     return _SelectorControl(
       recipe: recipe,
       label: label,
@@ -469,7 +505,7 @@ class _SelectorControl extends StatelessWidget {
     focusNode: focusNode,
     onPressed: onPressed,
     semanticLabel: null,
-    visualHeight: recipe.compact ? 24 : 36,
+    visualHeight: recipe.controlHeight,
     recipe: _SelectorRecipe(recipe.tokens),
     padding: recipe.contentInset,
     child: CustomPaint(
@@ -490,12 +526,7 @@ class _SelectorControl extends StatelessWidget {
                       label,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: RaftTypography.heading(
-                        recipe.tokens,
-                        size: 16,
-                        line: 24,
-                        weight: FontWeight.w700,
-                      ).copyWith(color: recipe.foreground),
+                      style: recipe.titleStyle,
                     ),
                   ),
                 ),
@@ -651,7 +682,11 @@ class RaftMobileRootHeader extends StatelessWidget {
     this.actions = const [],
     this.viewportHeight,
     this.inset = 16,
+    this.workspace = false,
   });
+
+  /// The phone Home workspace header has natural-width frame actions.
+  final bool workspace;
   final Widget? leading;
   final String? title;
   final List<Widget> actions;
@@ -664,6 +699,13 @@ class RaftMobileRootHeader extends StatelessWidget {
       viewportHeight: viewportHeight ?? MediaQuery.sizeOf(context).height,
       inset: inset,
     );
+    if (workspace && _stickerWorkspace(recipe.tokens) && leading != null) {
+      return _MobileWorkspaceHeader(
+        recipe: recipe,
+        leading: leading!,
+        actions: actions,
+      );
+    }
     return RaftMobilePageHeader(
       background: recipe.background,
       border: recipe.border,
@@ -696,6 +738,7 @@ class RaftMobileNotificationButton extends StatelessWidget {
     this.glyphSize = 16,
     this.rail = false,
     this.onFrame = false,
+    this.mobileHeader = false,
     this.attention = false,
   });
   final VoidCallback? onPressed;
@@ -712,9 +755,35 @@ class RaftMobileNotificationButton extends StatelessWidget {
   /// AppRailItemAttention composite the other rail items use. [glyphSize] is
   /// ignored then.
   final bool rail, attention;
-  final bool onFrame;
+  final bool onFrame, mobileHeader;
   @override
   Widget build(BuildContext context) {
+    final t = RaftTokens.of(context);
+    if (mobileHeader && _stickerWorkspace(t)) {
+      final extent = t.size('size.mobileHeaderAction', fallback: 44);
+      final control = RaftControl(
+        onPressed: onPressed,
+        semanticLabel: raftText(context, semanticLabel),
+        minimumTargetSize: extent,
+        visualHeight: extent,
+        visualWidth: extent,
+        recipe: _MobileHeaderBellRecipe(
+          t,
+          selected: open,
+          borderWidth: raftControlBorderPx(context, 1.5),
+        ),
+        child: RaftIcon(
+          RaftGlyph.bell,
+          size: t.size('size.mobileHeaderActionGlyph', fallback: 22),
+        ),
+      );
+      return RaftDensityScope.of(context) == RaftDensity.touch
+          ? RaftTapSlopAnchor(
+              minSize: const Size.square(RaftMetrics.touchTarget),
+              child: control,
+            )
+          : control;
+    }
     if (rail || onFrame) {
       return RaftWorkspaceRailAction(
         extent: onFrame ? 36 : null,
@@ -725,7 +794,6 @@ class RaftMobileNotificationButton extends StatelessWidget {
         onPressed: onPressed,
       );
     }
-    final t = RaftTokens.of(context);
     final recipe = _MobileNotificationRecipe(t, selected: open);
     return RaftInteractive(
       onPressed: onPressed,

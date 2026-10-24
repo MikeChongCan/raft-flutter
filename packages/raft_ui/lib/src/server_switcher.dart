@@ -266,6 +266,7 @@ class _RaftServerSwitcherState extends State<RaftServerSwitcher> {
                 )
               : widget.mobile
               ? RaftMobileRootHeader(
+                  workspace: true,
                   leading: RaftMobileServerSelector(
                     key: const Key('mobile-server-selector'),
                     label: widget.workspaceName,

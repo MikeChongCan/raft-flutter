@@ -1137,3 +1137,14 @@ rail 在栏下的导航顶部留 8px（矮屏 4px），没有栏时保留原间�
 的 SidebarItemIcon）。旧两套外观分别保留普通入口强前景、Saved 默认弱前景及
 悬停 foreground；选中态沿用原强前景。`RaftControlRecipe.iconForegroundFor`
 默认转发文字颜色，只有这些导航入口覆盖，其他配方维持原行为。
+
+手机 Home 工作区选择器的 `mobileWorkspace.surface = sticker | polygon`：
+Raft 采用 Sidebar.tsx 的圆角墨色贴纸、黄色名称和整体 -2° 倾斜；短窗口采用
+36px 透明按钮和 frame 前景。Elegant／Brutal 保留原来的黑色多边形及紧凑 24px。
+名称使用 `font.mobileWorkspaceTitle` 和对应的字号／行高；间距、侧边 padding、
+紧凑高度、Home 右侧空隙、按下遮罩透明度均由 mobileWorkspace 数据决定。
+`foreground-mobile-workspace`、紧凑前景、背景、外圈、按下遮罩引用现有色值。
+
+通知按钮的 `mobileHeader` 只用于手机 Home frame：Raft 44px／22px 图标，
+旧两套继续 32px／16px。泛用 SDK 默认值和顶部横栏的 36px／20px 分别保留。
+工作区提醒使用共用的 9px 方形 AttentionDot，定位在选择器整个盒子的右上角。

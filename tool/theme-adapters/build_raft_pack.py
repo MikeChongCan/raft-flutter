@@ -418,6 +418,7 @@ OPTIONS_RAFT = {
     'finder.boxLayout': 'css',
     'conversationHeader.metaFlow': 'stacked', 'conversationTabs.variant': 'default',
     'shell.browserTopBar': 'shown',
+    'mobileWorkspace.surface': 'sticker',
     'rail.attentionRendering': 'indicator',
     'avatar.sidebarHumanFallback': 'user',
     'sidebar.mobileSurface': 'canvas', 'resource.surface': 'canvas',
@@ -540,6 +541,7 @@ def build() -> dict:
             'type': scale,
             'font': {'font.messageTime': '{fonts.mono}',
                      'font.messageSubtitle': '{fonts.sans}', 'font.sidebarCount': '{fonts.mono}',
+                     'font.mobileWorkspaceTitle': '{fonts.sans}',
                      'font.conversationHeaderTitle': '{fonts.sans}', 'font.conversationHeaderMeta': '{fonts.sans}'},
             'case': CASE_RAFT,
             'shadows': {

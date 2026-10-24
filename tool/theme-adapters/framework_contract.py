@@ -6,6 +6,12 @@ the specified 1.5px remains data for the shared renderer to project.
 """
 
 RAFT_GEOMETRY = {
+    'type.mobileWorkspaceTitle.size': 17, 'type.mobileWorkspaceTitle.line': 22,
+    'space.mobileWorkspaceGap': 8, 'space.mobileWorkspaceStart': 12,
+    'space.mobileWorkspaceEnd': 10, 'space.mobileWorkspaceBlock': 0,
+    'space.mobileWorkspaceHeaderEnd': 3,
+    'size.mobileWorkspaceCompact': 36, 'size.mobileHeaderAction': 44,
+    'size.mobileHeaderActionGlyph': 22, 'opacity.mobileWorkspaceVeil': .15,
     'space.sidebarContentTopWithoutHeader': 8,
     'stroke.sidebarItemRing': 1.5,
     'stroke.sidebarCountRing': 1.5,
@@ -97,6 +103,12 @@ RAFT_GEOMETRY = {
 
 ELEGANT_GEOMETRY = {
     **RAFT_GEOMETRY,
+    'type.mobileWorkspaceTitle.size': 16, 'type.mobileWorkspaceTitle.line': 24,
+    'space.mobileWorkspaceGap': 6, 'space.mobileWorkspaceStart': 14,
+    'space.mobileWorkspaceEnd': 14, 'space.mobileWorkspaceBlock': 6,
+    'space.mobileWorkspaceHeaderEnd': 16,
+    'size.mobileWorkspaceCompact': 24, 'size.mobileHeaderAction': 32,
+    'size.mobileHeaderActionGlyph': 16, 'opacity.mobileWorkspaceVeil': 0,
     'space.sidebarContentTopWithoutHeader': 12,
     'stroke.sidebarItemRing': 0,
     'stroke.sidebarCountRing': 0,
@@ -241,6 +253,11 @@ def framework_colors(column, colors):
         'layer-sidebar-mention': colors['brand-400'] if raft else colors['primary-soft'],
         'foreground-sidebar-mention': colors['sticker-ink'] if raft else colors['primary-strong'],
         'line-sidebar-mention': colors['sticker-ink'] if raft else colors['line-strong'],
+        'foreground-mobile-workspace': colors['brand-400'] if raft else colors['primary-strong'],
+        'foreground-mobile-workspace-compact': colors['foreground-on-frame'] if raft else colors['primary-strong'],
+        'layer-mobile-workspace': colors['sticker-ink'] if raft else '#000000',
+        'line-mobile-workspace-ring': colors['sticker-edge'] if raft else transparent,
+        'layer-mobile-workspace-veil': colors['sticker-paper'] if raft else transparent,
         'foreground-sidebar-entry': colors['foreground'] if raft else colors['foreground-muted'],
         'foreground-sidebar-entry-icon': colors['foreground-hint'] if raft else colors['foreground-strong'],
         'foreground-sidebar-saved-icon': colors['foreground-hint'] if raft else colors['foreground-muted'],

@@ -639,10 +639,11 @@ class _SystemNotificationBellState extends State<SystemNotificationBell>
                   visualSize: widget.mobile ? 32 : 40,
                   glyphSize: 16,
                   // NotificationTrigger: the rail bell is a rail icon with the
-                  // shared attention composite; the mobile navbar keeps its
-                  // 16px muted bell and Status dot.
+                  // shared attention composite. The mobile header chooses its
+                  // frame treatment through theme data; SDK defaults stay 32/16.
                   rail: !widget.mobile && !widget.topBar,
                   onFrame: widget.topBar,
+                  mobileHeader: widget.mobile,
                   attention: !widget.mobile && store.unreadCount > 0,
                   onPressed: () => popup == null
                       ? show(

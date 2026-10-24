@@ -302,28 +302,25 @@ void main() {
     );
     await tester.pumpWidget(const SizedBox.shrink());
   });
-  test(
-    'selector vector preserves rotation and shadow offset; compact strips it',
-    () {
-      final t = raftTheme().extension<RaftTokens>()!;
-      final tall = RaftMobileServerSelectorRecipe(t, viewportHeight: 844);
-      final compact = RaftMobileServerSelectorRecipe(t, viewportHeight: 560);
-      expect(tall.contentAngle, -2 * math.pi / 180);
-      expect(tall.contentAngle + tall.chevronAngle, 0);
-      final face = tall.polygon(const Size(168, 36));
-      final shadow = tall.polygon(const Size(168, 36), shadowOffset: 2);
-      expect(face.first.dy, greaterThan(0));
-      expect(
-        (shadow.first - face.first).distance,
-        closeTo(math.sqrt(8), .000001),
-      );
-      expect(compact.contentAngle, 0);
-      expect(compact.contentInset, EdgeInsets.zero);
-      expect(compact.polygon(const Size(168, 24)).first, Offset.zero);
-    },
-  );
+  test('a57 Elegant selector preserves rotation and shadow offset; compact strips it', () {
+    final t = raftTheme(pack: builtInElegantTheme).extension<RaftTokens>()!;
+    final tall = RaftMobileServerSelectorRecipe(t, viewportHeight: 844);
+    final compact = RaftMobileServerSelectorRecipe(t, viewportHeight: 560);
+    expect(tall.contentAngle, -2 * math.pi / 180);
+    expect(tall.contentAngle + tall.chevronAngle, 0);
+    final face = tall.polygon(const Size(168, 36));
+    final shadow = tall.polygon(const Size(168, 36), shadowOffset: 2);
+    expect(face.first.dy, greaterThan(0));
+    expect(
+      (shadow.first - face.first).distance,
+      closeTo(math.sqrt(8), .000001),
+    );
+    expect(compact.contentAngle, 0);
+    expect(compact.contentInset, EdgeInsets.zero);
+    expect(compact.polygon(const Size(168, 24)).first, Offset.zero);
+  });
   testWidgets(
-    'server selector keyboard callback is real and only chevron counterrotates',
+    'a57 Elegant selector keyboard callback is real and only chevron counterrotates',
     (tester) async {
       var opened = 0;
       await tester.pumpWidget(
@@ -336,6 +333,7 @@ void main() {
               onPressed: () => opened++,
             ),
           ),
+          floating: true,
         ),
       );
       expect(find.byType(RaftIcon), findsOneWidget);
