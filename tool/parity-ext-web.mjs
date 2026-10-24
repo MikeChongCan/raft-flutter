@@ -40,10 +40,10 @@ const rootOriginal = readFileSync(rootTarget, 'utf8');
 // Flutter side, which keeps those themes: on the Web reference the two light names render
 // the same page and elegant-dark selects the dark mode.
 const THEME_OVERRIDE = `  const override = new URLSearchParams(window.location.search).get('parityTheme');
-  if (override && !['brutal-light', 'elegant-light', 'elegant-dark'].includes(override)) {
+  if (override && !['brutal-light', 'elegant-light', 'elegant-dark', 'raft-light', 'raft-dark'].includes(override)) {
     throw new Error('Unknown extension parity theme');
   }
-  const effectiveMode: AppResolvedMode = override ? (override === 'elegant-dark' ? 'dark' : 'light') : mode;
+  const effectiveMode: AppResolvedMode = override ? (override.endsWith('-dark') ? 'dark' : 'light') : mode;
 `;
 const rootCode = once(rootOriginal,
   '  return (\n    <ThemeProvider mode={mode}>\n'

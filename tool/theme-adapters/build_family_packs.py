@@ -30,6 +30,7 @@ import pathlib
 import sys
 
 from button_contract import button_colors, button_palette
+from framework_contract import ELEGANT_GEOMETRY, BRUTAL_GEOMETRY, framework_colors
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 VALUES = 'docs/theme-contract/values.json'
@@ -50,6 +51,7 @@ OPTIONS_ELEGANT = {
     'control.edge': 'ring', 'sticker.ring': 'none', 'emphasis.fill': 'soft',
     'iconButton.surface': 'generic', 'panelAction.surface': 'outline',
     # a57b9dab design_primitives.dart:141-145; resource_view.dart:2385,2393.
+    'sidebarItem.sectionContent': 'sectionScoped',
     'sidebar.mobileSurface': 'sidebar', 'resource.surface': 'sidebar',
     'resource.rows': 'cards', 'resource.badge': 'pill', 'resource.markRead': 'outline',
     'listGroup.frame': 'framed', 'task.status': 'symbol', 'searchResult.selection': 'card', 'messageReference.chipLayout': 'intrinsic', 'messageMenu.reactionDivider': 'hidden',
@@ -77,6 +79,7 @@ OPTIONS_BRUTAL = {
     'messageHeader.align': 'center',
     'control.edge': 'inkBorder', 'sticker.ring': 'none', 'emphasis.fill': 'solid',
     'iconButton.surface': 'raised', 'panelAction.surface': 'outline',
+    'sidebarItem.sectionContent': 'sectionScoped',
     'sidebar.mobileSurface': 'canvas', 'resource.surface': 'canvas',
     'resource.rows': 'cards', 'resource.badge': 'pill', 'resource.markRead': 'outline',
     'listGroup.frame': 'framed', 'task.status': 'symbol', 'searchResult.selection': 'card', 'messageReference.chipLayout': 'intrinsic', 'messageMenu.reactionDivider': 'hidden',
@@ -589,6 +592,10 @@ COLUMN = {
 }
 
 
+GEOMETRY_ELEGANT.update(ELEGANT_GEOMETRY)
+GEOMETRY_BRUTAL.update(BRUTAL_GEOMETRY)
+
+
 def load_values() -> dict:
     return json.loads((ROOT / VALUES).read_text())
 
@@ -787,12 +794,23 @@ def pack(pack_id: str, name_en: str, name_zh: str, values: dict,
         shadows['shadow.buttonHover'] = shadows['md'] if spec['column'] == 'brutal' else normal
         shadows['shadow.buttonPressed'] = shadows['xs'] if spec['column'] == 'brutal' else normal
         shadows['shadow.buttonDangerOutline'] = normal if spec['column'] == 'elegantDark' else 'none'
+        colors.update(framework_colors(spec['column'], colors))
+        shadows['shadow.railSelected'] = (
+            f"2px 2px 0 0 {colors['foreground-strong']}" if spec['column'] == 'brutal' else 'none')
+        shadows['shadow.railActionSelected'] = (
+            shadows['sm'] if spec['column'] in ('brutal', 'elegantDark') else 'none')
+        shadows['shadow.railFocus'] = (
+            'none' if spec['column'] == 'brutal' else f"0 0 0 0.5px {colors['primary-500']}")
         colors.update(button_colors(spec['column'], colors))
         return {
             'colors': colors,
             # Only the Elegant source modes carry these legacy preservation
             # colors; Brutal dark inherits the whole Elegant mode.
             'palette': {**({'palette-orange-100': colors['task-status-todo-soft'],
+                         'palette-workspaceRailInk': '#000000',
+                         'palette-workspaceHeadingEdge': 'rgba(0 0 0 / 0.25)',
+                         'palette-sidebarSectionCount': 'rgba(0 0 0 / 0.4)',
+                         'palette-sidebarSectionHover': 'rgba(0 0 0 / 0.7)',
                          'palette-composerTaskLabel': 'rgba(0 0 0 / 0.6)',
                          'palette-messageMeta': 'rgba(0 0 0 / 0.4)'}
                 if spec['column'] == 'brutal' else {
@@ -805,7 +823,7 @@ def pack(pack_id: str, name_en: str, name_zh: str, values: dict,
                     'palette-elegantNotice-dark': f'rgba({.534161 * 255:.9f} {.321382 * 255:.9f} {.207110 * 255:.9f} / 0.180368)',
                 }), **button_palette(spec['column'])},
             'geometry': {**geometry_with_type(spec['geometry'], type_metrics),
-                         **({'space.dialogBodyTop': 10} if spec['column'] == 'elegantDark' else {})},
+                         **({'space.dialogBodyTop': 10, 'opacity.railActionHover': 1} if spec['column'] == 'elegantDark' else {})},
             'font': {name: '{fonts.mono}' if spec['column'] == 'brutal' else '{fonts.sans}'
                      for name in ('font.messageTime', 'font.messageSubtitle')},
             # Brutal dark is the complete Elegant mode, including its families.

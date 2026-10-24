@@ -8,6 +8,8 @@ import 'rail_attention.dart';
 import 'recipes/app_rail.g.dart';
 import 'text_scaling.dart' show RaftScaled;
 import 'theme.dart';
+import 'panel_layout.dart' show RaftCssFocusOutline;
+import 'raft/css_box.dart' show raftControlBorderPx;
 
 /// Sidebar.tsx3840–3848: one bordered heading, no duplicate server switcher.
 class RaftChatSidebarHeading extends StatelessWidget {
@@ -38,8 +40,12 @@ class RaftChatSidebarHeading extends StatelessWidget {
       label,
       style: RaftTypography.heading(
         t,
-        size: workspaceEnabled ? 16 : 18,
-        line: workspaceEnabled ? 24 : 28,
+        size: workspaceEnabled
+            ? 16
+            : t.size('type.sidebarHeading.size', fallback: 18),
+        line: workspaceEnabled
+            ? 24
+            : t.size('type.sidebarHeading.line', fallback: 28),
         weight: workspaceEnabled ? FontWeight.w600 : FontWeight.w700,
       ),
     );
@@ -59,7 +65,16 @@ class RaftChatSidebarHeading extends StatelessWidget {
       padding: recipe.headerInset,
       decoration: BoxDecoration(
         border: Border(
-          bottom: BorderSide(color: t.colors['line-muted']!, width: 1),
+          bottom: BorderSide(
+            color:
+                t.colors[workspaceEnabled
+                    ? 'line-sidebar-heading-workspace'
+                    : 'line-sidebar-heading'] ??
+                t.colors['line-muted']!,
+            width: workspaceEnabled
+                ? 1
+                : t.size('stroke.sidebarHeading', fallback: 1),
+          ),
         ),
       ),
       alignment: AlignmentDirectional.centerStart,
@@ -81,15 +96,33 @@ class RaftWorkspaceRailFooter extends StatelessWidget {
       states: t.recipeStates(),
     ).footer;
     // Footer's own pb-2 is separate from LeftRail root's pb-2.
+    final short = MediaQuery.sizeOf(context).height <= 600;
     return Padding(
-      padding: footer.padding,
+      padding: EdgeInsets.fromLTRB(
+        t.size('space.railInline', fallback: 0),
+        0,
+        t.size('space.railInline', fallback: 0),
+        t.size(
+          short ? 'space.railFooterBottomCompact' : 'space.railFooterBottom',
+          fallback: footer.padding.bottom,
+        ),
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           for (var i = 0; i < children.length; i++) ...[
-            if (i > 0) SizedBox(height: footer.rowGap ?? 0),
+            if (i > 0)
+              SizedBox(
+                height: t.size(
+                  'space.railItemGap',
+                  fallback: footer.rowGap ?? 0,
+                ),
+              ),
             SizedBox(
-              height: RaftMetrics.railSlot,
+              height: t.size(
+                'size.railFooterSlot',
+                fallback: RaftMetrics.railSlot,
+              ),
               child: Center(child: children[i]),
             ),
           ],
@@ -122,6 +155,10 @@ class RaftWorkspaceRailAction extends StatelessWidget {
     final size = MediaQuery.sizeOf(context).height <= 600
         ? RaftMetrics.railItemCompact
         : RaftMetrics.railItem;
+    final recipe = RaftRailRecipe(
+      t,
+      viewportHeight: MediaQuery.sizeOf(context).height,
+    );
     return RaftInteractive(
       semanticLabel: label,
       selected: selected,
@@ -136,36 +173,82 @@ class RaftWorkspaceRailAction extends StatelessWidget {
             hovered: state.hovered,
             pressed: state.pressed,
             focusVisible: state.focusVisible,
+            disabled: !state.enabled,
             extra: [if (selected) 'data-selected=true'],
           ),
         ).item;
-        final glyphSize = style.target('& svg')?.width ?? RaftMetrics.railGlyph;
-        Widget glyphWidget() => RaftIcon(
-          glyph,
-          size: glyphSize,
-          color: style.foreground(t.recipeTokens, inherited: t.strong),
-        );
-        return RaftRecipeBox(
-          style: style,
-          tokens: t.recipeTokens,
-          width: size,
-          height: size,
-          padding: EdgeInsets.zero,
-          child: Center(
-            child: SizedBox.square(
-              dimension: glyphSize,
-              child: Stack(
-                clipBehavior: Clip.none,
-                fit: StackFit.expand,
-                children: [
-                  glyphWidget(),
-                  if (attention)
-                    RaftRailAttention(
-                      // The Source mask supplies currentColor through its
-                      // descendant; an explicit base color would defeat it.
-                      child: RaftIcon(glyph, size: glyphSize),
-                    ),
-                ],
+        final active = state.hovered || state.pressed;
+        final foreground =
+            t.colors[selected
+                ? 'foreground-workspace-rail-action-selected'
+                : active
+                ? 'foreground-workspace-rail-action-hover'
+                : 'foreground-workspace-rail-action']!;
+        final hoverFill = t.colors['layer-workspace-rail-hover']!;
+        return CustomPaint(
+          foregroundPainter: RaftCssFocusOutline(
+            enabled:
+                state.focusVisible &&
+                t.size('stroke.railFocus', fallback: 0) > 0,
+            color: t.colors['line-workspace-rail-focus']!,
+            width: t.size('stroke.railFocus', fallback: 0),
+            offset: t.size('space.railFocusOffset', fallback: 0),
+            radius: recipe.radius,
+          ),
+          child: RaftRecipeBox(
+            style: style,
+            tokens: t.recipeTokens,
+            width: size,
+            height: size,
+            padding: EdgeInsets.zero,
+            decorationOverride: (base) => base.copyWith(
+              color: selected
+                  ? recipe.selectedBackground
+                  : active
+                  ? hoverFill.withValues(
+                      alpha:
+                          hoverFill.a *
+                          t.size('opacity.railActionHover', fallback: 1),
+                    )
+                  : Colors.transparent,
+              borderRadius: recipe.radius,
+              border: Border.all(
+                color: selected
+                    ? t.colors['line-workspace-rail-selected']!
+                    : active
+                    ? t.colors['line-workspace-rail-hover']!
+                    : Colors.transparent,
+                width: raftControlBorderPx(
+                  context,
+                  t.size('stroke.railItem', fallback: 1),
+                ),
+              ),
+              boxShadow: [
+                if (selected) ...recipe.selectedShadows(action: true),
+                if (state.focusVisible) ...recipe.focusShadows,
+              ],
+            ),
+            child: DefaultTextStyle.merge(
+              style: TextStyle(color: foreground),
+              child: Center(
+                child: SizedBox.square(
+                  dimension: recipe.glyphSize,
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    fit: StackFit.expand,
+                    children: [
+                      RaftIcon(
+                        glyph,
+                        size: recipe.glyphSize,
+                        color: foreground,
+                      ),
+                      if (attention)
+                        RaftRailAttention(
+                          child: RaftIcon(glyph, size: recipe.glyphSize),
+                        ),
+                    ],
+                  ),
+                ),
               ),
             ),
           ),

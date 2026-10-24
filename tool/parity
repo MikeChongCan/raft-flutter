@@ -489,6 +489,11 @@ def summarize():
     diff = json.loads((RESULTS / 'diff' / f'{PAIR}.json').read_text())
     case_map_file = RESULTS / 'android-case-map.json'
     case_map = json.loads(case_map_file.read_text()) if case_map_file.is_file() else {}
+    # The extension manifest can contain thousands of rows. Read it once,
+    # preserving the original first matching case for each variant lookup.
+    cases_by_id = {}
+    for case in manifest_cases():
+        cases_by_id.setdefault(case['id'], case)
     rows = []
     for r in diff['results']:
         m = case_map.get(r['id'], {'status': 'harnessTodo', 'reason': 'No Flutter builder mapped yet.'})
@@ -508,7 +513,7 @@ def summarize():
         rows.append({
             'id': r['id'], 'captureType': r.get('captureType'),
             'theme': 'elegant-light' if r['id'].endswith('.elegant') else 'brutal-light',
-            'variant': next((c['variants'][0]['id'] for c in manifest_cases() if c['id'] == r['id']), None),
+            'variant': cases_by_id[r['id']]['variants'][0]['id'] if r['id'] in cases_by_id else None,
             'react': react, 'flutter': flutter, 'officialStatus': r['status'],
             'pixelPerfectSimilarity': pixel, 'verdict': verdict,
             'flutterMapping': m,

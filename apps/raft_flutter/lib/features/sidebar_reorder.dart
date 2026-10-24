@@ -445,7 +445,19 @@ Widget sidebarListRow(
       group: group,
       shown: entries,
       entryKey: entry.key,
-      child: item,
+      // Adjacent CSS row margins collapse; the last row alone keeps the
+      // trailing margin before the next section's padded header.
+      child: index == entries.length - 1
+          ? Builder(
+              builder: (context) => Padding(
+                padding: EdgeInsets.only(
+                  bottom: RaftTokens.of(context)
+                      .size('space.sidebarListEnd', fallback: 0),
+                ),
+                child: item,
+              ),
+            )
+          : item,
     ),
   );
 }

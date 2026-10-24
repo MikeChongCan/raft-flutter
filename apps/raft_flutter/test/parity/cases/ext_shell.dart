@@ -31,7 +31,14 @@ Map<String, dynamic> _preset(ParityContext ctx) {
   );
 }
 
-WorkspaceController _workspace(ParityContext ctx) => shellWorkspace(ctx);
+WorkspaceController _workspace(ParityContext ctx) => shellWorkspace(
+  ctx,
+  routes: ctx.props['extKind'] == 'framework'
+      ? Map<String, dynamic>.from(
+          (ctx.fixtures['ext:framework'] as Map)['routes'] as Map,
+        )
+      : const {},
+);
 
 /// The shell workspace (preset `ctx.props['preset']`) of the shell cases; the
 /// composed-screen cases (ext_screens.dart) add their message / inbox
@@ -155,10 +162,20 @@ class _Host extends StatefulWidget {
   State<_Host> createState() => _HostState();
 }
 
+/// Mount the workspace without the historical shell fixture's crop or mask.
+Widget shellWorkspaceView(ParityContext ctx) => _Host(ctx: ctx);
+
 class _HostState extends State<_Host> {
   late final WorkspaceController w = _workspace(widget.ctx);
   // Hide-empty defaults off in the browser and native clients.
   final presentation = PersonalPresentationStore();
+
+  @override
+  void dispose() {
+    w.dispose();
+    presentation.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {

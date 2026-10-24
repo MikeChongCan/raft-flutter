@@ -3370,15 +3370,18 @@ class _WorkspaceViewState extends State<WorkspaceView>
     ),
   );
 
-  /// [pinned] / [custom]: the Sidebar.tsx row options of those sections -
-  /// Pinned rows wrap (`allowWrap`) and hide an agent's description, custom
-  /// sections hide every DM description.
+  /// The current Sidebar.tsx reuses the same row across all sections.
+  /// Frozen packs retain their earlier section-scoped content and wrapping.
   RaftNavItem sidebarEntry(
     SidebarEntry entry, {
     bool pinned = false,
     bool custom = false,
     bool reorderable = false,
   }) {
+    final sectionScoped =
+        RaftTokens.of(context)
+            .option('sidebarItem.sectionContent', or: 'sectionScoped') ==
+        'sectionScoped';
     final agent = entry.agent;
     if (agent == null) {
       return channelItem(entry.channel!, pinned, custom, reorderable);
@@ -3402,11 +3405,13 @@ class _WorkspaceViewState extends State<WorkspaceView>
         source,
         presence: agentRowPresence(agent),
       ),
-      wrap: pinned,
+      wrap: pinned && sectionScoped,
       menuOpen: menuOpenRow == 'a:${agent['id']}',
       onContextMenu: (at) => openAgentMenu(at, agent, entry.channel),
       contextMenuOnLongPress: !reorderable,
-      description: pinned || custom || description.isEmpty ? null : description,
+      description: (sectionScoped && (pinned || custom)) || description.isEmpty
+          ? null
+          : description,
       // What a working agent is doing takes the place of its runtime.
       activityText: liveActivities.rowText('${agent['id']}'),
       selected:
@@ -3559,7 +3564,13 @@ class _WorkspaceViewState extends State<WorkspaceView>
     final scope = mobileAuthority;
     final peer = dmPeer(c);
     final agent = peer.agent, name = peer.name;
-    final description = custom || (pinned && agent) ? '' : peer.description;
+    final sectionScoped =
+        RaftTokens.of(context)
+            .option('sidebarItem.sectionContent', or: 'sectionScoped') ==
+        'sectionScoped';
+    final description = sectionScoped && (custom || (pinned && agent))
+        ? ''
+        : peer.description;
     final source = peer.avatar;
     final threads = SidebarThreadUnread.of(w)
         .forChannel(c.id, joined: c.joined);
@@ -3575,7 +3586,7 @@ class _WorkspaceViewState extends State<WorkspaceView>
                   : null,
             )
           : channelPublicLeading(context, w, c),
-      wrap: pinned,
+      wrap: pinned && sectionScoped,
       menuOpen: menuOpenRow == 'c:${c.id}',
       onContextMenu: (at) => openChannelMenu(at, c),
       contextMenuOnLongPress: !reorderable,

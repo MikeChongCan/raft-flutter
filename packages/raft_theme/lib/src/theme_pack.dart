@@ -127,6 +127,7 @@ const Map<String, Set<String>> raftStructuralOptions = {
   // are separate segments separated by a gap (the pre-theme app).
   'segmented.frame': {'framed', 'separate'},
   'sidebar.mobileSurface': {'canvas', 'sidebar'},
+  'sidebarItem.sectionContent': {'uniform', 'sectionScoped'},
   'resource.surface': {'canvas', 'sidebar'},
   'resource.rows': {'flat', 'cards'},
   'resource.badge': {'sticker', 'pill'},

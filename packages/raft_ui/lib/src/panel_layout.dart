@@ -306,25 +306,32 @@ class RaftCssFocusOutline extends CustomPainter {
     required this.enabled,
     required this.color,
     this.radius = BorderRadius.zero,
+    this.width = 2,
+    this.offset = 2,
   });
   final bool enabled;
   final Color color;
   final BorderRadius radius;
+  final double width, offset;
   @override
   void paint(Canvas canvas, Size size) {
     if (!enabled) return;
     canvas.drawRRect(
-      radius.toRRect(Offset.zero & size).inflate(3),
+      radius.toRRect(Offset.zero & size).inflate(offset + width / 2),
       Paint()
         ..color = color
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 2,
+        ..strokeWidth = width,
     );
   }
 
   @override
   bool shouldRepaint(RaftCssFocusOutline old) =>
-      old.enabled != enabled || old.color != color || old.radius != radius;
+      old.enabled != enabled ||
+      old.color != color ||
+      old.radius != radius ||
+      old.width != width ||
+      old.offset != offset;
 }
 
 /// Title/meta flow of the real raft-ui PanelHeaderContent slot.

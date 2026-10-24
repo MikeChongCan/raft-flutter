@@ -29,6 +29,7 @@ import re
 import sys
 
 from button_contract import button_colors
+from framework_contract import RAFT_GEOMETRY, framework_colors
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 TOKENS = 'packages/raft_ui/lib/src/tokens'
@@ -400,6 +401,8 @@ GEOMETRY_RAFT.update({
     'space.spinnerRingInset': 0, 'opacity.spinnerArc': .8,
 })
 
+GEOMETRY_RAFT.update(RAFT_GEOMETRY)
+
 OPTIONS_RAFT = {
     'mobileNav.boxLayout': 'css', 'mobileNav.textLayout': 'css',
     'button.hoverSurface': 'overlay',
@@ -410,6 +413,7 @@ OPTIONS_RAFT = {
     'messageHeader.align': 'center',
     'control.edge': 'inkBorder', 'sticker.ring': 'dieCut', 'emphasis.fill': 'solid',
     'iconButton.surface': 'generic', 'panelAction.surface': 'ghost',
+    'sidebarItem.sectionContent': 'uniform',
     'sidebar.mobileSurface': 'canvas', 'resource.surface': 'canvas',
     'resource.rows': 'flat', 'resource.badge': 'sticker', 'resource.markRead': 'ghost',
     'listGroup.frame': 'plain', 'task.status': 'square', 'searchResult.selection': 'flat', 'messageReference.chipLayout': 'fixed', 'messageMenu.reactionDivider': 'shown',
@@ -510,6 +514,7 @@ def build() -> dict:
             'line-select': 'line-strong', 'line-select-disabled': 'line-hairline',
         }.items():
             out[target] = out[source]
+        out.update(framework_colors('raftDark' if palette is dark else 'raftLight', out))
         out.update(button_colors('raftDark' if palette is dark else 'raftLight', out))
         return out
 
@@ -545,6 +550,9 @@ def build() -> dict:
                 'shadow.buttonHover': 'none',
                 'shadow.buttonPressed': 'none',
                 'shadow.buttonDangerOutline': 'none',
+                'shadow.railSelected': f"0 0 0 1.5px {palette['sticker-edge']}",
+                'shadow.railActionSelected': f"0 0 0 1.5px {palette['sticker-edge']}",
+                'shadow.railFocus': shadow_set['focusRing'],
             },
             'options': OPTIONS_RAFT,
         }

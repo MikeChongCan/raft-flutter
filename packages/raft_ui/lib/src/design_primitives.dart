@@ -100,7 +100,7 @@ abstract final class RaftLayoutMetrics {
   static double shellHeaderHeight(RaftTokens t, double viewportHeight) =>
       viewportHeight <= 600
       ? RaftMetrics.compactPanelHeader
-      : RaftMetrics.panelHeader;
+      : t.size('size.panelHeader', fallback: RaftMetrics.panelHeader);
 
   /// `size.rail`, or `size.railShort` on short viewports (a57b9dab: Brutal
   /// 64/50, others 56). The 600px threshold is form, not a theme value.
@@ -180,14 +180,21 @@ class RaftSidebarRecipe {
         ? 18
         : 28,
     top: product
-        ? 12
+        ? tokens.size('space.sidebarContentTop', fallback: 12)
         : headerInFlow
         ? 0
         : headerHeight,
     bottom: product
         ? !desktop
-              ? (bottomBar ? 68 : 12) + bottomInset
-              : 12
+              ? tokens.size('space.sidebarContentBottom', fallback: 12) +
+                    (bottomBar
+                        ? tokens.size(
+                            'space.sidebarBottomClearance',
+                            fallback: 56,
+                          )
+                        : 0) +
+                    bottomInset
+              : tokens.size('space.sidebarContentBottom', fallback: 12)
         : 12,
   );
 }
@@ -237,19 +244,44 @@ class RaftRailRecipe {
   final RaftTokens tokens;
   final double viewportHeight;
   double get width => RaftLayoutMetrics.railWidth(tokens, viewportHeight);
-  double get glyphSize => 16;
-  double get itemSize => RaftMetrics.railItem;
+  double get glyphSize => tokens.size('size.railGlyph', fallback: 16);
+  double get itemSize => tokens.size(
+    viewportHeight <= 600 ? 'size.railItemCompact' : 'size.railItem',
+    fallback: RaftMetrics.railItem,
+  );
   // AppRailRoot's bg-primary resolves the primary-400 ramp; primaryFill is
   // the separate product Button alias and differs by one blue channel.
-  Color get background => tokens.sidebar;
+  Color get background =>
+      tokens.colors['layer-workspace-rail'] ?? tokens.sidebar;
   Color get selectedBackground =>
-      tokens.dark ? tokens.card : tokens.colors['fill-strong']!;
+      tokens.colors['layer-workspace-rail-selected'] ?? tokens.card;
   Color get identityBackground => tokens.panel;
-  Color get foreground => tokens.strong;
-  BorderRadius get radius => BorderRadius.circular(6);
+  Color get foreground =>
+      tokens.colors['foreground-workspace-rail'] ?? tokens.muted;
+  Color get selectedForeground =>
+      tokens.colors['foreground-workspace-rail-selected'] ?? foreground;
+  BorderRadius get radius =>
+      BorderRadius.circular(tokens.size('radius.railItem', fallback: 6));
   BorderRadius get avatarRadius => BorderRadius.circular(8);
   // AppRailRoot `theme-brutal:border-r-2 border-black`: pure black, not the ink line token.
-  BorderSide get border => BorderSide(color: tokens.line, width: tokens.border);
+  BorderSide get border => BorderSide(
+    color: tokens.colors['line-workspace-rail'] ?? tokens.line,
+    width: tokens.size('stroke.rail', fallback: 0),
+  );
+
+  List<BoxShadow> selectedShadows({bool action = false}) =>
+      _shadows(action ? 'shadow.railActionSelected' : 'shadow.railSelected');
+  List<BoxShadow> get focusShadows => _shadows('shadow.railFocus');
+  List<BoxShadow> _shadows(String role) => [
+    for (final layer in tokens.shadowLayers(role).reversed)
+      if (!layer.inset)
+        BoxShadow(
+          color: layer.color,
+          offset: layer.offset,
+          blurRadius: raftCssBlurRadius(layer.blur),
+          spreadRadius: layer.spread,
+        ),
+  ];
 }
 
 @immutable

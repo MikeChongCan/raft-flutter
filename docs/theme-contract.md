@@ -374,6 +374,7 @@ RGB0.954685/0.954685/0.969524）；展示表中的0.04和整数RGB不作为绘�
 | 选项 | 取值 | Raft | Elegant | Brutal | 来源与适用范围 |
 | --- | --- | --- | --- | --- | --- |
 | `sidebar.mobileSurface` | `canvas` / `sidebar` | canvas | sidebar（明暗相同选择） | 浅色 canvas；深色 sidebar | Web v1.21.23 `packages/web/src/components/layout/Sidebar.tsx:3806`；a57b9dab `packages/raft_ui/lib/src/design_primitives.dart:141-145`。手机侧栏；桌面读取已有 `layer-sidebar`。 |
+| `sidebarItem.sectionContent` | `uniform` / `sectionScoped` | uniform | sectionScoped | sectionScoped | db5e399f Sidebar.tsx 的 renderSidebarDndDisplayItem 复用同一会话行；a57b9dab 固定分组换行、隐藏 Agent 副标题，自定义分组隐藏会话副标题。 |
 | `resource.surface` | `canvas` / `sidebar` | canvas | sidebar（手机／桌面相同） | 浅色 canvas；深色 sidebar | Web v1.21.23 `packages/web/src/components/thread/ThreadsInbox.tsx:1038,1079`；a57b9dab `apps/raft_flutter/lib/features/resource_view.dart:2385,2393`。Activity／Saved 的页表面，不改变 Search／Tasks。 |
 | `resource.rows` | `flat` / `cards` | flat | cards | cards | Web v1.21.23 `ThreadsInbox.tsx:103-108`、`SavedPanel.tsx:269` 的实际排列；a57b9dab 的资源卡片排列。 |
 | `resource.badge` | `sticker` / `pill` | sticker | pill | pill | Web v1.21.23 的 `Badge` 实际调用；a57b9dab `resource_rows.dart` 的胶囊 recipe。 |

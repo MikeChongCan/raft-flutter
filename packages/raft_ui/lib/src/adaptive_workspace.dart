@@ -13,6 +13,7 @@ import 'icons.dart';
 import 'mouse_double_click.dart';
 import 'mounted_avatar_recipe.dart';
 import 'recipe_surface.dart';
+import 'raft/css_box.dart' show raftControlBorderPx;
 import 'recipes/app_rail.g.dart';
 import 'rail_attention.dart';
 import 'status_bar.dart';
@@ -494,9 +495,12 @@ class _RaftAdaptiveWorkspaceState extends State<RaftAdaptiveWorkspace> {
         MediaQuery.sizeOf(context).height,
       );
       final onRight = widget.navigationOnRight;
-      final sidebarColor = t.sidebar;
+      final sidebarColor = t.colors['layer-sidebar'] ?? t.sidebar;
       // The divider always faces the content.
-      final sidebarLine = BorderSide(color: t.colors['line-muted']!, width: 1);
+      final sidebarLine = BorderSide(
+        color: t.colors['line-sidebar-frame'] ?? t.colors['line-muted']!,
+        width: t.size('stroke.sidebarFrame', fallback: 1),
+      );
       final sidebarBorder = onRight
           ? Border(left: sidebarLine)
           : Border(right: sidebarLine);
@@ -834,14 +838,25 @@ class RaftWorkspaceRail extends StatelessWidget {
     // On the window's right edge (rail on the end side) the divider faces the
     // content, which is now on the left.
 
-    final railBorder = null;
+    final onRight = RaftRailEdgeScope.onRightOf(context);
+    final divider = thinDivider
+        ? recipe.border.copyWith(width: 1)
+        : recipe.border;
+    final railBorder = recipe.border.width == 0
+        ? null
+        : onRight
+        ? Border(left: divider)
+        : Border(right: divider);
     // The rail colour and its divider continue up under the status bar.
     return RaftStatusBarSource(
       color: recipe.background,
       border: railBorder,
       child: Container(
         width: recipe.width,
-        padding: EdgeInsets.zero,
+        padding: EdgeInsets.only(
+          left: onRight ? recipe.border.width : 0,
+          right: onRight ? 0 : recipe.border.width,
+        ),
         decoration: BoxDecoration(color: recipe.background),
         foregroundDecoration: BoxDecoration(border: railBorder),
         child: SafeArea(
@@ -875,13 +890,24 @@ class RaftWorkspaceRail extends StatelessWidget {
                 key: itemAreaKey,
                 child: SingleChildScrollView(
                   // A phone's 48 dp targets need the whole 56 dp column.
-                  padding: phone
-                      ? nav.padding
-                            .resolve(Directionality.of(context))
-                            .copyWith(left: 0, right: 0)
-                      : nav.padding,
+                  padding: EdgeInsets.fromLTRB(
+                    phone ? 0 : t.size('space.railInline', fallback: 0),
+                    t.size(
+                      MediaQuery.sizeOf(context).height <= 600
+                          ? 'space.railNavTopCompact'
+                          : 'space.railNavTop',
+                      fallback: nav.padding
+                          .resolve(Directionality.of(context))
+                          .top,
+                    ),
+                    phone ? 0 : t.size('space.railInline', fallback: 0),
+                    t.size('space.railNavBottom', fallback: 8),
+                  ),
                   child: Column(
-                    spacing: nav.rowGap ?? 0,
+                    spacing: t.size(
+                      'space.railItemGap',
+                      fallback: nav.rowGap ?? 0,
+                    ),
                     children: [
                       for (final d in destinations)
                         Semantics(
@@ -912,7 +938,9 @@ class RaftWorkspaceRail extends StatelessWidget {
                                     shape: RoundedRectangleBorder(
                                       borderRadius: recipe.radius,
                                     ),
-                                    foregroundColor: t.muted,
+                                    foregroundColor: selected == d.id
+                                        ? recipe.selectedForeground
+                                        : recipe.foreground,
                                     backgroundColor: Colors.transparent,
                                   ),
                                   icon: Container(
@@ -925,10 +953,20 @@ class RaftWorkspaceRail extends StatelessWidget {
                                           : Colors.transparent,
                                       borderRadius: recipe.radius,
                                       border: Border.all(
-                                        color: Colors.transparent,
-                                        width: 1,
+                                        color: selected == d.id
+                                            ? t.colors['line-workspace-rail-selected']!
+                                            : Colors.transparent,
+                                        width: raftControlBorderPx(
+                                          context,
+                                          t.size(
+                                            'stroke.railItem',
+                                            fallback: 1,
+                                          ),
+                                        ),
                                       ),
-                                      boxShadow: null,
+                                      boxShadow: selected == d.id
+                                          ? recipe.selectedShadows()
+                                          : null,
                                     ),
                                     child: Stack(
                                       alignment: Alignment.center,
@@ -988,7 +1026,7 @@ class RaftWorkspaceRail extends StatelessWidget {
                 ),
               ),
               if (!footerScrolls && footer != null) footer!,
-              const SizedBox(height: 8),
+              SizedBox(height: t.size('space.railBottom', fallback: 8)),
             ],
           ),
         ),
