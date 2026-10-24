@@ -15,6 +15,7 @@ import 'mobile_route_gate.dart';
 import 'message_type_scale.dart';
 export 'mobile_route_gate.dart' show MobileChatDirectRead;
 import 'message_timeline.dart';
+import 'chat_timeline_presentation.dart';
 import 'history_reading_anchor.dart';
 import 'thread_unread_jump.dart';
 import 'message_history_gaps.dart';
@@ -227,7 +228,13 @@ class _RaftChatViewState extends PhonePageState<RaftChatView> {
 
   bool presentationActive = true;
   int presentationRevision = 0;
-  final timelineKeys = <int, GlobalKey>{};
+  final timelineKeys = ChatTimelinePresentation();
+  @override
+  void setState(VoidCallback fn) {
+    timelineKeys.invalidateRows();
+    super.setState(fn);
+  }
+
   bool atBottom = true, returningLatest = false;
 
   /// Channels keep their bottom edge (latest end) fixed; threads their top.
@@ -1122,7 +1129,7 @@ class _RaftChatViewState extends PhonePageState<RaftChatView> {
         }
       }
     }
-    if (mounted) setState(() {});
+    if (mounted) super.setState(() {});
     return true;
   }
 
@@ -1150,7 +1157,7 @@ class _RaftChatViewState extends PhonePageState<RaftChatView> {
     // retained page (another section or route in front) is not painted, and
     // becoming active again calls sync() once more, so it does not rebuild its
     // composer and chrome on every notification while a transition plays.
-    if (mounted && presentationActive) setState(() {});
+    if (mounted && presentationActive) super.setState(() {});
     final revision = bindingRevision, controller = w, thread = widget.thread;
     bool currentBinding() =>
         mounted &&
@@ -3304,12 +3311,13 @@ class _RaftChatViewState extends PhonePageState<RaftChatView> {
         ),
       ];
     }
-    // The list depends on the pane's width only. The keyboard animation, the
-    // composer growing and a banner appearing change its height on every
-    // frame, and `LayoutBuilder` re-runs for any constraint change: handing
-    // back the same widget lets the framework skip the rebuild of the whole
-    // timeline and its visible rows (new widgets would re-create the sliver
-    // delegates). The cache lives for this call's captured state only.
+    final rowStyle = timelineKeys.rowStyle(
+      context,
+      authority: (w, workspaceAuthority(w)),
+      user: w.client.user,
+      interactive: canReact,
+      day: timeFormatter.dayKey(sourceTimeNow()),
+    );
     Widget? timelineWidget;
     double? timelineWidth;
     Widget timelineFor(double width, Widget Function() create) {
@@ -3321,7 +3329,7 @@ class _RaftChatViewState extends PhonePageState<RaftChatView> {
     }
 
     return Chat(
-      key: timelineKeys.putIfAbsent(listRevision, GlobalKey.new),
+      key: timelineKeys.keyFor(listRevision),
       currentUserId: w.client.user?.id ?? '',
       resolveUser: (id) async => chat.User(id: id),
       chatController: timelineAdapter,
@@ -3343,6 +3351,16 @@ class _RaftChatViewState extends PhonePageState<RaftChatView> {
                 'chat-list-${widget.thread ? 'thread' : 'channel'}',
               ),
               controller: viewport,
+              rowRevision: (i) => timelineKeys.rowState(
+                w,
+                messages,
+                i,
+                style: (rowStyle, constraints.maxWidth, systemStateAt(i)),
+                source: source,
+                summaries: _messages.threadSummaries,
+                highlighted: _messages.state.highlightedMessageId,
+              ),
+              extentRevision: (rowStyle, constraints.maxWidth),
               canPrepareNearbyRows:
                   kDebugMode || defaultTargetPlatform != TargetPlatform.macOS
                   ? null

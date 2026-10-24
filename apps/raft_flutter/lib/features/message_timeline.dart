@@ -8,6 +8,7 @@ import 'package:flutter_chat_core/flutter_chat_core.dart' as chat;
 
 import 'message_preparation.dart';
 import 'timeline_scrollbar.dart';
+import 'timeline_row_reuse.dart';
 
 /// A two-sided message timeline: older history grows away from a fixed
 /// center, so loading it never moves the rows on screen.
@@ -39,6 +40,8 @@ class RaftMessageTimeline extends StatefulWidget {
     this.onRecenter,
     this.cacheExtent,
     this.canPrepareNearbyRows,
+    this.rowRevision,
+    this.extentRevision,
   });
 
   final RaftTimelineScrollController controller;
@@ -49,6 +52,14 @@ class RaftMessageTimeline extends StatefulWidget {
   /// child keeps an offset measured against the previous center.
   final int epoch;
   final Widget Function(BuildContext context, int index) rowBuilder;
+
+  /// Opt-in reuse: include non-message inputs such as selection, metadata and
+  /// theme here. Message and neighbour versions are checked separately.
+  final Object? Function(int index)? rowRevision;
+
+  /// Layout inputs for reusing measured extents across window updates.
+  /// Null keeps the per-presentation estimate behavior.
+  final Object? extentRevision;
   final int? Function(String id) indexOfId;
   final double Function(int index)? estimateRow;
 
@@ -94,6 +105,9 @@ class _RaftMessageTimelineState extends State<RaftMessageTimeline>
   final _timelineFocus = FocusNode(debugLabel: 'timeline', skipTraversal: true);
   RaftMessageTimeline? listsOwner;
   Widget? historyList, forwardList;
+  _TimelineExtentIndex? extentIndex;
+  List<chat.Message>? extentRows;
+  Object? extentRevision;
   late final nearbyPreparation = MessagePreparation(
     isIdle: () =>
         mounted &&
@@ -103,6 +117,10 @@ class _RaftMessageTimelineState extends State<RaftMessageTimeline>
   );
 
   void prepareNearbyRows() {
+    if (singlePosition?.viewportDimension == nearbyCache) {
+      nearbyPreparation.cancel();
+      return;
+    }
     nearbyPreparation.replace(
       List.generate(
         64,
@@ -155,8 +173,8 @@ class _RaftMessageTimelineState extends State<RaftMessageTimeline>
   @override
   void didUpdateWidget(RaftMessageTimeline oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Expanded layout is idle work; foreground updates restore the default margin.
-    nearbyCache = 250;
+    // Updating a parent must not discard warm rows merely to reconstruct them
+    // after the event. The retained margin remains bounded by the viewport.
     if (widget.canPrepareNearbyRows != null && widget.cacheExtent == null) {
       prepareNearbyRows();
     } else {
@@ -167,6 +185,7 @@ class _RaftMessageTimelineState extends State<RaftMessageTimeline>
       newerSpent = false;
       userDirection = ScrollDirection.idle;
       thumb = null;
+      nearbyCache = 250;
     }
     // Landed (or failed): the next user move toward older may request again.
     if (oldWidget.loadingOlder && !widget.loadingOlder) {
@@ -426,16 +445,30 @@ class _RaftMessageTimelineState extends State<RaftMessageTimeline>
       final estimate = widget.estimateRow;
       // Seed once for this presentation. Layout updates the measured entries;
       // scrolling queries sums without walking the unbuilt history again.
-      final extents = estimate == null
-          ? null
-          : _TimelineExtentIndex(messages.length, estimate);
+      final extents = prepareExtents(messages, estimate);
       Widget row(BuildContext context, int index) {
-        RaftMessageTimeline.debugRowBuilds++;
+        Widget buildRow(BuildContext context) {
+          RaftMessageTimeline.debugRowBuilds++;
+          return owner.rowBuilder(context, index);
+        }
+
+        final revision = owner.rowRevision;
+        final child = revision == null
+            ? buildRow(context)
+            : TimelineReusableRow(
+                message: messages[index],
+                before: index == 0 ? null : messages[index - 1],
+                after: index + 1 == messages.length
+                    ? null
+                    : messages[index + 1],
+                revision: revision(index),
+                builder: buildRow,
+              );
         final body = extents == null
-            ? owner.rowBuilder(context, index)
+            ? child
             : _TimelineExtentRecorder(
                 onExtent: (height) => extents.update(index, height),
-                child: owner.rowBuilder(context, index),
+                child: child,
               );
         return KeyedSubtree(
           key: ValueKey<String>(messages[index].id),
@@ -519,6 +552,40 @@ class _RaftMessageTimelineState extends State<RaftMessageTimeline>
         list,
         Positioned.fill(child: empty),
       ],
+    );
+  }
+
+  _TimelineExtentIndex? prepareExtents(
+    List<chat.Message> messages,
+    double Function(int)? estimate,
+  ) {
+    if (estimate == null) {
+      extentRows = null;
+      return extentIndex = null;
+    }
+    final previous = extentRows, index = extentIndex;
+    final reuse =
+        widget.extentRevision != null &&
+        widget.extentRevision == extentRevision &&
+        previous != null &&
+        index != null;
+    if (reuse &&
+        previous.length == messages.length &&
+        Iterable.generate(messages.length)
+            .every((i) => identical(previous[i], messages[i]))) {
+      return index;
+    }
+    final heights = Map<chat.Message, double>.identity();
+    if (reuse) {
+      for (var i = 0; i < previous.length; i++) {
+        heights[previous[i]] = index.values[i];
+      }
+    }
+    extentRows = List.of(messages);
+    extentRevision = widget.extentRevision;
+    return extentIndex = _TimelineExtentIndex(
+      messages.length,
+      (i) => heights[messages[i]] ?? estimate(i),
     );
   }
 }

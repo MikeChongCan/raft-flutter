@@ -66,6 +66,7 @@ class MessageSelection extends ChangeNotifier {
       : available.where((r) => ids.contains(r.message.id)).toList();
   void changed() {
     final previousIds = ids.toSet(), previousActive = active;
+    final previousError = error;
     final next = scope;
     final authority = w.channel == null
         ? null
@@ -89,8 +90,11 @@ class MessageSelection extends ChangeNotifier {
       ids.removeWhere((id) => !visible.contains(id));
     }
     if (active && ids.isEmpty) active = false;
-    if (previousActive != active || !setEquals(previousIds, ids)) revision++;
-    notifyListeners();
+    final changed = previousActive != active || !setEquals(previousIds, ids);
+    if (changed) revision++;
+    // Active exports also observe edits/deletions of selected messages. An
+    // inactive empty selection has no row state to publish on workspace events.
+    if (active || changed || previousError != error) notifyListeners();
   }
 
   void enter(String id) {
