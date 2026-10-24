@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_client/raft_client.dart';
@@ -17,13 +21,44 @@ const _stopped =
 RaftChannel _channel(String id, {String type = 'channel'}) =>
     RaftChannel({'id': id, 'name': id, 'type': type});
 
+/// Answers every request at once with an empty list: the composer accessory
+/// now also reads the channel's unfinished uploads
+/// (`GET /attachments/upload-sessions/:channelId/active`).
+class _EmptyAdapter implements HttpClientAdapter {
+  @override
+  Future<ResponseBody> fetch(
+    RequestOptions options,
+    Stream<Uint8List>? requestStream,
+    Future<void>? cancelFuture,
+  ) async => ResponseBody.fromString(
+    jsonEncode({'uploads': <Object>[]}),
+    200,
+    headers: {
+      Headers.contentTypeHeader: ['application/json'],
+    },
+  );
+
+  @override
+  void close({bool force = false}) {}
+}
+
 void main() {
   late WorkspaceController w;
+
+  /// Lets the unfinished-uploads read started by the last channel change
+  /// finish before the test ends.
+  Future<void> settle(WidgetTester t) async {
+    // Dio's request chain hops through several zero-length timers.
+    for (var i = 0; i < 20; i++) {
+      await t.pump(const Duration(milliseconds: 1));
+    }
+  }
 
   Future<void> mount(WidgetTester t) async {
     final client = RaftClient(
       origin: 'https://fixture.invalid',
       sessionStore: MemorySessionStore(),
+      transport: Dio()..httpClientAdapter = _EmptyAdapter(),
     )..user = RaftRecord({'id': 'u'});
     client.selectServer('s');
     w = WorkspaceController(client)..channel = _channel('c1');
@@ -56,7 +91,10 @@ void main() {
   ) async {
     await mount(t);
     expect(find.text(_unresolved), findsNothing);
-    w.sendWarnings['c1'] = (unresolved: ['ghost', 'nobody'], agentStopped: false);
+    w.sendWarnings['c1'] = (
+      unresolved: ['ghost', 'nobody'],
+      agentStopped: false,
+    );
     w.notifyListeners();
     await t.pump();
     expect(find.text(_unresolved), findsOneWidget);
@@ -67,6 +105,7 @@ void main() {
     await open(t, _channel('c2'));
     await open(t, _channel('c1'));
     expect(find.text(_unresolved), findsNothing);
+    await settle(t);
   });
 
   testWidgets('dismissing the stopped-agent warning in a DM ends it for good', (
@@ -84,6 +123,7 @@ void main() {
     await open(t, _channel('c1'));
     await open(t, _channel('d1', type: 'dm'));
     expect(find.text(_stopped), findsNothing);
+    await settle(t);
   });
 
   testWidgets('a warning only shows in the conversation it belongs to', (
@@ -107,5 +147,6 @@ void main() {
     w.notifyListeners();
     await t.pump();
     expect(find.textContaining('Not notified'), findsNothing);
+    await settle(t);
   });
 }

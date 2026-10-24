@@ -201,13 +201,26 @@ void main() {
       return w.followedThreads.threads;
     }
 
-    test('a paged answer with next is read as the list it carries', () async {
-      final rows = await read('first page (limit=1)');
+    test('a paged answer with next is followed to the last page', () async {
+      final (w, api) = await _controller();
+      addTearDown(w.dispose);
+      final cursors = <Object?>[];
+      api.routes['GET /channels/threads/followed'] = (o) {
+        final cursor = o.queryParameters['cursor'];
+        cursors.add(cursor);
+        return body[cursor == null
+            ? 'first page (limit=1)'
+            : 'last page (cursor)'];
+      };
+      await w.followedThreads.refresh();
+      final rows = w.followedThreads.threads;
       expect(rows.map((r) => r['threadChannelId']), [
         't1000000-0000-4000-8000-0000000000f2',
+        't1000000-0000-4000-8000-0000000000f4',
       ]);
-      expect(rows.single['hasMention'], isTrue);
-      expect(rows.single['parentMessageCreatedAt'], '2026-10-10T08:00:00.000Z');
+      expect(cursors, hasLength(2));
+      expect(rows.first['hasMention'], isTrue);
+      expect(rows.first['parentMessageCreatedAt'], '2026-10-10T08:00:00.000Z');
     });
 
     test(
