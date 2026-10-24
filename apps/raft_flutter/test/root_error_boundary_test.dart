@@ -6,12 +6,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_client/raft_client.dart';
 import 'package:raft_flutter/features/root_error_boundary.dart';
 import 'package:raft_ui/raft_ui.dart';
+
 import 'flutter_test_config.dart' show leakDebt;
 
 class _Bomb extends StatelessWidget {
   const _Bomb();
   @override
-  Widget build(BuildContext context) => throw StateError('channel header broke');
+  Widget build(BuildContext context) =>
+      throw StateError('channel header broke');
 }
 
 int _builds = 0;
@@ -38,11 +40,16 @@ class _Counter extends StatelessWidget {
 }
 
 void main() {
+  // v1.21.23 errorBoundary.title/reloadApp copy. Recovery, raw-error privacy,
+  // disclosures and actual reload behavior keep their original assertions.
   // Leak debt (app root): see docs/development.md, Leak tracking.
   leakDebt(const ['RootErrors']);
   test('which errors end the app on the fallback', () {
     expect(rootErrorIsFatal(StateError('x')), isTrue);
-    expect(rootErrorIsFatal(StateError('x'), library: 'widgets library'), isTrue);
+    expect(
+      rootErrorIsFatal(StateError('x'), library: 'widgets library'),
+      isTrue,
+    );
     expect(rootErrorIsFatal(const RaftApiException('offline')), isFalse);
     expect(rootErrorIsFatal(const SocketException('lost')), isFalse);
     expect(rootErrorIsFatal(TimeoutException('slow')), isFalse);
@@ -77,56 +84,58 @@ void main() {
       FlutterError.onError = originalOnError;
     });
 
-    testWidgets('a build error replaces the app with the fallback and reload remounts it', (
-      tester,
-    ) async {
-      var broken = true;
-      await tester.pumpWidget(
-        RootErrorBoundary(
-          errors: errors,
-          child: Builder(
-            builder: (_) => broken ? const _Bomb() : const _Counter(),
+    testWidgets(
+      'a build error replaces the app with the fallback and reload remounts it',
+      (tester) async {
+        var broken = true;
+        await tester.pumpWidget(
+          RootErrorBoundary(
+            errors: errors,
+            child: Builder(
+              builder: (_) => broken ? const _Bomb() : const _Counter(),
+            ),
           ),
-        ),
-      );
-      // The framework reports the build error; the boundary swaps in the page.
-      tester.takeException();
-      await tester.pump();
-      await tester.pump();
-      expect(find.text('Raft stopped unexpectedly'), findsOneWidget);
-      // The raw exception is not printed on the page: it sits in the closed
-      // "Stack trace" disclosure.
-      expect(find.textContaining('channel header broke'), findsNothing);
-      expect(find.byKey(const ValueKey('root-error-message')), findsNothing);
-      expect(find.text('Reload App'), findsOneWidget);
-      expect(find.byType(_Bomb), findsNothing);
+        );
+        // The framework reports the build error; the boundary swaps in the page.
+        tester.takeException();
+        await tester.pump();
+        await tester.pump();
+        expect(find.text('Something went wrong'), findsOneWidget);
+        // The raw exception is not printed on the page: it sits in the closed
+        // "Stack trace" disclosure.
+        expect(find.textContaining('channel header broke'), findsNothing);
+        expect(find.byKey(const ValueKey('root-error-message')), findsNothing);
+        expect(find.text('Reload app'), findsOneWidget);
+        expect(find.byType(_Bomb), findsNothing);
 
-      broken = false;
-      await tester.tap(find.text('Reload App'));
-      await tester.pump();
-      expect(find.text('Raft stopped unexpectedly'), findsNothing);
-      expect(find.text('app'), findsOneWidget);
-      expect(_builds, greaterThan(0));
-    });
+        broken = false;
+        await tester.tap(find.text('Reload app'));
+        await tester.pump();
+        expect(find.text('Something went wrong'), findsNothing);
+        expect(find.text('app'), findsOneWidget);
+        expect(_builds, greaterThan(0));
+      },
+    );
 
-    testWidgets('an uncaught async error shows the fallback, a network error does not', (
-      tester,
-    ) async {
-      await tester.pumpWidget(
-        RootErrorBoundary(errors: errors, child: const _Counter()),
-      );
-      final handler = tester.binding.platformDispatcher.onError!;
-      handler(const RaftApiException('offline'), StackTrace.current);
-      await tester.pump();
-      expect(find.text('app'), findsOneWidget);
-      expect(errors.current, isNull);
+    testWidgets(
+      'an uncaught async error shows the fallback, a network error does not',
+      (tester) async {
+        await tester.pumpWidget(
+          RootErrorBoundary(errors: errors, child: const _Counter()),
+        );
+        final handler = tester.binding.platformDispatcher.onError!;
+        handler(const RaftApiException('offline'), StackTrace.current);
+        await tester.pump();
+        expect(find.text('app'), findsOneWidget);
+        expect(errors.current, isNull);
 
-      handler(StateError('lost state'), StackTrace.current);
-      await tester.pump();
-      await tester.pump();
-      expect(find.text('Raft stopped unexpectedly'), findsOneWidget);
-      expect(errors.current?.message, contains('lost state'));
-    });
+        handler(StateError('lost state'), StackTrace.current);
+        await tester.pump();
+        await tester.pump();
+        expect(find.text('Something went wrong'), findsOneWidget);
+        expect(errors.current?.message, contains('lost state'));
+      },
+    );
 
     // Pages built beneath an opaque route are not laid out, yet their
     // Text.rich-with-WidgetSpan paragraphs register selectables; Flutter's
@@ -196,7 +205,9 @@ void main() {
       expect(errors.current?.message, contains('first'));
     });
 
-    testWidgets('the fallback shows Chinese for a Chinese device', (tester) async {
+    testWidgets('the fallback shows Chinese for a Chinese device', (
+      tester,
+    ) async {
       tester.platformDispatcher.localeTestValue = const Locale('zh', 'CN');
       addTearDown(tester.platformDispatcher.clearLocaleTestValue);
       errors.report(StateError('boom'), null);
@@ -204,7 +215,7 @@ void main() {
         RootErrorBoundary(errors: errors, child: const _Counter()),
       );
       await tester.pump();
-      expect(find.text('Raft 意外停止了'), findsOneWidget);
+      expect(find.text('出了点问题'), findsOneWidget);
       expect(find.text('重新加载应用'), findsOneWidget);
       expect(find.textContaining('boom'), findsNothing);
       await tester.tap(find.text('错误堆栈'));
@@ -247,7 +258,7 @@ void main() {
     await tester.tap(find.text('Stack trace'));
     await tester.pump();
     expect(find.textContaining('TypeError: x'), findsOneWidget);
-    await tester.tap(find.text('Reload App'));
+    await tester.tap(find.text('Reload app'));
     expect(reloaded, 1);
   });
 }

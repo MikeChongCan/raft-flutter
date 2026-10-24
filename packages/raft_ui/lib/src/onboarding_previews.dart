@@ -23,9 +23,15 @@ class RaftOnboardingDotPane extends StatelessWidget {
     final padding = MediaQuery.sizeOf(context).width >= 1280 ? 32.0 : 24.0;
     return ClipRect(
       child: ColoredBox(
-        color: t.semantic.layerCanvasMuted,
+        color: t.colors['layer-onboarding-pane']!,
         child: CustomPaint(
-          painter: _DotGridPainter(t.semantic.lineStrong.withValues(alpha: .6)),
+          painter: _DotGridPainter(
+            t.colors['line-onboarding-dot']!.withValues(
+              alpha: t.size('opacity.onboardingDots', fallback: .7),
+            ),
+            grid: t.size('size.onboardingDotGrid', fallback: 14),
+            radius: t.size('size.onboardingDotRadius', fallback: 1.5),
+          ),
           child: Padding(
             padding: EdgeInsets.all(padding),
             child: Column(
@@ -41,21 +47,25 @@ class RaftOnboardingDotPane extends StatelessWidget {
 }
 
 class _DotGridPainter extends CustomPainter {
-  const _DotGridPainter(this.color);
+  const _DotGridPainter(this.color, {required this.grid, required this.radius});
   final Color color;
+  final double grid, radius;
 
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()..color = color;
-    for (var y = 8.0; y < size.height + 8; y += 16) {
-      for (var x = 8.0; x < size.width + 8; x += 16) {
-        canvas.drawCircle(Offset(x, y), 1, paint);
+    // A CSS `radial-gradient` tile centres its dot in the tile.
+    final half = grid / 2;
+    for (var y = half; y < size.height + half; y += grid) {
+      for (var x = half; x < size.width + half; x += grid) {
+        canvas.drawCircle(Offset(x, y), radius, paint);
       }
     }
   }
 
   @override
-  bool shouldRepaint(_DotGridPainter old) => old.color != color;
+  bool shouldRepaint(_DotGridPainter old) =>
+      old.color != color || old.grid != grid || old.radius != radius;
 }
 
 const _black = Color(0xFF000000);
@@ -63,11 +73,24 @@ const _black = Color(0xFF000000);
 BoxDecoration _brutalCard({
   Color color = const Color(0xFFFFFFFF),
   bool shadow = false,
-}) => BoxDecoration(
-  color: color,
-  border: Border.all(color: _black, width: 2),
-  boxShadow: shadow ? RaftProductShadows.shadowBrutalLg.outer : null,
-);
+  RaftTokens? t,
+}) {
+  // v1.21.23 preview cards: `rounded-container border-[1.5px]
+  // border-line-strong shadow-sticker`; a57b9dab drew square 2px black boxes
+  // with the brutal shadow (onboarding.preview).
+  final web = t != null && t.option('onboarding.preview', or: 'sticker') == 'sticker';
+  return BoxDecoration(
+    color: color,
+    borderRadius: web
+        ? BorderRadius.circular(t.size('radius.container', fallback: 10))
+        : null,
+    border: Border.all(
+      color: web ? t.colors['line-strong']! : _black,
+      width: web ? 1.5 : 2,
+    ),
+    boxShadow: shadow ? RaftProductShadows.shadowBrutalLg.outer : null,
+  );
+}
 
 TextStyle _text(
   RaftTokens t,
@@ -347,7 +370,7 @@ class RaftServerCreatePreview extends StatelessWidget {
               Container(
                 width: 32,
                 height: 32,
-                decoration: _brutalCard(color: t.product.softSignal),
+                decoration: _brutalCard(color: t.product.softSignal, t: t),
                 child: const Center(
                   child: RaftIcon(RaftGlyph.hash, size: 16, color: _black),
                 ),
@@ -460,7 +483,7 @@ class RaftServerCreatePreview extends StatelessWidget {
       child: SizedBox(
         height: 520,
         child: Container(
-          decoration: _brutalCard(shadow: true),
+          decoration: _brutalCard(shadow: true, t: t),
           clipBehavior: Clip.hardEdge,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -569,7 +592,7 @@ class RaftIdentityImpactPreview extends StatelessWidget {
       ),
     );
     final channelCard = Container(
-      decoration: _brutalCard(shadow: true),
+      decoration: _brutalCard(shadow: true, t: t),
       clipBehavior: Clip.hardEdge,
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -586,7 +609,7 @@ class RaftIdentityImpactPreview extends StatelessWidget {
                 Container(
                   width: 29,
                   height: 29,
-                  decoration: _brutalCard(color: t.product.softSignal),
+                  decoration: _brutalCard(color: t.product.softSignal, t: t),
                   child: const Center(
                     child: RaftIcon(RaftGlyph.hash, size: 15, color: _black),
                   ),
@@ -720,7 +743,7 @@ class RaftIdentityImpactPreview extends StatelessWidget {
     );
     final profileCard = Container(
       padding: const EdgeInsets.all(16),
-      decoration: _brutalCard(shadow: true),
+      decoration: _brutalCard(shadow: true, t: t),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

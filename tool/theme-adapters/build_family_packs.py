@@ -32,6 +32,7 @@ import sys
 from button_contract import button_colors, button_palette
 from framework_contract import ELEGANT_GEOMETRY, BRUTAL_GEOMETRY, framework_colors
 import components_lane
+import pages_lane
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 VALUES = 'docs/theme-contract/values.json'
@@ -577,6 +578,10 @@ GEOMETRY_ELEGANT.update(components_lane.geometry_family())
 GEOMETRY_BRUTAL.update(components_lane.geometry_family())
 OPTIONS_ELEGANT.update(components_lane.options_family())
 OPTIONS_BRUTAL.update(components_lane.options_family())
+GEOMETRY_ELEGANT.update(pages_lane.geometry_family())
+GEOMETRY_BRUTAL.update(pages_lane.geometry_family())
+OPTIONS_ELEGANT.update(pages_lane.options_family())
+OPTIONS_BRUTAL.update(pages_lane.options_family())
 
 FONTS_ELEGANT = {
     'sans': {'family': 'Geist',
@@ -823,6 +828,7 @@ def pack(pack_id: str, name_en: str, name_zh: str, values: dict,
         shadows['shadow.railFocus'] = (
             'none' if spec['column'] == 'brutal' else f"0 0 0 0.5px {colors['primary-500']}")
         components_lane.family_aliases(colors)
+        pages_lane.family_aliases(colors)
         colors.update(button_colors(spec['column'], colors))
         return {
             'colors': colors,

@@ -243,9 +243,14 @@ class RaftSettingsPanelHeader extends StatelessWidget {
     this.mobile = true,
     this.backKey,
     this.backTooltip = 'Back',
+    this.iconTile = false,
   });
   final String title;
   final RaftGlyph? glyph;
+
+  /// The page passes an icon to its PanelHeader even in the v1.21.23 look
+  /// (RaftBench); the settings tabs do not (pageHeader.icon).
+  final bool iconTile;
   final VoidCallback? onMobileBack;
   final bool mobile;
   final Key? backKey;
@@ -257,7 +262,11 @@ class RaftSettingsPanelHeader extends StatelessWidget {
     if (t.option('panelAction.surface', or: 'outline') == 'ghost') {
       return RaftPanelHeaderBar(
         title: raftText(context, title),
-        iconSlot: !mobile && glyph != null
+        // v1.21.23 page heads carry no icon tile (pageHeader.icon).
+        iconSlot:
+            !mobile &&
+                glyph != null &&
+                (iconTile || t.option('pageHeader.icon', or: 'none') == 'tile')
             ? Container(
                 width: 27,
                 height: 27,

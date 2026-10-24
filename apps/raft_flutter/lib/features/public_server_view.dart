@@ -698,7 +698,7 @@ class _PublicServerViewState extends State<PublicServerView> {
     await RaftConfirmDialog.show(
       context,
       RaftConfirmDialog(
-        title: tr('Join as Guest'),
+        title: tr('Join this server?'),
         message: raftFormat(
           context,
           'You will join {server} as a Guest. You can keep reading without joining by cancelling.',
@@ -745,16 +745,24 @@ class _PublicServerViewState extends State<PublicServerView> {
 
   // ---------------------------------------------------------------- build
 
-  /// Web's public page formats with the browser's zone and clock: the
-  /// account's time preferences are not applied to it.
-  SourceTimeFormatter get timeFormatter => SourceTimeFormatter(
-    locale: Localizations.localeOf(context).toLanguageTag(),
-    systemTimeFormat: MediaQuery.alwaysUse24HourFormatOf(context)
-        ? SourceTimeFormat.twentyFourHour
-        : null,
-    todayLabel: tr('Today'),
-    yesterdayLabel: tr('Yesterday'),
-  );
+  /// Account time preferences apply to every appearance. A signed-out visitor
+  /// uses the browser/system defaults, as in Web useTimeFormatter.
+  SourceTimeFormatter get timeFormatter {
+    final user = authenticated ? widget.client.user : null;
+    return SourceTimeFormatter(
+      locale: Localizations.localeOf(context).toLanguageTag(),
+      preferredTimezone:
+          user?.string('preferredTimezone') ?? user?.string('timezone'),
+      preferredTimeFormat: sourceTimeFormatPreference(
+        user?.string('preferredTimeFormat') ?? user?.string('timeFormat'),
+      ),
+      systemTimeFormat: MediaQuery.alwaysUse24HourFormatOf(context)
+          ? SourceTimeFormat.twentyFourHour
+          : null,
+      todayLabel: tr('Today'),
+      yesterdayLabel: tr('Yesterday'),
+    );
+  }
 
   /// `#channel` mentions of the public channels chip like Web's MessageItem
   /// (`channels={displayChannels}`); users and agents are not linkable here.

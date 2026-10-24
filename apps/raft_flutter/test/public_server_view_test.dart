@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_client/raft_client.dart';
 import 'package:raft_flutter/features/public_server_view.dart';
+import 'package:raft_flutter/data/source_time_formatter.dart';
 import 'package:raft_ui/raft_ui.dart';
 
 typedef _Route = FutureOr<Object?> Function(
@@ -105,8 +106,8 @@ Map<String, _Route> _routes({
   'POST $_base/join-as-guest': (_, _) => {'ok': true},
 };
 
-Widget _host(Widget child) => MaterialApp(
-  theme: raftTheme(),
+Widget _host(Widget child, {String themeId = raftThemePackId}) => MaterialApp(
+  theme: raftTheme(pack: packForThemeId(themeId)),
   home: Scaffold(body: child),
 );
 
@@ -120,6 +121,7 @@ Future<void> _mount(
   Future<void> Function()? onJoined,
   String? channel,
   Size size = const Size(1280, 800),
+  String themeId = raftThemePackId,
 }) async {
   t.view.physicalSize = size;
   t.view.devicePixelRatio = 1;
@@ -136,13 +138,68 @@ Future<void> _mount(
         onRegister: onRegister ?? () {},
         onUnavailable: onUnavailable ?? () {},
       ),
+      themeId: themeId,
     ),
   );
   await t.pumpAndSettle();
 }
 
 void main() {
+  setUpAll(initializeSourceTimeFormatting);
   _loadOlderTests();
+  for (final themeId in [
+    raftThemePackId,
+    elegantThemePackId,
+    brutalThemePackId,
+  ]) {
+    testWidgets(
+      '$themeId preserves account time and join confirmation behavior',
+      (t) async {
+        final client = _PublicClient(
+          _routes(),
+          user: {
+            'id': 'u1',
+            'preferredTimezone': 'Asia/Kathmandu',
+            'preferredTimeFormat': '24h',
+          },
+        );
+        await _mount(
+          t,
+          client,
+          account: PublicServerAccount(servers: const [], onSelect: (_) {}),
+          themeId: themeId,
+        );
+        addTearDown(() async {
+          await t.pumpWidget(const SizedBox.shrink());
+          await t.pumpAndSettle();
+        });
+        final timestamp = t
+            .widget<RaftMessageTile>(
+              find.byKey(const ValueKey('public-message-m1')),
+            )
+            .timestamp;
+        await t.tap(find.byKey(const ValueKey('public-join-guest')));
+        await t.pumpAndSettle();
+        final questionTitle = t
+            .widget<RaftConfirmDialog>(find.byType(RaftConfirmDialog))
+            .title;
+        // Frozen packs uppercase the same copy through dialogShellTitle.
+        final questionVisible =
+            find.text('Join this server?').evaluate().length +
+                find.text('JOIN THIS SERVER?').evaluate().length ==
+            1;
+        await t.tap(find.text('Cancel'));
+        await t.pumpAndSettle();
+        expect(
+          (timestamp.endsWith('14:57'), questionTitle, questionVisible),
+          (true, 'Join this server?', true),
+          reason:
+              '$themeId rendered "$timestamp"; theme selection must not change account preferences or copy.',
+        );
+        expect(client.calls, isNot(contains('POST $_base/join-as-guest')));
+      },
+    );
+  }
   testWidgets(
     'signed out: channels, the first channel messages and the join banner',
     (t) async {
@@ -154,7 +211,8 @@ void main() {
         onSignIn: () => signIn++,
         onRegister: () => register++,
       );
-      expect(find.text('Public channels'.toUpperCase()), findsOneWidget);
+      // Raft look (the default): the SectionEyebrow as written, not uppercased.
+      expect(find.text('Public channels'), findsOneWidget);
       expect(find.text('general'), findsWidgets);
       expect(find.text('Welcome to the community'), findsOneWidget);
       expect(
@@ -335,7 +393,10 @@ void main() {
       expect(find.text('Sign In'), findsNothing);
       await t.tap(find.byKey(const ValueKey('public-join-guest')));
       await t.pumpAndSettle();
-      expect(find.text('Join as Guest'), findsNWidgets(3));
+      // The banner button and the dialog's confirm; the dialog is titled as the
+      // v1.21.23 question.
+      expect(find.text('Join as Guest'), findsNWidgets(2));
+      expect(find.text('Join this server?'), findsOneWidget);
       await t.tap(find.byKey(const ValueKey('public-join-confirm')));
       await t.pumpAndSettle();
       expect(client.calls, contains('POST $_base/join-as-guest'));
@@ -367,7 +428,10 @@ void main() {
       await t.tap(find.byKey(const ValueKey('public-join-confirm')));
       await t.pumpAndSettle();
       expect(find.text('Failed to join this public server'), findsWidgets);
-      expect(find.text('Join as Guest'), findsNWidgets(3));
+      // The banner button and the dialog's confirm; the dialog is titled as the
+      // v1.21.23 question.
+      expect(find.text('Join as Guest'), findsNWidgets(2));
+      expect(find.text('Join this server?'), findsOneWidget);
     });
 
     testWidgets(

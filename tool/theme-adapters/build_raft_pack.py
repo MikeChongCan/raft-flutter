@@ -31,6 +31,7 @@ import sys
 from button_contract import button_colors
 from framework_contract import RAFT_GEOMETRY, framework_colors
 import components_lane
+import pages_lane
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 TOKENS = 'packages/raft_ui/lib/src/tokens'
@@ -442,6 +443,8 @@ OPTIONS_RAFT = {
 
 GEOMETRY_RAFT.update(components_lane.geometry_raft())
 OPTIONS_RAFT.update(components_lane.options_raft())
+GEOMETRY_RAFT.update(pages_lane.geometry_raft())
+OPTIONS_RAFT.update(pages_lane.options_raft())
 
 CASE_RAFT = {'dialogShellTitle': 'none','heading': 'none', 'label': 'none', 'badge': 'none'}
 
@@ -527,6 +530,7 @@ def build() -> dict:
             out[target] = out[source]
         out.update(framework_colors('raftDark' if palette is dark else 'raftLight', out))
         components_lane.raft_aliases(out)
+        pages_lane.raft_aliases(out)
         out.update(button_colors('raftDark' if palette is dark else 'raftLight', out))
         return out
 

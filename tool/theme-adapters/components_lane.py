@@ -22,6 +22,13 @@ _GEOMETRY = {
     # ConversationPanelFooter: `bg-layer-canvas`, no rule above it (raft-ui 0.7
     # `conversationPanel.footer`); a57b9dab drew `border-t border-line-muted`.
     'stroke.channelFooter': (0, 1),
+    # The skeleton's source fills/geometry, including its caller-themed variant.
+    'radius.skeletonLine': (4, 0), 'radius.skeletonBlock': (4, 0),
+    'radius.skeletonAvatar': (4, 0),
+    'radius.skeletonThemedLine': (4, 999), 'radius.skeletonThemedBlock': (4, 6),
+    'stroke.skeletonAvatar': (0, 2),
+    'opacity.skeleton': (1, 26 / 255),
+    'opacity.skeletonAvatar': (1, .05), 'opacity.skeletonThemed': (1, .08),
     # messageItem toolbar p-[3px], frozen recipe 4px inline / 2px block.
     'space.messageToolbarInline': (3, 4),
     'space.messageToolbarBlock': (3, 2),
@@ -45,9 +52,6 @@ _OPTIONS = {
     # hairline, an always-visible remove square, layer-card washes, a soft failure
     # row); the generated recipe before.
     'composerAttachment.style': ('raft', 'recipe'),
-    # Skeleton: raft-ui 0.7 `skeleton` (a `fill-muted` block with the sticker radius for
-    # line, block and circle alike); black/10 squares and ink-ringed circles before.
-    'skeleton.style': ('raft', 'recipe'),
     # SurfaceListItem: raft-ui 0.7 `Card variant="default"` with `bg-info-soft` when
     # selected and a press overlay on hover (the hairline never changes); the
     # recipe card with a coloured selected border and shadow before.
@@ -96,6 +100,7 @@ _OPTIONS = {
     # A person without a picture: AvatarSlot's Gravatar fallback is the person glyph
     # in v1.21.23; a57b9dab drew the initials.
     'avatar.humanFallback': ('icon', 'initials'),
+    'skeleton.avatarShape': ('rounded', 'circle'),
 }
 
 # Allowed values per option, merged into raftStructuralOptions (theme_pack.dart).
@@ -105,7 +110,6 @@ OPTION_VALUES = {
     'banner.style': ('raft', 'recipe'),
     'channelFooter.joinSize': ('lg', 'md'),
     'composerAttachment.style': ('raft', 'recipe'),
-    'skeleton.style': ('raft', 'recipe'),
     'surfaceItem.style': ('raft', 'recipe'),
     'avatarListRow.style': ('raft', 'recipe'),
     'selectionPopover.style': ('raft', 'recipe'),
@@ -119,6 +123,7 @@ OPTION_VALUES = {
     'document.style': ('raft', 'recipe'),
     'messageToolbar.style': ('raft', 'recipe'),
     'avatar.humanFallback': ('icon', 'initials'),
+    'skeleton.avatarShape': ('rounded', 'circle'),
 }
 
 # ---------------------------------------------------------------- colours
@@ -147,11 +152,17 @@ def options_family() -> dict:
 
 
 def raft_aliases(colors: dict) -> None:
+    colors.update({'layer-skeleton': colors['fill-muted'],
+                   'layer-skeleton-themed': colors['fill-muted'],
+                   'line-skeleton-avatar': '#00000000'})
     for role, (raft, _) in _COLOR_ALIASES.items():
         colors[role] = colors[raft]
 
 
 def family_aliases(colors: dict) -> None:
+    colors.update({'layer-skeleton': '#000000',
+                   'layer-skeleton-themed': colors['foreground-strong'],
+                   'line-skeleton-avatar': '#000000'})
     for role, (_, family) in _COLOR_ALIASES.items():
         colors[role] = colors[family]
 

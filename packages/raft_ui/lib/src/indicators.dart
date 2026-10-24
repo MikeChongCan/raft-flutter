@@ -13,7 +13,7 @@ import 'recipes/progress.g.dart';
 import 'recipes/recipe_runtime.dart';
 import 'recipes/recipe_utilities.g.dart';
 import 'theme.dart';
-import 'tokens/tokens.dart';
+import 'tokens/tokens.dart' show RaftTypeScale;
 
 export 'raft/badge.dart' show RaftBadge;
 export 'raft/status.dart'
@@ -406,65 +406,50 @@ class _RaftSkeletonState extends State<RaftSkeleton>
 
   @override
   Widget build(BuildContext context) {
-    const black = RaftPrimitiveColors.black;
     final t = RaftTokens.of(context);
-    final themedFill = t.colors['foreground-strong']!.withValues(alpha: .08);
-    // raft-ui 0.7 `skeleton`: every variant is a `bg-fill-muted` block with the
-    // sticker radius (line h-3); an avatar stand-in is a square block as well.
-    final box =
-        t.option('skeleton.style', or: 'recipe') == 'raft' && !widget.themed
-        ? Container(
-            width: widget.width,
-            height:
-                widget.height ??
-                (widget.variant == RaftSkeletonVariant.line ? 12 : null),
-            decoration: BoxDecoration(
-              color: t.colors['fill-muted'],
-              borderRadius: BorderRadius.circular(
-                t.size('radius.sticker', fallback: 4),
-              ),
-            ),
-          )
-        : widget.themed && widget.variant != RaftSkeletonVariant.circle
-        ? Container(
-            width: widget.width,
-            height:
-                widget.height ??
-                (widget.variant == RaftSkeletonVariant.line ? 12 : null),
-            decoration: BoxDecoration(
-              color: themedFill,
-              borderRadius: BorderRadius.circular(
-                widget.variant == RaftSkeletonVariant.line ? 999 : 6,
-              ),
-            ),
-          )
-        : switch (widget.variant) {
-            RaftSkeletonVariant.line => Container(
-              width: widget.width,
-              height: widget.height ?? 12,
-              // CSS black/10 is stored in an 8-bit alpha channel before compositing.
-              // Preserve that quantization (26/255), rather than rounding the final
-              // floating-point white/black blend to 230 instead of source 229.
-              color: black.withAlpha(26),
-            ),
-            RaftSkeletonVariant.block => Container(
-              width: widget.width,
-              height: widget.height,
-              // CSS black/10 is stored in an 8-bit alpha channel before compositing.
-              // Preserve that quantization (26/255), rather than rounding the final
-              // floating-point white/black blend to 230 instead of source 229.
-              color: black.withAlpha(26),
-            ),
-            RaftSkeletonVariant.circle => Container(
-              width: widget.width,
-              height: widget.height,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: black.withValues(alpha: .05),
-                border: Border.all(color: black, width: 2),
-              ),
-            ),
-          };
+    final avatar = widget.variant == RaftSkeletonVariant.circle;
+    final themed = widget.themed && !avatar;
+    final circular =
+        avatar && t.option('skeleton.avatarShape', or: 'circle') == 'circle';
+    final fill = t.colors[themed ? 'layer-skeleton-themed' : 'layer-skeleton']!;
+    final opacity = t.size(
+      themed
+          ? 'opacity.skeletonThemed'
+          : avatar
+          ? 'opacity.skeletonAvatar'
+          : 'opacity.skeleton',
+      fallback: 1,
+    );
+    final radius = t.size(
+      avatar
+          ? 'radius.skeletonAvatar'
+          : themed
+          ? widget.variant == RaftSkeletonVariant.line
+                ? 'radius.skeletonThemedLine'
+                : 'radius.skeletonThemedBlock'
+          : widget.variant == RaftSkeletonVariant.line
+          ? 'radius.skeletonLine'
+          : 'radius.skeletonBlock',
+      fallback: 0,
+    );
+    final stroke = avatar ? t.size('stroke.skeletonAvatar', fallback: 2) : 0.0;
+    final box = Container(
+      width: widget.width,
+      height:
+          widget.height ??
+          (widget.variant == RaftSkeletonVariant.line ? 12 : null),
+      decoration: BoxDecoration(
+        shape: circular ? BoxShape.circle : BoxShape.rectangle,
+        color: fill.withValues(alpha: fill.a * opacity),
+        borderRadius: circular ? null : BorderRadius.circular(radius),
+        border: stroke > 0
+            ? Border.all(
+                color: t.colors['line-skeleton-avatar']!,
+                width: stroke,
+              )
+            : null,
+      ),
+    );
     return ExcludeSemantics(
       child: AnimatedBuilder(
         animation: pulse,

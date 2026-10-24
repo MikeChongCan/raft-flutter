@@ -68,8 +68,8 @@ void main() {
     },
   );
 
-  testWidgets('drawer width: 448, phones full width', (t) async {
-    for (final (view, width) in [(1280.0, 448.0), (390.0, 390.0)]) {
+  testWidgets('Raft drawer follows source 420px, phones full width', (t) async {
+    for (final (view, width) in [(1280.0, 420.0), (390.0, 390.0)]) {
       t.view.physicalSize = Size(view, 800);
       t.view.devicePixelRatio = 1;
       addTearDown(t.view.reset);

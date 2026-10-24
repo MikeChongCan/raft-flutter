@@ -6,6 +6,8 @@ the specified 1.5px remains data for the shared renderer to project.
 """
 
 RAFT_GEOMETRY = {
+    # Mounted raft-ui drawer axis=x max-w-[420px]; a57 OverflowSheet was 448 / 544.
+    'size.channelOverflowDrawer': 420,
     'type.mobileWorkspaceTitle.size': 17, 'type.mobileWorkspaceTitle.line': 22,
     'space.mobileWorkspaceGap': 8, 'space.mobileWorkspaceStart': 12,
     'space.mobileWorkspaceEnd': 10, 'space.mobileWorkspaceBlock': 0,
@@ -104,6 +106,7 @@ RAFT_GEOMETRY = {
 
 ELEGANT_GEOMETRY = {
     **RAFT_GEOMETRY,
+    'size.channelOverflowDrawer': 448,
     'type.mobileWorkspaceTitle.size': 16, 'type.mobileWorkspaceTitle.line': 24,
     'space.mobileWorkspaceGap': 6, 'space.mobileWorkspaceStart': 14,
     'space.mobileWorkspaceEnd': 14, 'space.mobileWorkspaceBlock': 6,
@@ -195,6 +198,7 @@ ELEGANT_GEOMETRY = {
 
 BRUTAL_GEOMETRY = {
     **ELEGANT_GEOMETRY,
+    'size.channelOverflowDrawer': 544,
     'size.conversationHeaderIcon': 36,
     'radius.conversationHeaderIcon': 0,
     'stroke.conversationHeaderIcon': 2,

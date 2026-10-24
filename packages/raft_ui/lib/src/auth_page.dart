@@ -17,12 +17,15 @@ import 'icons.dart';
 import 'keyboard_reveal.dart';
 import 'localization.dart';
 import 'onboarding_previews.dart';
+import 'page_tokens.dart';
 import 'recipes/button_variants.g.dart';
 import 'recipes/checkbox.g.dart';
 import 'recipes/field.g.dart' as field_recipe;
 import 'recipes/recipe_runtime.dart';
 import 'recipes/token_binding.dart';
 import 'status_bar.dart';
+import 'raft/ui_tokens.dart';
+import 'tokens/tokens.dart' show RaftTypeScale;
 import 'theme.dart' hide RaftFieldRecipe;
 import 'recipe_surface.dart' show RaftCssBoxDecoration, RaftRecipeBinding;
 
@@ -108,7 +111,7 @@ class RaftAuthShell extends StatelessWidget {
                   children: [bar, content],
                 );
               }
-              const barHeight = RaftAuthTopBar.height;
+              final barHeight = RaftAuthTopBar.heightFor(t);
               return RaftKeyboardScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -164,9 +167,10 @@ class RaftAuthTopBar extends StatelessWidget {
   final VoidCallback? onServer;
 
   /// `h-panel-header` outside the app shell: `--shell-header-height` is only
-  /// set on `[data-slot="app-shell-root"]`, so the auth pages fall back to
-  /// 62px in every theme (border-box).
-  static const double height = 62;
+  /// set on `[data-slot="app-shell-root"]`, so the pre-theme auth pages fell
+  /// back to 62px; the Raft look uses the 56px panel header (`size.authBar`,
+  /// border-box).
+  static double heightFor(RaftTokens t) => t.size('size.authBar', fallback: 56);
 
   @override
   Widget build(BuildContext context) {
@@ -175,14 +179,16 @@ class RaftAuthTopBar extends StatelessWidget {
     return RaftStatusBarSource(
       color: t.colors['layer-auth-header'] ?? t.panel,
       child: Container(
-        height: height,
+        height: heightFor(t),
         // `px-4 sm:px-6 md:px-8`.
         padding: EdgeInsets.symmetric(
           horizontal: width >= 768 ? 32 : (width >= 640 ? 24 : 16),
         ),
         decoration: BoxDecoration(
           color: t.colors['layer-auth-header'] ?? t.panel,
-          border: Border(bottom: BorderSide(color: t.semantic.lineHairline)),
+          border: Border(
+            bottom: BorderSide(color: t.colors['line-auth-header']!),
+          ),
         ),
         child: Row(
           children: [
@@ -231,8 +237,8 @@ class RaftAuthIntro extends StatelessWidget {
     final t = RaftTokens.of(context);
     final descriptionStyle = RaftTypography.heading(
       t,
-      size: 14,
-      line: 20,
+      size: t.size('type.authDescription.size', fallback: 15),
+      line: t.size('type.authDescription.line', fallback: 20),
       weight: FontWeight.w400,
     ).copyWith(color: t.muted);
     return Padding(
@@ -251,8 +257,8 @@ class RaftAuthIntro extends StatelessWidget {
             textAlign: TextAlign.center,
             style: RaftTypography.heading(
               t,
-              size: 20,
-              line: 28,
+              size: t.size('type.authTitle.size', fallback: 22),
+              line: t.size('type.authTitle.line', fallback: 28),
             ).copyWith(color: t.semantic.foreground),
           ),
           if (descriptionSpan != null) ...[
@@ -326,38 +332,77 @@ class RaftAuthField extends StatelessWidget {
       states: t.recipeStates(),
       tokens: tokens,
     );
+    // v1.21.23 FormField is the raft-ui Field: 13/18 600 `foreground-field-label`
+    // and the field's own 6px gap; the pre-theme looks keep the recipe label and
+    // `mb-1` (auth.fieldLabel).
+    final fieldTokens = t.option('auth.fieldLabel', or: 'tokens') == 'tokens';
+    final labelStyle = fieldTokens
+        ? style.label
+              .textStyle(tokens)
+              .copyWith(
+                fontSize: t.size('type.fieldLabel.size', fallback: 13),
+                height:
+                    t.size('type.fieldLabel.line', fallback: 18) /
+                    t.size('type.fieldLabel.size', fallback: 13),
+                fontWeight:
+                    FontWeight.values[(t.size(
+                                  'type.fieldLabel.weight',
+                                  fallback: 600,
+                                ) /
+                                100 -
+                            1)
+                        .round()
+                        .clamp(0, 8)],
+                color: t.colors['foreground-field-label'],
+              )
+        : style.label.textStyle(tokens);
+    final labelGap = fieldTokens
+        ? t.size('space.fieldGap', fallback: 6)
+        : (4 + (style.root.rowGap ?? 0)).toDouble();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (labelAction == null)
-          Text(label, style: style.label.textStyle(tokens))
+          Text(label, style: labelStyle)
         else
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               // The label takes the free width (`ml-auto` on the action), so
               // the action ends flush with the control below.
-              Expanded(
-                child: Text(label, style: style.label.textStyle(tokens)),
-              ),
+              Expanded(child: Text(label, style: labelStyle)),
               const SizedBox(width: 4), // gap-1
               labelAction!,
             ],
           ),
-        SizedBox(height: 4 + (style.root.rowGap ?? 0)),
+        SizedBox(height: labelGap),
         surface ? RaftFieldSurface(child: child) : child,
         // Field `gap` separates every direct child of the field.
         if (helper != null) ...[
-          SizedBox(height: (style.root.rowGap ?? 0) + 4), // gap-1 + mt-1
+          // Field gap (v1.21.23) / gap-1 + mt-1 (a57b9dab).
+          SizedBox(
+            height: fieldTokens
+                ? labelGap
+                : ((style.root.rowGap ?? 0) + 4).toDouble(),
+          ),
           Text(
             helper!,
             style: helperRecipe
                 ? style.description.textStyle(tokens)
-                : _helper(t, helperHint ? t.semantic.foregroundHint : t.muted),
+                : _helper(
+                    t,
+                    fieldTokens || helperHint
+                        ? t.semantic.foregroundHint
+                        : t.muted,
+                  ),
           ),
         ],
         if (error != null) ...[
-          SizedBox(height: (style.root.rowGap ?? 0) + 4),
+          SizedBox(
+            height: fieldTokens
+                ? labelGap
+                : ((style.root.rowGap ?? 0) + 4).toDouble(),
+          ),
           Semantics(
             liveRegion: true,
             child: Text(error!, style: style.error.textStyle(tokens)),
@@ -468,7 +513,14 @@ class RaftAuthWideButton extends StatelessWidget {
     final button = RaftButton(
       label: label,
       variant: variant,
+      // Web v1.21.23 submit buttons are `size="xl"` (auth.submitSize); the
+      // secondary wide buttons stay `lg`.
       size: RaftButtonRecipeSize.lg,
+      uiSize:
+          variant == RaftControlVariant.accent &&
+              RaftTokens.of(context).option('auth.submitSize', or: 'xl') == 'xl'
+          ? RaftButtonSize.xl
+          : null,
       expand: true,
       onPressed: onPressed,
       leading: leading,
@@ -676,7 +728,7 @@ class _RaftAuthLegalNoticeState extends State<RaftAuthLegalNotice> {
       t,
       size: RaftSansSize.caption,
       color: t.muted,
-    ).copyWith(height: 20 / 12);
+    ).copyWith(height: t.size('type.authLegal.line', fallback: 16) / 12);
     return RaftUnderlines(
       child: Text.rich(
         textAlign: TextAlign.center,
@@ -686,10 +738,19 @@ class _RaftAuthLegalNoticeState extends State<RaftAuthLegalNotice> {
             context,
             'By continuing, you agree to the <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>.',
             {
-              'terms': (text) =>
-                  RaftUnderlineSpan(text: text, recognizer: terms),
-              'privacy': (text) =>
-                  RaftUnderlineSpan(text: text, recognizer: privacy),
+              // v1.21.23 LEGAL_LINK_CLASS `text-foreground-link underline
+              // decoration-2 underline-offset-2`; the pre-theme looks kept the
+              // muted text colour (`foreground-legal-link`).
+              'terms': (text) => RaftUnderlineSpan(
+                text: text,
+                recognizer: terms,
+                style: TextStyle(color: t.colors['foreground-legal-link']),
+              ),
+              'privacy': (text) => RaftUnderlineSpan(
+                text: text,
+                recognizer: privacy,
+                style: TextStyle(color: t.colors['foreground-legal-link']),
+              ),
             },
           ),
         ),
@@ -753,12 +814,15 @@ class RaftAuthTextLink extends StatelessWidget {
       semanticLabel: label,
       builder: (context, state) {
         final strong = !primary && (state.hovered || state.pressed);
+        final underlined = t.textLinksUnderlined;
         final style = _linkStyle(
           t,
           primary: primary,
           bold: bold,
           sans: sans,
-          size: small ? 12 : 14,
+          // `text-footnote` (13/18) in v1.21.23, `text-xs` before.
+          size: small ? (underlined ? 13 : 12) : 14,
+          underlined: underlined,
         );
         final color = strong ? t.strong : style.color;
         return Opacity(
@@ -781,7 +845,11 @@ class RaftAuthTextLink extends StatelessWidget {
             child: RaftUnderlinedText(
               label,
               style: style.copyWith(color: color),
-              underline: inline || state.hovered || state.focusVisible,
+              // v1.21.23: a permanent 1.5px underline 3px below the baseline.
+              underline:
+                  underlined || inline || state.hovered || state.focusVisible,
+              underlineOffset: underlined ? 3 : null,
+              underlineThickness: underlined ? 1.5 : null,
             ),
           ),
         );
@@ -816,17 +884,24 @@ TextStyle _linkStyle(
   bool bold = false,
   bool sans = false,
   double size = 14,
+  bool underlined = false,
 }) {
   final weight = bold
       ? FontWeight.w700
       : primary
-      ? FontWeight.w500
-      : FontWeight.w400;
-  final line = size == 14 ? 20.0 : 16.0;
+      ? (underlined ? FontWeight.w600 : FontWeight.w500)
+      : (underlined ? FontWeight.w500 : FontWeight.w400);
+  final line = size == 14
+      ? 20.0
+      : size == 13
+      ? 18.0
+      : 16.0;
   final base = sans
       ? RaftTypography.body(t, size: size, line: line, weight: weight)
       : RaftTypography.heading(t, size: size, line: line, weight: weight);
-  return base.copyWith(color: primary ? (t.semantic.accentStrong) : t.muted);
+  return base.copyWith(
+    color: primary ? t.colors['foreground-text-link'] : t.muted,
+  );
 }
 
 /// `TextSans size="small" className="mt-4 text-center
@@ -953,7 +1028,7 @@ class RaftAuthHandleGroup extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 12),
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                color: t.product.softSignal,
+                color: t.colors['layer-input-addon'],
                 border: Border(
                   right: BorderSide(color: t.semantic.lineHairline),
                 ),
@@ -962,10 +1037,14 @@ class RaftAuthHandleGroup extends StatelessWidget {
                 '@',
                 style: RaftTypography.mono(
                   t,
-                  size: 16,
-                  line: 24,
-                  color: t.muted,
-                ).copyWith(fontWeight: FontWeight.w700),
+                  size: t.size('type.inputAddon.size', fallback: 13),
+                  line: t.size('type.inputAddon.line', fallback: 20),
+                  color: t.colors['foreground-input-addon'],
+                ).copyWith(
+                  fontWeight: t.size('type.inputAddon.weight', fallback: 400) >= 600
+                      ? FontWeight.w700
+                      : FontWeight.w400,
+                ),
               ),
             ),
             Expanded(child: child),
@@ -1623,6 +1702,41 @@ class RaftOnboardingHeading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
+    // v1.21.23: eyebrow `font-mono text-mono-meta text-foreground-hint`, title
+    // `mt-2 text-title sm:text-display`, description `mt-3 text-subhead
+    // text-foreground-muted`; a57b9dab: 10px bold eyebrow, 24/30 title, 14/20.
+    if (t.option('onboarding.heading', or: 'web23') == 'web23') {
+      final display = MediaQuery.sizeOf(context).width >= 640;
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            eyebrow,
+            style: RaftTypography.mono(
+              t,
+              size: 12,
+              line: 16,
+              color: t.colors['foreground-hint'],
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            title,
+            style: t
+                .scale(
+                  display ? RaftTypeScale.display : RaftTypeScale.title,
+                  color: t.colors['foreground'],
+                )
+                .copyWith(fontFamily: t.headingFont),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            description,
+            style: t.scale(RaftTypeScale.subhead, color: t.muted),
+          ),
+        ],
+      );
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1698,7 +1812,7 @@ class RaftOnboardingShell extends StatelessWidget {
     final safe = MediaQuery.paddingOf(context);
     final keyboard = MediaQuery.viewInsetsOf(context).bottom;
 
-    final divider = BorderSide(color: t.semantic.lineHairline);
+    final divider = BorderSide(color: t.colors['line-onboarding-panel']!);
     return Material(
       color: t.canvas,
       child: DefaultTextStyle.merge(
