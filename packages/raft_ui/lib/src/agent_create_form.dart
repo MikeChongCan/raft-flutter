@@ -21,11 +21,13 @@ import 'dart:math' as math;
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart' show OverflowBoxFit;
 
 import 'system_inset.dart';
+import 'banner_recipe.dart';
+import 'select_field.dart';
 
 import 'components.dart';
-import 'anchored_popup.dart';
 import 'design_primitives.dart';
 import 'dismiss_scope.dart';
 import 'form_presentation.dart';
@@ -385,16 +387,24 @@ class RaftStableField extends StatelessWidget {
       states: _states(t),
       tokens: tokens,
     );
-    final gap = field.root.rowGap ?? 0;
+    final gap = t.size('space.fieldGap', fallback: field.root.rowGap ?? 0);
     // LABEL_CLS = "text-sm font-bold text-foreground-strong"
+    final labelSize = t.size('type.fieldLabel.size', fallback: 14);
     final labelStyle = field.label
         .textStyle(tokens)
         .copyWith(
-          fontWeight: FontWeight.w700,
-          // FieldLabel dark:text-foreground-hint outranks the caller's base color.
-          color: t.dark
-              ? field.label.color?.resolve(tokens) ?? t.strong
-              : t.strong,
+          fontSize: labelSize,
+          height: t.size('type.fieldLabel.line', fallback: 20) / labelSize,
+          fontWeight:
+              FontWeight.values[(t.size(
+                            'type.fieldLabel.weight',
+                            fallback: 700,
+                          ) /
+                          100 -
+                      1)
+                  .round()
+                  .clamp(0, 8)],
+          color: t.colors['foreground-field-label'],
         );
     final message = error ?? hint;
     final messageStyle = TextStyle(
@@ -415,7 +425,7 @@ class RaftStableField extends StatelessWidget {
             const WidgetSpan(child: SizedBox(width: _tw)), // ml-1
             TextSpan(
               text: '*',
-              style: TextStyle(color: t.colors['danger-strong']),
+              style: TextStyle(color: t.colors['foreground-field-required']),
             ),
           ],
         ],
@@ -432,7 +442,22 @@ class RaftStableField extends StatelessWidget {
               labelText,
               const SizedBox(width: 2 * _tw), // gap-2
               const Spacer(),
-              labelAccessory!,
+              SizedBox(
+                height:
+                    (32 -
+                            2 *
+                                t.size(
+                                  'space.fieldLabelAccessoryOutset',
+                                  fallback: 0,
+                                ))
+                        .clamp(0, double.infinity),
+                child: OverflowBox(
+                  fit: OverflowBoxFit.deferToChild,
+                  minHeight: 0,
+                  maxHeight: double.infinity,
+                  child: labelAccessory!,
+                ),
+              ),
             ],
           )
         else
@@ -636,7 +661,9 @@ class _RaftAgentTextInputState extends State<RaftAgentTextInput> {
       child: RaftRecipeBox(
         style: root,
         tokens: tokens,
-        height: minHeight,
+        height: widget.multiline
+            ? minHeight
+            : t.size('size.fieldInput', fallback: 38),
         applyText: false,
         child: widget.trailing == null
             ? withKeys(editor)
@@ -711,7 +738,7 @@ class RaftAgentSelectOption<T> {
 
 /// raft-ui Select with `chrome="field"`: trigger = Button(outline, md) merged
 /// with the select trigger slot; options open in the raft menu panel.
-class RaftAgentSelect<T> extends StatefulWidget {
+class RaftAgentSelect<T> extends StatelessWidget {
   const RaftAgentSelect({
     super.key,
     required this.value,
@@ -733,149 +760,28 @@ class RaftAgentSelect<T> extends StatefulWidget {
   final bool invalid;
   final String? semanticLabel;
   @override
-  State<RaftAgentSelect<T>> createState() => _RaftAgentSelectState<T>();
-}
-
-class _RaftAgentSelectState<T> extends State<RaftAgentSelect<T>> {
-  final portal = OverlayPortalController();
-  final anchorKey = GlobalKey();
-  double width = 0;
-
-  void close() {
-    if (portal.isShowing) setState(portal.hide);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final t = RaftTokens.of(context);
-    final tokens = RaftRecipeTokens(t);
-    final open = portal.isShowing;
-    final enabled = widget.onChanged != null;
-    final flags = {
-      if (widget.invalid) 'data-invalid',
-      if (open) 'data-popup-open',
-      if (!enabled) RaftRecipeStates.disabled,
-    };
-    final button = RaftButtonRecipe.resolve(
-      theme: _theme(t),
-      variant: RaftButtonRecipeVariant.outline,
-      size: RaftButtonRecipeSize.md,
-      states: _states(t, flags),
-      tokens: tokens,
-    ).root;
-    final select = RaftSelectRecipe.resolve(
-      theme: _theme(t),
-      chrome: RaftSelectRecipeChrome.field,
-      states: _states(t, flags),
-      tokens: tokens,
-    );
-    // tailwind-merge: the select trigger classes win over the button's.
-    final trigger = RaftSlotStyle(
-      {...button.properties, ...select.trigger.properties},
-      {...button.targets, ...select.trigger.targets},
-      const [],
-      tokens,
-    );
-    final selected = widget.options
-        .where((o) => o.value == widget.value)
-        .firstOrNull;
-    final style = trigger.textStyle(tokens);
-    final icon = select.icon;
-    Widget body = RaftRecipeBox(
-      style: trigger,
-      tokens: tokens,
-      applyTransform: false,
-      child: Row(
-        children: [
-          Expanded(
-            child: RaftCssText(
-              selected?.label ??
-                  (widget.value != null ? widget.unmatchedLabel : null) ??
-                  raftText(context, widget.placeholder),
-              style: style,
-              maxLines: 1,
-              softWrap: false,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          const SizedBox(width: 1.5 * _tw), // select-trigger-content gap-1.5
-          Opacity(
-            opacity: icon.opacity ?? 1,
-            child: RaftIcon(
-              RaftGlyph.chevronDown,
-              size: icon.target('& > svg')?.width ?? 14,
-              strokeWidth: 1.5,
-              color: style.color,
-            ),
-          ),
-        ],
-      ),
-    );
-    final translate = trigger.translate;
-    if (translate != null) {
-      body = Transform.translate(offset: translate, child: body);
-    }
-    return Semantics(
-      key: anchorKey,
-      button: true,
-      label: widget.semanticLabel,
-      value: selected?.label,
-      child: OverlayPortal(
-        controller: portal,
-        overlayChildBuilder: raftBackDismissed(
-          close,
-          (context) => Positioned.fill(
-            child: TapRegion(
-              onTapOutside: (_) => close(),
-              // Escape closes the menu, not the dialog under it.
-              child: RaftDismissScope(
-                onDismiss: close,
-                takeFocus: true,
-                child: Stack(
-                  children: [
-                    RaftAnchoredPopup(
-                      anchorKey: anchorKey,
-                      movement: Scrollable.maybeOf(context)?.position,
-                      gap: _tw,
-                      child: RaftMenuPanel(
-                        width: width,
-                        onDismiss: close,
-                        children: [
-                          for (final o in widget.options)
-                            RaftMenuItem(
-                              label: o.label,
-                              selected: o.value == widget.value,
-                              onPressed: o.enabled
-                                  ? () {
-                                      close();
-                                      widget.onChanged?.call(o.value);
-                                    }
-                                  : null,
-                            ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
+  Widget build(BuildContext context) => RaftSelectField<T>(
+    value: value,
+    chrome: RaftSelectRecipeChrome.field,
+    height: RaftTokens.of(context).size('size.fieldSelect', fallback: 36),
+    items: [
+      for (final option in options)
+        DropdownMenuItem<T>(
+          value: option.value,
+          enabled: option.enabled,
+          child: Text(option.label),
         ),
-        child: LayoutBuilder(
-          builder: (context, box) {
-            width = box.maxWidth.isFinite ? box.maxWidth : 192;
-            return GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: enabled && widget.options.isNotEmpty
-                  ? () => setState(portal.toggle)
-                  : null,
-              child: body,
-            );
+    ],
+    onChanged: onChanged == null
+        ? null
+        : (value) {
+            if (value != null) onChanged!(value);
           },
-        ),
-      ),
-    );
-  }
+    label: semanticLabel,
+    placeholder: placeholder,
+    unmatchedLabel: unmatchedLabel,
+    invalid: invalid,
+  );
 }
 
 /// Banner `status` axis.
@@ -906,7 +812,7 @@ class RaftAgentBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
     final tokens = RaftRecipeTokens(t);
-    final b = RaftBannerRecipe.resolve(
+    final source = RaftBannerRecipe.resolve(
       theme: _theme(t),
       status: switch (status) {
         RaftAgentBannerStatus.warning => RaftBannerRecipeStatus.warning,
@@ -920,6 +826,17 @@ class RaftAgentBanner extends StatelessWidget {
           'has:>data-slot=banner-description+has:>data-slot=banner-title',
       }),
       tokens: tokens,
+    );
+    final b = raftBannerSlots(
+      t,
+      source,
+      RaftBannerRecipeSize.md,
+      switch (status) {
+        RaftAgentBannerStatus.warning => RaftBannerRecipeStatus.warning,
+        RaftAgentBannerStatus.info => RaftBannerRecipeStatus.info,
+        RaftAgentBannerStatus.destructive => RaftBannerRecipeStatus.destructive,
+        RaftAgentBannerStatus.success => RaftBannerRecipeStatus.success,
+      },
     );
     final descriptionText = b.description.text(
       tokens,
@@ -1010,7 +927,10 @@ class _RaftAgentInlineTextState extends State<RaftAgentInlineText> {
       tokens: tokens,
     ).root;
     tap.onTap = widget.onAction;
-    final color = widget.actionForeground ?? link.color?.resolve(tokens);
+    final color =
+        widget.actionForeground ??
+        t.colors['foreground-button-link'] ??
+        link.color?.resolve(tokens);
     return RaftCssText.rich(
       TextSpan(
         text: raftText(context, widget.text),
@@ -1025,6 +945,10 @@ class _RaftAgentInlineTextState extends State<RaftAgentInlineText> {
                   : SystemMouseCursors.click,
               style: TextStyle(
                 fontWeight: link.fontWeight,
+                decoration:
+                    t.option('button.linkDecoration', or: 'none') == 'underline'
+                    ? TextDecoration.underline
+                    : TextDecoration.none,
                 color: color?.withValues(alpha: color.a * (link.opacity ?? 1)),
               ),
             ),
@@ -1273,7 +1197,11 @@ class RaftAgentDialogButton extends StatelessWidget {
           ? (accent
                 ? RaftButtonRecipeVariant.accent
                 : RaftButtonRecipeVariant.primary)
-          : RaftButtonRecipeVariant.outline,
+          : (RaftTokens.of(context)
+                        .option('dialog.cancelSurface', or: 'outline') ==
+                    'ghost'
+                ? RaftButtonRecipeVariant.ghost
+                : RaftButtonRecipeVariant.outline),
       size: size,
       expand: expand,
       onPressed: onPressed,

@@ -825,7 +825,7 @@ class _RaftConfirmDialogState extends State<RaftConfirmDialog> {
               uiSize: actionSize,
               physicalHeight: widget.actionSize == null ? actionHeight : null,
               uiVariant:
-                  t.option('confirm.cancelSurface', or: 'outline') == 'ghost'
+                  t.option('dialog.cancelSurface', or: 'outline') == 'ghost'
                   ? RaftButtonVariant.ghost
                   : RaftButtonVariant.outline,
               onPressed: loading ? null : cancel,

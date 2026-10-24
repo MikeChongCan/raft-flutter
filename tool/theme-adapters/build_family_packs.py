@@ -59,7 +59,7 @@ OPTIONS_ELEGANT = {
     'mobileNav.style': 'floatingCapsule', 'mobileNav.labels': 'iconsOnly',
     'header.layout': 'overlay', 'panel.edge': 'seam', 'nav.selection': 'softFill',
     'tooltip.arrow': 'yes', 'code.innerBorder': 'dashed', 'spinner.style': 'ring',
-    'dialog.close': 'ghost', 'confirm.cancelSurface': 'outline',
+    'dialog.close': 'ghost', 'dialog.cancelSurface': 'outline',
     'banner.iconAlignment': 'center', 'banner.iconColor': 'intent', 'confirm.slug': 'text',
     'confirm.explanation': 'plain',
     'spinner.ringShape': 'sweep', 'spinner.foreground': 'inherited',
@@ -83,7 +83,7 @@ OPTIONS_BRUTAL = {
     'mobileNav.style': 'docked', 'mobileNav.labels': 'withLabels', 'header.layout': 'inFlow',
     'panel.edge': 'border', 'nav.selection': 'sticker', 'tooltip.arrow': 'no',
     'code.innerBorder': 'solid', 'spinner.style': 'ring',
-    'dialog.close': 'outline', 'confirm.cancelSurface': 'outline',
+    'dialog.close': 'outline', 'dialog.cancelSurface': 'outline',
     'banner.iconAlignment': 'center', 'banner.iconColor': 'foreground', 'confirm.slug': 'text',
     'confirm.explanation': 'plain',
     'spinner.ringShape': 'quarter', 'spinner.foreground': 'fixed',
@@ -93,6 +93,9 @@ OPTIONS_BRUTAL = {
 # digits that the P2 baseline can now confirm or refute; they are carried as-is
 # until that reconciliation, which is its own change.
 GEOMETRY_ELEGANT = {
+    'size.fieldInput': 38, 'size.fieldSelect': 36,
+    'type.fieldLabel.size': 14, 'type.fieldLabel.line': 20, 'type.fieldLabel.weight': 700,
+    'space.fieldGap': 6, 'space.fieldLabelAccessoryOutset': 0,
     # Shared Button source metrics, Cindy a0741fbf/c1ec691c.
     'size.control.xs': 24,
     'type.button.xs.size': 11,
@@ -250,6 +253,9 @@ GEOMETRY_ELEGANT = {
     'space.segmentGap': 6,
 }
 GEOMETRY_BRUTAL = {
+    'size.fieldInput': 44, 'size.fieldSelect': 44,
+    'type.fieldLabel.size': 14, 'type.fieldLabel.line': 20, 'type.fieldLabel.weight': 700,
+    'space.fieldGap': 4, 'space.fieldLabelAccessoryOutset': 0,
     # Shared Button source metrics, Cindy a0741fbf/c1ec691c.
     'size.control.xs': 24,
     'type.button.xs.size': 11,
@@ -656,6 +662,8 @@ def pack(pack_id: str, name_en: str, name_zh: str, values: dict,
         colors['foreground-message'] = colors['ink' if spec['column'] == 'brutal' else 'foreground-muted']
         colors['foreground-message-meta'] = '{palette.messageMeta}'
         colors['foreground-spinner'] = colors['ink' if spec['column'] == 'brutal' else 'foreground']
+        colors['foreground-field-label'] = colors['foreground-hint' if spec['column'] == 'elegantDark' else 'foreground-strong']
+        colors['foreground-field-required'] = colors['danger-strong']
         colors['foreground-banner-body'] = colors['foreground' if spec['column'] == 'brutal' else 'foreground-muted']
         colors['layer-banner-destructive'] = ('{palette.elegantBanner.destructive.dark}' if spec['column'] == 'elegantDark' else colors['danger-soft'])
         colors['layer-banner-info'] = ('{palette.elegantBanner.info.dark}' if spec['column'] == 'elegantDark' else colors['info-soft'])

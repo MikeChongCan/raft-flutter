@@ -862,7 +862,7 @@ Elegant 深色的 `space.dialogBodyTop` 为10。`blur.*` 为有限、非负的�
 现有 case 映射新增 `dialogShellTitle`：Raft none，旧两套 uppercase，仅供 RaftDialogShell 使用；
 普通 RaftDialogTitle 不因此改变。标题700是共同值。
 `confirm.explanation = dangerBanner | plain` 为 dangerBanner／plain／plain，仅选择说明的组合方式；
-显式 plainMessage 优先。`confirm.cancelSurface = ghost | outline` 为 ghost／outline／outline。
+显式 plainMessage 优先。`dialog.cancelSurface = ghost | outline` 为 ghost／outline／outline。
 三套确认操作均走共享 RaftButton，显式 actionSize 优先于默认高度，不通过无关主题选项选择按钮实现。
 
 #### Banner 的 md 档
@@ -991,3 +991,38 @@ ghost／link 无实体阴影，success 保持其静态阴影；边环由 `contro
 `values.json` 是便于阅读的数据导出，会舍掉浮点精度。五档原版阴影的完整层数据和源文件 SHA
 保存在 `tool/theme-adapters/original_shadows.json`；适配器同时保留 Elegant primary-edge、
 深色 line-muted 等既有颜色项的原始浮点通道。不要用显示用的四舍五入值替换绘制值。
+
+### StableField 与字段控件
+
+`StableField` 保留消息行，标签上的小动作按负外边距占据标签行，
+不靠放大整行来容纳按钮。字段形态的 Select（`chrome=field`）与普通
+Select 共用实现，但文字读取 `type.field.size/line/weight`，不读取普通
+Select 的半粗字重；弹出菜单也保留同一形态。
+
+| 名字 | Raft | Elegant | Brutal 浅色 |
+| --- | ---: | ---: | ---: |
+| `type.fieldLabel.size` | 13 | 14 | 14 |
+| `type.fieldLabel.line` | 18 | 20 | 20 |
+| `type.fieldLabel.weight` | 600 | 700 | 700 |
+| `space.fieldGap` | 6 | 6 | 4 |
+| `space.fieldLabelAccessoryOutset` | 7 | 0 | 0 |
+| `size.fieldInput` | 44 | 38 | 44 |
+| `size.fieldSelect` | 44 | 36 | 44 |
+
+Brutal 深色完整沿用 Elegant 深色，包括 6px 间距。`size.fieldInput`
+与 `size.fieldSelect` 是组合控件实测外高；原有 `size.field` 保持通用旧字段的含义。
+
+`foreground-field-label`：Raft 引用 foreground-muted；Elegant 浅色与
+Brutal 浅色引用 foreground-strong，Elegant 深色引用 foreground-hint。
+`foreground-field-required`：Raft 引用 foreground-muted，原两套引用 danger-strong。
+取消动作统一读取 `dialog.cancelSurface = ghost | outline`：Raft ghost，
+原两套 outline；确认框和表单对话框使用同一选项。原名称 `confirm.cancelSurface` 已撤销。
+
+依据：Web v1.21.23 的 `StableField.tsx` 与 raft-ui 字段 Select 的 `chrome=field`
+覆盖；原两套标签包装与输入／下拉外高取自 a57b9dab 实际控件。手机表单的
+sheet 展示策略由产品决定，不属于主题选项，仍遵守 `close-affordances.md`。
+
+命名流程（2026-10-24 更新）：实现者按契约自行确定令牌、颜色角色及结构选项名，
+在 PR 描述集中列出新增项；负责人在完整检查前统一审查。无需逐个等待名称批准。
+取值差异用数据，排布差异才用枚举；不按主题名判断，不借无关选项推断，
+旧外观的字面色存入对应包的专用调色板。

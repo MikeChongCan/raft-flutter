@@ -148,7 +148,7 @@ const Map<String, Set<String>> raftStructuralOptions = {
   'code.innerBorder': {'dashed', 'solid'},
   'spinner.style': {'pixel', 'ring'},
   'dialog.close': {'ghost', 'outline'},
-  'confirm.cancelSurface': {'ghost', 'outline'},
+  'dialog.cancelSurface': {'ghost', 'outline'},
   'banner.iconAlignment': {'start', 'center'},
   'banner.iconColor': {'foreground', 'intent'},
   'confirm.slug': {'chip', 'text'},

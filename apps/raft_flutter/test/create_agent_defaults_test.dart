@@ -333,7 +333,12 @@ void main() {
     testWidgets('a created agent gets a random pixel avatar preset', (t) async {
       w.machines = [_machine('mbp', 'Studio Mac')];
       await open(t, name: 'avatar-bot', seed: 3);
-      await t.tap(find.text('Create Agent'));
+      await t.tap(
+        find.descendant(
+          of: find.byType(RaftAgentDialogButton),
+          matching: find.text('Create Agent'),
+        ),
+      );
       await t.pumpAndSettle();
       final data = w.posts.single['data'] as Map;
       expect(data['avatarUrl'], startsWith('pixel:'));
@@ -365,7 +370,12 @@ void main() {
       expect(find.text('Build Rig'), findsOneWidget);
       expect(find.text('Codex CLI'), findsOneWidget);
       expect(find.text('GPT-5 Mini'), findsOneWidget);
-      await t.tap(find.text('Create Agent'));
+      await t.tap(
+        find.descendant(
+          of: find.byType(RaftAgentDialogButton),
+          matching: find.text('Create Agent'),
+        ),
+      );
       await t.pumpAndSettle();
       final data = w.posts.single['data'] as Map;
       expect(data['machineId'], 'rig');
@@ -387,7 +397,12 @@ void main() {
       await t.pumpAndSettle();
       await t.tap(find.text('GPT-5 Mini').last);
       await t.pumpAndSettle();
-      await t.tap(find.text('Create Agent'));
+      await t.tap(
+        find.descendant(
+          of: find.byType(RaftAgentDialogButton),
+          matching: find.text('Create Agent'),
+        ),
+      );
       await t.pumpAndSettle();
       expect(
         prefs.getString(_key),
@@ -402,7 +417,12 @@ void main() {
         ..runtimes = ['codex'];
       w.failCreate = true;
       await open(t, name: 'first');
-      await t.tap(find.text('Create Agent'));
+      await t.tap(
+        find.descendant(
+          of: find.byType(RaftAgentDialogButton),
+          matching: find.text('Create Agent'),
+        ),
+      );
       await t.pumpAndSettle();
       expect(prefs.getString(_key), isNull);
     });

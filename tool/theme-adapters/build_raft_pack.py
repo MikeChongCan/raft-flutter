@@ -312,6 +312,9 @@ GEOMETRY_RAFT = {
     'space.segmentGap': 2,
     # The six type metrics raft-ui carries; they size the field and the card
     # title, so they belong to the contract rather than to a constant.
+    'size.fieldInput': 44, 'size.fieldSelect': 44,
+    'type.fieldLabel.size': 13, 'type.fieldLabel.line': 18, 'type.fieldLabel.weight': 600,
+    'space.fieldGap': 6, 'space.fieldLabelAccessoryOutset': 7,
     'type.field.size': 16, 'type.field.line': 24, 'type.field.weight': 400,
     'type.cardTitle.size': 16, 'type.cardTitle.line': 22, 'type.cardTitle.weight': 500,
 }
@@ -391,7 +394,7 @@ OPTIONS_RAFT = {
     'mobileNav.style': 'docked', 'mobileNav.labels': 'iconsOnly', 'header.layout': 'overlay',
     'panel.edge': 'seam', 'nav.selection': 'sticker', 'tooltip.arrow': 'yes',
     'code.innerBorder': 'dashed', 'spinner.style': 'pixel',
-    'dialog.close': 'ghost', 'confirm.cancelSurface': 'ghost',
+    'dialog.close': 'ghost', 'dialog.cancelSurface': 'ghost',
     'banner.iconAlignment': 'start', 'banner.iconColor': 'foreground', 'confirm.slug': 'chip',
     'confirm.explanation': 'dangerBanner',
     'spinner.ringShape': 'sweep', 'spinner.foreground': 'inherited',
@@ -454,6 +457,8 @@ def build() -> dict:
 
         # Component aliases: values are existing roles, never new palette colors.
         for target, source in {
+            'foreground-field-label': 'foreground-muted',
+            'foreground-field-required': 'foreground-muted',
             'foreground-select': 'foreground',
             'foreground-select-placeholder': 'foreground-hint',
             'foreground-select-disabled': 'foreground-disabled',

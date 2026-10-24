@@ -17,8 +17,8 @@ void main() {
     );
     await t.tap(find.byType(RaftAgentSelect<String>));
     await t.pumpAndSettle();
-    final list = find.ancestor(
-      of: find.byType(RaftMenuPanel),
+    final list = find.descendant(
+      of: find.byKey(const ValueKey('raft-select-popup')),
       matching: find.byType(Scrollable),
     );
     await t.scrollUntilVisible(
@@ -65,18 +65,18 @@ void main() {
       );
       await t.tap(find.byType(RaftAgentSelect<String>));
       await t.pumpAndSettle();
-      final before = t.getRect(find.byType(RaftMenuPanel));
+      final before = t.getRect(find.byKey(const ValueKey('raft-select-popup')));
       scroll.jumpTo(100);
       await t.pumpAndSettle();
-      final moved = t.getRect(find.byType(RaftMenuPanel));
+      final moved = t.getRect(find.byKey(const ValueKey('raft-select-popup')));
       expect(moved.top, closeTo(before.top - 100, .01));
       t.view.physicalSize = const Size(360, 640);
       t.view.viewInsets = const FakeViewPadding(bottom: 260);
       await t.pumpAndSettle();
       final viewport = t.getRect(
         find
-            .ancestor(
-              of: find.byType(RaftMenuPanel),
+            .descendant(
+              of: find.byKey(const ValueKey('raft-select-popup')),
               matching: find.byType(Scrollable),
             )
             .first,
@@ -85,7 +85,7 @@ void main() {
       expect(find.text('Model B').hitTestable(), findsOneWidget);
       await t.tap(find.text('Model B'));
       await t.pumpAndSettle();
-      expect(find.byType(RaftMenuPanel), findsNothing);
+      expect(find.byKey(const ValueKey('raft-select-popup')), findsNothing);
       expect(t.takeException(), isNull);
     },
   );

@@ -208,7 +208,7 @@ ParityCase _createAgent(
             "runtime's v2 fields; Cancel / Create Agent). Served like the "
             'React host: visualBillingInfo, the primed machines '
             '(Jiachengs-MacBook-Pro runtimes ${customProvider ? '[claude, codex]' : '[$runtime, ...]'} + offline studio), '
-            '${customProvider ? 'the scoped claude runtime-options catalog and the claude v2 form' : 'no runtime-options catalog, so RUNTIME stays "Select..." and the declared-Claude pre-admission MODEL picker shows the bundled catalog with the failed machine source'}.'
+            '${customProvider ? 'the scoped claude runtime-options catalog and the claude v2 form' : 'the React HTTP 200 fallback without runtime options, so RUNTIME stays "Select..." and the declared-Claude pre-admission MODEL picker shows the bundled catalog with the failed machine source'}.'
             '$extraNotes',
   settle: const Duration(milliseconds: 600),
   build: (ctx) {
@@ -227,6 +227,13 @@ ParityCase _createAgent(
         'machines': _createAgentMachines(fixture, machineRuntimes),
       },
       base: (_) => form,
+      // Pinned React react-provider.spec.ts:1490 transport fallback.
+      if (!customProvider)
+        'GET $server/computer-mbp/runtime-options': (_) => {
+          'agents': [],
+          'humans': [],
+          'results': [],
+        },
       if (customProvider)
         'GET $server/computer-mbp/runtime-options': (_) => {
           'context': 'new_agent',

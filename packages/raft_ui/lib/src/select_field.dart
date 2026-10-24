@@ -43,6 +43,8 @@ class RaftSelectField<T> extends StatefulWidget {
     required this.onChanged,
     this.label,
     this.placeholder = 'Select...',
+    this.unmatchedLabel,
+    this.chrome = RaftSelectRecipeChrome.default_,
     this.invalid = false,
     this.visualHeight = RaftMetrics.buttonMd,
     this.minimumTargetHeight,
@@ -62,7 +64,11 @@ class RaftSelectField<T> extends StatefulWidget {
 
   /// `SelectValue placeholder`.
   final String placeholder;
+
+  /// Label for a current value absent from the option catalog.
+  final String? unmatchedLabel;
   final bool invalid;
+  final RaftSelectRecipeChrome chrome;
 
   /// Kept for source compatibility; the trigger is the Button md box.
   final double visualHeight;
@@ -81,7 +87,10 @@ class _RaftSelectFieldState<T> extends State<RaftSelectField<T>> {
 
   bool get open => portal.isShowing;
 
-  void toggle() => setState(() => open ? portal.hide() : portal.show());
+  void toggle() {
+    if (widget.items.isEmpty) return;
+    setState(() => open ? portal.hide() : portal.show());
+  }
 
   void close() {
     if (!open) return;
@@ -100,9 +109,13 @@ class _RaftSelectFieldState<T> extends State<RaftSelectField<T>> {
     final t = RaftTokens.of(context);
     final rt = t.recipeTokens;
     final enabled = widget.onChanged != null;
+    final fieldChrome = widget.chrome == RaftSelectRecipeChrome.field;
     final selected = widget.items
         .where((e) => e.value == widget.value && widget.value != null)
         .firstOrNull;
+    final hasValue =
+        selected != null ||
+        (widget.value != null && widget.unmatchedLabel != null);
     final trigger = RaftInteractive(
       onPressed: enabled ? toggle : null,
       focusNode: triggerFocus,
@@ -134,6 +147,7 @@ class _RaftSelectFieldState<T> extends State<RaftSelectField<T>> {
         ).root;
         final sel = RaftSelectRecipe.resolve(
           theme: recipeTheme,
+          chrome: widget.chrome,
           states: states,
           tokens: rt,
         );
@@ -142,14 +156,20 @@ class _RaftSelectFieldState<T> extends State<RaftSelectField<T>> {
           {
             ...merged.properties,
             'font-size': CssNum(
-              t.size('type.selectValue.size', fallback: 14),
+              t.size(
+                fieldChrome ? 'type.field.size' : 'type.selectValue.size',
+                fallback: 14,
+              ),
               'px',
             ),
-            'line-height': const CssNum(20, 'px'),
+            'line-height': CssNum(
+              fieldChrome ? t.size('type.field.line', fallback: 20) : 20,
+              'px',
+            ),
             'color': CssVar(
               '--foreground-select',
               null,
-              selected == null
+              !hasValue
                   ? 'foregroundSelectPlaceholder'
                   : !enabled
                   ? 'foregroundSelectDisabled'
@@ -221,7 +241,12 @@ class _RaftSelectFieldState<T> extends State<RaftSelectField<T>> {
                   builder: (context) => DefaultTextStyle.merge(
                     style: TextStyle(
                       fontWeight:
-                          FontWeight.values[((selected == null
+                          FontWeight.values[((fieldChrome
+                                          ? t.size(
+                                              'type.field.weight',
+                                              fallback: 400,
+                                            )
+                                          : !hasValue
                                           ? t.size(
                                               'type.selectPlaceholder.weight',
                                               fallback: 500,
@@ -238,7 +263,13 @@ class _RaftSelectFieldState<T> extends State<RaftSelectField<T>> {
                     maxLines: 1,
                     softWrap: false,
                     overflow: TextOverflow.clip,
-                    child: selected?.child ?? Text(widget.placeholder),
+                    child:
+                        selected?.child ??
+                        Text(
+                          hasValue
+                              ? widget.unmatchedLabel!
+                              : widget.placeholder,
+                        ),
                   ),
                 ),
               ),
@@ -283,6 +314,7 @@ class _RaftSelectFieldState<T> extends State<RaftSelectField<T>> {
     final rt = t.recipeTokens;
     final sel = RaftSelectRecipe.resolve(
       theme: t.recipeTheme,
+      chrome: widget.chrome,
       states: t.recipeStates(),
       tokens: rt,
     );
@@ -291,6 +323,7 @@ class _RaftSelectFieldState<T> extends State<RaftSelectField<T>> {
         _SelectItem<T>(
           item: widget.items[i],
           selected: widget.items[i].value == widget.value,
+          chrome: widget.chrome,
           last: i == widget.items.length - 1,
           autofocus:
               widget.items[i].value == widget.value ||
@@ -327,6 +360,7 @@ class _RaftSelectFieldState<T> extends State<RaftSelectField<T>> {
                         maxHeight: sel.list.maxHeight ?? 256,
                       ),
                       child: FocusTraversalGroup(
+                        key: const ValueKey('raft-select-popup'),
                         child: SingleChildScrollView(
                           padding: sel.list.padding,
                           child: Column(
@@ -359,12 +393,14 @@ class _SelectItem<T> extends StatefulWidget {
     super.key,
     required this.item,
     required this.selected,
+    required this.chrome,
     required this.last,
     required this.autofocus,
     required this.onSelect,
   });
   final DropdownMenuItem<T> item;
   final bool selected, last, autofocus;
+  final RaftSelectRecipeChrome chrome;
   final VoidCallback onSelect;
   @override
   State<_SelectItem<T>> createState() => _SelectItemState<T>();
@@ -380,6 +416,7 @@ class _SelectItemState<T> extends State<_SelectItem<T>> {
     final enabled = widget.item.enabled;
     final sel = RaftSelectRecipe.resolve(
       theme: t.recipeTheme,
+      chrome: widget.chrome,
       states: t.recipeStates(
         hovered: hovered && enabled && RaftHoverScope.of(context),
         extra: [

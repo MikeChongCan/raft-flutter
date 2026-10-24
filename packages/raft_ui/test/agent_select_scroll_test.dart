@@ -52,8 +52,8 @@ void main() {
             await tester.pumpAndSettle();
             await tester.tap(find.byType(RaftAgentSelect<int>));
             await tester.pumpAndSettle();
-            final popup = find.byType(RaftMenuPanel);
-            final scrollable = find.ancestor(
+            final popup = find.byKey(const ValueKey('raft-select-popup'));
+            final scrollable = find.descendant(
               of: popup,
               matching: find.byType(Scrollable),
             );
