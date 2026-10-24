@@ -53,6 +53,7 @@ OPTIONS_ELEGANT = {
     'mobileNav.style': 'floatingCapsule', 'mobileNav.labels': 'iconsOnly',
     'header.layout': 'overlay', 'panel.edge': 'seam', 'nav.selection': 'softFill',
     'tooltip.arrow': 'yes', 'code.innerBorder': 'dashed', 'spinner.style': 'ring',
+    'spinner.ringShape': 'sweep', 'spinner.foreground': 'inherited',
 }
 OPTIONS_BRUTAL = {
     'messageHeader.timePosition': 'inline',
@@ -69,6 +70,7 @@ OPTIONS_BRUTAL = {
     'mobileNav.style': 'docked', 'mobileNav.labels': 'withLabels', 'header.layout': 'inFlow',
     'panel.edge': 'border', 'nav.selection': 'sticker', 'tooltip.arrow': 'no',
     'code.innerBorder': 'solid', 'spinner.style': 'ring',
+    'spinner.ringShape': 'quarter', 'spinner.foreground': 'fixed',
 }
 
 # AUTHORED: docs/theme-contract.md §3.1–3.3. Values marked † in the contract are
@@ -329,6 +331,18 @@ GEOMETRY_BRUTAL.update({'size.messageRowMin': 48,
  'type.messageMeta.tracking': 0,
  'size.messageRowAvatarLarge': 36})
 
+# Original a57 Spinner geometry and animation, Cindy 63f52c81.
+GEOMETRY_ELEGANT.update({
+    'size.spinnerDefault': 14, 'duration.spinnerTurn': 1600,
+    'stroke.spinnerRing': 0, 'ratio.spinnerRingRadius': 10 / 24,
+    'space.spinnerRingInset': 0, 'opacity.spinnerArc': .8,
+})
+GEOMETRY_BRUTAL.update({
+    'size.spinnerDefault': 16, 'duration.spinnerTurn': 1000,
+    'stroke.spinnerRing': 2, 'ratio.spinnerRingRadius': .5,
+    'space.spinnerRingInset': 1, 'opacity.spinnerArc': 1,
+})
+
 FONTS_ELEGANT = {
     'sans': {'family': 'Geist',
              'stack': ['Geist', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
@@ -484,6 +498,7 @@ def pack(pack_id: str, name_en: str, name_zh: str, values: dict,
         colors['layer-auth-header'] = colors['layer-section-header-mobile']
         colors['foreground-message'] = colors['ink' if spec['column'] == 'brutal' else 'foreground-muted']
         colors['foreground-message-meta'] = '{palette.messageMeta}'
+        colors['foreground-spinner'] = colors['ink' if spec['column'] == 'brutal' else 'foreground']
         # Actual a57b9dab Select: muted Elegant text, solid Brutal text;
         # disabled keeps the same colors under the 0.4 group opacity.
         select_ink = 'foreground-strong' if spec['column'] == 'brutal' else 'foreground-muted'

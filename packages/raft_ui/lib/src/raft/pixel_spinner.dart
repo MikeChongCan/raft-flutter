@@ -2,6 +2,8 @@
 // bottom-right, bottom-left), 1s per turn, `steps(1)`. With reduced motion only the first pixel is lit.
 import 'package:flutter/material.dart';
 
+import '../theme.dart';
+
 /// `size` axis of the `spinner` recipe: pixel edge and gap in px.
 enum RaftPixelSpinnerSize {
   xs(4, 1.5),
@@ -37,18 +39,18 @@ class _RaftPixelSpinnerState extends State<RaftPixelSpinner>
     with SingleTickerProviderStateMixin {
   AnimationController? _controller;
 
-  void _sync(bool animate) {
+  void _sync(bool animate, Duration period) {
     if (!animate) {
       _controller?.dispose();
       _controller = null;
-    } else if (_controller == null) {
-      final controller = AnimationController(
-        vsync: this,
-        duration: const Duration(seconds: 1),
-      );
-      // ignore: raft_lints/avoid_unreviewed_idle_work -- Loop driven by an AnimationController whose vsync is this State, so TickerMode (hidden routes, offstage tabs, folded panels) mutes it, it is disposed with the widget, and reduced motion stops it.
-      controller.repeat();
-      _controller = controller;
+      return;
+    }
+    final changed = _controller?.duration != period;
+    _controller ??= AnimationController(vsync: this, duration: period);
+    if (changed) _controller!.duration = period;
+    if (changed || !_controller!.isAnimating) {
+      // ignore: raft_lints/avoid_unreviewed_idle_work -- State vsync and TickerMode bound the loop; reduced motion disposes the controller, as does unmount.
+      _controller!.repeat();
     }
   }
 
@@ -60,7 +62,12 @@ class _RaftPixelSpinnerState extends State<RaftPixelSpinner>
 
   @override
   Widget build(BuildContext context) {
-    _sync(!MediaQuery.disableAnimationsOf(context));
+    final period = Duration(
+      milliseconds: RaftTokens.of(context)
+          .size('duration.spinnerTurn', fallback: 1000)
+          .round(),
+    );
+    _sync(!MediaQuery.disableAnimationsOf(context), period);
     final color =
         widget.color ??
         DefaultTextStyle.of(context).style.color ??

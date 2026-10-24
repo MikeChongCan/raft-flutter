@@ -294,6 +294,13 @@ GEOMETRY_RAFT.update({'size.messageRowMin': 0,
  'type.messageMeta.tracking': 0,
  'size.messageRowAvatarLarge': 34})
 
+# Spinner source contract, Cindy 63f52c81 / 3fd7a4e6.
+GEOMETRY_RAFT.update({
+    'size.spinnerDefault': 12, 'duration.spinnerTurn': 1000,
+    'stroke.spinnerRing': 0, 'ratio.spinnerRingRadius': 10 / 24,
+    'space.spinnerRingInset': 0, 'opacity.spinnerArc': .8,
+})
+
 OPTIONS_RAFT = {
     'messageHeader.timePosition': 'trailing',
     'messageHeader.align': 'center',
@@ -310,6 +317,7 @@ OPTIONS_RAFT = {
     'mobileNav.style': 'docked', 'mobileNav.labels': 'iconsOnly', 'header.layout': 'overlay',
     'panel.edge': 'seam', 'nav.selection': 'sticker', 'tooltip.arrow': 'yes',
     'code.innerBorder': 'dashed', 'spinner.style': 'pixel',
+    'spinner.ringShape': 'sweep', 'spinner.foreground': 'inherited',
 }
 
 CASE_RAFT = {'heading': 'none', 'label': 'none', 'badge': 'none'}
@@ -351,6 +359,7 @@ def build() -> dict:
         out['layer-auth-header'] = out['layer-frame']
         out['foreground-message'] = out['foreground']
         out['foreground-message-meta'] = out['foreground-hint']
+        out['foreground-spinner'] = out['foreground']
         # Component aliases: values are existing roles, never new palette colors.
         for target, source in {
             'foreground-select': 'foreground',

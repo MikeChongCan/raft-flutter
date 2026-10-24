@@ -291,6 +291,7 @@ const String raftThemePackJson = r'''{
         "layer-auth-header": "#ffd440",
         "foreground-message": "#141111",
         "foreground-message-meta": "rgba(20 17 17 / 0.62)",
+        "foreground-spinner": "#141111",
         "foreground-select": "#141111",
         "foreground-select-placeholder": "rgba(20 17 17 / 0.62)",
         "foreground-select-disabled": "rgba(20 17 17 / 0.302)",
@@ -558,7 +559,13 @@ const String raftThemePackJson = r'''{
         "type.messageMeta.md.line": 16,
         "type.messageMeta.lg.line": 16,
         "type.messageMeta.tracking": 0,
-        "size.messageRowAvatarLarge": 34
+        "size.messageRowAvatarLarge": 34,
+        "size.spinnerDefault": 12,
+        "duration.spinnerTurn": 1000,
+        "stroke.spinnerRing": 0,
+        "ratio.spinnerRingRadius": 0.4166666666666667,
+        "space.spinnerRingInset": 0,
+        "opacity.spinnerArc": 0.8
       },
       "type": {
         "hero": [
@@ -689,7 +696,9 @@ const String raftThemePackJson = r'''{
         "nav.selection": "sticker",
         "tooltip.arrow": "yes",
         "code.innerBorder": "dashed",
-        "spinner.style": "pixel"
+        "spinner.style": "pixel",
+        "spinner.ringShape": "sweep",
+        "spinner.foreground": "inherited"
       }
     },
     "dark": {
@@ -921,6 +930,7 @@ const String raftThemePackJson = r'''{
         "layer-auth-header": "#0d0d0b",
         "foreground-message": "#e5e5e2",
         "foreground-message-meta": "#9e9e9b",
+        "foreground-spinner": "#e5e5e2",
         "foreground-select": "#e5e5e2",
         "foreground-select-placeholder": "#9e9e9b",
         "foreground-select-disabled": "#636360",
@@ -1188,7 +1198,13 @@ const String raftThemePackJson = r'''{
         "type.messageMeta.md.line": 16,
         "type.messageMeta.lg.line": 16,
         "type.messageMeta.tracking": 0,
-        "size.messageRowAvatarLarge": 34
+        "size.messageRowAvatarLarge": 34,
+        "size.spinnerDefault": 12,
+        "duration.spinnerTurn": 1000,
+        "stroke.spinnerRing": 0,
+        "ratio.spinnerRingRadius": 0.4166666666666667,
+        "space.spinnerRingInset": 0,
+        "opacity.spinnerArc": 0.8
       },
       "type": {
         "hero": [
@@ -1319,7 +1335,9 @@ const String raftThemePackJson = r'''{
         "nav.selection": "sticker",
         "tooltip.arrow": "yes",
         "code.innerBorder": "dashed",
-        "spinner.style": "pixel"
+        "spinner.style": "pixel",
+        "spinner.ringShape": "sweep",
+        "spinner.foreground": "inherited"
       }
     }
   }

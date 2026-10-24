@@ -305,3 +305,5 @@ export 'package:raft_theme/raft_theme.dart'
         brutalThemePackId,
         RaftThemePack,
         RaftThemeException;
+
+export 'src/recipes/spinner.g.dart' show RaftSpinnerRecipeSize;

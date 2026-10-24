@@ -230,6 +230,7 @@ const String elegantThemePackJson = r'''{
         "layer-auth-header": "#ffffff",
         "foreground-message": "#3d3d3a",
         "foreground-message-meta": "{palette.messageMeta}",
+        "foreground-spinner": "#191815",
         "foreground-select": "#3d3d3a",
         "foreground-select-placeholder": "#3d3d3a",
         "foreground-select-disabled": "#3d3d3a",
@@ -395,6 +396,12 @@ const String elegantThemePackJson = r'''{
         "type.messageMeta.lg.line": 14,
         "type.messageMeta.tracking": -0.14,
         "size.messageRowAvatarLarge": 36,
+        "size.spinnerDefault": 14,
+        "duration.spinnerTurn": 1600,
+        "stroke.spinnerRing": 0,
+        "ratio.spinnerRingRadius": 0.4166666666666667,
+        "space.spinnerRingInset": 0,
+        "opacity.spinnerArc": 0.8,
         "type.field.size": 14.0,
         "type.field.line": 20.0,
         "type.field.weight": 400.0,
@@ -456,7 +463,9 @@ const String elegantThemePackJson = r'''{
         "nav.selection": "softFill",
         "tooltip.arrow": "yes",
         "code.innerBorder": "dashed",
-        "spinner.style": "ring"
+        "spinner.style": "ring",
+        "spinner.ringShape": "sweep",
+        "spinner.foreground": "inherited"
       }
     },
     "dark": {
@@ -633,6 +642,7 @@ const String elegantThemePackJson = r'''{
         "layer-auth-header": "#242422",
         "foreground-message": "#c4c4c1",
         "foreground-message-meta": "{palette.messageMeta}",
+        "foreground-spinner": "#d8d8d5",
         "foreground-select": "#c4c4c1",
         "foreground-select-placeholder": "#c4c4c1",
         "foreground-select-disabled": "#c4c4c1",
@@ -798,6 +808,12 @@ const String elegantThemePackJson = r'''{
         "type.messageMeta.lg.line": 14,
         "type.messageMeta.tracking": -0.14,
         "size.messageRowAvatarLarge": 36,
+        "size.spinnerDefault": 14,
+        "duration.spinnerTurn": 1600,
+        "stroke.spinnerRing": 0,
+        "ratio.spinnerRingRadius": 0.4166666666666667,
+        "space.spinnerRingInset": 0,
+        "opacity.spinnerArc": 0.8,
         "type.field.size": 14.0,
         "type.field.line": 20.0,
         "type.field.weight": 400.0,
@@ -859,7 +875,9 @@ const String elegantThemePackJson = r'''{
         "nav.selection": "softFill",
         "tooltip.arrow": "yes",
         "code.innerBorder": "dashed",
-        "spinner.style": "ring"
+        "spinner.style": "ring",
+        "spinner.ringShape": "sweep",
+        "spinner.foreground": "inherited"
       }
     }
   }

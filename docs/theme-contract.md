@@ -802,3 +802,29 @@ Brutal 深色明确覆盖为 Elegant 的三组字体，避免只继承颜色、�
 
 头像上间距三套均为2：Raft 的挂载 MessageItem.tsx 内的 MessageSenderAvatar（2290、2338行）
 两条路径都是 `mt-0.5`，与 a57 原版一致。因此撤掉 `space.messageRowAvatarTop`，使用共同常量。
+
+
+### 加载动画的数值与结构（Cindy 63f52c81 / 3fd7a4e6）
+
+数值类别新增 `duration.*`（正整数毫秒）和 `ratio.*`（有限的 0 到 1，包含端点）。
+校验器拒绝零／负／小数时长及范围外比例，不将它们当作像素长度。
+
+| 数值 | Raft | Elegant | Brutal 浅色 |
+| --- | --- | --- | --- |
+| `size.spinnerDefault` | 12 | 14 | 16 |
+| `duration.spinnerTurn` | 1000 | 1600 | 1000 |
+| `stroke.spinnerRing` | 0 | 0 | 2 |
+| `ratio.spinnerRingRadius` | 10/24 | 10/24 | 0.5 |
+| `space.spinnerRingInset` | 0 | 0 | 1 |
+| `opacity.spinnerArc` | 0.8 | 0.8 | 1 |
+
+`spinner.style` 沿用已有 pixel／ring；Raft 真正绘制像素网格，圆环字段在包内保留但不参与绘制。
+`spinner.ringShape = sweep | quarter` 为 sweep／sweep／quarter；
+`spinner.foreground = inherited | fixed` 为 inherited／inherited／fixed。
+颜色角色 `foreground-spinner` 引用现有 foreground／foreground／ink；仅 fixed 使用。
+Brutal 深色完整沿 Elegant。描边为 0 时保留原比例 2.5/24；半径按尺寸乘 ratio 后减 inset。
+
+Raft 的来源为 Web v1.21.23 实际安装的 raft-ui 0.7.0：xs／sm／md／lg 像素边长
+4／5／6／8，间隙 1.5／2／2／3。原版圆环取 a57b9dab。
+共用夹具传来源尺寸档，不按主题改写。调用方显式物理尺寸优先；未传尺寸档时读取默认大小，
+inverse 在每套外观均保持白色。减弱动画时像素首格点亮，圆环静止；隐藏与卸载受 State vsync 生命周期约束。

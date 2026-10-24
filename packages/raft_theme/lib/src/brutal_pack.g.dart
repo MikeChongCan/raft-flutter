@@ -230,6 +230,7 @@ const String brutalThemePackJson = r'''{
         "layer-auth-header": "#ffd440",
         "foreground-message": "#000000",
         "foreground-message-meta": "{palette.messageMeta}",
+        "foreground-spinner": "#000000",
         "foreground-select": "#141110",
         "foreground-select-placeholder": "#141110",
         "foreground-select-disabled": "#141110",
@@ -395,6 +396,12 @@ const String brutalThemePackJson = r'''{
         "type.messageMeta.lg.line": 16,
         "type.messageMeta.tracking": 0,
         "size.messageRowAvatarLarge": 36,
+        "size.spinnerDefault": 16,
+        "duration.spinnerTurn": 1000,
+        "stroke.spinnerRing": 2,
+        "ratio.spinnerRingRadius": 0.5,
+        "space.spinnerRingInset": 1,
+        "opacity.spinnerArc": 1,
         "type.field.size": 16.0,
         "type.field.line": 24.0,
         "type.field.weight": 400.0,
@@ -456,7 +463,9 @@ const String brutalThemePackJson = r'''{
         "nav.selection": "sticker",
         "tooltip.arrow": "no",
         "code.innerBorder": "solid",
-        "spinner.style": "ring"
+        "spinner.style": "ring",
+        "spinner.ringShape": "quarter",
+        "spinner.foreground": "fixed"
       }
     },
     "dark": {
@@ -633,6 +642,7 @@ const String brutalThemePackJson = r'''{
         "layer-auth-header": "#242422",
         "foreground-message": "#c4c4c1",
         "foreground-message-meta": "{palette.messageMeta}",
+        "foreground-spinner": "#d8d8d5",
         "foreground-select": "#c4c4c1",
         "foreground-select-placeholder": "#c4c4c1",
         "foreground-select-disabled": "#c4c4c1",
@@ -798,6 +808,12 @@ const String brutalThemePackJson = r'''{
         "type.messageMeta.lg.line": 14,
         "type.messageMeta.tracking": -0.14,
         "size.messageRowAvatarLarge": 36,
+        "size.spinnerDefault": 14,
+        "duration.spinnerTurn": 1600,
+        "stroke.spinnerRing": 0,
+        "ratio.spinnerRingRadius": 0.4166666666666667,
+        "space.spinnerRingInset": 0,
+        "opacity.spinnerArc": 0.8,
         "type.field.size": 14.0,
         "type.field.line": 20.0,
         "type.field.weight": 400.0,
@@ -893,7 +909,9 @@ const String brutalThemePackJson = r'''{
         "nav.selection": "softFill",
         "tooltip.arrow": "yes",
         "code.innerBorder": "dashed",
-        "spinner.style": "ring"
+        "spinner.style": "ring",
+        "spinner.ringShape": "sweep",
+        "spinner.foreground": "inherited"
       }
     }
   }

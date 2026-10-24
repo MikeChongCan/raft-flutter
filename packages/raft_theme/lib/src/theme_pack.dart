@@ -147,6 +147,8 @@ const Map<String, Set<String>> raftStructuralOptions = {
   'tooltip.arrow': {'yes', 'no'},
   'code.innerBorder': {'dashed', 'solid'},
   'spinner.style': {'pixel', 'ring'},
+  'spinner.ringShape': {'sweep', 'quarter'},
+  'spinner.foreground': {'inherited', 'fixed'},
 };
 
 /// The type-scale slots a pack may fill (§3.4 of the contract).
@@ -379,7 +381,7 @@ RaftModeValues? _mode(Object? raw, String where) {
       final value = entry.value;
       if (value is! num) {
         throw RaftThemeException(
-          'a geometry token is a number in px',
+          'a numeric token is a number',
           where: '$where.geometry.${entry.key}',
         );
       }
@@ -387,6 +389,20 @@ RaftModeValues? _mode(Object? raw, String where) {
       if (!raftGeometryTokens.contains(token)) {
         throw RaftThemeException(
           'unknown geometry token "$token"',
+          where: '$where.geometry.$token',
+        );
+      }
+      if (token.startsWith('duration.') &&
+          (!value.isFinite || value <= 0 || value % 1 != 0)) {
+        throw RaftThemeException(
+          'a duration is positive integer milliseconds',
+          where: '$where.geometry.$token',
+        );
+      }
+      if (token.startsWith('ratio.') &&
+          (!value.isFinite || value < 0 || value > 1)) {
+        throw RaftThemeException(
+          'a ratio is between 0 and 1',
           where: '$where.geometry.$token',
         );
       }

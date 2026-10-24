@@ -549,7 +549,7 @@ final ParityCase _spinner = ParityCase(
   notes:
       'React renders spinners with animation:none; Flutter uses reduced '
       'motion (MediaQuery.disableAnimations) for the same static frame. '
-      'RaftSpinner takes a free size: React xs/sm/md/lg = 10/16/20/32px. '
+      'The source xs/sm/md/lg size axis is shared by all themes: Raft uses pixel grids, legacy themes keep the original rings. '
       'The black inverse box reproduces the fixture span (p-2 around a 24px '
       'line box).',
   build: (ctx) => _reducedMotion(
@@ -559,14 +559,17 @@ final ParityCase _spinner = ParityCase(
       child: Align(
         alignment: Alignment.topLeft,
         child: _row(20, [
-          const RaftSpinner(size: 10),
-          const RaftSpinner(size: 16),
-          const RaftSpinner(size: 20),
-          const RaftSpinner(size: 32),
+          const RaftSpinner(recipeSize: RaftSpinnerRecipeSize.xs),
+          const RaftSpinner(recipeSize: RaftSpinnerRecipeSize.sm),
+          const RaftSpinner(recipeSize: RaftSpinnerRecipeSize.md),
+          const RaftSpinner(recipeSize: RaftSpinnerRecipeSize.lg),
           Container(
             color: Colors.black,
             padding: const EdgeInsets.fromLTRB(8, 10, 8, 14),
-            child: const RaftSpinner(size: 16, inverse: true),
+            child: const RaftSpinner(
+              recipeSize: RaftSpinnerRecipeSize.sm,
+              inverse: true,
+            ),
           ),
         ]),
       ),

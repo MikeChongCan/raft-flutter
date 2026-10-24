@@ -33,6 +33,8 @@ import 'raft/css_box.dart';
 import 'raft/ui_tokens.dart';
 import 'raft/segmented_control.dart';
 import 'raft/tabs.dart';
+import 'raft/pixel_spinner.dart';
+import 'recipes/spinner.g.dart' show RaftSpinnerRecipeSize;
 
 enum RaftDensity { desktop, touch }
 
@@ -1476,10 +1478,20 @@ class RaftMenuRecipe {
         ];
 }
 
-/// Original raft-ui spinner ring recipe, using the enclosing control foreground.
+/// Theme spinner: the source pixel grid or original ring, with caller overrides.
 class RaftSpinner extends StatefulWidget {
-  const RaftSpinner({super.key, this.size, this.inverse = false});
+  const RaftSpinner({
+    super.key,
+    this.size,
+    this.inverse = false,
+    this.recipeSize,
+  });
+
+  /// Explicit physical slot size. Wins over the recipe's intrinsic extent.
   final double? size;
+
+  /// Source size axis; retained separately from a caller's physical override.
+  final RaftSpinnerRecipeSize? recipeSize;
   final bool inverse;
   @override
   State<RaftSpinner> createState() => _RaftSpinnerState();
@@ -1496,16 +1508,26 @@ class _RaftSpinnerState extends State<RaftSpinner>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    final t = RaftTokens.of(context);
+    final pixel = t.option('spinner.style', or: 'ring') == 'pixel';
+    final quarter = t.option('spinner.ringShape', or: 'sweep') == 'quarter';
     reduced = MediaQuery.disableAnimationsOf(context);
-    spin.duration = Duration(milliseconds: 1600);
-    if (reduced) {
+    spin.duration = Duration(
+      milliseconds: t.size('duration.spinnerTurn', fallback: 1600).round(),
+    );
+    if (reduced || pixel) {
       spin.stop();
       dash.stop();
     } else {
       // ignore: raft_lints/avoid_unreviewed_idle_work -- Loop driven by an AnimationController whose vsync is this State, so TickerMode (hidden routes, offstage tabs, folded panels) mutes it, it is disposed with the widget, and reduced motion stops it.
       spin.repeat();
       // ignore: raft_lints/avoid_unreviewed_idle_work -- Loop driven by an AnimationController whose vsync is this State, so TickerMode (hidden routes, offstage tabs, folded panels) mutes it, it is disposed with the widget, and reduced motion stops it.
-      dash.repeat();
+      if (quarter) {
+        dash.stop();
+      } else {
+        // ignore: raft_lints/avoid_unreviewed_idle_work -- State vsync and TickerMode bound this animation; reduced motion stops it and dispose retires it.
+        dash.repeat();
+      }
     }
   }
 
@@ -1519,11 +1541,51 @@ class _RaftSpinnerState extends State<RaftSpinner>
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
-    final dimension = widget.size ?? (14);
+    final pixel = t.option('spinner.style', or: 'ring') == 'pixel';
+    final quarter = t.option('spinner.ringShape', or: 'sweep') == 'quarter';
+    final fixed = t.option('spinner.foreground', or: 'inherited') == 'fixed';
+    if (pixel) {
+      final grid = RaftPixelSpinner(
+        size: switch (widget.recipeSize) {
+          RaftSpinnerRecipeSize.xs => RaftPixelSpinnerSize.xs,
+          RaftSpinnerRecipeSize.md => RaftPixelSpinnerSize.md,
+          RaftSpinnerRecipeSize.lg => RaftPixelSpinnerSize.lg,
+          _ => RaftPixelSpinnerSize.sm,
+        },
+        color: widget.inverse
+            ? Colors.white
+            : fixed
+            ? t.colors['foreground-spinner']!
+            : DefaultTextStyle.of(context).style.color ?? t.ink,
+      );
+      return ExcludeSemantics(
+        child: RepaintBoundary(
+          child: widget.size == null && widget.recipeSize != null
+              ? grid
+              : SizedBox.square(
+                  dimension:
+                      widget.size ??
+                      t.size('size.spinnerDefault', fallback: 12),
+                  child: Center(child: grid),
+                ),
+        ),
+      );
+    }
+    final dimension =
+        widget.size ??
+        switch (widget.recipeSize) {
+          RaftSpinnerRecipeSize.xs => 10.0,
+          RaftSpinnerRecipeSize.sm => 16.0,
+          RaftSpinnerRecipeSize.md => 20.0,
+          RaftSpinnerRecipeSize.lg => 32.0,
+          null => t.size('size.spinnerDefault', fallback: 14),
+        };
     // [inverse]: on a dark surface (the video stage, a dark button) in every
     // theme; elegant used to ignore it and drew an ink spinner on black.
     final color = widget.inverse
         ? Colors.white
+        : fixed
+        ? t.colors['foreground-spinner']!
         : IconTheme.of(context).color ?? t.ink;
     // The spinner repaints every frame while it is mounted. Its own repaint
     // boundary keeps that to the spinner's layer instead of re-recording the
@@ -1536,6 +1598,14 @@ class _RaftSpinnerState extends State<RaftSpinner>
             animation: Listenable.merge([spin, dash]),
             builder: (_, _) => CustomPaint(
               painter: _SpinnerPainter(
+                quarter: quarter,
+                stroke: t.size('stroke.spinnerRing', fallback: 0),
+                radiusRatio: t.size(
+                  'ratio.spinnerRingRadius',
+                  fallback: 10 / 24,
+                ),
+                inset: t.size('space.spinnerRingInset', fallback: 0),
+                arcOpacity: t.size('opacity.spinnerArc', fallback: .8),
                 color: color,
                 rotation: reduced ? 0 : spin.value,
                 phase: reduced ? .5 : dash.value,
@@ -1552,19 +1622,25 @@ class _RaftSpinnerState extends State<RaftSpinner>
 class _SpinnerPainter extends CustomPainter {
   const _SpinnerPainter({
     required this.color,
+    required this.quarter,
+    required this.stroke,
+    required this.radiusRatio,
+    required this.inset,
+    required this.arcOpacity,
     required this.rotation,
     required this.phase,
     required this.reduced,
   });
-  final bool reduced;
+  final bool reduced, quarter;
+  final double stroke, radiusRatio, inset, arcOpacity;
   final Color color;
   final double rotation, phase;
   @override
   void paint(Canvas canvas, Size size) {
-    final stroke = size.width * 2.5 / 24;
+    final stroke = this.stroke > 0 ? this.stroke : size.width * 2.5 / 24;
     final rect = Rect.fromCircle(
       center: size.center(Offset.zero),
-      radius: size.width * 10 / 24,
+      radius: size.width * radiusRatio - inset,
     );
     final paint = Paint()
       ..style = PaintingStyle.stroke
@@ -1574,8 +1650,8 @@ class _SpinnerPainter extends CustomPainter {
     canvas.translate(-size.width / 2, -size.height / 2);
     paint.color = color.withValues(alpha: .2);
     canvas.drawOval(rect, paint);
-    paint.color = color.withValues(alpha: .8);
-    paint.strokeCap = StrokeCap.round;
+    paint.color = color.withValues(alpha: arcOpacity);
+    paint.strokeCap = quarter ? StrokeCap.butt : StrokeCap.round;
     final eased = Curves.easeInOut.transform(phase);
     final length = reduced
         ? 72.0
@@ -1586,7 +1662,7 @@ class _SpinnerPainter extends CustomPainter {
     canvas.drawArc(
       rect,
       -math.pi / 2 + offset / 150 * math.pi * 2,
-      length / 150 * math.pi * 2,
+      quarter ? math.pi / 2 : length / 150 * math.pi * 2,
       false,
       paint,
     );
@@ -1594,6 +1670,11 @@ class _SpinnerPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_SpinnerPainter old) =>
+      old.quarter != quarter ||
+      old.stroke != stroke ||
+      old.radiusRatio != radiusRatio ||
+      old.inset != inset ||
+      old.arcOpacity != arcOpacity ||
       old.rotation != rotation ||
       old.phase != phase ||
       old.color != color ||
