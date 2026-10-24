@@ -223,7 +223,11 @@ void main() {
       expect(w.channel?.id, 'dm1');
       expect(w.location.route, RaftRoute.dm);
       expect(find.byKey(const Key('profile-panel')), findsNothing);
-      final field = find.byType(EditableText);
+      // The composer's field (a desktop sidebar also has "Find a conversation").
+      final field = find.descendant(
+        of: find.byType(RaftComposer),
+        matching: find.byType(EditableText),
+      );
       expect(field, findsOneWidget);
       await t.tap(field);
       await frames(t, 10);
