@@ -31,6 +31,7 @@ import sys
 
 from button_contract import button_colors, button_palette
 from framework_contract import ELEGANT_GEOMETRY, BRUTAL_GEOMETRY, framework_colors
+import components_lane
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 VALUES = 'docs/theme-contract/values.json'
@@ -572,6 +573,11 @@ GEOMETRY_BRUTAL.update({
     'space.spinnerRingInset': 1, 'opacity.spinnerArc': 1,
 })
 
+GEOMETRY_ELEGANT.update(components_lane.geometry_family())
+GEOMETRY_BRUTAL.update(components_lane.geometry_family())
+OPTIONS_ELEGANT.update(components_lane.options_family())
+OPTIONS_BRUTAL.update(components_lane.options_family())
+
 FONTS_ELEGANT = {
     'sans': {'family': 'Geist',
              'stack': ['Geist', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
@@ -799,6 +805,7 @@ def pack(pack_id: str, name_en: str, name_zh: str, values: dict,
         # Shared Button elevation, independent of edge rings and press motion.
         normal = shadows['sm'] if spec['column'] == 'brutal' else shadows['xs'] if spec['column'] == 'elegantDark' else 'none'
         shadows['shadow.buttonSuccess'] = shadows['sm'] if spec['column'] == 'brutal' else 'none'
+        shadows['shadow.tooltip'] = components_lane.tooltip_shadow_family(spec['column'] == 'elegantDark')
         shadows['shadow.control'] = normal
         # Select elevation is independent of the shared press-motion option.
         shadows['shadow.select'] = normal
@@ -815,6 +822,7 @@ def pack(pack_id: str, name_en: str, name_zh: str, values: dict,
             shadows['sm'] if spec['column'] in ('brutal', 'elegantDark') else 'none')
         shadows['shadow.railFocus'] = (
             'none' if spec['column'] == 'brutal' else f"0 0 0 0.5px {colors['primary-500']}")
+        components_lane.family_aliases(colors)
         colors.update(button_colors(spec['column'], colors))
         return {
             'colors': colors,

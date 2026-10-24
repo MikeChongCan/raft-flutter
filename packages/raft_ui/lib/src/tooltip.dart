@@ -44,43 +44,10 @@ class RaftTooltipRecipe {
     letterSpacing: -.065,
     color: foreground,
   );
-  List<BoxShadow> get shadows => tokens.dark
-      ? [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: .55),
-            spreadRadius: 1,
-          ),
-          BoxShadow(
-            color: Colors.black.withValues(alpha: .45),
-            offset: const Offset(0, 10),
-            blurRadius: 20,
-            spreadRadius: -6,
-          ),
-          BoxShadow(
-            color: Colors.black.withValues(alpha: .35),
-            offset: const Offset(0, 4),
-            blurRadius: 8,
-            spreadRadius: -3,
-          ),
-        ]
-      : [
-          // foundation.css371 oklch(.21 .006 106.42).
-          BoxShadow(
-            color: const Color(0xff191815).withValues(alpha: .1),
-            offset: const Offset(0, 1),
-            blurRadius: 1,
-          ),
-          BoxShadow(
-            color: const Color(0xff191815).withValues(alpha: .04),
-            spreadRadius: 1,
-          ),
-          BoxShadow(
-            color: const Color(0xff191815).withValues(alpha: .16),
-            offset: const Offset(0, 2),
-            blurRadius: 12,
-            spreadRadius: -4,
-          ),
-        ];
+  List<BoxShadow> get shadows => [
+    for (final layer in tokens.shadowLayers('shadow.tooltip').reversed)
+      if (!layer.inset) layer.toBoxShadow(),
+  ];
 }
 
 /// Generic RUI defaults: delay0, closeDelay0, adjacent-trigger timeout400.

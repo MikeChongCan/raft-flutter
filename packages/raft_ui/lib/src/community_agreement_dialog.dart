@@ -149,9 +149,10 @@ class _RaftCommunityAgreementDialogState
                 ),
               ],
               const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+              Wrap(
+                alignment: WrapAlignment.end,
                 spacing: 12,
+                runSpacing: 8,
                 children: [
                   RaftRecipeButton(
                     key: const ValueKey('community-agreement-cancel'),

@@ -172,6 +172,26 @@ const Map<String, Set<String>> raftStructuralOptions = {
   'button.hoverSurface': {'overlay', 'variant'},
   'button.linkDecoration': {'underline', 'none'},
   'button.linkPadding': {'none', 'size'},
+  // Components lane (Web v1.21.23 shared components; tool/theme-adapters/components_lane.py).
+  'toast.style': {'recipe', 'hud'},
+  'button.surface': {'recipe', 'ported'},
+  'banner.style': {'recipe', 'raft'},
+  'channelFooter.joinSize': {'md', 'lg'},
+  'composerAttachment.style': {'recipe', 'raft'},
+  'skeleton.style': {'recipe', 'raft'},
+  'surfaceItem.style': {'recipe', 'raft'},
+  'avatarListRow.style': {'recipe', 'raft'},
+  'selectionPopover.style': {'recipe', 'raft'},
+  'progress.style': {'recipe', 'raft'},
+  'menuItem.style': {'recipe', 'raft'},
+  'field.layout': {'recipe', 'raft'},
+  'inputGroup.style': {'recipe', 'raft'},
+  'announcement.style': {'recipe', 'raft'},
+  'reaction.style': {'recipe', 'raft'},
+  'lightbox.style': {'recipe', 'raft'},
+  'document.style': {'recipe', 'raft'},
+  'messageToolbar.style': {'recipe', 'raft'},
+  'avatar.humanFallback': {'initials', 'icon'},
 };
 
 /// The type-scale slots a pack may fill (§3.4 of the contract).

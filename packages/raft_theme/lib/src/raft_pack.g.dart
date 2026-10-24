@@ -386,6 +386,7 @@ const String raftThemePackJson = r'''{
         "foreground-sidebar-section-control": "#141111",
         "foreground-sidebar-section-hover": "#141111",
         "foreground-sidebar-section-count": "rgba(20 17 17 / 0.62)",
+        "foreground-channel-footer-note": "rgba(20 17 17 / 0.62)",
         "layer-button-primary-hover": "#ff99c3",
         "foreground-button-primary": "#141111",
         "layer-button-standard": "#ffffff",
@@ -951,7 +952,12 @@ const String raftThemePackJson = r'''{
         "type.sidebarSection.line": 18,
         "type.sidebarSection.weight": 700,
         "type.sidebarSection.tracking": 0,
-        "type.sidebarSectionCount.weight": 400
+        "type.sidebarSectionCount.weight": 400,
+        "radius.popover": 10,
+        "stroke.popoverRing": 1,
+        "stroke.channelFooter": 0,
+        "space.messageToolbarInline": 3,
+        "space.messageToolbarBlock": 3
       },
       "type": {
         "hero": [
@@ -1048,6 +1054,7 @@ const String raftThemePackJson = r'''{
         "lg": "0px 1px 0px 0px rgba(20 17 17 / 0.039), 0px 12px 32px -12px rgba(20 17 17 / 0.322)",
         "xl": "0px 1px 0px 0px rgba(20 17 17 / 0.039), 0px 12px 32px -12px rgba(20 17 17 / 0.322)",
         "shadow.float": "0px 1px 0px 0px rgba(20 17 17 / 0.039), 0px 12px 32px -12px rgba(20 17 17 / 0.322)",
+        "shadow.tooltip": "0px 1px 0px 0px rgba(20 17 17 / 0.039), 0px 12px 32px -12px rgba(20 17 17 / 0.322)",
         "shadow.sticker": "4px 4px 0px 0px #141111",
         "shadow.focusRing": "0px 0px 0px 2px #ffffff, 0px 0px 0px 4px #141111",
         "shadow.control": "none",
@@ -1123,7 +1130,26 @@ const String raftThemePackJson = r'''{
         "confirm.slug": "chip",
         "confirm.explanation": "dangerBanner",
         "spinner.ringShape": "sweep",
-        "spinner.foreground": "inherited"
+        "spinner.foreground": "inherited",
+        "toast.style": "hud",
+        "button.surface": "ported",
+        "banner.style": "raft",
+        "channelFooter.joinSize": "lg",
+        "composerAttachment.style": "raft",
+        "skeleton.style": "raft",
+        "surfaceItem.style": "raft",
+        "avatarListRow.style": "raft",
+        "selectionPopover.style": "raft",
+        "progress.style": "raft",
+        "menuItem.style": "raft",
+        "field.layout": "raft",
+        "inputGroup.style": "raft",
+        "announcement.style": "raft",
+        "reaction.style": "raft",
+        "lightbox.style": "raft",
+        "document.style": "raft",
+        "messageToolbar.style": "raft",
+        "avatar.humanFallback": "icon"
       }
     },
     "dark": {
@@ -1450,6 +1476,7 @@ const String raftThemePackJson = r'''{
         "foreground-sidebar-section-control": "#e5e5e2",
         "foreground-sidebar-section-hover": "#e5e5e2",
         "foreground-sidebar-section-count": "#9e9e9b",
+        "foreground-channel-footer-note": "#9e9e9b",
         "layer-button-primary-hover": "#ff99c3",
         "foreground-button-primary": "#141111",
         "layer-button-standard": "#242422",
@@ -2015,7 +2042,12 @@ const String raftThemePackJson = r'''{
         "type.sidebarSection.line": 18,
         "type.sidebarSection.weight": 700,
         "type.sidebarSection.tracking": 0,
-        "type.sidebarSectionCount.weight": 400
+        "type.sidebarSectionCount.weight": 400,
+        "radius.popover": 10,
+        "stroke.popoverRing": 1,
+        "stroke.channelFooter": 0,
+        "space.messageToolbarInline": 3,
+        "space.messageToolbarBlock": 3
       },
       "type": {
         "hero": [
@@ -2112,6 +2144,7 @@ const String raftThemePackJson = r'''{
         "lg": "0px 0px 0px 1px rgba(250 250 247 / 0.078), 0px 16px 40px -12px rgba(0 0 0 / 0.8)",
         "xl": "0px 0px 0px 1px rgba(250 250 247 / 0.078), 0px 16px 40px -12px rgba(0 0 0 / 0.8)",
         "shadow.float": "0px 0px 0px 1px rgba(250 250 247 / 0.078), 0px 16px 40px -12px rgba(0 0 0 / 0.8)",
+        "shadow.tooltip": "0px 0px 0px 1px rgba(250 250 247 / 0.078), 0px 16px 40px -12px rgba(0 0 0 / 0.8)",
         "shadow.sticker": "4px 4px 0px 0px #000000",
         "shadow.focusRing": "0px 0px 0px 2px #1b1b19, 0px 0px 0px 4px #e5e5e2",
         "shadow.control": "none",
@@ -2187,7 +2220,26 @@ const String raftThemePackJson = r'''{
         "confirm.slug": "chip",
         "confirm.explanation": "dangerBanner",
         "spinner.ringShape": "sweep",
-        "spinner.foreground": "inherited"
+        "spinner.foreground": "inherited",
+        "toast.style": "hud",
+        "button.surface": "ported",
+        "banner.style": "raft",
+        "channelFooter.joinSize": "lg",
+        "composerAttachment.style": "raft",
+        "skeleton.style": "raft",
+        "surfaceItem.style": "raft",
+        "avatarListRow.style": "raft",
+        "selectionPopover.style": "raft",
+        "progress.style": "raft",
+        "menuItem.style": "raft",
+        "field.layout": "raft",
+        "inputGroup.style": "raft",
+        "announcement.style": "raft",
+        "reaction.style": "raft",
+        "lightbox.style": "raft",
+        "document.style": "raft",
+        "messageToolbar.style": "raft",
+        "avatar.humanFallback": "icon"
       }
     }
   }

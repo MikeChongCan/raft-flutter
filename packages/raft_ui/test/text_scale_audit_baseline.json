@@ -58,9 +58,6 @@
   "real|light|channelHeaderPreview|2.0x": [
     "escapes: Public channel"
   ],
-  "real|light|communityAgreementPreview|3.1x": [
-    "overflow: A RenderFlex overflowed by 50 pixels on the right."
-  ],
   "real|light|expandedComposerPhonePreview|3.1x": [
     "inkClipped: ## Plan\n\n**Ship** Friday\n- tests\n- \u4e2d\u6587"
   ],
