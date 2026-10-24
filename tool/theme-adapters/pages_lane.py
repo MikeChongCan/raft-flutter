@@ -14,6 +14,12 @@ from __future__ import annotations
 # ---------------------------------------------------------------- geometry
 # token: (Raft, Elegant and Brutal)
 _GEOMETRY = {
+    # ConversationCardSkeleton in the py-1 scroller / frozen 16px list inset.
+    'space.activityLoadingInline': (0, 16),
+    'space.activityLoadingBlock': (4, 16),
+    'radius.activityLoadingCard': (10, 0),
+    # TaskCardSkeleton Card rounded-container / frozen muted 4px box.
+    'radius.taskLoadingCard': (10, 4),
     # AuthBrandShell top bar: `h-panel-header` (56) in the Raft look; a57b9dab
     # fell back to 62 in every look (the auth pages sit outside the app shell).
     'size.authBar': (56, 62),
@@ -85,9 +91,6 @@ _OPTIONS = {
     # EmptyState: bare 36px hint icon + headline title (0.7.0) or the recipe tile
     # of a57b9dab.
     'emptyState.look': ('plain', 'recipe'),
-    # Activity / Saved loading cards: edge to edge rounded cards (v1.21.23) or
-    # the 16px-inset square cards of a57b9dab.
-    'activity.loadingCards': ('edge', 'inset'),
     # Search page failure: a warning Banner with a Retry button (v1.21.23) or
     # the bordered card of a57b9dab.
     'search.failure': ('banner', 'card'),
@@ -120,6 +123,7 @@ _OPTIONS = {
 # ---------------------------------------------------------------- colours
 # role: (Raft source role, family source role). Values are existing roles.
 _COLOR_ALIASES = {
+    'line-loading-card': ('line-hairline', 'line-muted'),
     # AUTH_BRAND_TOP_BAR_CLASS `border-line-seam` (Raft); a57b9dab hairline.
     'line-auth-header': ('line-seam', 'line-hairline'),
     # Standalone page label: `text-foreground-muted` (Raft), foreground before.

@@ -693,30 +693,23 @@ class RaftActivityLoadingList extends StatelessWidget {
       label: raftText(context, 'Loading Activity'),
       child: ListView.separated(
         // v1.21.23: the cards sit in the `py-1` scroller edge to edge; the
-        // pre-theme looks inset them 16 (activity.loadingCards).
-        padding: t.option('activity.loadingCards', or: 'edge') == 'edge'
-            ? const EdgeInsets.symmetric(vertical: 4)
-            : const EdgeInsets.all(16),
+        // pre-theme looks inset them 16. Both are component geometry data.
+        padding: EdgeInsets.symmetric(
+          horizontal: t.size('space.activityLoadingInline', fallback: 0),
+          vertical: t.size('space.activityLoadingBlock', fallback: 4),
+        ),
         itemCount: 6,
         separatorBuilder: (_, _) => const SizedBox(height: 8),
         itemBuilder: (_, _) => Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: t.panel,
-            borderRadius:
-                t.option('activity.loadingCards', or: 'edge') == 'edge'
-                ? BorderRadius.circular(
-                    t.size('radius.container', fallback: 10),
-                  )
-                : null,
-            // `border border-line-muted theme-brutal:border-2`: the muted rule
-            // colour stays in Brutal, only the width grows.
-            border: Border.all(
-              color: t.option('activity.loadingCards', or: 'edge') == 'edge'
-                  ? t.colors['line-hairline']!
-                  : t.colors['line-muted']!,
-              width: 1,
+            borderRadius: BorderRadius.circular(
+              t.size('radius.activityLoadingCard', fallback: 10),
             ),
+            // The rule colour varies independently of padding and corners;
+            // this list retains its existing 1px rule in every mode.
+            border: Border.all(color: t.colors['line-loading-card']!, width: 1),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,

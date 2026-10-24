@@ -208,7 +208,6 @@ const Map<String, Set<String>> raftStructuralOptions = {
   'taskBoard.column': {'flat', 'card'},
   'taskModal.head': {'web23', 'legacy'},
   'emptyState.look': {'plain', 'recipe'},
-  'activity.loadingCards': {'edge', 'inset'},
   'search.failure': {'banner', 'card'},
   'appearance.layout': {'web23', 'legacy'},
   'formSection.look': {'web23', 'legacy'},
