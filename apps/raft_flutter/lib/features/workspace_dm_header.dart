@@ -4,6 +4,7 @@ import 'package:raft_ui/raft_ui.dart';
 
 import '../data/raft_location.dart';
 import '../data/workspace_controller.dart';
+import 'agent_hosted_cindy_banner.dart';
 import 'agent_metadata_projection.dart';
 import 'resource_cards.dart' show resourceRelativeTime;
 
@@ -54,7 +55,7 @@ class WorkspaceDmHeader extends StatelessWidget {
             _ => RaftActivityTone.offline,
           };
     final peerId = channel.string('peerId');
-    return RaftDmHeader(
+    final header = RaftDmHeader(
       key: headerKey,
       name: name,
       avatar: avatar,
@@ -98,6 +99,19 @@ class WorkspaceDmHeader extends StatelessWidget {
             },
       searchLabel: raftText(context, 'Search this channel'),
       settingsLabel: raftText(context, 'Channel details and settings'),
+    );
+    final cloud = profile;
+    // A cloud Cindy that could not start says so under her header.
+    if (!agent || cloud == null || !isHostedCindyCandidate(controller, cloud)) {
+      return header;
+    }
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        header,
+        HostedCindyFailedBanner(controller: controller, agent: cloud),
+      ],
     );
   }
 }

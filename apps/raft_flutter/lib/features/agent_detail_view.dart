@@ -26,7 +26,9 @@ import 'agent_apps_view.dart';
 import 'agent_diagnostic_info.dart';
 import 'feedback_attachment_preview.dart' show showFeedbackImage;
 import 'agent_archive_section.dart';
+import 'agent_connections_section.dart';
 import 'agent_hosted_model.dart';
+import 'agent_identity_adoption.dart';
 import 'agent_hosted_usage.dart';
 import 'agent_migration_section.dart';
 import 'agent_profile_rules.dart';
@@ -1104,6 +1106,16 @@ class _AgentDetailPanelState extends State<AgentDetailPanel> {
           // `min-h-[66px] theme-brutal:min-h-[72px]`.
           minHeight: t.brutal ? 72 : 66,
         ),
+        // Onboarding identity adoption (the server's onboarding agent only).
+        if (_canManage &&
+            widget.controller.server?.string('onboardingAgentId') == agentId)
+          AgentOnboardingIdentity(
+            key: ValueKey('identity-adoption-$agentId'),
+            controller: widget.controller,
+            agentId: agentId,
+            identityKey:
+                '${a['name']}|${a['displayName']}|${a['description']}|${a['avatarUrl']}',
+          ),
         // Description: `px-5 py-3` (no top border).
         RaftPanelSection(
           topBorder: false,
@@ -1134,6 +1146,11 @@ class _AgentDetailPanelState extends State<AgentDetailPanel> {
         if (external && _canManage && _hostedRuntime?['state'] == 'active') ...[
           AgentHostedRuntimeModel(
             key: ValueKey('model-$agentId'),
+            controller: widget.controller,
+            agentId: agentId,
+          ),
+          AgentConnectionsSection(
+            key: ValueKey('connections-$agentId'),
             controller: widget.controller,
             agentId: agentId,
           ),

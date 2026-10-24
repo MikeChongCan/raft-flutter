@@ -28,6 +28,7 @@ Future<Map<String, dynamic>?> showManagedAgentForm(
   String? autoJoinChannelName,
   String? prefilledNameNote,
   math.Random? random,
+  bool onboarding = false,
 }) async {
   final authority = workspaceAuthority(w);
   bool current() =>
@@ -61,6 +62,8 @@ Future<Map<String, dynamic>?> showManagedAgentForm(
         autoJoinChannelName: autoJoinChannelName,
         prefilledNameNote: prefilledNameNote,
         random: random,
+        onboarding: onboarding,
+        onboardingModal: onboarding,
       ),
     ),
   );

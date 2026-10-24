@@ -123,6 +123,9 @@ Map<String, dynamic> _errorDetails(Map? body) {
     'expiresAt',
     'signInMethods',
     'legal',
+    // A cloud agent's provider refused a GitHub connection step: its own
+    // plain-text reason (`providerMessage`), shown as "The provider refused:".
+    'providerMessage',
     // Agent migration start refusals: which computer lacks which runtime
     // (COMPUTER_CAPABILITY_INSUFFICIENT) or needs a Raft Computer update
     // (MIGRATION_RESUMABLE_CAPABILITY_REQUIRED); the view validates the shape.
@@ -155,6 +158,7 @@ Map<String, dynamic> _errorDetails(Map? body) {
       'provider',
       'email',
       'expiresAt',
+      'providerMessage',
     }.contains(key)) {
       return value is String ? value : null;
     }
