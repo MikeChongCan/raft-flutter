@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_flutter/data/raft_location.dart';
+import 'package:raft_flutter/data/device_preferences.dart';
 import 'package:raft_ui/raft_ui.dart';
 
 import 'app_global_server_selector_test.dart' show RootFixture;
@@ -14,17 +15,34 @@ void windowMetrics(WidgetTester t, double bottom, {double keyboard = 0}) {
 void main() {
   for (final platform in [TargetPlatform.iOS, TargetPlatform.android]) {
     final inset = platform == TargetPlatform.iOS ? 34.0 : 48.0;
-    for (final theme in ['light', 'dark']) {
+    for (final (pack, theme) in [
+      (raftThemePackId, 'light'),
+      (raftThemePackId, 'dark'),
+      (elegantThemePackId, 'light'),
+      (elegantThemePackId, 'dark'),
+      (brutalThemePackId, 'light'),
+      (brutalThemePackId, 'dark'),
+    ]) {
       testWidgets(
-        '$platform $theme root controls clear the system gesture area',
+        '$platform $pack $theme root controls clear the system gesture area',
         (t) async {
           addTearDown(t.view.reset);
           windowMetrics(t, inset);
           final f = RootFixture();
-          await f.mount(t, theme, 390, uri: Uri.parse('/s/alpha'));
+          await f.mount(
+            t,
+            theme,
+            390,
+            uri: Uri.parse('/s/alpha'),
+            preferences: {appearanceThemeKey: pack},
+          );
           final w = f.workspace(t);
           final nav = find.byKey(const Key('workspace-mobile-navigation'));
           final screenBottom = t.view.physicalSize.height;
+          final tokens = RaftTokens.of(t.element(nav));
+          final floating =
+              tokens.option('mobileNav.style', or: 'docked') ==
+              'floatingCapsule';
 
           void expectBarClearance() {
             expect(t.getRect(nav).bottom, closeTo(screenBottom - inset, .01));
@@ -34,25 +52,37 @@ void main() {
                 lessThanOrEqualTo(screenBottom - inset),
               );
             }
-            final capsule = find.byKey(
-              const ValueKey('mobile-nav-source-capsule'),
+            final surface = find.byKey(
+              ValueKey(
+                floating
+                    ? 'mobile-nav-source-capsule'
+                    : 'mobile-nav-source-docked',
+              ),
             );
             expect(
-              t.getRect(capsule).bottom,
-              closeTo(screenBottom - inset - 8, .01),
+              t.getRect(surface).bottom,
+              closeTo(screenBottom - inset - (floating ? 8 : 0), .01),
+              reason:
+                  'Only the floating capsule leaves a gap above the safe area.',
             );
           }
 
           expectBarClearance();
-          // The floating home list extends to the bottom, and its scroll padding
-          // lets the last row clear both the capsule and the home indicator.
           final sidebar = find.byKey(const Key('workspace-sidebar'));
-          expect(t.getRect(sidebar).bottom, screenBottom);
-          final sliver = t.widget<CustomScrollView>(sidebar).slivers.first;
           expect(
-            (sliver as SliverPadding).padding.resolve(TextDirection.ltr).bottom,
-            68 + inset,
+            t.getRect(sidebar).bottom,
+            floating ? screenBottom : t.getRect(nav).top,
           );
+          if (floating) {
+            // The overlaid list retains scroll clearance for the capsule.
+            final sliver = t.widget<CustomScrollView>(sidebar).slivers.first;
+            expect(
+              (sliver as SliverPadding).padding
+                  .resolve(TextDirection.ltr)
+                  .bottom,
+              68 + inset,
+            );
+          }
 
           // The keyboard covers the tab bar rather than lifting it. Its dismissal
           // restores the same geometry, with the safe inset consumed once.

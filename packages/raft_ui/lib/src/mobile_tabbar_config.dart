@@ -179,9 +179,12 @@ class RaftMobileTabbarConfigView extends StatelessWidget {
         : null;
     final nav = RaftMobileNav(
       selectedId: config.visible.firstOrNull ?? settingsTab.id,
-      // Keep the capsule's shadow clearance; the dock owns the actual
-      // system inset, including navigation bars taller than this gap.
-      bottomInset: 16,
+      // Only floating capsules need shadow clearance. The dock owns the
+      // actual system inset; an in-flow preview matches the real bar height.
+      bottomInset:
+          t.option('mobileNav.style', or: 'docked') == 'floatingCapsule'
+          ? 16
+          : 0,
       viewportHeight: viewportHeight,
       onSelected: (_) {},
       items: [
@@ -349,7 +352,7 @@ class _PreviewDock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
-    return RaftBottomInsetSurface(
+    return DecoratedBox(
       decoration: BoxDecoration(
         color: t.panel,
         border: Border(top: BorderSide(color: t.colors['line-muted']!)),
@@ -362,11 +365,20 @@ class _PreviewDock extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
             child: RaftSettingsSectionHeader(label: 'Preview', bottom: 4),
           ),
-          IgnorePointer(
-            child: ExcludeSemantics(
-              child: KeyedSubtree(
-                key: const Key('mobile-tabbar-preview'),
-                child: nav,
+          // Keep the preview header on the panel, while extending the bar's
+          // own surface through the system inset. Transparent legacy bars
+          // retain the panel backdrop.
+          RaftBottomInsetSurface(
+            color: Color.alphaBlend(
+              t.colors['layer-mobile-nav-system']!,
+              t.panel,
+            ),
+            child: IgnorePointer(
+              child: ExcludeSemantics(
+                child: KeyedSubtree(
+                  key: const Key('mobile-tabbar-preview'),
+                  child: nav,
+                ),
               ),
             ),
           ),

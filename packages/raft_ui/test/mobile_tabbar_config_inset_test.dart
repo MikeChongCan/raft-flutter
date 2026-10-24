@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_ui/mobile_tabbar_config_previews.dart';
 import 'package:raft_ui/raft_ui.dart';
-import 'package:raft_ui/test_themes.dart';
 
 const preview = Key('mobile-tabbar-preview');
 const screen = Size(390, 844);
@@ -22,30 +21,52 @@ Finder previewNav() => find.descendant(
 );
 
 void main() {
-  for (final dark in raftThemeMatrix([false, true])) {
+  for (final (pack, dark, floating) in [
+    (raftThemePackId, false, false),
+    (raftThemePackId, true, false),
+    (elegantThemePackId, false, true),
+    (elegantThemePackId, true, true),
+    (brutalThemePackId, false, false),
+    (brutalThemePackId, true, true),
+  ]) {
     for (final inset in [0.0, 24.0, 48.0]) {
       testWidgets(
-        '${dark ? 'dark' : 'light'} preview clears $inset system inset and IME',
+        '$pack ${dark ? 'dark' : 'light'} preview clears $inset system inset and IME',
         (t) async {
           addTearDown(t.view.reset);
           metrics(t, inset);
           await t.pumpWidget(
             MaterialApp(
-              theme: raftTheme(dark: dark)
-                  .copyWith(platform: TargetPlatform.android),
+              theme: raftTheme(
+                pack: packForThemeId(pack),
+                dark: dark,
+              ).copyWith(platform: TargetPlatform.android),
               home: Scaffold(body: mobileTabbarConfigDefaultPreview()),
             ),
           );
           final nav = previewNav();
           expect(t.getRect(nav).bottom, screen.height - inset);
           final navHeight = t.getSize(nav).height;
+          if (pack == raftThemePackId) {
+            expect(
+              navHeight,
+              52,
+              reason: 'Preview matches the real docked bar; no capsule gap.',
+            );
+          }
           expect(
             t
                 .getRect(
-                  find.byKey(const ValueKey('mobile-nav-source-capsule')),
+                  find.byKey(
+                    ValueKey(
+                      floating
+                          ? 'mobile-nav-source-capsule'
+                          : 'mobile-nav-source-docked',
+                    ),
+                  ),
                 )
                 .bottom,
-            screen.height - inset - 16,
+            screen.height - inset - (floating ? 16 : 0),
           );
 
           // A pinned preview leaves the scrollable form usable on short bodies.
@@ -72,13 +93,13 @@ void main() {
       );
     }
     testWidgets(
-      '${dark ? 'dark' : 'light'} parent SafeArea consumes the inset once',
+      '$pack ${dark ? 'dark' : 'light'} parent SafeArea consumes the inset once',
       (t) async {
         addTearDown(t.view.reset);
         metrics(t, 48);
         await t.pumpWidget(
           MaterialApp(
-            theme: raftTheme(dark: dark),
+            theme: raftTheme(pack: packForThemeId(pack), dark: dark),
             home: Scaffold(
               body: SafeArea(
                 top: false,
@@ -92,13 +113,13 @@ void main() {
       },
     );
     testWidgets(
-      '${dark ? 'dark' : 'light'} dock paints to the edge with matching icon contrast',
+      '$pack ${dark ? 'dark' : 'light'} dock paints to the edge with matching icon contrast',
       (t) async {
         addTearDown(t.view.reset);
         metrics(t, 48);
         await t.pumpWidget(
           MaterialApp(
-            theme: raftTheme(dark: dark),
+            theme: raftTheme(pack: packForThemeId(pack), dark: dark),
             home: Scaffold(body: mobileTabbarConfigDefaultPreview()),
           ),
         );

@@ -198,10 +198,12 @@ void main() {
     RaftSwitch sw(String id) =>
         t.widget<RaftSwitch>(find.byKey(ValueKey('mobile-tabbar-switch-$id')));
     int navItems() => t.widgetList(find.byType(RaftMobileNavItem)).length;
-    // The Raft bar is icon-only: an item's label is its tooltip.
+    // Both labelled and icon-only bars retain the large-content label.
     Finder preview(String id) => find.descendant(
       of: find.byKey(const Key('mobile-tabbar-preview')),
-      matching: find.byTooltip(id),
+      matching: find.byWidgetPredicate(
+        (w) => w is RaftLargeContentViewer && w.label == id,
+      ),
     );
 
     // Default: Home, Tasks, Members + Settings -> 4 of 5; nothing disabled.
