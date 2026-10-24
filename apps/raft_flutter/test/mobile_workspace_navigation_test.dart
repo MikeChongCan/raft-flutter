@@ -707,7 +707,7 @@ void main() {
             .color,
         RaftTokens.of(
           tester.element(find.byKey(const Key('workspace-mobile-home'))),
-        ).sidebar,
+        ).canvas,
       );
       expect(
         tester.getTopLeft(find.byKey(const Key('nav-search'))).dy,

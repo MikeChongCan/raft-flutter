@@ -10,6 +10,8 @@ import 'package:raft_flutter/features/resource_view.dart';
 import 'package:raft_ui/raft_ui.dart';
 import 'package:raft_ui/test_themes.dart';
 
+import 'support/activity_row_actions.dart';
+
 import 'activity_done_lifecycle_test.dart' show doneThread;
 import 'message_presentation_test.dart' show fixture, MessageAdapter;
 
@@ -89,7 +91,7 @@ class _MountedDone {
   }
 
   Future<void> click(WidgetTester tester) async {
-    await tester.tap(find.byTooltip('Mark Conversation Done'));
+    await clickActivityDone(tester);
     await _dispatch(tester);
   }
 

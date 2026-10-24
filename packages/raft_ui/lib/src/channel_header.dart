@@ -103,11 +103,12 @@ class RaftConversationHeader extends StatelessWidget {
     final surface = ghost
         ? t.colors['layer-panel-header']
         : t.colors['layer-canvas-muted'];
+    final recipeFill = recipe.header.decoration(rt).color;
+    final paintedFill = ghost || recipeFill == null || recipeFill.a == 0
+        ? surface
+        : recipeFill;
     return RaftStatusBarSource(
-      color: switch (recipe.header.decoration(rt).color) {
-        final c? when c.a != 0 => c,
-        _ => surface ?? Colors.transparent,
-      },
+      color: paintedFill ?? Colors.transparent,
       child: RaftRecipeBox(
         style: recipe.header,
         height: ghost
@@ -125,9 +126,7 @@ class RaftConversationHeader extends StatelessWidget {
             : null,
         tokens: rt,
         decorationOverride: (d) => d.copyWith(
-          color: ghost || d.color == null || d.color!.a == 0
-              ? surface
-              : d.color,
+          color: paintedFill,
           border: Border(bottom: BorderSide(color: t.colors['line-muted']!)),
         ),
         child: Row(

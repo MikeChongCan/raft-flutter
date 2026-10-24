@@ -233,13 +233,13 @@ void main() {
       await tester.pumpWidget(const SizedBox());
     });
 
-    testWidgets('scrolled up: a parent below gets Next beside Back to bottom', (
+    testWidgets('scrolled up: a parent below gets Next beside Back to Bottom', (
       tester,
     ) async {
       await mount(tester, followed: [_thread(3), _thread(78)]);
       expect(pill('top'), findsOneWidget);
       // Reading history: drag the timeline down so the newest rows leave the
-      // view; Back to bottom shows and m-78 is now below.
+      // view; Back to Bottom shows and m-78 is now below.
       final timeline = find.byType(RaftChatView);
       await tester.dragFrom(
         tester.getCenter(timeline),
@@ -249,12 +249,12 @@ void main() {
       await tester.pumpAndSettle();
       await tester.pump(const Duration(milliseconds: 300));
       await tester.pumpAndSettle();
-      expect(find.text('Back to bottom'), findsOneWidget);
+      expect(find.text('Back to Bottom'), findsOneWidget);
       expect(pill('bottom'), findsOneWidget);
       expect(pill('top'), findsNothing, reason: 'a parent below wins');
       expect(find.text('Next unread thread (2)'), findsOneWidget);
       // Both controls share one row, centred, 8 px apart.
-      final back = tester.getRect(find.text('Back to bottom'));
+      final back = tester.getRect(find.text('Back to Bottom'));
       final next = tester.getRect(find.text('Next unread thread (2)'));
       expect(next.left, greaterThan(back.right));
       expect((back.center.dy - next.center.dy).abs(), lessThan(2));

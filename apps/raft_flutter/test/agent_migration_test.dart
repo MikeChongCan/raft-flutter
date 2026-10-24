@@ -394,9 +394,7 @@ void main() {
       );
       expect(find.byType(RaftFormDialog), findsNothing);
       // "Upgrade" opens Plan & Billing settings.
-      await tester.tap(
-        find.widgetWithText(RaftSettingsRecipeButton, 'Upgrade to Pro'),
-      );
+      await tester.tap(find.widgetWithText(RaftButton, 'Upgrade to Pro'));
       await tester.pumpAndSettle();
       expect(w.section, 'billing');
     });
@@ -413,10 +411,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('升级至 Pro 以迁移 Agent'), findsOneWidget);
       expect(find.textContaining('升级后，可以把 Agent 连同工作区'), findsOneWidget);
-      expect(
-        find.widgetWithText(RaftSettingsRecipeButton, '升级到 Pro'),
-        findsOneWidget,
-      );
+      expect(find.widgetWithText(RaftButton, '升级到 Pro'), findsOneWidget);
     });
 
     testWidgets('closing the upgrade dialog stays on the section', (
@@ -430,7 +425,7 @@ void main() {
       );
       await tester.tap(_migrateButton);
       await tester.pumpAndSettle();
-      await tester.tap(find.widgetWithText(RaftSettingsRecipeButton, 'Cancel'));
+      await tester.tap(find.widgetWithText(RaftButton, 'Cancel'));
       await tester.pumpAndSettle();
       expect(find.text('Upgrade to Pro to migrate agents'), findsNothing);
       expect(find.byType(AgentMigrationSection), findsOneWidget);
@@ -708,13 +703,10 @@ void main() {
         findsOneWidget,
       );
       expect(
-        find.widgetWithText(RaftSettingsRecipeButton, 'Cancel Migration'),
+        find.byKey(const ValueKey('agent-migration-cancel-confirm')),
         findsOneWidget,
       );
-      expect(
-        find.widgetWithText(RaftSettingsRecipeButton, 'Keep Migrating'),
-        findsOneWidget,
-      );
+      expect(find.widgetWithText(RaftButton, 'Keep Migrating'), findsOneWidget);
     });
 
     testWidgets('Continue keeps the migration and sends nothing', (
@@ -722,9 +714,7 @@ void main() {
     ) async {
       final (t, _) = await mount(tester);
       await openCancel(tester);
-      await tester.tap(
-        find.widgetWithText(RaftSettingsRecipeButton, 'Keep Migrating'),
-      );
+      await tester.tap(find.widgetWithText(RaftButton, 'Keep Migrating'));
       await tester.pumpAndSettle();
       expect(find.text('Cancel Migration'), findsOneWidget);
       expect(t.requests, isEmpty);
@@ -736,7 +726,7 @@ void main() {
       final (t, _) = await mount(tester, setup: (t) => t.staleCancels = 2);
       await openCancel(tester);
       await tester.tap(
-        find.widgetWithText(RaftSettingsRecipeButton, 'Cancel Migration'),
+        find.byKey(const ValueKey('agent-migration-cancel-confirm')),
       );
       await tester.pumpAndSettle();
       // The revision the dialog opened with, then each re-read revision.
@@ -755,7 +745,7 @@ void main() {
       final (t, _) = await mount(tester);
       await openCancel(tester);
       await tester.tap(
-        find.widgetWithText(RaftSettingsRecipeButton, 'Cancel Migration'),
+        find.byKey(const ValueKey('agent-migration-cancel-confirm')),
       );
       await tester.pumpAndSettle();
       expect(t.requests, hasLength(3));
@@ -776,7 +766,7 @@ void main() {
       await openCancel(tester);
       t.extra = {'migrationRef': 'other-ref'};
       await tester.tap(
-        find.widgetWithText(RaftSettingsRecipeButton, 'Cancel Migration'),
+        find.byKey(const ValueKey('agent-migration-cancel-confirm')),
       );
       await tester.pumpAndSettle();
       expect(t.requests, hasLength(1));

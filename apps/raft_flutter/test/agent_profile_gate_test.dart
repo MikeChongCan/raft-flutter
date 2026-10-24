@@ -265,14 +265,14 @@ void main() {
         await tester.pumpAndSettle();
         expect(
           find.text(
-            'Archive "八戒"? It stops working and leaves your active agents. '
-            'Its messages stay, and the app has no way to unarchive it.',
+            "The agent stops and no longer counts toward your plan's agent limit. "
+            'Its profile and message history stay visible, read-only.',
           ),
           findsOneWidget,
         );
-        expect(find.text('Keep Agent'), findsOneWidget);
+        expect(find.text('Cancel'), findsOneWidget);
         expect(api.calls.where((c) => c.method == 'DELETE'), isEmpty);
-        await tester.tap(find.text('Archive Agent').last);
+        await tester.tap(find.byKey(const ValueKey('agent-archive-confirm')));
         await tester.pumpAndSettle();
         expect(
           api.calls.where(

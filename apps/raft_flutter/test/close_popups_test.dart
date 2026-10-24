@@ -302,7 +302,15 @@ void main() {
     'message-context-menu': (t, size) async {
       await mountShell(t, size, chat: true);
       final target = find.byKey(const ValueKey('message-mh')).first;
-      await openRowMenu(t, size, target);
+      if (platformFor(size) == TargetPlatform.android) {
+        // Long press on text selects it. The message menu belongs to the
+        // row's whitespace; the new body font now reaches the row's centre.
+        final bounds = t.getRect(target);
+        await t.longPressAt(Offset(bounds.right - 8, bounds.center.dy));
+        await frames(t, 20);
+      } else {
+        await openRowMenu(t, size, target);
+      }
       return SurfaceProbe(
         isOpen: () => find.byType(RaftMessageContextMenu).evaluate().isNotEmpty,
         scrim: Offset(6, size.height - 6),

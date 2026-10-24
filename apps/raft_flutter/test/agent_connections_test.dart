@@ -154,7 +154,7 @@ void main() {
   group('what is shown', () {
     testWidgets('not connected: the status line and Connect', (t) async {
       await mount(t);
-      expect(find.text('CONNECTED ACCOUNTS'), findsOneWidget);
+      expect(find.text('Connected accounts'), findsOneWidget);
       expect(find.text('GitHub'), findsOneWidget);
       expect(find.text('Not connected'), findsOneWidget);
       expect(find.text('Connect'), findsOneWidget);
@@ -224,7 +224,7 @@ void main() {
       ]) {
         c = _Client()..status = out;
         await mount(t);
-        expect(find.text('CONNECTED ACCOUNTS'), findsNothing, reason: '$out');
+        expect(find.text('Connected accounts'), findsNothing, reason: '$out');
         await t.pumpWidget(const SizedBox());
       }
     });
@@ -443,7 +443,7 @@ void main() {
       await mount(t);
       await t.tap(k('agent-connection-detach'));
       await t.pumpAndSettle();
-      expect(find.text('REMOVE GITHUB FROM THIS AGENT?'), findsOneWidget);
+      expect(find.text('Remove GitHub from this agent?'), findsOneWidget);
       expect(
         find.text(
           'This agent stops using GitHub as octocat. The connection stays available to other agents on this server.',
@@ -465,7 +465,7 @@ void main() {
       await mount(t);
       await t.tap(k('agent-connection-disconnect'));
       await t.pumpAndSettle();
-      expect(find.text('DISCONNECT THIS GITHUB CONNECTION?'), findsOneWidget);
+      expect(find.text('Disconnect this GitHub connection?'), findsOneWidget);
       expect(
         find.textContaining(
           'octocat is disconnected for every agent on this server that uses it',

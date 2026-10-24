@@ -62,7 +62,7 @@ void main() {
         tab: AgentDetailTab.chat,
         actions: AgentDetailActions(onOpenChannel: opened.add),
       );
-      expect(find.text('ACTIVITY ONLY'), findsOneWidget);
+      expect(find.text('Activity only'), findsOneWidget);
       await tester.tap(find.text('Scout'));
       await tester.pump();
       expect(opened, isEmpty);

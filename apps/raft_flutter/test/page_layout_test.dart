@@ -45,11 +45,13 @@ void main() {
         expect(find.byType(RaftMobilePageHeader), findsNothing);
         expect(tester.getSize(find.byType(RaftPanelHeaderBar)).height, 56);
         final back = tester.getRect(find.byType(RaftPanelAction));
-        expect(back.size, const Size(32, 32));
-        expect(back.left, 1 + 20);
+        // Web PanelAction reserves a 44px target around its 32px face.
+        expect(back.size, const Size(44, 44));
+        // Web mobile pl-4 minus the leading -ml-[13px].
+        expect(back.left, 1 + 3);
         expect(title.left, back.right + (8));
         expect(subtitle.left, title.left);
-        expect(title.height, 21);
+        expect(title.height, 22);
         expect(subtitle.top, greaterThanOrEqualTo(title.bottom));
         expect(tester.takeException(), isNull);
       },
@@ -96,7 +98,7 @@ void main() {
           // Web TasksPanel header: h-panel-header (62 Brutal / 56 Elegant /
           // 48 short viewports), px-5, Brutal soft-signal fill.
           expect(recipe.height, size.height <= 600 ? 48 : (56));
-          expect(tester.widget<Text>(find.text('Tasks')).style!.fontSize, 16);
+          expect(tester.widget<Text>(find.text('Tasks')).style!.fontSize, 17);
           expect(
             tester.widget<Text>(find.text('4 channel tasks')).style!.fontSize,
             12,

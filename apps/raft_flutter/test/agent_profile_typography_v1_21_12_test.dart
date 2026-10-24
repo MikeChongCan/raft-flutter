@@ -5,7 +5,8 @@ import 'package:raft_ui/raft_ui.dart';
 
 import 'parity/parity_harness.dart' show loadParityFonts;
 
-/// Web v1.21.12 agent-profile typography (AgentDetailPanel InfoRow / header
+/// Default Raft typography after the v1.21.23 design migration; original
+/// v1.21.12 profile structure remains covered (AgentDetailPanel InfoRow / header
 /// name / handle, KeyValueRow, AvatarListRow, `ProfilePanelBody font-sans`).
 void main() {
   setUpAll(loadParityFonts);
@@ -15,6 +16,10 @@ void main() {
     Widget child, {
     bool dark = false,
   }) async {
+    // A normal phone viewport; 600px-tall windows use the compact header.
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(390, 844);
+    addTearDown(tester.view.reset);
     late RaftTokens tokens;
     addTearDown(() => tester.pumpWidget(const SizedBox()));
     await tester.pumpWidget(
@@ -145,7 +150,7 @@ void main() {
     expect(styleOf(tester, 'Claude').color, t.colors['foreground-hint']);
   });
 
-  testWidgets('profile header handle keeps its 15px mono role in both modes', (
+  testWidgets('Raft profile header uses the source 12px mono-meta role', (
     tester,
   ) async {
     final t = await host(
@@ -157,7 +162,7 @@ void main() {
       ),
     );
     final handle = styleOf(tester, '@agent');
-    expect(handle.fontSize, 15);
+    expect(handle.fontSize, 12);
     expect(handle.fontFamily, t.monoFont);
     await host(
       tester,
@@ -167,10 +172,10 @@ void main() {
         profileHandle: true,
       ),
     );
-    expect(styleOf(tester, '@agent').fontSize, 15);
+    expect(styleOf(tester, '@agent').fontSize, 12);
   });
 
-  testWidgets('elegant profile header carries the 1px line-muted divider', (
+  testWidgets('Raft profile header carries the 1px line-seam divider', (
     tester,
   ) async {
     final t = await host(
@@ -189,7 +194,7 @@ void main() {
         .firstWhere((d) => d.border != null);
     final border = headerDecoration().border! as Border;
     expect(border.bottom.width, 1);
-    expect(border.bottom.color, t.colors['line-muted']);
+    expect(border.bottom.color, t.ui.lineSeam);
     // The divider sits inside the header's own height.
     expect(tester.getSize(find.byType(RaftPanelHeaderBar)).height, 56);
   });
@@ -231,7 +236,7 @@ void main() {
     expect(tester.getRect(handle).top, 42.5);
   });
 
-  testWidgets('elegant avatar slot clips to the padding-box circle', (
+  testWidgets('Raft avatar slot clips to the padding-box sticker radius', (
     tester,
   ) async {
     await host(
@@ -248,8 +253,8 @@ void main() {
         matching: find.byType(ClipRRect),
       ),
     );
-    // 36px slot, 2px transparent border: the circle is the 32px padding box.
-    expect(clip.borderRadius, BorderRadius.circular(16));
+    // Raft avatar: 4px outer sticker radius less its 2px used border.
+    expect(clip.borderRadius, BorderRadius.circular(2));
   });
 
   testWidgets('key-value row accepts a node that inherits the value style', (

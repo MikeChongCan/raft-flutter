@@ -169,7 +169,7 @@ void main() {
       expect(w.reads, contains('/agent-runtime-providers/antiproton'));
       // Not chosen yet: the computer's own runtime fields show.
       expect(
-        find.textContaining('RUNTIME', findRichText: true),
+        find.textContaining('Runtime', findRichText: true),
         findsOneWidget,
       );
       expect(find.text(_hint), findsNothing);
@@ -185,9 +185,12 @@ void main() {
     w.machines = [_machine];
     await open(t);
     await chooseCloud(t);
-    expect(find.textContaining('RUNTIME', findRichText: true), findsNothing);
+    expect(find.textContaining('Runtime', findRichText: true), findsNothing);
     expect(find.text(_hint), findsOneWidget);
-    expect(find.text('MODEL'), findsOneWidget);
+    expect(
+      find.byWidgetPredicate((w) => w is RaftStableField && w.label == 'Model'),
+      findsOneWidget,
+    );
     expect(find.text('Default (Balanced)'), findsOneWidget);
     expect(w.reads, contains('/agent-runtime-providers/antiproton/models'));
   });
@@ -198,7 +201,12 @@ void main() {
       w.machines = [_machine];
       final result = await open(t);
       await chooseCloud(t);
-      await t.tap(find.text('Create Agent'));
+      await t.tap(
+        find.descendant(
+          of: find.byType(RaftAgentDialogButton),
+          matching: find.text('Create Agent'),
+        ),
+      );
       await t.pumpAndSettle();
       expect(w.posts, hasLength(1));
       final data = w.posts.single['data'] as Map;
@@ -224,7 +232,12 @@ void main() {
     await t.pumpAndSettle();
     await t.tap(find.text('Smart'));
     await t.pumpAndSettle();
-    await t.tap(find.text('Create Agent'));
+    await t.tap(
+      find.descendant(
+        of: find.byType(RaftAgentDialogButton),
+        matching: find.text('Create Agent'),
+      ),
+    );
     await t.pumpAndSettle();
     expect((w.posts.single['data'] as Map)['hostedModel'], 'smart');
   });
@@ -243,8 +256,16 @@ void main() {
       };
     await open(t);
     await chooseCloud(t);
-    expect(find.text('MODEL'), findsNothing);
-    await t.tap(find.text('Create Agent'));
+    expect(
+      find.byWidgetPredicate((w) => w is RaftStableField && w.label == 'Model'),
+      findsNothing,
+    );
+    await t.tap(
+      find.descendant(
+        of: find.byType(RaftAgentDialogButton),
+        matching: find.text('Create Agent'),
+      ),
+    );
     await t.pumpAndSettle();
     expect((w.posts.single['data'] as Map).containsKey('hostedModel'), isFalse);
   });
@@ -273,7 +294,12 @@ void main() {
       ),
       findsOneWidget,
     );
-    await t.tap(find.text('Create Agent'));
+    await t.tap(
+      find.descendant(
+        of: find.byType(RaftAgentDialogButton),
+        matching: find.text('Create Agent'),
+      ),
+    );
     await t.pumpAndSettle();
     expect((w.posts.single['data'] as Map).containsKey('hostedModel'), isFalse);
   });
@@ -288,7 +314,13 @@ void main() {
     await t.pumpAndSettle();
     await t.tap(find.text(_option));
     await t.pump(const Duration(milliseconds: 100));
-    await t.tap(find.text('Create Agent'), warnIfMissed: false);
+    await t.tap(
+      find.descendant(
+        of: find.byType(RaftAgentDialogButton),
+        matching: find.text('Create Agent'),
+      ),
+      warnIfMissed: false,
+    );
     await t.pump();
     expect(w.posts, isEmpty, reason: 'Create is disabled while loading');
     gate.completeError(RaftApiException('down', status: 502));
@@ -320,7 +352,7 @@ void main() {
     await t.tap(find.text('Office-Mac'));
     await t.pumpAndSettle();
     expect(find.text(_option), findsNothing);
-    expect(find.textContaining('RUNTIME', findRichText: true), findsOneWidget);
+    expect(find.textContaining('Runtime', findRichText: true), findsOneWidget);
     expect(w.reads.where((p) => p.endsWith('/models')), isEmpty);
   });
 
@@ -354,8 +386,13 @@ void main() {
     await open(t);
     expect(find.text('Connect a computer first'), findsNothing);
     expect(find.text(_hint), findsOneWidget);
-    expect(find.textContaining('RUNTIME', findRichText: true), findsNothing);
-    await t.tap(find.text('Create Agent'));
+    expect(find.textContaining('Runtime', findRichText: true), findsNothing);
+    await t.tap(
+      find.descendant(
+        of: find.byType(RaftAgentDialogButton),
+        matching: find.text('Create Agent'),
+      ),
+    );
     await t.pumpAndSettle();
     final data = w.posts.single['data'] as Map;
     expect(data['provider'], 'antiproton');
@@ -374,9 +411,14 @@ void main() {
   testWidgets('an action card can preselect the cloud and a model', (t) async {
     w.machines = [_machine];
     await open(t, hosting: 'antiproton', hostedModel: 'smart');
-    expect(find.textContaining('RUNTIME', findRichText: true), findsNothing);
+    expect(find.textContaining('Runtime', findRichText: true), findsNothing);
     expect(find.text('Smart'), findsOneWidget);
-    await t.tap(find.text('Create Agent'));
+    await t.tap(
+      find.descendant(
+        of: find.byType(RaftAgentDialogButton),
+        matching: find.text('Create Agent'),
+      ),
+    );
     await t.pumpAndSettle();
     expect((w.posts.single['data'] as Map)['hostedModel'], 'smart');
   });
@@ -387,7 +429,12 @@ void main() {
     w.machines = [_machine];
     await open(t, hosting: 'antiproton', hostedModel: 'retired');
     expect(find.text('Default (Balanced)'), findsOneWidget);
-    await t.tap(find.text('Create Agent'));
+    await t.tap(
+      find.descendant(
+        of: find.byType(RaftAgentDialogButton),
+        matching: find.text('Create Agent'),
+      ),
+    );
     await t.pumpAndSettle();
     expect((w.posts.single['data'] as Map).containsKey('hostedModel'), isFalse);
   });

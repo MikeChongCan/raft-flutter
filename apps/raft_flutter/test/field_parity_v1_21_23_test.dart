@@ -275,7 +275,8 @@ void main() {
         find.text('Subagent: Explore', findRichText: true),
         findsNWidgets(3),
       );
-      expect(find.text('Subagent', findRichText: true), findsNWidgets(2));
+      expect(find.text('Subagent: Plan', findRichText: true), findsOneWidget);
+      expect(find.text('Subagent', findRichText: true), findsOneWidget);
     });
   });
 }

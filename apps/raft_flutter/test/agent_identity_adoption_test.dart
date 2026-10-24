@@ -187,7 +187,13 @@ void main() {
     await _pump(t);
     await t.tap(button);
     await t.pumpAndSettle();
-    expect(find.text('UPDATE OFFICIAL IDENTITY'), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('agent-identity-adoption-dialog')),
+        matching: find.text('Update official identity'),
+      ),
+      findsOneWidget,
+    );
     expect(find.text('Review official identity changes'), findsOneWidget);
     expect(find.text('Display name'), findsOneWidget);
     expect(find.text('Helper'), findsWidgets);
@@ -214,7 +220,7 @@ void main() {
       c.calls,
       contains('POST /agents/cindy-1/onboarding-identity-adoption'),
     );
-    expect(find.text('UPDATE OFFICIAL IDENTITY'), findsNothing);
+    expect(find.text('Update official identity'), findsNothing);
     expect(button, findsNothing);
   });
 
@@ -246,7 +252,7 @@ void main() {
     await _pump(t, client: c);
     await t.tap(button);
     await t.pumpAndSettle();
-    expect(find.text('UPDATE IDENTITY AND ADMIN ROLE'), findsOneWidget);
+    expect(find.text('Update identity and admin role'), findsOneWidget);
     expect(find.byKey(const ValueKey('identity-grants-admin')), findsOneWidget);
     expect(
       find.text('This will grant the onboarding agent admin permissions.'),
