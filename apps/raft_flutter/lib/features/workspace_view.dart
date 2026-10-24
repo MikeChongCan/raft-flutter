@@ -1846,7 +1846,9 @@ class _WorkspaceViewState extends State<WorkspaceView>
                                     child: workspaceRail(),
                                   )
                                 : const SizedBox.shrink(),
-                            mobileNavigationFloating: !false,
+                            mobileNavigationFloating:
+                                t.option('mobileNav.style', or: 'docked') ==
+                                'floatingCapsule',
                             mobileNavigationClearance: raftTabBarClearance(),
                             mobileRail: railShown
                                 ? RailGestureExclusion(
