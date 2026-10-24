@@ -52,6 +52,9 @@ OPTIONS_ELEGANT = {
     'iconButton.surface': 'generic', 'panelAction.surface': 'outline',
     # a57b9dab design_primitives.dart:141-145; resource_view.dart:2385,2393.
     'sidebarItem.sectionContent': 'sectionScoped',
+    'sidebar.textLayout': 'natural',
+    'finder.boxLayout': 'natural',
+    'rail.attentionRendering': 'masked',
     'sidebar.mobileSurface': 'sidebar', 'resource.surface': 'sidebar',
     'resource.rows': 'cards', 'resource.badge': 'pill', 'resource.markRead': 'outline',
     'listGroup.frame': 'framed', 'task.status': 'symbol', 'searchResult.selection': 'card', 'messageReference.chipLayout': 'intrinsic', 'messageMenu.reactionDivider': 'hidden',
@@ -80,6 +83,9 @@ OPTIONS_BRUTAL = {
     'control.edge': 'inkBorder', 'sticker.ring': 'none', 'emphasis.fill': 'solid',
     'iconButton.surface': 'raised', 'panelAction.surface': 'outline',
     'sidebarItem.sectionContent': 'sectionScoped',
+    'sidebar.textLayout': 'natural',
+    'finder.boxLayout': 'natural',
+    'rail.attentionRendering': 'masked',
     'sidebar.mobileSurface': 'canvas', 'resource.surface': 'canvas',
     'resource.rows': 'cards', 'resource.badge': 'pill', 'resource.markRead': 'outline',
     'listGroup.frame': 'framed', 'task.status': 'symbol', 'searchResult.selection': 'card', 'messageReference.chipLayout': 'intrinsic', 'messageMenu.reactionDivider': 'hidden',
@@ -824,8 +830,9 @@ def pack(pack_id: str, name_en: str, name_zh: str, values: dict,
                 }), **button_palette(spec['column'])},
             'geometry': {**geometry_with_type(spec['geometry'], type_metrics),
                          **({'space.dialogBodyTop': 10, 'opacity.railActionHover': 1} if spec['column'] == 'elegantDark' else {})},
-            'font': {name: '{fonts.mono}' if spec['column'] == 'brutal' else '{fonts.sans}'
+            'font': {**{name: '{fonts.mono}' if spec['column'] == 'brutal' else '{fonts.sans}'
                      for name in ('font.messageTime', 'font.messageSubtitle')},
+                     'font.sidebarCount': '{fonts.sans}'},
             # Brutal dark is the complete Elegant mode, including its families.
             **({'fonts': spec['fonts']} if spec['fonts'] != light['fonts'] else {}),
             'shadows': shadows,

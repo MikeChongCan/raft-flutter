@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'icons.dart';
+import 'sidebar_text.dart';
+import 'raft/css_box.dart' show raftControlBorderPx;
 import 'design_primitives.dart';
 import 'theme.dart';
 import 'tooltip.dart' show RaftTooltip;
@@ -15,13 +17,23 @@ class RaftSidebarQuietUnreadCount extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-      child: Text(
+      padding: EdgeInsets.symmetric(
+        horizontal: t.size('space.sidebarQuietInline', fallback: 6),
+        vertical: t.size('space.sidebarQuietVertical', fallback: 2),
+      ),
+      child: RaftSidebarText(
         count > 99 ? '99+' : '$count',
-        style: RaftTypography.mono(t, size: 10, line: 10).copyWith(
-          fontWeight: FontWeight.w500,
-          color: t.colors['foreground-muted'],
-        ),
+        style:
+            RaftTypography.mono(
+              t,
+              size: t.size('type.sidebarMeta.size', fallback: 10),
+              line: t.size('type.sidebarQuietMeta.line', fallback: 10),
+            ).copyWith(
+              fontWeight: raftFontWeight(
+                t.size('type.sidebarMeta.weight', fallback: 500),
+              ),
+              color: t.colors['foreground-sidebar-quiet'],
+            ),
       ),
     );
   }
@@ -71,8 +83,8 @@ class RaftSidebarMutedIcon extends StatelessWidget {
           child: Center(
             child: RaftIcon(
               RaftGlyph.bellOff,
-              size: 12,
-              color: t.colors['foreground-icon'],
+              size: t.size('size.sidebarMetaGlyph', fallback: 12),
+              color: t.colors['foreground-sidebar-meta'],
             ),
           ),
         ),
@@ -88,10 +100,15 @@ class RaftSidebarDraftIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
-    return RaftIcon(
-      RaftGlyph.pencil,
-      size: 12,
-      color: t.colors['foreground-placeholder'],
+    return SizedBox.square(
+      dimension: t.size('size.sidebarMetaSlot', fallback: 12),
+      child: Center(
+        child: RaftIcon(
+          RaftGlyph.pencil,
+          size: t.size('size.sidebarMetaGlyph', fallback: 12),
+          color: t.colors['foreground-sidebar-meta'],
+        ),
+      ),
     );
   }
 }
@@ -113,18 +130,24 @@ class RaftSidebarMentionMarker extends StatelessWidget {
         label: label,
         child: Container(
           key: const ValueKey('sidebar-mention-marker'),
-          width: 16,
-          height: 16,
+          width: t.size('size.sidebarMention', fallback: 16),
+          height: t.size('size.sidebarMention', fallback: 16),
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: t.colors['primary-soft'],
-            border: Border.all(color: t.colors['line-strong']!),
+            color: t.colors['layer-sidebar-mention'],
+            border: Border.all(
+              color: t.colors['line-sidebar-mention']!,
+              width: raftControlBorderPx(
+                context,
+                t.size('stroke.sidebarMention', fallback: 1),
+              ),
+            ),
             borderRadius: BorderRadius.circular(4),
           ),
           child: RaftIcon(
             RaftGlyph.atSign,
-            size: 10,
-            color: t.colors['primary-strong'],
+            size: t.size('size.sidebarMentionGlyph', fallback: 10),
+            color: t.colors['foreground-sidebar-mention'],
           ),
         ),
       ),

@@ -64,7 +64,10 @@ void main() {
         await t.pumpAndSettle();
         final expected = 8.0;
         final primary = find.byKey(const ValueKey('rail-chat'));
-        final footer = find.byType(RaftWorkspaceRailAction);
+        final footer = find.descendant(
+          of: find.byType(RaftWorkspaceRailFooter),
+          matching: find.byType(RaftWorkspaceRailAction),
+        );
         expect(t.getRect(primary).left, expected);
         expect(t.getRect(footer).left, expected);
         expect(t.getSize(primary), const Size(40, 40));
@@ -72,7 +75,7 @@ void main() {
         expect(t.getSize(find.byType(RaftWorkspaceRail)).width, width);
         // Real AppRailRoot uses bg-primary -> --primary-400, not the
         // product's Button primary alias (#FFD440). Source blank-rail pixels:
-        // Raft light layer-sidebar #FFFAEF; dark layer-sidebar #0D0D0B.
+        // Mounted Raft frame light #FFD440; dark #0D0D0B.
         final boundary = t.renderObject<RenderRepaintBoundary>(
           find.byKey(const ValueKey('rail-paint')),
         );
@@ -86,7 +89,7 @@ void main() {
           image.dispose();
           return pixel;
         });
-        expect(pixel, dark ? [13, 13, 11, 255] : [255, 250, 239, 255]);
+        expect(pixel, dark ? [13, 13, 11, 255] : [255, 212, 64, 255]);
         await t.tapAt(t.getCenter(primary));
         await t.tapAt(t.getCenter(footer));
         expect(routeCalls, 1);

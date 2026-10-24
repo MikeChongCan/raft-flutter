@@ -88,7 +88,7 @@ EXT_AREA_LEVEL = {
     'conversation': COMPONENT, 'thread-ext': COMPONENT, 'composer-states': COMPONENT, 'errors': COMPONENT,
     'search-overlay': COMPONENT, 'composerattachments': COMPONENT,
     # the coverage families added by this audit name their level in the id: components.<area>.<level>.<...>
-    'frame': FRAME, 'pages': PAGE, 'states': FRAME,
+    'frame': FRAME, 'framework': FRAME, 'pages': PAGE, 'states': FRAME,
 }
 
 
@@ -144,7 +144,7 @@ def _is_extension(case_id):
         'composerattachments', 'composer-states', 'conversation', 'dialogs', 'errors', 'forward-mobile', 'list-pages',
         'members-ext', 'members-pages', 'notifications', 'public-server', 'raftbench', 'row-menus', 'screens-ext',
         'search-overlay', 'shell', 'taskspage', 'taskdetail', 'thread-ext', 'thread-pill', 'attachment', 'wp6',
-        'frame', 'states'}
+        'frame', 'framework', 'states'}
 
 
 def unassigned(case_ids):

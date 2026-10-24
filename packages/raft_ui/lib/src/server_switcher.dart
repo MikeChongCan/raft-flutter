@@ -1,3 +1,5 @@
+import 'sidebar_text.dart';
+
 import 'dart:math' as math;
 
 import 'dismiss_scope.dart';
@@ -272,6 +274,17 @@ class _RaftServerSwitcherState extends State<RaftServerSwitcher> {
                           ),
                         ).item;
                         final extent = size.height <= 600 ? 36.0 : 40.0;
+                        final compact = size.height <= 600;
+                        final avatarExtent = t.size(
+                          widget.controller.isOpen
+                              ? compact
+                                    ? 'size.avatar.workspaceActiveCompact'
+                                    : 'size.avatar.workspaceActive'
+                              : compact
+                              ? 'size.avatar.workspaceCompact'
+                              : 'size.avatar.workspace',
+                          fallback: extent - 4,
+                        );
                         return RaftRecipeBox(
                           style: slot,
                           tokens: t.recipeTokens,
@@ -280,7 +293,7 @@ class _RaftServerSwitcherState extends State<RaftServerSwitcher> {
                           padding: EdgeInsets.zero,
                           child: Center(
                             child: SizedBox.square(
-                              dimension: extent - 4,
+                              dimension: avatarExtent,
                               child: Stack(
                                 clipBehavior: Clip.none,
                                 fit: StackFit.expand,
@@ -288,7 +301,7 @@ class _RaftServerSwitcherState extends State<RaftServerSwitcher> {
                                   _ServerAvatar(
                                     name: widget.workspaceName,
                                     avatarUrl: widget.workspaceAvatarUrl,
-                                    size: extent - 4,
+                                    size: avatarExtent,
                                     initialSize: 14,
                                   ),
                                   if (widget.attention)
@@ -740,18 +753,38 @@ class _ServerAvatar extends StatelessWidget {
       tokens: rt,
     ).fallback.color?.resolve(rt);
     final initial = Center(
-      child: Text(
+      child: RaftSidebarText(
         name.trim().isEmpty ? 'S' : name.trim().characters.first.toUpperCase(),
         // Initials fill a fixed-size avatar: they grow with the text size only
         // up to the chrome bound.
         textScaler: RaftChrome.boundedScalerOf(context),
-        style: RaftTypography.body(
-          t,
-          size: initialSize,
-          line: 16,
-          weight: FontWeight.w700,
-          color: (fallbackInk ?? t.strong),
-        ),
+        style:
+            RaftTypography.body(
+              t,
+              size: t.size(
+                'type.avatarServerInitial.size',
+                fallback: initialSize,
+              ),
+              line: t.size('type.avatarServerInitial.line', fallback: 16),
+              weight: FontWeight.w700,
+              color:
+                  (t.colors['foreground-avatar-server'] ??
+                          fallbackInk ??
+                          t.strong)
+                      .withValues(
+                        alpha: t.size(
+                          'opacity.avatarServerInitial',
+                          fallback: 1,
+                        ),
+                      ),
+            ).copyWith(
+              letterSpacing:
+                  t.size('type.avatarServerInitial.tracking', fallback: 0) *
+                  t.size(
+                    'type.avatarServerInitial.size',
+                    fallback: initialSize,
+                  ),
+            ),
       ),
     );
     return RaftAvatarSlot(

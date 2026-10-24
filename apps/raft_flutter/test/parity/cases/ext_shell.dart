@@ -62,6 +62,10 @@ WorkspaceController shellWorkspace(
     'displayName': a['displayName'],
     'avatarUrl': a['avatar'],
     'description': a['description'],
+    if (ctx.props['extKind'] == 'framework') ...{
+      'runtime': a['runtime'],
+      'external': a['external'],
+    },
     'status': a['status'],
     'activity': a['activity'],
     'activityDetail': a['activityDetail'],

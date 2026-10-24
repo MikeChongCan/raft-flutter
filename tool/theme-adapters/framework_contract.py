@@ -6,6 +6,13 @@ the specified 1.5px remains data for the shared renderer to project.
 """
 
 RAFT_GEOMETRY = {
+    'type.finderInput.size': 15,
+    'space.sidebarQuietInline': 0, 'space.sidebarQuietVertical': 0, 'type.sidebarQuietMeta.line': 16,
+    'size.sidebarMetaSlot': 16,
+    'type.sidebarMeta.size': 12, 'type.sidebarMeta.line': 16, 'type.sidebarMeta.weight': 400,
+    'type.sidebarSavedPhone.size': 16, 'type.sidebarSavedPhone.line': 24,
+    'space.sidebarCountEdge': 0,
+    'size.sidebarMetaGlyph': 14, 'size.sidebarMention': 20, 'size.sidebarMentionGlyph': 13, 'stroke.sidebarMention': 1.5,
     'size.sidebarEntry': 36, 'size.sidebarEntryCompact': 36, 'size.sidebarEntryPhone': 46,
     'size.sidebarSaved': 36, 'size.sidebarSavedCompact': 36, 'size.sidebarSavedPhone': 46,
     'space.sidebarEntryMarginTop': 1, 'space.sidebarEntryMarginBottom': 1,
@@ -27,6 +34,11 @@ RAFT_GEOMETRY = {
     'stroke.sidebarItem': 1.5, 'radius.sidebarItem': 8, 'opacity.sidebarItemHover': 1,
     'size.sidebarCount': 20, 'space.sidebarCountInline': 6, 'radius.sidebarCount': 4,
     'stroke.sidebarCount': 1.5, 'type.sidebarCount.size': 12, 'type.sidebarCount.line': 16, 'type.sidebarCount.weight': 700,
+    'size.avatar.workspace': 35, 'size.avatar.workspaceCompact': 32,
+    'size.avatar.workspaceActive': 32, 'size.avatar.workspaceActiveCompact': 28,
+    'size.avatar.sidebarGlyph': 10, 'size.avatar.sidebarList': 19, 'opacity.avatarServerInitial': 1,
+    'type.avatarServerInitial.size': 15, 'type.avatarServerInitial.line': 15, 'type.avatarServerInitial.tracking': -.01,
+    'size.railAttention': 8, 'radius.railAttention': 2, 'stroke.railAttention': 1.5, 'space.railAttentionOffset': -4,
     'size.rail': 57, 'size.railShort': 49, 'size.railGlyph': 20,
     'size.railItem': 40, 'size.railItemCompact': 36,
     'space.railNavTop': 10, 'space.railNavTopCompact': 6,
@@ -52,6 +64,13 @@ RAFT_GEOMETRY = {
 
 ELEGANT_GEOMETRY = {
     **RAFT_GEOMETRY,
+    'type.finderInput.size': 14,
+    'space.sidebarQuietInline': 6, 'space.sidebarQuietVertical': 2, 'type.sidebarQuietMeta.line': 10,
+    'size.sidebarMetaSlot': 12,
+    'type.sidebarMeta.size': 10, 'type.sidebarMeta.line': 15, 'type.sidebarMeta.weight': 500,
+    'type.sidebarSavedPhone.size': 13, 'type.sidebarSavedPhone.line': 19.5,
+    'space.sidebarCountEdge': 1,
+    'size.sidebarMetaGlyph': 12, 'size.sidebarMention': 16, 'size.sidebarMentionGlyph': 10, 'stroke.sidebarMention': 1,
     'size.sidebarEntry': 30, 'size.sidebarEntryCompact': 30, 'size.sidebarEntryPhone': 38,
     'size.sidebarSaved': 33.5, 'size.sidebarSavedCompact': 29.5, 'size.sidebarSavedPhone': 33.5,
     'space.sidebarEntryMarginTop': 0, 'space.sidebarEntryMarginBottom': 4,
@@ -73,6 +92,10 @@ ELEGANT_GEOMETRY = {
     'stroke.sidebarItem': 1, 'radius.sidebarItem': 6, 'opacity.sidebarItemHover': .8,
     'size.sidebarCount': 16, 'space.sidebarCountInline': 4, 'radius.sidebarCount': 4,
     'stroke.sidebarCount': 0, 'type.sidebarCount.size': 10, 'type.sidebarCount.line': 10, 'type.sidebarCount.weight': 400,
+    'size.avatar.workspace': 36, 'size.avatar.workspaceCompact': 32,
+    'size.avatar.workspaceActive': 36, 'size.avatar.workspaceActiveCompact': 32,
+    'size.avatar.sidebarGlyph': 12, 'size.avatar.sidebarList': 18, 'opacity.avatarServerInitial': .7,
+    'type.avatarServerInitial.size': 14, 'type.avatarServerInitial.line': 16, 'type.avatarServerInitial.tracking': 0,
     'size.rail': 56, 'size.railShort': 56, 'size.railGlyph': 16,
     'size.railItemCompact': 40,
     'space.railNavTop': 16, 'space.railNavTopCompact': 16,
@@ -94,6 +117,7 @@ ELEGANT_GEOMETRY = {
 BRUTAL_GEOMETRY = {
     **ELEGANT_GEOMETRY,
     'size.navRow': 40, 'size.navRowWide': 32, 'size.navRowCompact': 32,
+    'opacity.avatarServerInitial': 1,
     'size.rail': 64, 'size.railShort': 50, 'size.railGlyph': 18,
     'size.railItemCompact': 36,
     'space.railNavTop': 8, 'space.railNavTopCompact': 8,
@@ -113,6 +137,11 @@ def framework_colors(column, colors):
     dark = column.endswith('Dark')
     transparent = '#00000000'
     return {
+        'foreground-sidebar-quiet': colors['foreground-hint'] if raft else colors['foreground-muted'],
+        'foreground-sidebar-meta': colors['foreground-hint'] if raft else colors['foreground-placeholder'],
+        'layer-sidebar-mention': colors['brand-400'] if raft else colors['primary-soft'],
+        'foreground-sidebar-mention': colors['sticker-ink'] if raft else colors['primary-strong'],
+        'line-sidebar-mention': colors['sticker-ink'] if raft else colors['line-strong'],
         'foreground-sidebar-entry': colors['foreground'] if raft else colors['foreground-muted'],
         'foreground-sidebar-item': colors['foreground'] if raft else colors['foreground-muted'],
         'foreground-sidebar-item-active': colors['sticker-ink'] if raft else colors['foreground-strong'],
@@ -124,6 +153,10 @@ def framework_colors(column, colors):
         'layer-sidebar-count': colors['attention-400'] if raft else colors['accent-soft'],
         'foreground-sidebar-count': colors['sticker-ink'] if raft else colors['accent-strong'],
         'line-sidebar-count': colors['sticker-ink'] if raft else transparent,
+        'layer-avatar-server': colors['sticker-ink'] if raft else colors['color-soft-signal'] if brutal else transparent,
+        'foreground-avatar-server': colors['brand-400'] if raft else colors['foreground-strong'] if brutal else colors['foreground-muted'],
+        'layer-rail-attention': colors['attention-400'] if raft else colors['primary-400'],
+        'line-rail-attention': colors['sticker-ink'] if raft else colors['foreground-strong'],
         'layer-workspace-rail': colors['layer-frame'] if raft else colors['primary-400'] if brutal else colors['layer-sidebar'],
         'foreground-workspace-rail': colors['foreground-on-frame'] if raft else colors['foreground-strong'] if brutal else colors['foreground-muted'],
         'foreground-workspace-rail-selected': colors['foreground-on-frame-active'] if raft else colors['foreground-strong'] if brutal else colors['foreground-muted'],

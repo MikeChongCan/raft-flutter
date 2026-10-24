@@ -1,3 +1,6 @@
+import 'sidebar_text.dart';
+import 'tap_slop.dart';
+
 import 'package:flutter/material.dart';
 
 import 'design_primitives.dart';
@@ -36,7 +39,7 @@ class RaftChatSidebarHeading extends StatelessWidget {
       workspaceEnabled: workspaceEnabled,
     );
     final grows = RaftScaled.grows(context);
-    final title = Text(
+    final title = RaftSidebarText(
       label,
       style: RaftTypography.heading(
         t,
@@ -137,29 +140,34 @@ class RaftWorkspaceRailAction extends StatelessWidget {
   const RaftWorkspaceRailAction({
     super.key,
     required this.label,
-    required this.glyph,
+    this.glyph,
+    this.icon,
     required this.onPressed,
+    this.navigation = false,
+    this.badge,
     this.selected = false,
     this.focusNode,
     this.showTooltip = true,
     this.attention = false,
-  });
+  }) : assert(glyph != null || icon != null);
   final String label;
-  final RaftGlyph glyph;
+  final RaftGlyph? glyph;
+  final Widget? icon;
+  final bool navigation;
+  final Widget? badge;
   final VoidCallback? onPressed;
   final bool selected, showTooltip, attention;
   final FocusNode? focusNode;
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
-    final size = MediaQuery.sizeOf(context).height <= 600
-        ? RaftMetrics.railItemCompact
-        : RaftMetrics.railItem;
     final recipe = RaftRailRecipe(
       t,
       viewportHeight: MediaQuery.sizeOf(context).height,
     );
-    return RaftInteractive(
+    final size = recipe.itemSize;
+    Widget iconFor() => icon ?? RaftIcon(glyph!, size: recipe.glyphSize);
+    final control = RaftInteractive(
       semanticLabel: label,
       selected: selected,
       focusNode: focusNode,
@@ -178,12 +186,17 @@ class RaftWorkspaceRailAction extends StatelessWidget {
           ),
         ).item;
         final active = state.hovered || state.pressed;
-        final foreground =
-            t.colors[selected
-                ? 'foreground-workspace-rail-action-selected'
-                : active
-                ? 'foreground-workspace-rail-action-hover'
-                : 'foreground-workspace-rail-action']!;
+        final foreground = navigation
+            ? selected
+                  ? recipe.selectedForeground
+                  : active
+                  ? t.colors['foreground-workspace-rail-action-hover']!
+                  : recipe.foreground
+            : t.colors[selected
+                  ? 'foreground-workspace-rail-action-selected'
+                  : active
+                  ? 'foreground-workspace-rail-action-hover'
+                  : 'foreground-workspace-rail-action']!;
         final hoverFill = t.colors['layer-workspace-rail-hover']!;
         return CustomPaint(
           foregroundPainter: RaftCssFocusOutline(
@@ -224,30 +237,34 @@ class RaftWorkspaceRailAction extends StatelessWidget {
                 ),
               ),
               boxShadow: [
-                if (selected) ...recipe.selectedShadows(action: true),
+                if (selected) ...recipe.selectedShadows(action: !navigation),
                 if (state.focusVisible) ...recipe.focusShadows,
               ],
             ),
             child: DefaultTextStyle.merge(
               style: TextStyle(color: foreground),
-              child: Center(
-                child: SizedBox.square(
-                  dimension: recipe.glyphSize,
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    fit: StackFit.expand,
-                    children: [
-                      RaftIcon(
-                        glyph,
-                        size: recipe.glyphSize,
-                        color: foreground,
-                      ),
-                      if (attention)
-                        RaftRailAttention(
-                          child: RaftIcon(glyph, size: recipe.glyphSize),
+              child: IconTheme.merge(
+                data: IconThemeData(color: foreground, size: recipe.glyphSize),
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  fit: StackFit.expand,
+                  children: [
+                    Center(
+                      child: SizedBox.square(
+                        dimension: recipe.glyphSize,
+                        child: Stack(
+                          clipBehavior: Clip.none,
+                          fit: StackFit.expand,
+                          children: [
+                            iconFor(),
+                            if (attention) RaftRailAttention(child: iconFor()),
+                          ],
                         ),
-                    ],
-                  ),
+                      ),
+                    ),
+                    if (badge != null)
+                      Positioned(right: -4, top: -4, child: badge!),
+                  ],
                 ),
               ),
             ),
@@ -255,6 +272,12 @@ class RaftWorkspaceRailAction extends StatelessWidget {
         );
       },
     );
+    return RaftDensityScope.of(context) == RaftDensity.touch
+        ? RaftTapSlopAnchor(
+            minSize: const Size.square(RaftMetrics.touchTarget),
+            child: control,
+          )
+        : control;
   }
 }
 

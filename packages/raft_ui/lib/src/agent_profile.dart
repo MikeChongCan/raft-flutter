@@ -42,6 +42,7 @@ import 'recipe_surface.dart'
 import 'split_pane.dart';
 import 'theme.dart';
 import 'raft/avatar.dart';
+import 'raft/css_box.dart';
 import 'raft/ui_tokens.dart';
 import 'tooltip.dart';
 import 'status_bar.dart';
@@ -352,6 +353,23 @@ class RaftAvatarSlot extends StatelessWidget {
             ),
           ),
         );
+    if (sticker && server) {
+      return RaftCssBox(
+        width: extent,
+        height: extent,
+        radius: t.size('radius.avatar', fallback: 4),
+        fill: t.colors['layer-avatar-server']!,
+        borderWidth: raftControlBorderPx(context, 1.5),
+        borderColor: t.colors['sticker-ink']!,
+        rings: [RaftRing(1.5, raftStickerEdge(t.ui))],
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(
+            t.size('radius.avatarInner', fallback: 2),
+          ),
+          child: SizedBox.expand(child: child),
+        ),
+      );
+    }
     if (sticker && !server) {
       return RaftStickerAvatar(
         size: RaftAvatarSize.nearest(extent),

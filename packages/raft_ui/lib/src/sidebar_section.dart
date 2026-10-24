@@ -1,3 +1,5 @@
+import 'sidebar_text.dart';
+
 import 'package:flutter/material.dart';
 
 import 'design_primitives.dart';
@@ -142,11 +144,14 @@ class RaftSidebarSectionHeader extends StatelessWidget {
           SizedBox(width: t.size('space.sidebarSectionGap', fallback: 4)),
         ],
         if (emoji != null && emoji!.isNotEmpty) ...[
-          Text(emoji!, style: TextStyle(fontFamilyFallback: t.fontFallback)),
+          RaftSidebarText(
+            emoji!,
+            style: TextStyle(fontFamilyFallback: t.fontFallback),
+          ),
           SizedBox(width: t.size('space.sidebarSectionGap', fallback: 4)),
         ],
         Flexible(
-          child: Text(
+          child: RaftSidebarText(
             label,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -155,7 +160,7 @@ class RaftSidebarSectionHeader extends StatelessWidget {
         ),
         if (count != null) ...[
           const SizedBox(width: 4),
-          Text('$count', style: recipe.count),
+          RaftSidebarText('$count', style: recipe.count),
         ],
         if (!expanded && attention != null) ...[
           const SizedBox(width: 4),

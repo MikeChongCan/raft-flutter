@@ -128,6 +128,9 @@ const Map<String, Set<String>> raftStructuralOptions = {
   'segmented.frame': {'framed', 'separate'},
   'sidebar.mobileSurface': {'canvas', 'sidebar'},
   'sidebarItem.sectionContent': {'uniform', 'sectionScoped'},
+  'sidebar.textLayout': {'css', 'natural'},
+  'finder.boxLayout': {'css', 'natural'},
+  'rail.attentionRendering': {'indicator', 'masked'},
   'resource.surface': {'canvas', 'sidebar'},
   'resource.rows': {'flat', 'cards'},
   'resource.badge': {'sticker', 'pill'},
@@ -456,7 +459,11 @@ RaftModeValues? _mode(Object? raw, String where) {
     for (final entry in rawFontRefs.entries) {
       final token = '${entry.key}';
       final path = '$where.font.$token';
-      if (token != 'font.messageTime' && token != 'font.messageSubtitle') {
+      if (!const {
+        'font.messageTime',
+        'font.messageSubtitle',
+        'font.sidebarCount',
+      }.contains(token)) {
         throw RaftThemeException('unknown font token "$token"', where: path);
       }
       final ref = RegExp(r'^\{fonts\.(sans|heading|mono)\}$')

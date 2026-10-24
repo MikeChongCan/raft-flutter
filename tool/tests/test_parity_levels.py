@@ -15,6 +15,12 @@ import regress  # noqa: E402
 
 
 class LevelTests(unittest.TestCase):
+    def test_mounted_framework_is_in_the_frame_gate(self):
+        for platform, region in [('desktop', 'navigation'), ('tablet', 'frame'), ('mobile', 'frame')]:
+            case = f'components.framework.{platform}.{region}.default.raft-light'
+            self.assertEqual(levels.level_of(case), levels.FRAME)
+            self.assertTrue(levels.is_assigned(case))
+
     def test_frame_page_component_assignment(self):
         self.assertEqual(levels.level_of('components.navigation.tabbar.states'), levels.FRAME)
         self.assertEqual(levels.level_of('components.shell.desktop.sidebar.default.brutal'), levels.FRAME)

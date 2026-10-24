@@ -203,7 +203,7 @@ void main() {
     final threadHandle = tester
         .getSize(find.byKey(const Key('thread-resize-handle')))
         .width;
-    expect(rail, 56);
+    expect(rail, 57);
     expect(thread, 1200 - rail - sidebar - 320);
     expect(sidebarHandle, 8);
     expect(threadHandle, 8);
@@ -227,6 +227,9 @@ void main() {
   testWidgets(
     'workspace rail announces selected destinations and unread counts',
     (tester) async {
+      tester.view.physicalSize = const Size(1280, 800);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
       final semantics = tester.ensureSemantics();
 
       String selected = 'chat';
@@ -262,12 +265,18 @@ void main() {
       await tester.tap(find.byKey(const Key('rail-activity')));
       expect(selected, 'activity');
       expect(find.byTooltip('Activity'), findsOneWidget);
+      expect(tester.getSize(find.byKey(const Key('rail-activity'))).height, 40);
       expect(
-        tester.getSize(find.byKey(const Key('rail-activity'))).height,
+        tester
+            .getSemantics(find.bySemanticsLabel(RegExp('Activity')))
+            .rect
+            .height,
         greaterThanOrEqualTo(48),
       );
       expect(
-        tester.getSemantics(find.byKey(const Key('rail-activity'))).toString(),
+        tester
+            .getSemantics(find.bySemanticsLabel(RegExp('Activity')))
+            .toString(),
         contains('12'),
       );
       semantics.dispose();

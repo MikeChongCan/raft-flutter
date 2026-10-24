@@ -1,3 +1,5 @@
+import 'agent_runtime_labels.dart' show runtimeDisplayNameOf;
+
 import 'dart:async';
 import 'dart:convert';
 
@@ -3414,6 +3416,7 @@ class _WorkspaceViewState extends State<WorkspaceView>
           : description,
       // What a working agent is doing takes the place of its runtime.
       activityText: liveActivities.rowText('${agent['id']}'),
+      metaText: runtimeDisplayNameOf('${agent['runtime'] ?? ''}'),
       selected:
           w.section == 'chat' &&
           entry.channel != null &&
@@ -3596,6 +3599,9 @@ class _WorkspaceViewState extends State<WorkspaceView>
       // What a working agent is doing takes the place of its runtime.
       activityText: agent && c.string('peerId').isNotEmpty
           ? liveActivities.rowText(c.string('peerId'))
+          : null,
+      metaText: agent
+          ? runtimeDisplayNameOf('${peer.profile?['runtime'] ?? ''}')
           : null,
       label: c.type == 'dm' ? name : c.name,
       glyph: c.type == 'dm'

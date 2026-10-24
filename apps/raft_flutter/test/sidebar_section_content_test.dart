@@ -8,6 +8,63 @@ import 'mounted_message_navigation_test.dart' show pageFixture, mountPage;
 void main() {
   for (final dark in [false, true]) {
     testWidgets(
+      'Raft $dark runtime metadata survives descriptions and yields to unread counts',
+      (t) async {
+        final (w, api) = await pageFixture(t);
+        api.routes['GET /agents'] = (_) => [
+          {
+            'id': 'runtime-agent',
+            'name': 'Cindy',
+            'displayName': 'Cindy',
+            'description': 'Keeps visual tests honest',
+            'runtime': 'codex',
+            'status': 'active',
+            'activity': 'idle',
+            'serverId': 's1',
+          },
+        ];
+        w.dms = [
+          RaftChannel({
+            'id': 'runtime-dm',
+            'type': 'dm',
+            'peerType': 'agent',
+            'peerId': 'runtime-agent',
+            'name': 'Cindy',
+            'peerDisplayName': 'Cindy',
+            'peerDescription': 'Keeps visual tests honest',
+            'joined': true,
+          }),
+        ];
+        await mountPage(t, w, dark);
+        final row = find.byKey(const ValueKey('sidebar-channel-runtime-dm'));
+        expect(
+          find.descendant(of: row, matching: find.text('Codex CLI')),
+          findsOneWidget,
+        );
+        expect(
+          find.descendant(
+            of: row,
+            matching: find.text('Keeps visual tests honest'),
+          ),
+          findsOneWidget,
+        );
+        w.conversationReads.unread['runtime-dm'] = 2;
+        w.notifyListeners();
+        await t.pumpAndSettle();
+        expect(
+          find.descendant(of: row, matching: find.text('Codex CLI')),
+          findsNothing,
+        );
+        expect(
+          find.descendant(of: row, matching: find.text('2')),
+          findsOneWidget,
+        );
+        await t.pumpWidget(const SizedBox());
+      },
+      variant: TargetPlatformVariant.only(TargetPlatform.linux),
+    );
+
+    testWidgets(
       'Raft $dark adjacent sidebar margins collapse like the mounted source',
       (t) async {
         final (w, _) = await pageFixture(t);

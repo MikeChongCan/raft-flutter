@@ -8,6 +8,7 @@ import 'recipes/app_rail.g.dart';
 import 'recipes/status.g.dart';
 import 'recipes/recipe_runtime.dart';
 import 'theme.dart';
+import 'raft/css_box.dart' show raftControlBorderPx;
 
 /// Source AppRailItemAttention: an 8px Status plus Elegant icon tint/mask.
 /// The caller owns whether attention is present and whether the active entry
@@ -19,6 +20,40 @@ class RaftRailAttention extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
+    if (t.option('rail.attentionRendering', or: 'masked') == 'indicator') {
+      return IgnorePointer(
+        child: ExcludeSemantics(
+          child: Stack(
+            clipBehavior: Clip.none,
+            fit: StackFit.expand,
+            children: [
+              Positioned(
+                right: t.size('space.railAttentionOffset', fallback: -4),
+                top: t.size('space.railAttentionOffset', fallback: -4),
+                child: Container(
+                  key: const ValueKey('rail-attention-indicator'),
+                  width: t.size('size.railAttention', fallback: 8),
+                  height: t.size('size.railAttention', fallback: 8),
+                  decoration: BoxDecoration(
+                    color: t.colors['layer-rail-attention'],
+                    borderRadius: BorderRadius.circular(
+                      t.size('radius.railAttention', fallback: 2),
+                    ),
+                    border: Border.all(
+                      color: t.colors['line-rail-attention']!,
+                      width: raftControlBorderPx(
+                        context,
+                        t.size('stroke.railAttention', fallback: 1.5),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
     final rail = RaftAppRailRecipe.resolve(
       theme: t.recipeTheme,
       states: t.recipeStates(extra: const ['data-variant=primary']),

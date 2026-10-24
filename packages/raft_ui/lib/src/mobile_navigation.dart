@@ -10,9 +10,8 @@ import 'icons.dart';
 import 'localization.dart';
 import 'primitive_tokens.dart';
 import 'public_page_mark.dart';
-import 'rail_attention.dart';
+import 'workspace_shell.dart' show RaftWorkspaceRailAction;
 import 'recipe_surface.dart';
-import 'recipes/app_rail.g.dart';
 import 'tokens/tokens.dart';
 import 'theme.dart';
 import 'text_scaling.dart';
@@ -714,6 +713,15 @@ class RaftMobileNotificationButton extends StatelessWidget {
   final bool rail, attention;
   @override
   Widget build(BuildContext context) {
+    if (rail) {
+      return RaftWorkspaceRailAction(
+        label: raftText(context, semanticLabel),
+        glyph: RaftGlyph.bell,
+        selected: open,
+        attention: attention,
+        onPressed: onPressed,
+      );
+    }
     final t = RaftTokens.of(context);
     final recipe = _MobileNotificationRecipe(t, selected: open);
     return RaftInteractive(
@@ -745,39 +753,12 @@ class RaftMobileNotificationButton extends StatelessWidget {
             null,
             EdgeInsets.all(t.border),
           ),
-          child: rail
-              ? _railBell(t, state.hovered)
-              : RaftIcon(
-                  RaftGlyph.bell,
-                  size: glyphSize,
-                  color: recipe.foreground,
-                ),
+          child: RaftIcon(
+            RaftGlyph.bell,
+            size: glyphSize,
+            color: recipe.foreground,
+          ),
         ),
-      ),
-    );
-  }
-
-  Widget _railBell(RaftTokens t, bool hovered) {
-    final item = RaftAppRailRecipe.resolve(
-      theme: t.recipeTheme,
-      tokens: t.recipeTokens,
-      states: t.recipeStates(hovered: hovered),
-    ).item;
-    final size = item.target('& svg')?.width ?? RaftMetrics.railGlyph;
-    final color = item.foreground(t.recipeTokens, inherited: t.strong);
-    return SizedBox.square(
-      dimension: size,
-      child: Stack(
-        clipBehavior: Clip.none,
-        fit: StackFit.expand,
-        children: [
-          RaftIcon(RaftGlyph.bell, size: size, color: color),
-          if (attention)
-            RaftRailAttention(
-              // The mask supplies currentColor through its descendant.
-              child: RaftIcon(RaftGlyph.bell, size: size),
-            ),
-        ],
       ),
     );
   }

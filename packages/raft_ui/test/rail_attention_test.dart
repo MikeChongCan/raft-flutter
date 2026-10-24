@@ -10,7 +10,7 @@ import 'package:raft_ui/test_themes.dart';
 void main() {
   for (final dark in raftThemeMatrix([false, true])) {
     testWidgets(
-      '[K09e] ${dark ? 'dark' : 'light'} actual rail attention paints Source indicator/mask, suppresses active',
+      '[K09e] ${dark ? 'dark' : 'light'} frozen Elegant attention paints Source indicator/mask, suppresses active',
       (tester) async {
         tester.view.physicalSize = const Size(1280, 900);
         tester.view.devicePixelRatio = 1;
@@ -19,7 +19,10 @@ void main() {
         var selected = 'search';
         await tester.pumpWidget(
           MaterialApp(
-            theme: raftTheme(dark: dark),
+            theme: raftTheme(
+              pack: packForThemeId(elegantThemePackId),
+              dark: dark,
+            ),
             home: Scaffold(
               body: StatefulBuilder(
                 builder: (context, update) => Align(

@@ -414,6 +414,9 @@ OPTIONS_RAFT = {
     'control.edge': 'inkBorder', 'sticker.ring': 'dieCut', 'emphasis.fill': 'solid',
     'iconButton.surface': 'generic', 'panelAction.surface': 'ghost',
     'sidebarItem.sectionContent': 'uniform',
+    'sidebar.textLayout': 'css',
+    'finder.boxLayout': 'css',
+    'rail.attentionRendering': 'indicator',
     'sidebar.mobileSurface': 'canvas', 'resource.surface': 'canvas',
     'resource.rows': 'flat', 'resource.badge': 'sticker', 'resource.markRead': 'ghost',
     'listGroup.frame': 'plain', 'task.status': 'square', 'searchResult.selection': 'flat', 'messageReference.chipLayout': 'fixed', 'messageMenu.reactionDivider': 'shown',
@@ -533,7 +536,7 @@ def build() -> dict:
             }),
             'type': scale,
             'font': {'font.messageTime': '{fonts.mono}',
-                     'font.messageSubtitle': '{fonts.sans}'},
+                     'font.messageSubtitle': '{fonts.sans}', 'font.sidebarCount': '{fonts.mono}'},
             'case': CASE_RAFT,
             'shadows': {
                 'xs': 'none', 'sm': 'none', 'md': 'none',

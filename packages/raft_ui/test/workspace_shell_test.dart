@@ -43,7 +43,7 @@ void main() {
         expect(tester.getSize(find.byType(RaftChatSidebarHeading)).height, 56);
         final text = tester.widget<Text>(find.text('Chat'));
         expect(text.style!.fontWeight, FontWeight.w700);
-        expect(text.style!.fontSize, 18);
+        expect(text.style!.fontSize, 17);
         expect(find.byType(RaftDropdownMenu), findsNothing);
       },
     );
@@ -74,10 +74,7 @@ void main() {
           ),
         );
         await mount(tester, footer());
-        expect(
-          tester.getSize(find.byType(RaftWorkspaceRailFooter)).height,
-          102,
-        );
+        expect(tester.getSize(find.byType(RaftWorkspaceRailFooter)).height, 94);
         final action = find.bySemanticsLabel('Workspace');
         final semantics = tester.ensureSemantics();
         expect(

@@ -375,6 +375,9 @@ RGB0.954685/0.954685/0.969524）；展示表中的0.04和整数RGB不作为绘�
 | --- | --- | --- | --- | --- | --- |
 | `sidebar.mobileSurface` | `canvas` / `sidebar` | canvas | sidebar（明暗相同选择） | 浅色 canvas；深色 sidebar | Web v1.21.23 `packages/web/src/components/layout/Sidebar.tsx:3806`；a57b9dab `packages/raft_ui/lib/src/design_primitives.dart:141-145`。手机侧栏；桌面读取已有 `layer-sidebar`。 |
 | `sidebarItem.sectionContent` | `uniform` / `sectionScoped` | uniform | sectionScoped | sectionScoped | db5e399f Sidebar.tsx 的 renderSidebarDndDisplayItem 复用同一会话行；a57b9dab 固定分组换行、隐藏 Agent 副标题，自定义分组隐藏会话副标题。 |
+| `sidebar.textLayout` | `css` / `natural` | css | natural | natural | Raft 侧栏使用共享 RaftCssText 的实际 CSS 行框与基线；旧两套保留 a57b9dab 的 Flutter 段落指标。 |
+| `finder.boxLayout` | `css` / `natural` | css | natural | natural | 搜索框以共享 CSS 边框规则投影 1.5px；旧两套保留 Flutter 原边框。 |
+| `rail.attentionRendering` | `indicator` / `masked` | indicator | masked | masked | db5e399f AppRailItemAttention 只显示 8px Status；a57b9dab 保留图标着色与径向遮罩复合层。 |
 | `resource.surface` | `canvas` / `sidebar` | canvas | sidebar（手机／桌面相同） | 浅色 canvas；深色 sidebar | Web v1.21.23 `packages/web/src/components/thread/ThreadsInbox.tsx:1038,1079`；a57b9dab `apps/raft_flutter/lib/features/resource_view.dart:2385,2393`。Activity／Saved 的页表面，不改变 Search／Tasks。 |
 | `resource.rows` | `flat` / `cards` | flat | cards | cards | Web v1.21.23 `ThreadsInbox.tsx:103-108`、`SavedPanel.tsx:269` 的实际排列；a57b9dab 的资源卡片排列。 |
 | `resource.badge` | `sticker` / `pill` | sticker | pill | pill | Web v1.21.23 的 `Badge` 实际调用；a57b9dab `resource_rows.dart` 的胶囊 recipe。 |
@@ -783,7 +786,8 @@ Raft 外壳底内边距8不因下一条消息分组改变；原有 followedBy、
 ```jsonc
 "font": {
   "font.messageTime": "{fonts.mono}",
-  "font.messageSubtitle": "{fonts.sans}"
+  "font.messageSubtitle": "{fonts.sans}",
+  "font.sidebarCount": "{fonts.mono}"
 }
 ```
 
@@ -1074,3 +1078,7 @@ Flutter painting independently of selection surface, colors and typography.
 (Raft layer-card, legacy transparent). It adds no inset and does not follow the
 keyboard. `line-mobile-nav-divider` preserves the legacy line-strong separators
 separately from the pure-black outer borders.
+
+
+侧栏计数字体角色 `font.sidebarCount`：Raft 引用 mono（Space Mono），Elegant／Brutal 引用 sans，保留各自旧字体定义。只用于侧栏计数与运行时元信息；不改变全局正文或现有消息字体角色。
+搜索框 `type.finderInput.size`：Raft 15，旧两套 14；行高三套均为20。1x 下外框36不变，系统大字时允许控件增高以容纳编辑行。

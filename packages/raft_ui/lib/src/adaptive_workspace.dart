@@ -13,11 +13,11 @@ import 'icons.dart';
 import 'mouse_double_click.dart';
 import 'mounted_avatar_recipe.dart';
 import 'recipe_surface.dart';
-import 'raft/css_box.dart' show raftControlBorderPx;
 import 'recipes/app_rail.g.dart';
-import 'rail_attention.dart';
 import 'status_bar.dart';
 import 'tooltip.dart' show RaftTooltip;
+import 'tap_slop.dart';
+import 'workspace_shell.dart' show RaftWorkspaceRailAction;
 import 'viewport_breakpoints.dart';
 
 /// A window-sized workspace layout. Panel sizes follow the Web panel contract.
@@ -848,186 +848,106 @@ class RaftWorkspaceRail extends StatelessWidget {
         ? Border(left: divider)
         : Border(right: divider);
     // The rail colour and its divider continue up under the status bar.
-    return RaftStatusBarSource(
-      color: recipe.background,
-      border: railBorder,
-      child: Container(
-        width: recipe.width,
-        padding: EdgeInsets.only(
-          left: onRight ? recipe.border.width : 0,
-          right: onRight ? 0 : recipe.border.width,
-        ),
-        decoration: BoxDecoration(color: recipe.background),
-        foregroundDecoration: BoxDecoration(border: railBorder),
-        child: SafeArea(
-          child: Column(
-            children: [
-              workspaceHeader ??
-                  SizedBox(
-                    height: headerHeight,
-                    child: RaftTooltip(
-                      message: workspaceTooltip,
-                      child: IconButton(
-                        key: const Key('rail-workspace'),
-                        constraints: BoxConstraints.tightFor(
-                          width: bounds.layoutHeight,
-                          height: bounds.layoutHeight,
-                        ),
-                        style: IconButton.styleFrom(
-                          minimumSize: Size.square(bounds.layoutHeight),
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          shape: const RoundedRectangleBorder(),
-                        ),
-                        onPressed: onWorkspace,
-                        icon: _RailAvatar(
-                          name: workspaceName,
-                          size: visualSize - 4,
+    return RaftTapSlopHost(
+      child: RaftStatusBarSource(
+        color: recipe.background,
+        border: railBorder,
+        child: Container(
+          width: recipe.width,
+          padding: EdgeInsets.only(
+            left: onRight ? recipe.border.width : 0,
+            right: onRight ? 0 : recipe.border.width,
+          ),
+          decoration: BoxDecoration(color: recipe.background),
+          foregroundDecoration: BoxDecoration(border: railBorder),
+          child: SafeArea(
+            child: Column(
+              children: [
+                workspaceHeader ??
+                    SizedBox(
+                      height: headerHeight,
+                      child: RaftTooltip(
+                        message: workspaceTooltip,
+                        child: IconButton(
+                          key: const Key('rail-workspace'),
+                          constraints: BoxConstraints.tightFor(
+                            width: bounds.layoutHeight,
+                            height: bounds.layoutHeight,
+                          ),
+                          style: IconButton.styleFrom(
+                            minimumSize: Size.square(bounds.layoutHeight),
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            shape: const RoundedRectangleBorder(),
+                          ),
+                          onPressed: onWorkspace,
+                          icon: _RailAvatar(
+                            name: workspaceName,
+                            size: visualSize - 4,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-              Expanded(
-                key: itemAreaKey,
-                child: SingleChildScrollView(
-                  // A phone's 48 dp targets need the whole 56 dp column.
-                  padding: EdgeInsets.fromLTRB(
-                    phone ? 0 : t.size('space.railInline', fallback: 0),
-                    t.size(
-                      MediaQuery.sizeOf(context).height <= 600
-                          ? 'space.railNavTopCompact'
-                          : 'space.railNavTop',
-                      fallback: nav.padding
-                          .resolve(Directionality.of(context))
-                          .top,
+                Expanded(
+                  key: itemAreaKey,
+                  child: SingleChildScrollView(
+                    // A phone's 48 dp targets need the whole 56 dp column.
+                    padding: EdgeInsets.fromLTRB(
+                      phone ? 0 : t.size('space.railInline', fallback: 0),
+                      t.size(
+                        MediaQuery.sizeOf(context).height <= 600
+                            ? 'space.railNavTopCompact'
+                            : 'space.railNavTop',
+                        fallback: nav.padding
+                            .resolve(Directionality.of(context))
+                            .top,
+                      ),
+                      phone ? 0 : t.size('space.railInline', fallback: 0),
+                      t.size('space.railNavBottom', fallback: 8),
                     ),
-                    phone ? 0 : t.size('space.railInline', fallback: 0),
-                    t.size('space.railNavBottom', fallback: 8),
-                  ),
-                  child: Column(
-                    spacing: t.size(
-                      'space.railItemGap',
-                      fallback: nav.rowGap ?? 0,
-                    ),
-                    children: [
-                      for (final d in destinations)
-                        Semantics(
-                          selected: selected == d.id,
-                          child: Padding(
-                            padding: EdgeInsets.zero,
-                            child: RaftTooltip(
-                              message: d.label,
-                              child: RaftMouseDoubleClick(
-                                onDoubleClick: d.onDoubleClick,
-                                child: IconButton(
-                                  key: ValueKey('rail-${d.id}'),
-                                  isSelected: selected == d.id,
-                                  constraints: BoxConstraints.tightFor(
-                                    width: bounds.layoutHeight,
-                                    height: bounds.layoutHeight,
-                                  ),
-                                  style: IconButton.styleFrom(
-                                    visualDensity: phone
-                                        ? VisualDensity.standard
-                                        : null,
-                                    minimumSize: Size.square(
-                                      bounds.layoutHeight,
-                                    ),
-                                    tapTargetSize:
-                                        MaterialTapTargetSize.shrinkWrap,
-                                    padding: EdgeInsets.zero,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: recipe.radius,
-                                    ),
-                                    foregroundColor: selected == d.id
-                                        ? recipe.selectedForeground
-                                        : recipe.foreground,
-                                    backgroundColor: Colors.transparent,
-                                  ),
-                                  icon: Container(
-                                    width: visualSize,
-                                    height: visualSize,
-                                    alignment: Alignment.center,
-                                    decoration: BoxDecoration(
-                                      color: selected == d.id
-                                          ? recipe.selectedBackground
-                                          : Colors.transparent,
-                                      borderRadius: recipe.radius,
-                                      border: Border.all(
-                                        color: selected == d.id
-                                            ? t.colors['line-workspace-rail-selected']!
-                                            : Colors.transparent,
-                                        width: raftControlBorderPx(
-                                          context,
-                                          t.size(
-                                            'stroke.railItem',
-                                            fallback: 1,
-                                          ),
-                                        ),
-                                      ),
-                                      boxShadow: selected == d.id
-                                          ? recipe.selectedShadows()
-                                          : null,
-                                    ),
-                                    child: Stack(
-                                      alignment: Alignment.center,
-                                      fit: StackFit.expand,
-                                      clipBehavior: Clip.none,
-                                      children: [
-                                        Center(
-                                          child: SizedBox.square(
-                                            dimension: recipe.glyphSize,
-                                            child: Stack(
-                                              clipBehavior: Clip.none,
-                                              fit: StackFit.expand,
-                                              children: [
-                                                railGlyph(d, recipe.glyphSize),
-                                                if (d.attention &&
-                                                    (!d.attentionInactiveOnly ||
-                                                        selected != d.id))
-                                                  RaftRailAttention(
-                                                    child: railGlyph(
-                                                      d,
-                                                      recipe.glyphSize,
-                                                    ),
-                                                  ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                        if (d.unread > 0)
-                                          Positioned(
-                                            right: -4,
-                                            top: -4,
-                                            child: RaftRailUnreadCount(
-                                              count: d.unread,
-                                            ),
-                                          ),
-                                      ],
-                                    ),
-                                  ),
-                                  onPressed: () {
-                                    if (d.onDoubleClick != null &&
-                                        RaftMouseDoubleClick.secondClick) {
-                                      return;
-                                    }
-                                    onSelected(d.id);
-                                  },
-                                ),
-                              ),
+                    child: Column(
+                      spacing: t.size(
+                        'space.railItemGap',
+                        fallback: nav.rowGap ?? 0,
+                      ),
+                      children: [
+                        for (final d in destinations)
+                          RaftMouseDoubleClick(
+                            onDoubleClick: d.onDoubleClick,
+                            child: RaftWorkspaceRailAction(
+                              key: ValueKey('rail-${d.id}'),
+                              label: d.label,
+                              glyph: d.glyph,
+                              icon: railGlyph(d, recipe.glyphSize),
+                              navigation: true,
+                              selected: selected == d.id,
+                              badge: d.unread > 0
+                                  ? RaftRailUnreadCount(count: d.unread)
+                                  : null,
+                              attention:
+                                  d.attention &&
+                                  (!d.attentionInactiveOnly ||
+                                      selected != d.id),
+                              onPressed: () {
+                                if (d.onDoubleClick != null &&
+                                    RaftMouseDoubleClick.secondClick) {
+                                  return;
+                                }
+                                onSelected(d.id);
+                              },
                             ),
                           ),
-                        ),
-                      // Short phone windows (landscape): the footer scrolls
-                      // with the list, so the list is never cut off above a
-                      // pinned footer with its tail unreachable-looking.
-                      if (footerScrolls && footer != null) footer!,
-                    ],
+                        // Short phone windows (landscape): the footer scrolls
+                        // with the list, so the list is never cut off above a
+                        // pinned footer with its tail unreachable-looking.
+                        if (footerScrolls && footer != null) footer!,
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              if (!footerScrolls && footer != null) footer!,
-              SizedBox(height: t.size('space.railBottom', fallback: 8)),
-            ],
+                if (!footerScrolls && footer != null) footer!,
+                SizedBox(height: t.size('space.railBottom', fallback: 8)),
+              ],
+            ),
           ),
         ),
       ),

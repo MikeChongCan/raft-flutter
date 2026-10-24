@@ -115,7 +115,10 @@ void main() {
             ],
           ),
         );
-        final actions = find.byType(RaftWorkspaceRailAction);
+        final actions = find.descendant(
+          of: find.byType(RaftWorkspaceRailFooter),
+          matching: find.byType(RaftWorkspaceRailAction),
+        );
         expect(actions, findsNWidgets(3));
         for (var i = 0; i < 3; i++) {
           expect(
@@ -133,6 +136,101 @@ void main() {
       },
       variant: TargetPlatformVariant.only(TargetPlatform.linux),
     );
+
+    testWidgets('Raft $dark notification rail trigger shares the 20px glyph', (
+      t,
+    ) async {
+      await rail(
+        t,
+        footer: RaftWorkspaceRailFooter(
+          children: [
+            RaftMobileNotificationButton(rail: true, onPressed: () {}),
+          ],
+        ),
+      );
+      final glyph = find.descendant(
+        of: find.byType(RaftMobileNotificationButton),
+        matching: find.byType(RaftIcon),
+      );
+      expect(t.widget<RaftIcon>(glyph.first).size, 20);
+    }, variant: TargetPlatformVariant.only(TargetPlatform.linux));
+
+    testWidgets('Raft $dark rail attention keeps the original icon unmasked', (
+      t,
+    ) async {
+      await rail(
+        t,
+        footer: RaftWorkspaceRailFooter(
+          children: [
+            RaftWorkspaceRailAction(
+              label: 'Help',
+              glyph: RaftGlyph.circleHelp,
+              attention: true,
+              onPressed: () {},
+            ),
+          ],
+        ),
+      );
+      expect(find.byKey(const ValueKey('rail-attention-mask')), findsNothing);
+      expect(
+        t.getSize(find.byKey(const ValueKey('rail-attention-indicator'))),
+        const Size(8, 8),
+      );
+    }, variant: TargetPlatformVariant.only(TargetPlatform.linux));
+
+    testWidgets('Raft $dark workspace fallback is the source ink tile', (
+      t,
+    ) async {
+      t.view.physicalSize = const Size(1280, 800);
+      t.view.devicePixelRatio = 1;
+      addTearDown(t.view.reset);
+      final menu = RaftMenuController();
+      await t.pumpWidget(
+        MaterialApp(
+          theme: raftTheme(dark: dark),
+          home: Scaffold(
+            body: Align(
+              alignment: Alignment.topLeft,
+              child: RepaintBoundary(
+                key: const ValueKey('server-paint'),
+                child: SizedBox(
+                  width: 56,
+                  height: 56,
+                  child: RaftServerSwitcher(
+                    controller: menu,
+                    workspaceName: 'Visual',
+                    label: 'Switch Server',
+                    rows: const [],
+                    actions: const [],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      expect(t.getSize(find.byType(RaftAvatarSlot)), const Size(35, 35));
+      final initial = t.widget<Text>(find.text('V'));
+      expect(initial.style!.fontSize, 15);
+      expect(initial.style!.color, const Color(0xffffd440));
+      final boundary = t.renderObject<RenderRepaintBoundary>(
+        find.byKey(const ValueKey('server-paint')),
+      );
+      final pixel = await t.runAsync(() async {
+        final image = await boundary.toImage();
+        final bytes = (await image.toByteData(
+          format: ui.ImageByteFormat.rawRgba,
+        ))!;
+        final result = bytes.buffer
+            .asUint8List((14 * image.width + 20) * 4, 4)
+            .toList();
+        image.dispose();
+        return result;
+      });
+      expect(pixel, [20, 17, 17, 255]);
+      await t.pumpWidget(const SizedBox());
+      menu.dispose();
+    }, variant: TargetPlatformVariant.only(TargetPlatform.linux));
 
     testWidgets('Raft $dark saved entry retains mounted 36px box', (t) async {
       t.view.physicalSize = const Size(1280, 800);

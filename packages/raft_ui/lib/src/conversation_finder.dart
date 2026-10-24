@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 
 import 'design_primitives.dart';
 import 'icons.dart';
+import 'raft/css_box.dart';
+import 'text_scaling.dart';
 import 'text_selection_toolbar.dart';
 import 'theme.dart';
 
@@ -52,9 +54,13 @@ class RaftConversationFinderField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
+    final border = t.option('finder.boxLayout', or: 'natural') == 'css'
+        ? raftControlBorderPx(context, 1.5)
+        : 1.5;
+    final grows = RaftScaled.grows(context);
     final style = RaftTypography.body(
       t,
-      size: 14,
+      size: t.size('type.finderInput.size', fallback: 14),
       line: 20,
       color: t.colors['foreground'],
     );
@@ -63,12 +69,13 @@ class RaftConversationFinderField extends StatelessWidget {
       child: ListenableBuilder(
         listenable: focusNode,
         builder: (context, _) => Container(
-          height: 36,
+          height: grows ? null : 36,
+          constraints: grows ? const BoxConstraints(minHeight: 36) : null,
           padding: const EdgeInsets.symmetric(horizontal: 10),
           decoration: BoxDecoration(
             color: t.colors['layer-card'],
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: t.colors['line-strong']!, width: 1.5),
+            border: Border.all(color: t.colors['line-strong']!, width: border),
             boxShadow: focusNode.hasFocus
                 ? [BoxShadow(color: t.colors['primary-soft']!, spreadRadius: 3)]
                 : null,

@@ -32,6 +32,7 @@ import 'sidebar_indicators.dart';
 import 'sidebar_thread_unread.dart';
 import 'mouse_double_click.dart';
 import 'name_description_row.dart';
+import 'sidebar_text.dart';
 
 import 'package:flutter/foundation.dart' show ValueListenable;
 import 'package:flutter/material.dart';
@@ -324,7 +325,9 @@ class RaftMountedSidebarNavigationRecipe extends RaftControlRecipe {
       tokens.size('space.sidebarEntryMarginTop', fallback: 0);
   double get fontSize => tokens.size(
     viewportWidth < 768
-        ? 'type.sidebarEntryPhone.size'
+        ? role == RaftNavItemRole.saved
+              ? 'type.sidebarSavedPhone.size'
+              : 'type.sidebarEntryPhone.size'
         : role == RaftNavItemRole.saved
         ? 'type.sidebarSaved.size'
         : 'type.sidebarEntry.size',
@@ -332,7 +335,9 @@ class RaftMountedSidebarNavigationRecipe extends RaftControlRecipe {
   );
   double get contentHeight => tokens.size(
     viewportWidth < 768
-        ? 'type.sidebarEntryPhone.line'
+        ? role == RaftNavItemRole.saved
+              ? 'type.sidebarSavedPhone.line'
+              : 'type.sidebarEntryPhone.line'
         : role == RaftNavItemRole.saved
         ? 'type.sidebarSaved.line'
         : 'type.sidebarEntry.line',
@@ -447,12 +452,17 @@ class RaftMountedSidebarNavigationRecipe extends RaftControlRecipe {
     return tokens.shadows;
   }
 
-  TextStyle get savedCount => RaftTypography.mono(
-    tokens,
-    size: 10,
-    line: 15,
-    color: tokens.colors['foreground-placeholder'],
-  ).copyWith(fontWeight: FontWeight.w500);
+  TextStyle get savedCount =>
+      RaftTypography.mono(
+        tokens,
+        size: tokens.size('type.sidebarMeta.size', fallback: 10),
+        line: tokens.size('type.sidebarMeta.line', fallback: 15),
+        color: tokens.colors['foreground-sidebar-meta'],
+      ).copyWith(
+        fontWeight: raftFontWeight(
+          tokens.size('type.sidebarMeta.weight', fallback: 500),
+        ),
+      );
 }
 
 /// Mounted ChannelRow and DM unread counts are product variants, independent
@@ -644,7 +654,9 @@ class RaftConversationNavigationRecipe {
   double get countHeight => tokens.size('size.sidebarCount', fallback: 16);
   double get countMinimumWidth => countHeight;
   EdgeInsets get countPadding => EdgeInsets.symmetric(
-    horizontal: tokens.size('space.sidebarCountInline', fallback: 4),
+    horizontal:
+        tokens.size('space.sidebarCountInline', fallback: 4) +
+        tokens.size('space.sidebarCountEdge', fallback: 1),
     vertical: 0,
   );
   Color get countBackground => tokens.colors['layer-sidebar-count']!;
@@ -671,6 +683,8 @@ class RaftConversationNavigationRecipe {
           tokens.size('type.sidebarCount.weight', fallback: 400),
         ),
       ).copyWith(
+        fontFamily: tokens.fontFamily('font.sidebarCount'),
+        fontFamilyFallback: tokens.fontFamilyFallback('font.sidebarCount'),
         color: countForeground,
         fontFeatures: const [FontFeature.tabularFigures()],
       );
@@ -701,7 +715,14 @@ class RaftSidebarUnreadCount extends StatelessWidget {
         minHeight: grown ? recipe.countHeight : 0,
       ),
       padding: recipe.countPadding,
-      decoration: recipe.countDecoration,
+      decoration: BoxDecoration(
+        color: recipe.countBackground,
+        borderRadius: recipe.countDecoration.borderRadius,
+      ),
+      foregroundDecoration: BoxDecoration(
+        border: recipe.countDecoration.border,
+        borderRadius: recipe.countDecoration.borderRadius,
+      ),
       // Not `Container(alignment: center)`: an Align fills the loose height a
       // Row (or the width a Stack) offers and the chip becomes a tall bar. A
       // factor of 1 keeps the chip as big as its text, centred inside the
@@ -709,7 +730,7 @@ class RaftSidebarUnreadCount extends StatelessWidget {
       child: Center(
         widthFactor: 1,
         heightFactor: grown ? 1 : null,
-        child: Text(
+        child: RaftSidebarText(
           count > 99 ? '99+' : '$count',
           style: recipe.countTextStyle,
           textScaler: bounded,
@@ -768,6 +789,7 @@ class RaftNavItem extends StatelessWidget {
     this.contextMenuOnLongPress = true,
     this.menuOpen = false,
     this.activityText,
+    this.metaText,
   }) : assert(icon != null || glyph != null || leading != null),
        assert(conversationKind == null || role == RaftNavItemRole.generic);
   final String label;
@@ -851,6 +873,9 @@ class RaftNavItem extends StatelessWidget {
   /// the row, and hidden from assistive technology (the name stays the
   /// row's label and the light already carries the state).
   final ValueListenable<String?>? activityText;
+
+  /// Stable right-hand agent metadata (its runtime); live activity replaces it.
+  final String? metaText;
   bool get _channel => conversationKind == RaftConversationNavKind.channel;
   bool get _mutedIcon => _channel && joined && activityMuted;
   bool get _mention => mention && _channel && joined;
@@ -867,8 +892,13 @@ class RaftNavItem extends StatelessWidget {
       ? t.strong
       : DefaultTextStyle.of(context).style.color;
   Widget _title(RaftTokens t, TextStyle style) => labelSuffix == null
-      ? Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: style)
-      : Text.rich(
+      ? RaftSidebarText(
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: style,
+        )
+      : RaftSidebarText.rich(
           TextSpan(
             text: label,
             children: [
@@ -903,8 +933,13 @@ class RaftNavItem extends StatelessWidget {
     final activity = unread == 0 && (activityValue?.isNotEmpty ?? false)
         ? activityValue
         : null;
-    // The activity takes the place of the description (an agent's runtime).
-    final description = activity != null ? null : this.description;
+    final uniform =
+        t.option('sidebarItem.sectionContent', or: 'sectionScoped') ==
+        'uniform';
+    // Current SidebarPeerRowBody keeps its subtitle beside the name; activity
+    // replaces only the runtime in the separate trailing column.
+    final description = activity != null && !uniform ? null : this.description;
+    final metadata = unread == 0 ? activity ?? metaText : null;
     final conversation = conversationKind == null
         ? null
         : RaftConversationNavigationRecipe(
@@ -921,14 +956,14 @@ class RaftNavItem extends StatelessWidget {
                 strokeWidth: conversation?.glyphStrokeWidth ?? 2,
                 color: _dimmed
                     ? t.colors['foreground-placeholder']
-                    : t.colors['foreground-icon'],
+                    : t.colors['foreground-sidebar-item-icon'],
               )
             : RaftSymbol(
                 icon!,
                 size: conversation?.glyphSize ?? (18),
                 color: _dimmed
                     ? t.colors['foreground-placeholder']
-                    : t.colors['foreground-icon'],
+                    : t.colors['foreground-sidebar-item-icon'],
               ));
     Widget wrappedTitle(BuildContext context) {
       final style =
@@ -944,7 +979,7 @@ class RaftNavItem extends StatelessWidget {
                 ? (DefaultTextStyle.of(context).style.color)
                 : _titleColor(context, t),
           );
-      final text = Text(label, style: style);
+      final text = RaftSidebarText(label, style: style);
       if (description == null) return text;
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -952,7 +987,7 @@ class RaftNavItem extends StatelessWidget {
         children: [
           text,
           const SizedBox(height: 2),
-          Text(
+          RaftSidebarText(
             description,
             style: RaftTypography.heading(
               t,
@@ -1014,7 +1049,7 @@ class RaftNavItem extends StatelessWidget {
               ),
               Padding(
                 padding: EdgeInsets.only(top: tag == null ? 0 : 2),
-                child: Text(
+                child: RaftSidebarText(
                   description,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -1094,8 +1129,8 @@ class RaftNavItem extends StatelessWidget {
       flexibleHeight: wrap,
       padding: wrap ? EdgeInsets.symmetric(horizontal: 6, vertical: 6) : null,
       variant: selected ? RaftControlVariant.surface : RaftControlVariant.ghost,
-      child: Builder(
-        builder: (context) => Row(
+      child: LayoutBuilder(
+        builder: (context, box) => Row(
           crossAxisAlignment: wrap
               ? CrossAxisAlignment.start
               : CrossAxisAlignment.center,
@@ -1109,7 +1144,7 @@ class RaftNavItem extends StatelessWidget {
               leading,
             SizedBox(width: t.size('space.sidebarItemGap', fallback: 6)),
             Expanded(
-              child: activity != null
+              child: activity != null && !uniform
                   ? LayoutBuilder(
                       builder: (context, box) => Row(
                         children: [
@@ -1120,7 +1155,7 @@ class RaftNavItem extends StatelessWidget {
                               maxWidth: box.maxWidth * .58,
                             ),
                             child: ExcludeSemantics(
-                              child: Text(
+                              child: RaftSidebarText(
                                 activity,
                                 key: const Key('nav-item-activity'),
                                 maxLines: 1,
@@ -1144,13 +1179,94 @@ class RaftNavItem extends StatelessWidget {
               const SizedBox(width: 4),
             if (_mention) ...[
               // gap-1.5 (6) + `ml-1` (4) before the chip, gap-1.5 after it.
-              const SizedBox(width: 10),
+              SizedBox(width: t.size('space.sidebarItemGap', fallback: 6) + 4),
               RaftSidebarMentionMarker(
                 label: raftText(context, 'Mentioned you'),
               ),
-              const SizedBox(width: 6),
+              SizedBox(width: t.size('space.sidebarItemGap', fallback: 6)),
             ],
-            if (trailing != null)
+            if (uniform &&
+                !_mention &&
+                (trailing != null ||
+                    unread > 0 ||
+                    _threadSegment ||
+                    _quietNew ||
+                    hasDraft ||
+                    metadata?.isNotEmpty == true))
+              SizedBox(width: t.size('space.sidebarItemGap', fallback: 6)),
+            if (uniform &&
+                !_channel &&
+                unread <= 0 &&
+                (hasDraft || metadata?.isNotEmpty == true))
+              ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: box.maxWidth * .58),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (hasDraft) const RaftSidebarDraftIcon(),
+                    if (hasDraft && metadata?.isNotEmpty == true)
+                      const SizedBox(width: 6),
+                    if (metadata?.isNotEmpty == true)
+                      Flexible(
+                        child: ExcludeSemantics(
+                          child: RaftSidebarText(
+                            metadata!,
+                            key: Key(
+                              activity == null
+                                  ? 'nav-item-runtime'
+                                  : 'nav-item-activity',
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: activity == null
+                                ? RaftTypography.mono(
+                                    t,
+                                    size: t.size(
+                                      'type.sidebarMeta.size',
+                                      fallback: 12,
+                                    ),
+                                    line: t.size(
+                                      'type.sidebarMeta.line',
+                                      fallback: 16,
+                                    ),
+                                    color: selected
+                                        ? t.colors['foreground-sidebar-item-active']
+                                        : t.colors['foreground-sidebar-meta'],
+                                  ).copyWith(
+                                    fontWeight: raftFontWeight(
+                                      t.size(
+                                        'type.sidebarMeta.weight',
+                                        fallback: 400,
+                                      ),
+                                    ),
+                                  )
+                                : RaftTypography.heading(
+                                    t,
+                                    size: t.size(
+                                      'type.sidebarSubtitle.size',
+                                      fallback: 13,
+                                    ),
+                                    line: t.size(
+                                      'type.sidebarSubtitle.line',
+                                      fallback: 18,
+                                    ),
+                                    weight: raftFontWeight(
+                                      t.size(
+                                        'type.sidebarSubtitle.weight',
+                                        fallback: 400,
+                                      ),
+                                    ),
+                                    color: selected
+                                        ? t.colors['foreground-sidebar-item-active']
+                                        : t.colors['foreground-muted'],
+                                  ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              )
+            else if (trailing != null)
               trailing!
             else if (_threadSegment)
               Padding(
@@ -1308,7 +1424,7 @@ class RaftNavItem extends StatelessWidget {
                     RaftSymbol(icon!, size: recipe.glyphSize),
                   SizedBox(width: recipe.gap),
                   Expanded(
-                    child: Text(
+                    child: RaftSidebarText(
                       label,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -1317,7 +1433,7 @@ class RaftNavItem extends StatelessWidget {
                   if (trailing != null)
                     trailing!
                   else if (saved)
-                    Text(savedLabel, style: recipe.savedCount)
+                    RaftSidebarText(savedLabel, style: recipe.savedCount)
                   else if (role == RaftNavItemRole.activity && unread > 0)
                     // Sidebar.tsx mounts the same `SidebarItemCount accent`
                     // here as in the channel and DM rows. Do not rebuild the

@@ -90,7 +90,7 @@ class RaftMountedAvatarRecipe {
       : membersRow
       ? 28
       : sidebarList
-      ? 18
+      ? tokens.size('size.avatar.sidebarList', fallback: 18)
       : previewMini
       ? 14
       : 20;
@@ -99,7 +99,9 @@ class RaftMountedAvatarRecipe {
   /// `border-[1.5px]` (the painted width floors per device, see [raftControlBorderPx]).
   double get borderWidth => 1.5;
   double get contentExtent => extent - borderWidth * 2;
-  double get placeholderExtent => avatarSize.icon;
+  double get placeholderExtent => sidebarList
+      ? tokens.size('size.avatar.sidebarGlyph', fallback: 12)
+      : avatarSize.icon;
   // One glyph size for the humanPlaceholder and the Gravatar User fallback:
   // a gravatar hash that arrives after first paint never resizes the glyph.
   double get gravatarFallbackExtent => placeholderExtent;
