@@ -69,20 +69,23 @@ class RaftFileTypeBadge extends StatelessWidget {
         // `h-[22px]`, a minimum so the label is never cut at larger text sizes.
         constraints: const BoxConstraints(minHeight: 22),
         padding: const EdgeInsets.symmetric(horizontal: 6),
-        alignment: Alignment.center,
         decoration: BoxDecoration(
           color: tokens.ui.fillMuted,
           borderRadius: BorderRadius.circular(
             tokens.size('radius.chip', fallback: 6),
           ),
         ),
-        child: Text(
-          extension,
-          maxLines: 1,
-          style: tokens.scale(
-            RaftTypeScale.caption,
-            weight: FontWeight.w600,
-            color: tokens.ui.foregroundMuted,
+        child: Center(
+          widthFactor: 1,
+          heightFactor: 1,
+          child: Text(
+            extension,
+            maxLines: 1,
+            style: tokens.scale(
+              RaftTypeScale.caption,
+              weight: FontWeight.w600,
+              color: tokens.ui.foregroundMuted,
+            ),
           ),
         ),
       );

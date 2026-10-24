@@ -400,6 +400,7 @@ const Set<String> raftColorRoles = {
 /// Numeric tokens: radii, stroke widths, sizes, density and spacing.
 const Set<String> raftGeometryTokens = {
   'blur.dialogBackdrop',
+  'blur.modalBackdrop',
   'duration.spinnerTurn',
   'motion.switchColorMs',
   'motion.switchSlideMs',

@@ -215,6 +215,8 @@ GEOMETRY_ELEGANT = {
     'size.dialogCloseGlyph': 16,
     'space.dialogCloseOutset': 0,
     'blur.dialogBackdrop': 2,
+    # a57b9dab dialog_card.dart:340: ModalBackdrop always used sigma 2.
+    'blur.modalBackdrop': 2,
     # ComposerToolbarLabel / shared CheckboxIndicator, Cindy fc426a64.
     'size.composerTaskToggle': 16,
     'size.composerTaskCheckbox': 14,
@@ -399,6 +401,7 @@ GEOMETRY_BRUTAL = {
     'size.dialogCloseGlyph': 20,
     'space.dialogCloseOutset': 0,
     'blur.dialogBackdrop': 0,
+    'blur.modalBackdrop': 2,
     # ComposerToolbarLabel / shared CheckboxIndicator, Cindy fc426a64.
     'size.composerTaskToggle': 16,
     'size.composerTaskCheckbox': 14,

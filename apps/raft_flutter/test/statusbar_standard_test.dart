@@ -173,7 +173,13 @@ Future<void> _check(
         Rect.fromLTWH(0, _topDp * _dpr - 1, image.width.toDouble(), 2),
         Paint()..color = const Color(0xFFFF00FF),
       );
-      final out = await recorder.endRecording().toImage(image.width, h);
+      final picture = recorder.endRecording();
+      final ui.Image out;
+      try {
+        out = await picture.toImage(image.width, h);
+      } finally {
+        picture.dispose();
+      }
       final bytes = await out.toByteData(format: ui.ImageByteFormat.png);
       File('$shots/$sizeName/$theme/${p.name}.png')
         ..createSync(recursive: true)

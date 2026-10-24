@@ -244,6 +244,8 @@ GEOMETRY_RAFT = {
     'size.dialogCloseGlyph': 18,
     'space.dialogCloseOutset': 6,
     'blur.dialogBackdrop': 0,
+    # Web Modal.tsx: rf-scrim, no blur (separate from the Dialog overlay).
+    'blur.modalBackdrop': 0,
     # ComposerToolbarLabel / shared CheckboxIndicator, Cindy fc426a64.
     'size.composerTaskToggle': 32,
     'size.composerTaskCheckbox': 20,

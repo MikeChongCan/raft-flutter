@@ -855,10 +855,13 @@ Brutal 深色整套沿 Elegant 深色；模式内 geometry 覆盖沿用包的统
 | `size.dialogClose` / `size.dialogCloseGlyph` | 32 / 18 | 28 / 16 | 32 / 20 |
 | `space.dialogCloseOutset` | 6 | 0 | 0 |
 | `blur.dialogBackdrop` | 0 | 2 | 0 |
+| `blur.modalBackdrop` | 0 | 2 | 2 |
 | `stroke.dialog` / `stroke.dialogRing` | 0 / 1 | 0 / 0 | 2 / 0 |
 | `size.confirmAction` | 44 | 28 | 28 |
 
 Elegant 深色的 `space.dialogBodyTop` 为10。`blur.*` 为有限、非负的像素值，负值须拒绝。
+`blur.modalBackdrop` 属于 Web `Modal`（v1.21.23 `Modal.tsx` 明确不模糊），
+与 Dialog overlay 分开；a57b9dab `dialog_card.dart:340` 的 ModalBackdrop 在旧两套外观均为2。
 关闭按钮的 outset 对应来源的负上下及右 margin，只缩小布局槽位；绘制与可点击范围必须保留。
 实体边会占布局空间，外圈不占；Elegant 原圈已在 xl 阴影里，不能重复描边。
 `line-dialog` 引用现有 line-seam／line-muted（未使用）／ink。

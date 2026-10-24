@@ -80,6 +80,7 @@ Future<WorkspaceController> mountShell(
   WidgetTester t,
   Size size, {
   bool chat = false,
+  TargetPlatform? platform,
 }) async {
   // Each affordance reopens the surface fresh: drop the previous tree first.
   await t.pumpWidget(const SizedBox.shrink());
@@ -87,7 +88,7 @@ Future<WorkspaceController> mountShell(
     t,
     size,
     section: size.width < 768 && !chat ? 'home' : 'chat',
-    platform: platformFor(size),
+    platform: platform ?? platformFor(size),
   );
   return w;
 }
@@ -228,16 +229,14 @@ void main() {
       );
     },
     'server-switcher': (t, size) async {
-      await mountShell(t, size);
-      await t.tap(
-        find
-            .byKey(
-              size.width < 768
-                  ? const Key('mobile-server-selector')
-                  : const Key('rail-workspace'),
-            )
-            .first,
+      await mountShell(t, size, platform: closePlatform(size));
+      final trigger = find.byKey(
+        size.width < 768
+            ? const Key('mobile-server-selector')
+            : const Key('topbar-workspace'),
       );
+      expect(trigger, findsOneWidget);
+      await t.tap(trigger);
       await frames(t, 20);
       return SurfaceProbe(
         isOpen: () => find.byType(RaftServerMenuPanel).evaluate().isNotEmpty,

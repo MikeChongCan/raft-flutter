@@ -543,7 +543,8 @@ class _RaftModalBackdropState extends State<RaftModalBackdrop> {
     }
     final child = widget.child, onBackdrop = widget.onBackdrop;
     final t = RaftTokens.of(context);
-    // backdrop-blur-[2px]: CSS blur radius is the Gaussian standard deviation.
+    // Web Modal has no blur in Raft; the frozen packs supply their own radius.
+    final blur = t.size('blur.modalBackdrop', fallback: 2);
     final scrim = t.colors['layer-backdrop']!;
     // The scrim dims the status bar band over its width too (see
     // `status_bar.dart`: a modal inside the host's scope publishes it).
@@ -551,7 +552,8 @@ class _RaftModalBackdropState extends State<RaftModalBackdrop> {
       color: scrim,
       overlay: true,
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
+        enabled: blur > 0,
+        filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
         child: ColoredBox(
           color: scrim,
           child: LayoutBuilder(
