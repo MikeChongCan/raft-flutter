@@ -313,6 +313,14 @@ class RaftMountedSidebarNavigationRecipe extends RaftControlRecipe {
         : 'size.sidebarEntryGlyph',
     fallback: 14,
   );
+  double get glyphSlot => role == RaftNavItemRole.saved
+      ? tokens.size(
+          viewportWidth < 768
+              ? 'size.sidebarSavedSlotPhone'
+              : 'size.sidebarSavedSlot',
+          fallback: glyphSize,
+        )
+      : glyphSize;
   double get gap => tokens.size(
     viewportWidth < 768
         ? 'space.sidebarEntryGapPhone'
@@ -353,7 +361,9 @@ class RaftMountedSidebarNavigationRecipe extends RaftControlRecipe {
         ? 'size.sidebarSaved'
         : 'size.sidebarEntry';
     final suffix = viewportHeight <= 600
-        ? 'Compact'
+        ? viewportWidth < 768
+              ? 'PhoneCompact'
+              : 'Compact'
         : viewportWidth < 768
         ? 'Phone'
         : '';
@@ -366,11 +376,18 @@ class RaftMountedSidebarNavigationRecipe extends RaftControlRecipe {
   @override
   bool get transformsOnInteraction => false;
   @override
-  EdgeInsets get padding =>
-      EdgeInsets.symmetric(horizontal: (role != RaftNavItemRole.saved) ? 8 : 6);
+  EdgeInsets get padding => role == RaftNavItemRole.saved
+      ? EdgeInsets.only(
+          left: tokens.size('space.sidebarSavedStart', fallback: 6),
+          right: tokens.size('space.sidebarSavedEnd', fallback: 6),
+        )
+      : const EdgeInsets.symmetric(horizontal: 8);
   @override
-  BorderRadius get radius =>
-      BorderRadius.circular((role == RaftNavItemRole.saved) ? 6 : 0);
+  BorderRadius get radius => BorderRadius.circular(
+    role == RaftNavItemRole.saved
+        ? tokens.size('radius.sidebarSaved', fallback: 6)
+        : 0,
+  );
   @override
   Gradient? get overlayGradient => null;
   @override
@@ -558,7 +575,13 @@ class RaftMountedConversationControlRecipe extends RaftControlRecipe {
     bool hovered = false,
     bool pressed = false,
     bool focused = false,
-  }) => [];
+  }) => [
+    if (selected && tokens.size('stroke.sidebarItemRing', fallback: 0) > 0)
+      BoxShadow(
+        color: tokens.colors['line-sidebar-item-ring']!,
+        spreadRadius: tokens.size('stroke.sidebarItemRing', fallback: 0),
+      ),
+  ];
 }
 
 class RaftConversationNavigationRecipe {
@@ -642,7 +665,10 @@ class RaftConversationNavigationRecipe {
   }) {
     final regular = tokens.size('size.navRow', fallback: 34);
     if (viewportHeight <= 600) {
-      return tokens.size('size.navRowCompact', fallback: regular);
+      final compact = tokens.size('size.navRowCompact', fallback: regular);
+      return viewportWidth < RaftLayoutMetrics.desktopBreakpoint
+          ? tokens.size('size.navRowPhoneCompact', fallback: compact)
+          : compact;
     }
     if (viewportWidth >= RaftLayoutMetrics.desktopBreakpoint) {
       return tokens.size('size.navRowWide', fallback: regular);
@@ -654,11 +680,11 @@ class RaftConversationNavigationRecipe {
   double get countHeight => tokens.size('size.sidebarCount', fallback: 16);
   double get countMinimumWidth => countHeight;
   EdgeInsets get countPadding => EdgeInsets.symmetric(
-    horizontal:
-        tokens.size('space.sidebarCountInline', fallback: 4) +
-        tokens.size('space.sidebarCountEdge', fallback: 1),
+    horizontal: tokens.size('space.sidebarCountInline', fallback: 4),
     vertical: 0,
   );
+  double get countLayoutEdge =>
+      tokens.size('space.sidebarCountEdge', fallback: 1);
   Color get countBackground => tokens.colors['layer-sidebar-count']!;
   Color get countForeground => tokens.colors['foreground-sidebar-count']!;
   BoxDecoration get countDecoration => BoxDecoration(
@@ -717,7 +743,21 @@ class RaftSidebarUnreadCount extends StatelessWidget {
       padding: recipe.countPadding,
       decoration: BoxDecoration(
         color: recipe.countBackground,
+        boxShadow: [
+          if (recipe.tokens.size('stroke.sidebarCountRing', fallback: 0) > 0)
+            BoxShadow(
+              color: recipe.tokens.colors['line-sidebar-count-ring']!,
+              spreadRadius: recipe.tokens.size(
+                'stroke.sidebarCountRing',
+                fallback: 0,
+              ),
+            ),
+        ],
         borderRadius: recipe.countDecoration.borderRadius,
+        border: Border.all(
+          color: Colors.transparent,
+          width: recipe.countLayoutEdge,
+        ),
       ),
       foregroundDecoration: BoxDecoration(
         border: recipe.countDecoration.border,
@@ -1418,10 +1458,14 @@ class RaftNavItem extends StatelessWidget {
               onPressed: _tap,
               child: Row(
                 children: [
-                  if (glyph != null)
-                    RaftIcon(glyph!, size: recipe.glyphSize)
-                  else
-                    RaftSymbol(icon!, size: recipe.glyphSize),
+                  SizedBox.square(
+                    dimension: recipe.glyphSlot,
+                    child: Center(
+                      child: glyph != null
+                          ? RaftIcon(glyph!, size: recipe.glyphSize)
+                          : RaftSymbol(icon!, size: recipe.glyphSize),
+                    ),
+                  ),
                   SizedBox(width: recipe.gap),
                   Expanded(
                     child: RaftSidebarText(

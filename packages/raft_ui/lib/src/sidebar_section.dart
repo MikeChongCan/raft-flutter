@@ -159,7 +159,7 @@ class RaftSidebarSectionHeader extends StatelessWidget {
           ),
         ),
         if (count != null) ...[
-          const SizedBox(width: 4),
+          SizedBox(width: t.size('space.sidebarSectionCountGap', fallback: 4)),
           RaftSidebarText('$count', style: recipe.count),
         ],
         if (!expanded && attention != null) ...[

@@ -1,3 +1,5 @@
+// Frozen a57b9dab Elegant contract. Current Raft source geometry is covered
+// by framework_navigation_contract_test and framework_sidebar_phone_contract_test.
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -16,7 +18,10 @@ void main() {
           const addKey = ValueKey('section-add');
           await tester.pumpWidget(
             MaterialApp(
-              theme: raftTheme(dark: dark),
+              theme: raftTheme(
+                pack: packForThemeId(elegantThemePackId),
+                dark: dark,
+              ),
               home: Scaffold(
                 body: RaftDensityScope(
                   density: density,
@@ -91,12 +96,15 @@ void main() {
           );
           final title = tester.widget<Text>(find.text('Channels'));
           expect(title.style!.fontSize, 12);
-          expect(title.style!.fontWeight, FontWeight.w700);
-          expect(title.style!.letterSpacing ?? 0, 0);
+          expect(title.style!.fontWeight, FontWeight.w400);
+          expect(title.style!.letterSpacing, 1.2);
           expect(
             tester.widget<Text>(find.text('3')).style!.fontFamily,
             RaftSidebarSectionRecipe(
-              raftTheme(dark: dark).extension<RaftTokens>()!,
+              raftTheme(
+                pack: packForThemeId(elegantThemePackId),
+                dark: dark,
+              ).extension<RaftTokens>()!,
               density,
             ).count.fontFamily,
           );

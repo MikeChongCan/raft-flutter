@@ -1082,3 +1082,30 @@ separately from the pure-black outer borders.
 
 侧栏计数字体角色 `font.sidebarCount`：Raft 引用 mono（Space Mono），Elegant／Brutal 引用 sans，保留各自旧字体定义。只用于侧栏计数与运行时元信息；不改变全局正文或现有消息字体角色。
 搜索框 `type.finderInput.size`：Raft 15，旧两套 14；行高三套均为20。1x 下外框36不变，系统大字时允许控件增高以容纳编辑行。
+
+
+`avatar.sidebarHumanFallback = user | identity`：Raft 的侧栏人物头像在缺图时显示 User 图标，使用 sidebarList 的10px字形尺寸；旧两套保留原姓名首字母／装饰占位图。只作用于人物的 sidebarList 上下文，上传图、Gravatar 加载与失败重试及其他头像上下文不变。依据固定 Web AvatarSlot 与 GravatarAvatar 的共同 User 回退路径。
+
+侧栏 Saved 的内容边距：`space.sidebarSavedStart/End` 为 Raft 8/10、旧两套6/6；图标槽 `size.sidebarSavedSlot` 为19/14/14，手机 `size.sidebarSavedSlotPhone` 为20/14/14；`radius.sidebarSaved` 为8/6/6。图标本身继续用既有大小，槽居中，不修改图片像素。`space.sidebarSectionCountGap` 为6/4/4，对应标题与计数之间的源版间隔。
+
+短屏手机维持自己的行最小高度：`size.navRowPhoneCompact` 为44/30/32，`size.sidebarEntryPhoneCompact` 为44/30/30，`size.sidebarSavedPhoneCompact` 为44/29.5/29.5；普通短屏宽窗口继续用既有 Compact 值。Raft 的手机样式不因 max-height:600 降为36px。
+
+
+### 挂载频道头与会话标签
+
+`conversationHeader.metaFlow = stacked | inlineWide`：Raft stacked；Elegant inlineWide；Brutal 浅色 stacked，深色沿 Elegant。只选择标题与元信息的排布，字形、颜色和尺寸各用组件数据。`font.conversationHeaderTitle` 为 Raft sans、旧两套 heading；`font.conversationHeaderMeta` 为 Raft／Elegant sans、Brutal 浅色 mono。
+
+`size.conversationHeaderIcon` 为27/36/36，圆角4/6/0，边线1.5/0/2，外环1.5/0/0。对应 `layer-conversation-icon`、`foreground-conversation-icon`、`line-conversation-icon`、`line-conversation-icon-ring`。Raft 引用 brand／sticker-ink／sticker-edge；旧两套引用原 fill-strong 或 primary-400、foreground-icon 或 ink。标题／元信息颜色用 `foreground-conversation-title/meta`；Brutal 元信息的原黑色50%值保留。
+
+`type.conversationHeaderTitle.{size,line,weight}` 为17/22/700、17/21.25/600、16/20/700。元信息字号三套均为12；`type.conversationHeaderMeta.line` 为16/12/16，Phone.line 为16/15/16，weight 为500/400/400。`space.conversationHeaderMeta` 为0/8/0，Phone为0/4/0；Actions 为4/6/6，Phone为4/2/6。底边 `stroke.conversationHeader` 为1/1/2，颜色 `line-conversation-header` 引用 Raft line-seam、Elegant line-muted、Brutal ink。
+
+`conversationTabs.variant = default | underline` 只对应挂载 ConversationPanelTabs 的显式 Tabs 变体；Raft default，旧两套 underline，与通用 Tabs 的选中结构选项独立。Raft 标签32、列表48、纵向内边距8、间隔2、横向边距20（手机16），底边1；旧两套保留48/40桌面／手机标签与列表、纵向0、间隔20、横向16、底边0/1。`size.conversationTab*`、`space.conversationTab*`、`stroke.conversationTabList*` 逐项存数据，背景角色 `layer-conversation-tabs[-phone]` 保留各自原图层。触控目标由上层 RaftTapSlopHost 与48px锚点处理，不撑大32px可见标签。
+
+来源：固定 db5e399f 的 raft-ui0.7.0 panelHeader、conversationPanel、Tabs 配方与实际 DOM；旧值由固定 a57b9dab 对应配方及原主题解析验证。所有数字均为 Raft／Elegant／Brutal 浅色顺序；Brutal 深色整体沿 Elegant 深色。
+
+390×480 的实际 Web DOM 补测确认：max-height:600 的 py-0 会覆盖手机入口 py-2.5，Search／Activity／Saved 短屏均为44；常规高屏入口为46。新增 phone-short 明暗框架用例保留这条交叉断点。
+
+侧栏选中行、未读数和提及标记的外描边分别由 `stroke.sidebarItemRing`、
+`stroke.sidebarCountRing`、`stroke.sidebarMentionRing` 定义（Raft 1.5，旧两套 0）；
+颜色角色 `line-sidebar-item-ring`、`line-sidebar-count-ring`、`line-sidebar-mention-ring`
+在 Raft 引用现有 `sticker-edge`，旧两套透明。描边绘制在盒外，不改变布局。

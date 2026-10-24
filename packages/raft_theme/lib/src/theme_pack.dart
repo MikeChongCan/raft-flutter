@@ -117,6 +117,7 @@ const Map<String, Set<String>> raftStructuralOptions = {
   'iconButton.surface': {'generic', 'raised'},
   'control.sheen': {'none', 'gradient'},
   'avatar.shape': {'square', 'circle'},
+  'avatar.sidebarHumanFallback': {'user', 'identity'},
   'indicator.border': {'none', 'ink'},
   'switch.shape': {'pill', 'square'},
   'checkbox.mark': {'fillCheck', 'strokeCheck', 'thickStroke'},
@@ -130,6 +131,8 @@ const Map<String, Set<String>> raftStructuralOptions = {
   'sidebarItem.sectionContent': {'uniform', 'sectionScoped'},
   'sidebar.textLayout': {'css', 'natural'},
   'finder.boxLayout': {'css', 'natural'},
+  'conversationHeader.metaFlow': {'stacked', 'inlineWide'},
+  'conversationTabs.variant': {'default', 'underline'},
   'rail.attentionRendering': {'indicator', 'masked'},
   'resource.surface': {'canvas', 'sidebar'},
   'resource.rows': {'flat', 'cards'},
@@ -463,6 +466,8 @@ RaftModeValues? _mode(Object? raw, String where) {
         'font.messageTime',
         'font.messageSubtitle',
         'font.sidebarCount',
+        'font.conversationHeaderTitle',
+        'font.conversationHeaderMeta',
       }.contains(token)) {
         throw RaftThemeException('unknown font token "$token"', where: path);
       }

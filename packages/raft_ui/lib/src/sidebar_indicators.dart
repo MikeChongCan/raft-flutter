@@ -135,6 +135,16 @@ class RaftSidebarMentionMarker extends StatelessWidget {
           alignment: Alignment.center,
           decoration: BoxDecoration(
             color: t.colors['layer-sidebar-mention'],
+            boxShadow: [
+              if (t.size('stroke.sidebarMentionRing', fallback: 0) > 0)
+                BoxShadow(
+                  color: t.colors['line-sidebar-mention-ring']!,
+                  spreadRadius: t.size(
+                    'stroke.sidebarMentionRing',
+                    fallback: 0,
+                  ),
+                ),
+            ],
             border: Border.all(
               color: t.colors['line-sidebar-mention']!,
               width: raftControlBorderPx(

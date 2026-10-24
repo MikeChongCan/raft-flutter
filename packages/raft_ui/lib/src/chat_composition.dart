@@ -15,6 +15,7 @@ import 'theme.dart';
 import 'status_bar.dart';
 import 'text_scaling.dart';
 import 'large_content_viewer.dart';
+import 'tap_slop.dart';
 
 enum RaftChatSidebarGroupKind { pinned, joint, channels, directMessages }
 
@@ -358,7 +359,7 @@ class RaftConversationTab {
   final bool enabled;
 }
 
-/// ConversationPanelTabs + underline Tabs + product h7/max-md h10 overrides.
+/// Mounted ConversationPanelTabs layout, with the pack-selected tab surface.
 class RaftConversationTabsRecipe {
   const RaftConversationTabsRecipe(
     this.tokens, {
@@ -368,26 +369,32 @@ class RaftConversationTabsRecipe {
   final RaftTokens tokens;
   final bool mobile;
   final RaftDensity density;
-  // raft-ui 0.7.1 underline tabs fill the strip (the list height), the 2px bar sits on its bottom edge.
-  double get sourceTabHeight => sourceListHeight;
-  double get sourceListHeight => mobile ? 40 : 48;
-  // ChatPanel mounts h-7 tabs (Elegant mobile is overridden to h-10 by
-  // ConversationPanelTabs). Its flow stays source-sized on coarse input too;
-  // the generic 48px native target must not enlarge this specific tab strip.
+  RaftTabsVariant get variant =>
+      tokens.option('conversationTabs.variant', or: 'underline') == 'default'
+      ? RaftTabsVariant.standard
+      : RaftTabsVariant.underline;
+  double get sourceTabHeight => tokens.size(
+    mobile ? 'size.conversationTabPhone' : 'size.conversationTab',
+    fallback: mobile ? 40 : 48,
+  );
+  double get sourceListHeight =>
+      mobile ? tokens.size('size.conversationTabListPhone', fallback: 40) : 48;
   double get targetHeight => sourceTabHeight;
   double get effectiveListHeight => math.max(sourceListHeight, targetHeight);
-  double get outerBottomBorder => mobile ? 1 : 0;
-  Color get background => mobile
-      ? tokens.colors['layer-canvas-muted']!
-      // ConversationPanelContent is the mounted ancestor: dark tabs are
-      // transparent over its card surface, independently of the panel timeline.
-      : tokens.dark
-      ? tokens.card
-      : tokens.panel;
-  Color get border => tokens.colors['line-muted']!;
-  // raft-ui `TabsList variant="underline"`: `gap-5`; the tab itself has `px-0`.
-  double get gap => 20;
-  EdgeInsets get listInset => EdgeInsets.symmetric(horizontal: 16);
+  double get outerBottomBorder =>
+      mobile ? 1 : tokens.size('stroke.conversationTabList', fallback: 0);
+  Color get background =>
+      tokens.colors[mobile
+          ? 'layer-conversation-tabs-phone'
+          : 'layer-conversation-tabs']!;
+  Color get border => tokens.colors['line-conversation-header']!;
+  double get gap => tokens.size('space.conversationTabGap', fallback: 20);
+  EdgeInsets get listInset => EdgeInsets.symmetric(
+    horizontal: mobile
+        ? 16
+        : tokens.size('space.conversationTabInline', fallback: 16),
+    vertical: tokens.size('space.conversationTabVertical', fallback: 0),
+  );
   double get glyphSize => 14;
   double get glyphStroke => 1.5;
   Color get indicator => tokens.colors['primary-400']!;
@@ -533,55 +540,57 @@ class _ConversationTabsState extends State<RaftConversationTabs> {
 
   Widget _tabStrip(BuildContext context, RaftConversationTabsRecipe recipe) {
     final grows = RaftScaled.grows(context);
-    return RaftStatusBarSource(
-      color: recipe.background,
-      child: Container(
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: recipe.background,
-          // Elegant desktop tabs have no rule (`border-b-0`); a zero-width
-          // Flutter BorderSide would still paint a hairline.
-          border: Border(
-            bottom: recipe.outerBottomBorder == 0
-                ? BorderSide.none
-                : BorderSide(
-                    color: recipe.border,
-                    width: recipe.outerBottomBorder,
-                  ),
+    return RaftTapSlopHost(
+      child: RaftStatusBarSource(
+        color: recipe.background,
+        child: Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: recipe.background,
+            // Elegant desktop tabs have no rule (`border-b-0`); a zero-width
+            // Flutter BorderSide would still paint a hairline.
+            border: Border(
+              bottom: recipe.outerBottomBorder == 0
+                  ? BorderSide.none
+                  : BorderSide(
+                      color: recipe.border,
+                      width: recipe.outerBottomBorder,
+                    ),
+            ),
           ),
-        ),
-        child: ConstrainedBox(
-          // The strip is a minimum height: the tabs grow with their label.
-          constraints: BoxConstraints(
-            minHeight: recipe.effectiveListHeight,
-            maxHeight: grows ? double.infinity : recipe.effectiveListHeight,
-          ),
-          child: Focus(
-            canRequestFocus: false,
-            onKeyEvent: navigation,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              primary: false,
-              child: Padding(
-                padding: recipe.listInset,
-                child: Semantics(
-                  role: SemanticsRole.tabBar,
-                  explicitChildNodes: true,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      for (
-                        var index = 0;
-                        index < widget.tabs.length;
-                        index++
-                      ) ...[
-                        if (index > 0 && recipe.gap > 0)
-                          SizedBox(width: recipe.gap),
-                        buildTab(widget.tabs[index], index, recipe),
+          child: ConstrainedBox(
+            // The strip is a minimum height: the tabs grow with their label.
+            constraints: BoxConstraints(
+              minHeight: recipe.effectiveListHeight,
+              maxHeight: grows ? double.infinity : recipe.effectiveListHeight,
+            ),
+            child: Focus(
+              canRequestFocus: false,
+              onKeyEvent: navigation,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                primary: false,
+                child: Padding(
+                  padding: recipe.listInset,
+                  child: Semantics(
+                    role: SemanticsRole.tabBar,
+                    explicitChildNodes: true,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        for (
+                          var index = 0;
+                          index < widget.tabs.length;
+                          index++
+                        ) ...[
+                          if (index > 0 && recipe.gap > 0)
+                            SizedBox(width: recipe.gap),
+                          buildTab(widget.tabs[index], index, recipe),
+                        ],
+                        // Source TabsList owns the final right border; separators
+                        // belong to the following tab and do not consume its width.
                       ],
-                      // Source TabsList owns the final right border; separators
-                      // belong to the following tab and do not consume its width.
-                    ],
+                    ),
                   ),
                 ),
               ),
@@ -611,17 +620,17 @@ class _ConversationTabsState extends State<RaftConversationTabs> {
       child: ExcludeSemantics(
         child: ConstrainedBox(
           constraints: BoxConstraints(
-            minHeight: recipe.effectiveListHeight,
-            maxHeight: grows ? double.infinity : recipe.effectiveListHeight,
+            minHeight: recipe.targetHeight,
+            maxHeight: grows ? double.infinity : recipe.targetHeight,
           ),
-          // raft-ui `Tabs` `variant="underline"`: bare callout text, a 2px foreground bar under the selected tab.
+          // The mounted panel selects its tab variant independently of the generic Tabs control.
           child: RaftTabButton(
             key: ValueKey('panel-tab-${tab.id.name}'),
             focusNode: focus,
             label: tab.label,
-            variant: RaftTabsVariant.underline,
+            variant: recipe.variant,
             selected: selected,
-            height: recipe.effectiveListHeight,
+            height: recipe.targetHeight,
             growsWithText: grows,
             glyph: switch (tab.id) {
               RaftConversationTabId.chat => RaftGlyph.messageSquare,
@@ -659,6 +668,12 @@ class _ConversationTabsState extends State<RaftConversationTabs> {
             color: IconTheme.of(context).color ?? recipe.tokens.ink,
           ),
         },
+        child: control,
+      );
+    }
+    if (RaftDensityScope.of(context) == RaftDensity.touch) {
+      control = RaftTapSlopAnchor(
+        minSize: const Size.square(RaftMetrics.touchTarget),
         child: control,
       );
     }

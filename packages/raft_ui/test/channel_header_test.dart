@@ -45,7 +45,7 @@ void main() {
         // panelHeadEdges: pl-4 plus the leading -ml-[13px].
         expect(t.getTopLeft(back).dx, 3);
         for (final label in ['Search This Channel', 'Channel Settings']) {
-          expect(t.getSize(find.bySemanticsLabel(label)), const Size(28, 28));
+          expect(t.getSize(find.bySemanticsLabel(label)), const Size(32, 32));
         }
         // PanelMeta is `truncate`: ChannelDescription's line clamp never
         // wraps; the one line is clipped at the content edge.

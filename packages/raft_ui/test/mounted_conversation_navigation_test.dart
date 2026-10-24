@@ -1,3 +1,5 @@
+// Frozen a57b9dab Elegant contract. Current Raft source geometry is covered
+// by framework_navigation_contract_test and framework_sidebar_phone_contract_test.
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
@@ -13,10 +15,16 @@ void main() {
       testWidgets(
         '${dark ? 'dark' : 'light'}/$density channel slot and count stay source-specific',
         (tester) async {
+          tester.view.physicalSize = const Size(1280, 800);
+          tester.view.devicePixelRatio = 1;
+          addTearDown(tester.view.reset);
           var activations = 0;
           await tester.pumpWidget(
             MaterialApp(
-              theme: raftTheme(dark: dark),
+              theme: raftTheme(
+                pack: packForThemeId(elegantThemePackId),
+                dark: dark,
+              ),
               home: Scaffold(
                 body: RaftDensityScope(
                   density: density,
@@ -67,7 +75,10 @@ void main() {
               ),
             ),
           );
-          final tokens = raftTheme(dark: dark).extension<RaftTokens>()!;
+          final tokens = raftTheme(
+            pack: packForThemeId(elegantThemePackId),
+            dark: dark,
+          ).extension<RaftTokens>()!;
           final channel = find.byKey(const ValueKey('channel'));
           final iconFinder = find.descendant(
             of: channel,
@@ -101,9 +112,10 @@ void main() {
           // The row height is a contract token. The default (Raft) pack keeps one
           // height at every viewport and density, so read it rather than assuming
           // the 30 this asserted while the value was a single literal.
-          final rowHeight = raftTheme(dark: dark)
-              .extension<RaftTokens>()!
-              .size('size.navRow', fallback: 34);
+          final rowHeight = raftTheme(
+            pack: packForThemeId(elegantThemePackId),
+            dark: dark,
+          ).extension<RaftTokens>()!.size('size.navRow', fallback: 34);
           expect(tester.widget<RaftControl>(control).visualHeight, rowHeight);
           // The row box is Web's in every density; touch only widens the hit
           // and semantics rectangle to 48dp (RaftTouchTarget).
@@ -186,7 +198,10 @@ void main() {
       (tester) async {
         await tester.pumpWidget(
           MaterialApp(
-            theme: raftTheme(dark: dark),
+            theme: raftTheme(
+              pack: packForThemeId(elegantThemePackId),
+              dark: dark,
+            ),
             home: Scaffold(
               body: SizedBox(
                 width: 300,
@@ -205,7 +220,10 @@ void main() {
         expect(icon.size, 14);
         expect(icon.strokeWidth, 1.5);
         expect(find.byType(RaftConversationUnreadCount), findsNothing);
-        final tokens = raftTheme(dark: dark).extension<RaftTokens>()!;
+        final tokens = raftTheme(
+          pack: packForThemeId(elegantThemePackId),
+          dark: dark,
+        ).extension<RaftTokens>()!;
         expect(
           RaftConversationNavigationRecipe(
             tokens,
@@ -224,7 +242,10 @@ void main() {
       (tester) async {
         await tester.pumpWidget(
           MaterialApp(
-            theme: raftTheme(dark: dark),
+            theme: raftTheme(
+              pack: packForThemeId(elegantThemePackId),
+              dark: dark,
+            ),
             home: Scaffold(
               body: SizedBox(
                 width: 300,
@@ -291,13 +312,19 @@ void main() {
           // Read the expectation from the theme rather than a literal: the row
           // height is a contract token now, and the default (Raft) pack keeps one
           // height at every viewport and density.
-          final rowTokens = raftTheme(dark: dark).extension<RaftTokens>()!;
+          final rowTokens = raftTheme(
+            pack: packForThemeId(elegantThemePackId),
+            dark: dark,
+          ).extension<RaftTokens>()!;
           final expected = viewport.height <= 600
               ? rowTokens.size('size.navRowCompact', fallback: 30)
               : rowTokens.size('size.navRow', fallback: 34);
           await tester.pumpWidget(
             MaterialApp(
-              theme: raftTheme(dark: dark),
+              theme: raftTheme(
+                pack: packForThemeId(elegantThemePackId),
+                dark: dark,
+              ),
               home: MediaQuery(
                 data: MediaQueryData(size: viewport),
                 child: Scaffold(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'css_pixel_snap.dart';
+import 'icons.dart';
 
 import 'raft/avatar.dart';
 import 'raft/status.dart';
@@ -146,6 +147,19 @@ class RaftMountedAvatarFallback extends StatelessWidget {
       avatarContext,
       identity,
     );
+    if (identity == RaftMountedAvatarIdentity.human &&
+        avatarContext == RaftMountedAvatarContext.sidebarList &&
+        RaftTokens.of(context)
+                .option('avatar.sidebarHumanFallback', or: 'identity') ==
+            'user') {
+      return Center(
+        child: RaftIcon(
+          RaftGlyph.user,
+          size: r.placeholderExtent,
+          color: RaftTokens.of(context).ui.stickerInk,
+        ),
+      );
+    }
     final size = r.avatarSize;
     final text = switch (identity) {
       RaftMountedAvatarIdentity.human => raftAvatarInitials(initials),

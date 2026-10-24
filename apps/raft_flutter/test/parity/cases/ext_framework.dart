@@ -87,17 +87,17 @@ final _frameworkCase = ParityCase(
     'raft_ui:RaftAdaptiveWorkspace',
   ],
   notes:
-      'Actual workspace content. Web uses the source desktop-shell guard; '
-      'this is not an Electron or native OS window capture.',
+      'Actual workspace content. Desktop uses the source desktop-shell guard; '
+      'mobile and tablet use browser chrome. No native OS window capture.',
   settle: const Duration(milliseconds: 900),
   build: (ctx) => _Framework(ctx),
 );
 
 final Map<String, ParityCase> extFrameworkCases = {
-  for (final platform in const ['desktop', 'mobile', 'tablet'])
+  for (final platform in const ['desktop', 'mobile', 'phone-short', 'tablet'])
     for (final mode in const ['light', 'dark'])
       for (final region
-          in platform == 'mobile'
+          in ['mobile', 'phone-short'].contains(platform)
               ? const ['frame']
               : const ['frame', 'navigation'])
         'components.framework.$platform.$region.default.raft-$mode':

@@ -261,6 +261,8 @@ void main() {
       expect(control.visualHeight, 36);
       expect(control.recipe!.textStyle.fontSize, 15);
       expect(t.widget<RaftIcon>(find.byType(RaftIcon)).size, 16);
+      expect(t.getTopLeft(find.text('Saved')).dx, 36);
+      expect(t.getTopRight(find.text('5')).dx, 212);
     }, variant: TargetPlatformVariant.only(TargetPlatform.linux));
 
     testWidgets(
@@ -360,6 +362,11 @@ void main() {
         expect(second, const Rect.fromLTWH(187, 11, 28, 28));
         final disclosure = t.getRect(find.byKey(const ValueKey('disclosure')));
         expect(disclosure, const Rect.fromLTWH(8, 16, 139, 18));
+        expect(
+          t.getTopLeft(find.text('2')).dx -
+              t.getTopRight(find.text('Pinned')).dx,
+          6,
+        );
         await t.tapAt(first.topLeft + const Offset(2, 2));
         await t.tapAt(second.bottomRight - const Offset(2, 2));
         expect(actions, 2);

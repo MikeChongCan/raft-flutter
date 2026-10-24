@@ -73,15 +73,15 @@ void main() {
             final files = find.byKey(const ValueKey('panel-tab-files'));
             expect(tester.getRect(strip).left, 0);
             expect(tester.getSize(strip).width, width);
-            expect(tester.getRect(chat).left, 16);
+            expect(tester.getRect(chat).left, width < 768 ? 16 : 20);
             final mobile = width < 768;
-            final expectedStrip = mobile ? 41.0 : 48.0;
-            // raft-ui 0.7.1 underline tab: fills the strip, no horizontal padding.
-            final expectedTarget = mobile ? 40.0 : 48.0;
+            // Pinned raft-ui 0.7.0 default tabs: 32px within py8 and a 1px rule.
+            const expectedStrip = 49.0;
+            const expectedTarget = 32.0;
             expect(tester.getSize(strip).height, expectedStrip);
             expect(tester.getSize(chat).height, expectedTarget);
             final tab = tester.widget<RaftTabButton>(chat);
-            expect(tab.variant, RaftTabsVariant.underline);
+            expect(tab.variant, RaftTabsVariant.standard);
             expect(tab.padding, isNull);
             final surface = tester.widget<Container>(
               find
@@ -100,9 +100,9 @@ void main() {
             if (dark && !mobile) {
               expect(
                 recipe.background,
-                RaftTokens.of(tester.element(strip)).card,
+                RaftTokens.of(tester.element(strip)).canvas,
               );
-              expect(recipe.background, const Color(0xff242422));
+              expect(recipe.background, const Color(0xff1b1b19));
             }
 
             await tester.tap(chat);

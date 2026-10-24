@@ -14,6 +14,8 @@ import 'icons.dart';
 import 'indicators.dart';
 import 'panel_layout.dart';
 import 'public_page_mark.dart';
+import 'raft/button.dart';
+import 'raft/css_box.dart' show raftControlBorderPx;
 import 'recipe_surface.dart';
 import 'recipes/panel_header.g.dart';
 import 'recipes/recipe_runtime.dart';
@@ -61,13 +63,121 @@ class RaftConversationHeader extends StatelessWidget {
     bool hasMeta = false,
   }) {
     final t = RaftTokens.of(context);
-    return RaftPanelHeaderRecipe.resolve(
+    final base = RaftPanelHeaderRecipe.resolve(
       theme: raftRecipeTheme(t),
       states: RaftRecipeStates({
         if (t.dark) RaftRecipeStates.dark,
         if (hasMeta) 'has:>data-slot=panel-meta',
       }, MediaQuery.sizeOf(context).width),
       tokens: RaftRecipeTokens(t),
+    );
+    final rt = t.recipeTokens;
+    final phone =
+        MediaQuery.sizeOf(context).width < RaftLayoutMetrics.desktopBreakpoint;
+    RaftSlotStyle project(RaftSlotStyle slot, Map<String, CssValue> fields) =>
+        RaftSlotStyle(
+          {...slot.properties, ...fields},
+          slot.targets,
+          slot.classes,
+          rt,
+        );
+    CssColor color(String role) => CssColor(t.colors[role]!.toARGB32());
+    RaftSlotStyle textSlot(
+      RaftSlotStyle slot,
+      String prefix,
+      String font,
+      String foreground, {
+      double? size,
+      String? lineKey,
+    }) => project(slot, {
+      'font-size': CssNum(size ?? t.size('$prefix.size', fallback: 17), 'px'),
+      'line-height': CssNum(
+        t.size(lineKey ?? '$prefix.line', fallback: 20),
+        'px',
+      ),
+      'font-weight': CssNum(t.size('$prefix.weight', fallback: 400)),
+      'font-family': CssString(t.fontFamily(font)),
+      'color': color(foreground),
+    });
+    final inline =
+        hasMeta &&
+        !phone &&
+        t.option('conversationHeader.metaFlow', or: 'inlineWide') ==
+            'inlineWide';
+    final gap = t.size(
+      phone
+          ? 'space.conversationHeaderMetaPhone'
+          : 'space.conversationHeaderMeta',
+      fallback: 0,
+    );
+    final iconBorder = raftControlBorderPx(
+      context,
+      t.size('stroke.conversationHeaderIcon', fallback: 0),
+    );
+    // A specified zero border has no CSS used-width floor.
+    final usedBorder = t.size('stroke.conversationHeaderIcon', fallback: 0) == 0
+        ? 0.0
+        : iconBorder;
+    return RaftPanelHeaderRecipeStyle(
+      header: base.header,
+      sectionHeader: base.sectionHeader,
+      headerIcon: project(base.headerIcon, {
+        'width': CssNum(
+          t.size('size.conversationHeaderIcon', fallback: 36),
+          'px',
+        ),
+        'height': CssNum(
+          t.size('size.conversationHeaderIcon', fallback: 36),
+          'px',
+        ),
+        'border-radius': CssNum(
+          t.size('radius.conversationHeaderIcon', fallback: 6),
+          'px',
+        ),
+        'background-color': color('layer-conversation-icon'),
+        'color': color('foreground-conversation-icon'),
+        for (final edge in ['top', 'right', 'bottom', 'left']) ...{
+          'border-$edge-width': CssNum(usedBorder, 'px'),
+          'border-$edge-style': const CssKeyword('solid'),
+          'border-$edge-color': color('line-conversation-icon'),
+        },
+      }),
+      headerContent: project(base.headerContent, {
+        'flex-direction': CssKeyword(inline ? 'row' : 'column'),
+        'gap': CssNum(gap, 'px'),
+        'row-gap': CssNum(gap, 'px'),
+        'column-gap': CssNum(gap, 'px'),
+      }),
+      heading: base.heading,
+      title: textSlot(
+        base.title,
+        'type.conversationHeaderTitle',
+        'font.conversationHeaderTitle',
+        'foreground-conversation-title',
+      ),
+      meta: textSlot(
+        base.meta,
+        'type.conversationHeaderMeta',
+        'font.conversationHeaderMeta',
+        'foreground-conversation-meta',
+        size: 12,
+        lineKey: phone
+            ? 'type.conversationHeaderMetaPhone.line'
+            : 'type.conversationHeaderMeta.line',
+      ),
+      status: base.status,
+      activity: base.activity,
+      actions: project(base.actions, {
+        'column-gap': CssNum(
+          t.size(
+            phone
+                ? 'space.conversationHeaderActionsPhone'
+                : 'space.conversationHeaderActions',
+            fallback: 6,
+          ),
+          'px',
+        ),
+      }),
     );
   }
 
@@ -127,7 +237,12 @@ class RaftConversationHeader extends StatelessWidget {
         tokens: rt,
         decorationOverride: (d) => d.copyWith(
           color: paintedFill,
-          border: Border(bottom: BorderSide(color: t.colors['line-muted']!)),
+          border: Border(
+            bottom: BorderSide(
+              color: t.colors['line-conversation-header']!,
+              width: t.size('stroke.conversationHeader', fallback: 1),
+            ),
+          ),
         ),
         child: Row(
           children: [
@@ -143,8 +258,25 @@ class RaftConversationHeader extends StatelessWidget {
             ],
             if (identity != null) ...[
               RaftRecipeBox(
+                key: const ValueKey('conversation-header-icon'),
                 style: recipe.headerIcon,
                 tokens: rt,
+                decorationOverride: (d) => d.copyWith(
+                  boxShadow: [
+                    if (t.size(
+                          'stroke.conversationHeaderIconRing',
+                          fallback: 0,
+                        ) >
+                        0)
+                      BoxShadow(
+                        color: t.colors['line-conversation-icon-ring']!,
+                        spreadRadius: t.size(
+                          'stroke.conversationHeaderIconRing',
+                          fallback: 0,
+                        ),
+                      ),
+                  ],
+                ),
                 alignment: Alignment.center,
                 child: identity,
               ),
@@ -173,19 +305,49 @@ List<Widget> raftConversationHeaderActions({
   VoidCallback? onSearch,
   VoidCallback? onSettings,
 }) => [
-  RaftPanelIconButton(
+  _ConversationHeaderAction(
     key: const ValueKey('channel-topbar-search'),
     glyph: RaftGlyph.search,
     tooltip: searchLabel,
     onPressed: onSearch,
   ),
-  RaftPanelIconButton(
+  _ConversationHeaderAction(
     key: const ValueKey('channel-overflow-trigger'),
     glyph: RaftGlyph.settings,
     tooltip: settingsLabel,
     onPressed: onSettings,
   ),
 ];
+
+class _ConversationHeaderAction extends StatelessWidget {
+  const _ConversationHeaderAction({
+    super.key,
+    required this.glyph,
+    required this.tooltip,
+    this.onPressed,
+  });
+  final RaftGlyph glyph;
+  final String tooltip;
+  final VoidCallback? onPressed;
+  @override
+  Widget build(BuildContext context) =>
+      RaftTokens.of(context).option('panelAction.surface', or: 'outline') ==
+          'ghost'
+      ? RaftButton(
+          label: '',
+          glyph: glyph,
+          tooltip: tooltip,
+          semanticLabel: tooltip,
+          uiVariant: RaftButtonVariant.ghost,
+          uiSize: RaftButtonSize.iconSm,
+          onPressed: onPressed,
+        )
+      : RaftPanelIconButton(
+          glyph: glyph,
+          tooltip: tooltip,
+          onPressed: onPressed,
+        );
+}
 
 /// CSS `white-space: nowrap` collapses every whitespace run (newlines
 /// included) into one space; descriptions are stored with authored newlines.

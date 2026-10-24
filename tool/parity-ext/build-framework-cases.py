@@ -39,23 +39,25 @@ routes = {
 viewports = {
     'desktop': {'width': 1280, 'height': 800, 'density': 1},
     'mobile': {'width': 390, 'height': 844, 'density': 3},
+    'phone-short': {'width': 390, 'height': 480, 'density': 3},
     'tablet': {'width': 856, 'height': 944, 'density': 3},
 }
 cases = []
 for platform, viewport in viewports.items():
+    phone = platform in ('mobile', 'phone-short')
     for mode in ['light', 'dark']:
-        for region in (['frame'] if platform == 'mobile' else ['frame', 'navigation']):
+        for region in (['frame'] if phone else ['frame', 'navigation']):
             name = f'components.framework.{platform}.{region}.default.raft-{mode}'
             cases.append({
-                'id': name, 'title': f'Mounted native-content framework {region}, {platform}, Raft {mode}',
+                'id': name, 'title': f'Mounted {"desktop-shell" if platform == "desktop" else "browser"} framework {region}, {platform}, Raft {mode}',
                 'captureType': 'component-fixture', 'surface': 'framework',
                 'category': 'extension/framework', 'suite': 'raft-flutter-extension',
                 'viewport': {**viewport, 'touch': platform != 'desktop'},
                 'theme': f'raft-{mode}', 'locale': 'en',
                 'variants': [{'id': 'default', 'name': 'Default', 'props': {
-                    'extKind': 'framework', 'extFixture': 'framework', 'platform': platform,
-                    'preset': 'mobile' if platform == 'mobile' else 'default',
-                    'shell': 'browser' if platform == 'mobile' else 'desktop',
+                    'extKind': 'framework', 'extFixture': 'framework', 'platform': 'mobile' if phone else platform,
+                    'preset': 'mobile' if phone else 'default',
+                    'shell': 'desktop' if platform == 'desktop' else 'browser',
                     'region': region, 'parityTheme': f'raft-{mode}',
                     'captureTimeoutMs': 120000,
                 }}],
