@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Nightly quality run for raft-flutter (machine-local, scheduled by cron).
 
-Three jobs on a fresh worktree of origin/cindy/integration, one Chinese summary:
+Four jobs on a fresh worktree of origin/cindy/integration, one Chinese summary:
 
   1. coverage   the app suite (plus raft_ui / raft_client / raft_sync package suites) with
                 `--coverage`, a per-area summary, and a diff-coverage report for every open PR
@@ -12,6 +12,10 @@ Three jobs on a fresh worktree of origin/cindy/integration, one Chinese summary:
   3. random     the app suite runs in a random order (--test-randomize-ordering-seed); the seed is recorded
                 so a failure reproduces. Job 1 and job 3 are the same app run: coverage does not depend on
                 order, and a second 25 minute run would only repeat it.
+  4. visual     the fast subset of the three-level visual suite (tool/nightly_visual.py): L1 frame cases and
+                the key L2 pages at phone and desktop widths, light mode, for the Raft look (against the Web
+                v1.21.23 render) and the Elegant / Brutal looks (against their frozen a57b9dab originals); the
+                summary lists the cases below the 96% line and every drop since the previous night.
 
 The test jobs take the shared gate lock (/tmp/raft-flutter-check.lock, same flock as tool/prepare-handoff)
 so they never overlap a gate; they wait up to --lock-wait-minutes and then record "skipped: gate busy".
@@ -20,7 +24,7 @@ Nothing is committed or pushed; flutter's temp dirs live under a private TMPDIR 
 
 Output: ~/.local/share/raft-nightly/<date>/summary.md (+ summary.json, per-job logs, lcov files).
 Usage:  tool/nightly-quality [--date YYYY-MM-DD] [--seed N] [--lock-wait-minutes M] [--max-prs N] [--no-gate-lock]
-                             [--app-tests PATH ...] [--skip-packages] [--skip-prs] [--skip-osv]
+                             [--app-tests PATH ...] [--skip-packages] [--skip-prs] [--skip-osv] [--skip-visual]
 """
 import argparse
 import collections
@@ -40,6 +44,7 @@ TOOL = pathlib.Path(__file__).resolve().parent
 sys.path.insert(0, str(TOOL))
 import affected_tests  # noqa: E402
 import diff_coverage  # noqa: E402
+import nightly_visual  # noqa: E402
 
 REPO = TOOL.parent
 HOME = pathlib.Path.home()
@@ -340,7 +345,11 @@ def render_summary(data):
             add(f"  - {name}：{why}" + (f"（树内 {len(files)} 个：{', '.join(files[:4])}{'…' if len(files) > 4 else ''}）" if files else ''))
     add('')
 
-    add('## 5. 运行记录')
+    add('## 5. 视觉回归（框架 / 页面 / 组件三级，快速子集）')
+    nightly_visual.render(data.get('visual'), add)
+    add('')
+
+    add('## 6. 运行记录')
     for line in data.get('notes', []):
         add(f'- {line}')
     add(f"- 原始输出：`{data['out']}`")
@@ -672,6 +681,30 @@ class Run:
         return {'status': status, 'lines': lines, 'executable': result['executable'], 'covered': result['covered'],
                 'cacheable': not failed and not incomplete}
 
+    def visual_job(self):
+        """Fast subset of the three-level visual suite (tool/nightly_visual.py); never ends the night."""
+        source = nightly_visual.source_dir(HOME)
+        if source is None:
+            self.data['visual'] = {'error': '未运行：没有固定的 Web 源码检出（RAFT_PARITY_SOURCE 或 ~/.cache/raft-flutter/raft-source-23）'}
+            return
+        out = self.out / 'visual'
+        env = nightly_visual.environment(self.env, source)
+        env.setdefault('PARITY_TOOLCHAIN_PATHS', str(HOME / 'github/raft-flutter/.local/toolchain-paths.txt'))
+        done = run(nightly_visual.command(self.worktree, out), self.worktree, self.out / 'visual.log',
+                   min(self.args.visual_timeout_minutes * 60, self.remaining()), env)
+        summary = out / 'regress-summary.json'
+        if done['timed_out'] or not summary.is_file():
+            self.data['visual'] = {'error': f"未完成：退出码 {done['code']}" + ('，超时' if done['timed_out'] else '') + '（见 visual.log）'}
+            return
+        previous = pick_previous(self.args.out_dir, self.date)
+        before = None
+        if previous:
+            try:
+                before = (json.loads(previous.read_text()).get('visual') or {}).get('scores')
+            except (OSError, ValueError):
+                before = None
+        self.data['visual'] = nightly_visual.summarize(summary, before)
+
     def cleanup(self):
         shutil.rmtree(self.tmp, ignore_errors=True)
         for stale in pathlib.Path('/tmp').glob('raft-nightly-tmp-*'):
@@ -718,6 +751,8 @@ def main(argv=None):
     parser.add_argument('--skip-packages', action='store_true')
     parser.add_argument('--skip-prs', action='store_true')
     parser.add_argument('--skip-osv', action='store_true')
+    parser.add_argument('--skip-visual', action='store_true', help='skip the visual regression job (tool/nightly_visual.py)')
+    parser.add_argument('--visual-timeout-minutes', type=float, default=75)
     args = parser.parse_args(argv)
     if args.seed is None:
         args.seed = random.SystemRandom().randrange(1, 2**31)
@@ -746,6 +781,11 @@ def main(argv=None):
                 run_.note(data['skipped'])
             else:
                 run_.tests_job()
+                if not args.skip_visual:
+                    try:
+                        run_.visual_job()
+                    except Exception as error:  # the visual job must not end the night
+                        data['visual'] = {'error': f'异常：{type(error).__name__}: {error}'}
                 if args.skip_prs:
                     data['prs_note'] = '未运行：按参数跳过（--skip-prs）'
                 else:

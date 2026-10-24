@@ -172,11 +172,20 @@ class ParityContext {
     'raft-dark' => (pack: raftThemePackId, dark: true),
     _ => throw ArgumentError.value(name, 'override', 'Unknown parity theme'),
   };
-  if (override != null && override.isNotEmpty) return named(override);
   final props =
       ((visualCase['variants'] as List?)?.firstOrNull as Map?)?['props']
           as Map?;
   final extTheme = props?['parityTheme'];
+  // `<look>-case` (raft-case, elegant-case, brutal-case): the look is forced,
+  // the brightness still follows the case's own `parityTheme` (a name that ends
+  // in `dark` renders dark). The coverage runner uses it to render one case
+  // list in every look (tool/parity-ext/run --theme).
+  if (override != null && override.endsWith('-case')) {
+    final look = override.substring(0, override.length - '-case'.length);
+    final dark = extTheme is String && extTheme.endsWith('dark');
+    return named('$look-${dark ? 'dark' : 'light'}');
+  }
+  if (override != null && override.isNotEmpty) return named(override);
   if (extTheme is String) return named(extTheme);
   return (pack: raftThemePackId, dark: false);
 }
@@ -547,7 +556,14 @@ Future<void> _androidInteractions(
   TestGesture? mouse;
   for (final raw in steps.cast<Map>()) {
     final key = raw['type'] == 'key' ? null : raw['key'] as String?;
-    final target = key == null ? null : find.byKey(ValueKey(key));
+    // `finder`: a control that carries no ValueKey (control-state cases,
+    // tool/parity-ext/build-states-cases.py): {text|tooltip|label|key, nth?, in?}.
+    final finderSpec = raw['finder'] as Map?;
+    final target = finderSpec != null
+        ? parityFinder(finderSpec)
+        : key == null
+        ? null
+        : find.byKey(ValueKey(key));
     // Like Playwright's actionability wait: the target may appear after the
     // fixture reads settle (up to 2s of fake time).
     for (
@@ -686,6 +702,64 @@ Future<void> _androidInteractions(
               .first,
           raw['text'] as String,
         );
+      case 'hold':
+        // Pointer down on the control and no release: the pressed state.
+        mouse ??= await t.createGesture(kind: PointerDeviceKind.mouse);
+        try {
+          await mouse.addPointer(location: Offset.zero);
+        } on AssertionError {
+          // The mouse device is already added.
+        }
+        await mouse.moveTo(t.getCenter(target!.first));
+        await mouse.down(t.getCenter(target.first));
+        addTearDown(() async {
+          try {
+            await mouse?.up();
+          } on Object {
+            // Already released.
+          }
+        });
+      case 'focus':
+        // Keyboard focus ring on the control (the Web case calls locator.focus() after no pointer use).
+        FocusManager.instance.highlightStrategy =
+            FocusHighlightStrategy.alwaysTraditional;
+        FocusNode? node;
+        for (final e
+            in find
+                .descendant(of: target!.first, matching: find.byType(Focus))
+                .evaluate()) {
+          final n = (e.widget as Focus).focusNode ?? Focus.maybeOf(e);
+          if (n != null && n.canRequestFocus) {
+            node = n;
+            break;
+          }
+        }
+        node ??= Focus.maybeOf(t.element(target.first));
+        node?.requestFocus();
+        await t.pump();
+      case 'tab':
+        // Keyboard focus: Tab `count` times (the Web case presses Tab the same number of times).
+        for (var i = 0; i < ((raw['count'] as num?) ?? 1).toInt(); i++) {
+          await t.sendKeyEvent(LogicalKeyboardKey.tab);
+          await t.pump(const Duration(milliseconds: 50));
+        }
+      case 'mark':
+        // Crop marker over the control (plus `pad`), the counterpart of the
+        // Web `mark` interaction: the capture selector / androidKey is `states-crop`.
+        await t.pump(const Duration(milliseconds: 300));
+        final markPad = ((raw['pad'] as num?) ?? 6).toDouble();
+        final markRect = t.getRect(target!.first).inflate(markPad);
+        final overlay = t.state<OverlayState>(find.byType(Overlay).first);
+        overlay.insert(
+          OverlayEntry(
+            builder: (_) => Positioned.fromRect(
+              rect: markRect,
+              child: const IgnorePointer(
+                child: SizedBox.expand(key: ValueKey('states-crop')),
+              ),
+            ),
+          ),
+        );
       case 'key':
         final name = raw['key'] as String;
         final logical = switch (name) {
@@ -693,6 +767,7 @@ Future<void> _androidInteractions(
           'arrowUp' => LogicalKeyboardKey.arrowUp,
           'enter' => LogicalKeyboardKey.enter,
           'escape' => LogicalKeyboardKey.escape,
+          'tab' => LogicalKeyboardKey.tab,
           _ => throw StateError('unknown androidInteraction key $name'),
         };
         await t.sendKeyEvent(logical);
@@ -704,6 +779,25 @@ Future<void> _androidInteractions(
     await t.pump(const Duration(milliseconds: 50));
     await t.pump(const Duration(milliseconds: 300));
   }
+}
+
+/// The widget a control-state interaction names without a ValueKey:
+/// `{text}`, `{tooltip}`, `{label}` (semantics label), `{key}`; `in` scopes it under a keyed
+/// ancestor, `nth` picks one of several matches.
+Finder parityFinder(Map spec) {
+  Finder base = spec['text'] != null
+      ? find.text(spec['text'] as String)
+      : spec['tooltip'] != null
+      ? find.byTooltip(spec['tooltip'] as String)
+      : spec['label'] != null
+      ? find.bySemanticsLabel(spec['label'] as String)
+      : find.byKey(ValueKey(spec['key'] as String));
+  final scope = spec['in'] as String?;
+  if (scope != null) {
+    base = find.descendant(of: find.byKey(ValueKey(scope)), matching: base);
+  }
+  final nth = (spec['nth'] as num?)?.toInt();
+  return nth == null ? base : base.at(nth);
 }
 
 String _hex(Color? c) {

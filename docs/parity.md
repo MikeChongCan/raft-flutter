@@ -289,6 +289,70 @@ same-row double tap = open) applies at every multi-column width (>= 768 dp,
 (`DesktopActivityFlag.masterDetail`; covered by
 `test/activity_fold_widths_test.dart`.)
 
+## Visual suite levels and looks (owner scope 2026-10-24)
+
+The visual suite has three explicit levels, because a theme change can move any of them:
+
+| level | what | cases |
+| --- | --- | --- |
+| L1 frame | app frame: window, top bar, rail, sidebar, mobile tab bar, channel header, panel layout, at phone / tablet / desktop widths | `components.frame.*` (new, the real Web `MainLayout` vs the real `WorkspaceView`), `components.shell.*` rail + sidebar states, `components.channelheader.*`, official `components.navigation.tabbar.states`, `components.home.titlebar.states`, `components.thread.header.states` |
+| L2 page | every main page / route as a whole-page capture | `screens.*`, `components.settings.*.page`, `components.ext-settings.*`, `components.members-pages.*` (incl. `window.*` whole-window cases), `components.list-pages.*`, computers, tasks, auth / public pages, Raftbench |
+| L3 component | official component cases and the extension dialogs, menus, rows and cards | everything else |
+
+`tool/parity-ext/levels.py` is the only place that assigns an id to a level (`unassigned()` reports a family it does not know).
+Looks and what each is compared with:
+
+* **raft**: Flutter in the Raft look against the pinned Web v1.21.23 render (the default pipelines).
+* **elegant / brutal**: Flutter in that look against its own frozen original, the a57b9dab render captured once
+  (`tool/theme-baseline` for the official cases and the extension desktop cases, `tool/parity-ext/frozen-capture` for the
+  rest; registry `tool/parity-ext/frozen-baselines.json`, files under `$PARITY_FROZEN_ROOT`, default `/mnt/data/theme-baseline`).
+  They never move because the look is a new pixel contract: a regression means the look drifted from itself.
+
+One command runs any slice and writes one summary (level x look x mode):
+
+```bash
+tool/parity-ext/run regress --level frame|page|component|all --theme raft|elegant|brutal|all --mode light|dark|all [--fast] [--out DIR]
+tool/parity-ext/run regress --plan-only        # case counts per job, nothing runs
+tool/parity-ext/run regress --summary-only     # rebuild <out>/regress-summary.md from the job directories
+```
+
+Official ids run through `tool/parity`, extension ids through `tool/parity-ext/run run`, one job per (look, mode) in
+`<out>/<look>-<mode>/{official,ext}/`; the Raft jobs set `PARITY_THEME_OVERRIDE=raft-case` (the Flutter harness renders every
+extension case in the Raft pack, brightness from the case's own theme name), the Elegant / Brutal jobs add `--frozen`.
+Pass line is the tool's own: `pixelPerfectSimilarity > 0.96`. `--fast` is the nightly subset (`tool/nightly_visual.py`, job 4
+of `tool/nightly-quality`): L1 frame + the key L2 pages (`levels.FAST_PAGES`), phone and desktop widths, light.
+
+Official cases the tool cannot run (20 of 119: 18 `baselineStatus: pending`, 2 hidden) have no React capture upstream;
+`tool/parity-ext/official-skipped.json` maps each to the extension cases that render the same Web page, and
+`docs/parity-coverage-map.md` reports their scores.
+
+### Control states (owner scope 2026-10-24)
+
+Level cases show a surface at rest; the controls on it have states. `components.states.<platform>.<control>.<state>` (L1 for the
+frame's controls, L2 for page controls such as the composer) crops one control in one state, on the same real Web `MainLayout` /
+Flutter `WorkspaceView` scenes as `components.frame.*`: default, selected, hover (pointer over it), pressed (`hold`: pointer down,
+no release), keyboard focus (`focus`: `locator.focus()` / `FocusNode.requestFocus()` under the traditional highlight), disabled and
+checked. The crop is a transparent marker (`mark` step) over the control plus 6 px, so a focus ring or a pressed shadow is inside it.
+`tool/parity-ext/build-states-cases.py` lists the controls (`CONTROLS`), their Web locator and Flutter `ValueKey`, the states, and
+clones existing `ext-settings` cases for settings controls. The Web steps `hold`, `focus`, `mark` are `SPEC_STATES_PATCHES` in
+`tool/parity-ext/run` and are not part of the React cache key (the cases carry `machineryRev`; bump it when the steps change).
+`docs/parity-coverage-map.md` lists, per control family, the states the Web has and the ones captured; touch hosts have no hover.
+
+### Theme isolation (owner scope 2026-10-24)
+
+Three checks that one look cannot leak into another, none of which changes product code:
+
+* `tool/parity-ext/theme-isolation`: runtime switch. Each representative L1 / L2 surface is pumped in look A, the app theme is
+  switched to look B the way the app root does (same `MaterialApp`, new `theme` / `darkTheme` / `themeMode`, widgets keep their
+  State), settled, and compared byte for byte with a fresh launch in B; every ordered pair of raft / elegant / brutal x light /
+  dark (30 pairs, Brutal dark is the Brutal light column by decision). `distinctLooks` in `done.jsonl` says how many of the
+  fresh renders differ, so a clean result is meaningful. The first fresh render of a process is discarded (one-time async work).
+* `tool/parity-ext/pack-audit`: Elegant and Brutal `extends: raft`, so a name they do not write is the Raft value. The audit lists
+  per tier what is inherited, checks every colour role of the original look (`docs/theme-contract/values.json`) against what the
+  pack resolves to, and lists the Raft-only colour roles that components read.
+* `tool/parity-ext/literal-audit`: colour, typography, shape and geometry literals in `packages/raft_ui/lib` and
+  `apps/raft_flutter/lib` that bypass the contract (the `tool/ds-audit` scanner), per category and file.
+
 ## One command
 
 ```bash

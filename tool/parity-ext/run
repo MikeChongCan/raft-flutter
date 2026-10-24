@@ -58,6 +58,7 @@ sys.path.insert(0, str(EXT))
 import builders  # noqa: E402  (tool/parity-ext/builders.py)
 import react_cache  # noqa: E402  (tool/parity-ext/react_cache.py)
 import sampling  # noqa: E402  (tool/parity-ext/sampling.py: theme sampling rule)
+import frozen_ref  # noqa: E402  (tool/parity-ext/frozen_ref.py: frozen a57b9dab references)
 
 _ad_loader = importlib.machinery.SourceFileLoader('parity_ext_analyze_diffs', str(EXT / 'analyze-diffs.py'))
 analyze = importlib.util.module_from_spec(importlib.util.spec_from_loader(_ad_loader.name, _ad_loader))
@@ -161,6 +162,32 @@ SPEC_EXT_PATCHES = [
      '      await parityExtDomDump(page, selector, visualCase.id, process.env.PARITY_EXT_DOM_DUMP);\n'
      '      return;\n'
      '    }\n'),
+]
+# Control-state interactions (components.states.*, build-states-cases.py). Applied after SPEC_EXT_PATCHES and
+# deliberately NOT part of capture_machinery(): the cache key of every older case must not change; the state cases carry
+# `machineryRev` in their props instead (bump it when these steps change).
+SPEC_STATES_PATCHES = [
+    ('    } else if (interaction.type === "fill" && interaction.target) {',
+     '    } else if ((interaction.type as string) === "hold" && interaction.target) {\n'
+     '      // Pointer down on the control, no release: the pressed state.\n'
+     '      const holdBox = await page.locator(interaction.target).first().boundingBox();\n'
+     '      await page.mouse.move(holdBox!.x + holdBox!.width / 2, holdBox!.y + holdBox!.height / 2);\n'
+     '      await page.mouse.down();\n'
+     '    } else if ((interaction.type as string) === "focus" && interaction.target) {\n'
+     '      await page.locator(interaction.target).first().focus();\n'
+     '    } else if ((interaction.type as string) === "tab") {\n'
+     '      // Keyboard focus: Tab `count` times.\n'
+     '      for (let n = 0; n < Number((interaction as { count?: number }).count ?? 1); n++) await page.keyboard.press("Tab");\n'
+     '    } else if ((interaction.type as string) === "mark" && interaction.target) {\n'
+     '      // Crop marker over the control (+ pad px): the capture selector is [data-testid="states-crop"].\n'
+     '      await page.locator(interaction.target).first().evaluate((el: Element, pad: number) => {\n'
+     '        const r = el.getBoundingClientRect();\n'
+     '        const m = document.createElement("div");\n'
+     '        m.setAttribute("data-testid", "states-crop");\n'
+     '        m.style.cssText = `position:fixed;left:${r.left - pad}px;top:${r.top - pad}px;width:${r.width + 2 * pad}px;height:${r.height + 2 * pad}px;pointer-events:none`;\n'
+     '        document.body.appendChild(m);\n'
+     '      }, Number((interaction as { pad?: number }).pad ?? 6));\n'
+     '    } else if (interaction.type === "fill" && interaction.target) {'),
 ]
 SPEC_EXT_APPENDIX = r'''
 
@@ -341,7 +368,7 @@ def react_capture(cases, refresh, dom_dump=None):
     config = parity.prepare_react_provider()
     spec_file = parity.REACT_GEN / 'react-provider.spec.ts'
     code = spec_file.read_text()
-    for old, new in SPEC_EXT_PATCHES:
+    for old, new in SPEC_EXT_PATCHES + SPEC_STATES_PATCHES:
         code = parity.patch_exactly_once(code, old, new, 'react-provider.spec.ts (extension)')
     spec_file.write_text(code + SPEC_EXT_APPENDIX)
     conf = config.read_text()
@@ -521,7 +548,13 @@ def cmd_run(a):
     chosen = parity.select(ext_cases(), a.cases)
     if not chosen:
         sys.exit(f'no extension cases match {a.cases!r}')
-    react_capture(chosen, a.refresh_react)
+    if a.frozen:
+        # Elegant / Brutal: the reference is the frozen a57b9dab render, not the Web (frozen_ref.py).
+        found, missing = frozen_ref.install(parity.RESULTS, [c['id'] for c in chosen], frozen_ref.search_dirs('ext'))
+        print(f'frozen references: {len(found)} found, {len(missing)} without a frozen image', flush=True)
+        (OUT / 'frozen-missing.json').write_text(json.dumps(missing, indent=1))
+    else:
+        react_capture(chosen, a.refresh_react)
     if not a.skip_flutter:
         os.environ['PARITY_MANIFEST'] = str(MANIFEST)
         os.environ['PARITY_EXT_FIXTURES'] = str(FIXTURES)
@@ -607,7 +640,13 @@ def main():
     r.add_argument('--refresh-react', action='store_true')
     r.add_argument('--shards', type=int, default=int(os.environ.get('PARITY_SHARDS', '4')))
     r.add_argument('--skip-flutter', action='store_true')
+    r.add_argument('--frozen', action='store_true',
+                   help='compare against the frozen a57b9dab images (Elegant / Brutal looks) instead of the Web render')
     r.set_defaults(fn=cmd_run)
+    g = sub.add_parser('regress', help='three-level (frame / page / component) x look (raft / elegant / brutal) regression')
+    import regress  # noqa: E402  (tool/parity-ext/regress.py)
+    regress.add_arguments(g)
+    g.set_defaults(fn=regress.command)
     d = sub.add_parser('dom-dump', help='diagnostic: dump the Web DOM geometry/style of the capture target per case')
     d.add_argument('--cases', default='components.search-overlay.*', help='ids or globs (default: search overlay)')
     d.add_argument('--out', default=str(OUT / 'react-dom'))

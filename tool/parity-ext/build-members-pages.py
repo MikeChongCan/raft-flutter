@@ -206,6 +206,14 @@ for platform in ('desktop', 'phone'):
         add(platform, 'list.error', 'Members page: humans failed to load', 'main', selector=VIEW, android_key=None,
             hint=LIST_HINT, props={'route': '/members', 'humans': 'none', 'membersError': 'true'}, route_set='list-error')
 
+    # ---- L2 whole-window pages (visual levels, docs/parity.md): the members list, a human profile and the agent
+    # profile as the whole window (desktop: top bar + rail + sidebar + content; phone: the page + tab bar). The
+    # desktop cases above crop the content column; these are the same routes captured whole.
+    add(platform, 'window.members', 'Members page, whole window', 'main', selector=VIEW, android_key=None, hint=LIST_HINT,
+        props={'route': '/members'})
+    human_main(platform, 'window.human', 'Human profile, whole window', selector=VIEW, android_key=None)
+    agent_main(platform, 'window.agent', 'Agent profile, whole window', selector=VIEW, android_key=None)
+
     # ---- 7.04 human profile actions (phone) / 7.05 role help
     if phone:
         human_main(platform, 'human.edit-role', 'Human profile: editing the role',

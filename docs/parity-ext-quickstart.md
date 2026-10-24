@@ -23,6 +23,15 @@ One page for adding or fixing a surface in the extension suite
    (a duplicate id throws at startup). Reasons for ids without a widget go in a `Map<String, ParityUncovered> ext<Area>Uncovered`.
    Crop with `capture.androidKey` (a `ValueKey` in the widget); interactions with `capture.androidInteractions`.
 
+## Levels and looks
+
+Every case belongs to a level (frame / page / component, `tool/parity-ext/levels.py`: add your surface there) and renders in
+three looks. Cases name their old theme (`brutal`, `elegant`, `elegant-dark`); on the Web all three light names are the one Raft
+page and `elegant-dark` is its dark mode, so the Raft look reads one light and one dark name per case. Slice runs:
+`tool/parity-ext/run regress --level page --theme raft --mode light` (docs/parity.md "Visual suite levels and looks").
+A new whole-window page case belongs in an existing family when the route is already there (e.g. `build-members-pages.py`
+`window.*`); a new family needs a `host/<Area>Cases.tsx`, a builder and `cases/ext_<area>.dart` as above.
+
 ## Run only your cases
 
 ```bash

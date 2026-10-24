@@ -19,7 +19,6 @@ import {
 } from "raft-ui";
 import { LeftRail as ParityExtShLeftRail } from "../src/components/layout/LeftRail";
 import { MobileTabBar as ParityExtShMobileTabBar } from "../src/components/layout/MainLayout";
-import ParityExtShMobileBottomBarStack from "../src/components/layout/MobileBottomBarStack";
 import ParityExtShConfirmDialog from "../src/components/ConfirmDialog";
 import ParityExtShBanner from "../src/components/ui/Banner";
 import ParityExtShEmptyState from "../src/components/ui/EmptyState";
@@ -223,18 +222,12 @@ function ParityExtShView({ p }: { p: ParityExtShProps }) {
               <Route path="/s/:serverSlug/*" element={<Sidebar mobileInline />} />
             </Routes>
           </div>
-          {/* MainLayout MobileBottomBarStack: Brutal keeps the tab bar in flow
-              under the page, Elegant floats the capsule over it (the list
-              clears it with `mobile-nav-clearance`). */}
+          {/* MainLayout (v1.21.23): the tab bar is an in-flow edge bar under the page
+              (MobileTabBar, raft-ui MobileNavRoot); the older floating stack is gone. */}
           <div style={{ pointerEvents: "none" }}>
             {/* The capture parks the mouse in the viewport's bottom-right corner,
                 which would paint the Settings tab hovered; Flutter has no hover. */}
-            <ParityExtShMobileBottomBarStack
-              showLiveActivity={false}
-              liveActivity={null}
-              tabBar={<ParityExtShMobileTabBar />}
-              floating={p.theme !== "brutal-light"}
-            />
+            <ParityExtShMobileTabBar />
           </div>
         </div>
       </main>
