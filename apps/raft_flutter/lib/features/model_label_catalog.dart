@@ -54,8 +54,9 @@ ModelLabelMap? parseModelLabelCatalog(Object? value) {
 }
 
 /// One catalog per workspace session. Notifies when a catalog is accepted.
-/// A plain listener list, not a [ChangeNotifier]: the store lives and dies
-/// with the session that owns it and has no lifecycle of its own to dispose.
+/// A plain listener list, not a [ChangeNotifier]. The store made by [of] is
+/// disposed with its session, so its accepted catalog leaves
+/// [AgentModelLabelRegistry] (a static map) together with the workspace.
 class ModelLabelCatalogStore implements Listenable {
   ModelLabelCatalogStore(this.w, {DateTime Function()? clock})
     : _clock = clock ?? DateTime.now {
@@ -65,7 +66,13 @@ class ModelLabelCatalogStore implements Listenable {
 
   /// The store of a workspace session.
   factory ModelLabelCatalogStore.of(WorkspaceController w) =>
-      _stores[w] ??= ModelLabelCatalogStore(w);
+      _stores[w] ??= _sessionStore(w);
+  static ModelLabelCatalogStore _sessionStore(WorkspaceController w) {
+    final store = ModelLabelCatalogStore(w);
+    w.services.disposeWithSession(store.dispose);
+    return store;
+  }
+
   static final _stores = Expando<ModelLabelCatalogStore>();
 
   final WorkspaceController w;
@@ -173,6 +180,7 @@ class ModelLabelCatalogStore implements Listenable {
   }
 
   void dispose() {
+    if (_disposed) return;
     _disposed = true;
     w.removeListener(_workspaceChanged);
     AgentModelLabelRegistry.forget(this);
