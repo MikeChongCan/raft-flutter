@@ -242,6 +242,9 @@ def framework_colors(column, colors):
         'foreground-sidebar-mention': colors['sticker-ink'] if raft else colors['primary-strong'],
         'line-sidebar-mention': colors['sticker-ink'] if raft else colors['line-strong'],
         'foreground-sidebar-entry': colors['foreground'] if raft else colors['foreground-muted'],
+        'foreground-sidebar-entry-icon': colors['foreground-hint'] if raft else colors['foreground-strong'],
+        'foreground-sidebar-saved-icon': colors['foreground-hint'] if raft else colors['foreground-muted'],
+        'foreground-sidebar-saved-icon-hover': colors['foreground-hint'] if raft else colors['foreground'],
         'foreground-sidebar-item': colors['foreground'] if raft else colors['foreground-muted'],
         'foreground-sidebar-item-active': colors['sticker-ink'] if raft else colors['foreground-strong'],
         'foreground-sidebar-item-icon': colors['foreground-hint'] if raft else colors['foreground-icon'],
@@ -276,6 +279,7 @@ def framework_colors(column, colors):
         'line-sidebar-heading-workspace': colors['line-seam'] if raft else '{palette.workspaceHeadingEdge}' if brutal else colors['line-muted'],
         'line-sidebar-frame': colors['line-seam'] if raft else '{palette.workspaceRailInk}' if brutal else colors['line-muted'],
         'foreground-sidebar-section': colors['foreground-hint'] if raft else '{palette.workspaceRailInk}' if brutal else colors['foreground-strong'],
+        'foreground-sidebar-section-control': colors['foreground-strong'] if raft else colors['foreground-muted'],
         'foreground-sidebar-section-hover': colors['foreground-strong'] if raft else '{palette.sidebarSectionHover}' if brutal else colors['foreground-muted'],
         'foreground-sidebar-section-count': colors['foreground-hint'] if raft else '{palette.sidebarSectionCount}' if brutal else colors['foreground-placeholder'],
     }

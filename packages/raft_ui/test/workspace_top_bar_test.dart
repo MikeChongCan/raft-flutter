@@ -187,6 +187,127 @@ void main() {
       await t.pumpWidget(const SizedBox.shrink());
     });
   }
+  testWidgets('out-of-range current stays outside the sortable head', (
+    t,
+  ) async {
+    t.view.devicePixelRatio = 1;
+    t.view.physicalSize = const Size(856, 944);
+    addTearDown(t.view.reset);
+    final menu = RaftMenuController();
+    addTearDown(menu.dispose);
+    final moves = <List<int>>[];
+    await t.pumpWidget(
+      MaterialApp(
+        theme: raftTheme(),
+        home: Scaffold(
+          body: Column(
+            children: [
+              RaftWorkspaceTopBar(
+                workspace: RaftServerSwitcher(
+                  controller: menu,
+                  workspaceName: 'G',
+                  label: 'Switch Server',
+                  topBar: true,
+                  rows: [
+                    for (final id in ['a', 'b', 'c', 'd', 'e', 'f', 'g'])
+                      RaftServerMenuRow(
+                        id: id,
+                        name: id.toUpperCase(),
+                        slug: id,
+                        current: id == 'g',
+                        onSelected: () {},
+                      ),
+                  ],
+                  actions: const [],
+                  onReorder: (from, to) => moves.add([from, to]),
+                ),
+                onSearch: () {},
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    await t.pumpAndSettle();
+    final lastHead = find.byKey(const ValueKey('topbar-workspace-c'));
+    final current = find.byKey(const ValueKey('topbar-workspace-g'));
+    expect(lastHead, findsOneWidget);
+    expect(current, findsOneWidget);
+    await t.tap(lastHead);
+    await t.sendKeyEvent(LogicalKeyboardKey.space);
+    await t.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+    await t.sendKeyEvent(LogicalKeyboardKey.space);
+    expect(moves, isEmpty, reason: 'current tail is not a sortable target');
+    await t.pump();
+    final pointer = await t.startGesture(
+      t.getCenter(lastHead),
+      kind: PointerDeviceKind.mouse,
+    );
+    await pointer.moveTo(t.getCenter(current));
+    await t.pump();
+    await pointer.up();
+    await t.pump();
+    expect(moves, isEmpty);
+    await t.pumpWidget(const SizedBox.shrink());
+  }, variant: TargetPlatformVariant.only(TargetPlatform.linux));
+  testWidgets(
+    'strip activation uses pointer distance before horizontal restriction',
+    (t) async {
+      t.view.devicePixelRatio = 1;
+      t.view.physicalSize = const Size(1280, 800);
+      addTearDown(t.view.reset);
+      final menu = RaftMenuController();
+      addTearDown(menu.dispose);
+      await t.pumpWidget(
+        MaterialApp(
+          theme: raftTheme(),
+          home: Scaffold(
+            body: Column(
+              children: [
+                RaftWorkspaceTopBar(
+                  workspace: RaftServerSwitcher(
+                    controller: menu,
+                    workspaceName: 'A',
+                    label: 'Switch Server',
+                    topBar: true,
+                    rows: [
+                      for (final id in ['a', 'b', 'c'])
+                        RaftServerMenuRow(
+                          id: id,
+                          name: id.toUpperCase(),
+                          slug: id,
+                          current: id == 'a',
+                          onSelected: () {},
+                        ),
+                    ],
+                    actions: const [],
+                    onReorder: (_, _) {},
+                  ),
+                  onSearch: () {},
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+      await t.pumpAndSettle();
+      final pointer = await t.startGesture(
+        t.getCenter(find.byKey(const ValueKey('topbar-workspace-b'))),
+        kind: PointerDeviceKind.mouse,
+      );
+      await pointer.moveBy(const Offset(0, 7));
+      await t.pump();
+      expect(
+        find.byWidgetPredicate((w) => w is Opacity && w.opacity == .3),
+        findsOneWidget,
+        reason: 'WorkspaceStripSortableAvatar uses opacity-30 after distance6',
+      );
+      await pointer.cancel();
+      await t.pumpAndSettle();
+      await t.pumpWidget(const SizedBox.shrink());
+    },
+    variant: TargetPlatformVariant.only(TargetPlatform.linux),
+  );
   testWidgets(
     'workspace strip keyboard reorders and Escape cancels without switching',
     (t) async {

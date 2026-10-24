@@ -258,5 +258,17 @@
   "GET /tasks/channel/shell-partner": {
    "tasks": []
   }
+ },
+ "agentActivities": {
+  "agent-cindy": {
+   "activity": "working",
+   "activityDetail": "Capturing visual testing baselines",
+   "detailKind": "other"
+  },
+  "agent-product-ux": {
+   "activity": "online",
+   "activityDetail": "Reviewing screenshots",
+   "detailKind": "other"
+  }
  }
 }

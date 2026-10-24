@@ -55,6 +55,14 @@ WorkspaceController shellWorkspace(
   final cindy = base.agent('cindy');
   final productUx = base.agent('productUx');
   final designer = base.human('designer');
+  Map activityWire(Map a) {
+    if (ctx.props['extKind'] != 'framework') return a;
+    final frames =
+        (ctx.fixtures['ext:framework'] as Map)['agentActivities'] as Map;
+    final live = frames[a['id']];
+    return live is Map ? live : a;
+  }
+
   Map<String, dynamic> agentWire(Map<String, dynamic> a) => {
     'id': a['id'],
     'serverId': 'visual-server',
@@ -67,8 +75,10 @@ WorkspaceController shellWorkspace(
       'external': a['external'],
     },
     'status': a['status'],
-    'activity': a['activity'],
-    'activityDetail': a['activityDetail'],
+    // FrameworkCases primes these newer live frames over the shared snapshot.
+    // Historical shell cases retain their original inputs.
+    'activity': activityWire(a)['activity'],
+    'activityDetail': activityWire(a)['activityDetail'],
     'deletedAt': null,
   };
   final order = <String, dynamic>{

@@ -1126,3 +1126,14 @@ rail 在栏下的导航顶部留 8px（矮屏 4px），没有栏时保留原间�
 顶部搜索菜单读取真实搜索框的全局位置，顶部与搜索框顶部重合；窗口居中，
 宽度至少为搜索框或 min(720px,92vw)，高度沿用 min(680px,80vh) 并留底边 24px。
 没有顶部搜索框时保留原来的居中回退位置。
+
+侧栏分组操作图标使用 `foreground-sidebar-section-control`：Raft 引用
+`foreground-strong`（Web SidebarSectionControl 的 ghost 按钮），Elegant／Brutal
+引用 `foreground-muted`，保持 a57 默认态；悬停和键盘焦点仍使用原来的强前景。
+
+导航入口的图标颜色独立于文案：`foreground-sidebar-entry-icon`、
+`foreground-sidebar-saved-icon`、`foreground-sidebar-saved-icon-hover` 在 Raft
+均引用 `foreground-hint`（Sidebar.tsx 的 SIDEBAR_ENTRY_ICON_CLASS，以及 Saved
+的 SidebarItemIcon）。旧两套外观分别保留普通入口强前景、Saved 默认弱前景及
+悬停 foreground；选中态沿用原强前景。`RaftControlRecipe.iconForegroundFor`
+默认转发文字颜色，只有这些导航入口覆盖，其他配方维持原行为。

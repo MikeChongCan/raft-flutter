@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
+import 'package:raft_client/raft_client.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_ui/raft_ui.dart';
@@ -8,6 +10,53 @@ import 'mounted_message_navigation_test.dart' show pageFixture, mountPage;
 // MainLayout shouldShowTopBar: a wide browser/tablet shell owns the bar; a
 // native desktop window owns its own chrome, and a narrow phone has no bar.
 void main() {
+  for (final dark in [false, true]) {
+    testWidgets('top bar pointer reorder saves Source order/$dark', (t) async {
+      final (w, api) = await pageFixture(t);
+      w.servers = [
+        w.server!,
+        for (final id in ['s2', 's3'])
+          RaftRecord({'id': id, 'name': id, 'slug': id, 'role': 'owner'}),
+      ];
+      api.routes['GET /agents'] = (_) => [];
+      api.routes['GET /servers/s1/members'] = (_) => [];
+      api.routes['GET /servers/unread-summary'] = (_) => [];
+      final writes = <dynamic>[];
+      api.routes['PATCH /servers/order'] = (request) {
+        writes.add(request.data);
+        return request.data;
+      };
+      await mountPage(t, w, dark, width: 1280, browserHost: true);
+      final uri = w.location.toString(), history = w.navigation.index;
+      final other = find.byKey(const ValueKey('topbar-workspace-s2'));
+      final target = find.byKey(const ValueKey('topbar-workspace-s3'));
+      expect(other, findsOneWidget);
+      expect(target, findsOneWidget);
+      final mouse = await t.startGesture(
+        t.getCenter(other),
+        kind: PointerDeviceKind.mouse,
+      );
+      await mouse.moveTo(t.getCenter(target));
+      await t.pump();
+      await mouse.up();
+      await t.runAsync(() async {
+        await Future<void>.delayed(const Duration(milliseconds: 20));
+      });
+      await t.pumpAndSettle();
+      expect(writes, [
+        {
+          'serverOrder': ['s1', 's3', 's2'],
+        },
+      ]);
+      expect(w.servers.map((s) => s.id), ['s1', 's3', 's2']);
+      expect(w.server!.id, 's1');
+      expect(w.location.toString(), uri);
+      expect(w.navigation.index, history);
+      expect(t.getCenter(target).dx, lessThan(t.getCenter(other).dx));
+      expect(t.takeException(), isNull);
+      await t.pumpWidget(const SizedBox.shrink());
+    }, variant: TargetPlatformVariant.only(TargetPlatform.linux));
+  }
   testWidgets(
     'short browser host keeps the bottom bar without a native side rail',
     (t) async {

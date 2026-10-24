@@ -34,7 +34,20 @@ routes = {
     },
     **{f'GET /tasks/channel/{channel["id"]}': {'tasks': []} for channel in shell['channels']},
 }
-(HERE / 'fixtures/framework.json').write_text(json.dumps({'routes': routes}, indent=1) + '\n')
+# The pinned primeDirectVisualStores hydrates these newer live frames over
+# fixtureData.agents (whose Product UX snapshot still says working).
+agent_activities = {
+    'agent-cindy': {
+        'activity': 'working', 'activityDetail': 'Capturing visual testing baselines',
+        'detailKind': 'other',
+    },
+    'agent-product-ux': {
+        'activity': 'online', 'activityDetail': 'Reviewing screenshots',
+        'detailKind': 'other',
+    },
+}
+(HERE / 'fixtures/framework.json').write_text(
+    json.dumps({'routes': routes, 'agentActivities': agent_activities}, indent=1) + '\n')
 
 viewports = {
     'desktop': {'width': 1280, 'height': 800, 'density': 1},

@@ -262,7 +262,7 @@ class _TopBarServerTriggerState extends State<_TopBarServerTrigger> {
                           const SizedBox(width: 4),
                       stripButton(
                         indices[slot],
-                        n,
+                        n - (outside ? 1 : 0),
                         hiddenUnread:
                             widget.rows[indices[slot]].current && hiddenUnread,
                         draggable: !(outside && slot == indices.length - 1),
@@ -302,7 +302,8 @@ class _TopBarServerTriggerState extends State<_TopBarServerTrigger> {
             widget.onReorder == null)
           return;
         final dx = e.position.dx - start!.dx;
-        if (!dragging && dx.abs() < 6) return;
+        // PointerSensor activates before restrictToHorizontalAxis applies.
+        if (!dragging && (e.position - start!).distance <= 6) return;
         setState(() {
           dragging = true;
           over = (index + (dx / 36).round()).clamp(0, count - 1);
@@ -354,7 +355,7 @@ class _TopBarServerTriggerState extends State<_TopBarServerTrigger> {
           clipBehavior: Clip.none,
           children: [
             Opacity(
-              opacity: dragging && picked == index ? .5 : 1,
+              opacity: dragging && picked == index ? .3 : 1,
               child: touchTarget(
                 RaftButton(
                   key: ValueKey('topbar-workspace-${row.id}'),
@@ -375,7 +376,7 @@ class _TopBarServerTriggerState extends State<_TopBarServerTrigger> {
                 ),
               ),
             ),
-            if (row.current)
+            if (row.current && !(dragging && picked == index))
               Positioned(
                 bottom: -6,
                 left: 9,

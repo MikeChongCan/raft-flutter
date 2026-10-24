@@ -9,7 +9,7 @@ void main() {
     for (final height in [915.0, 568.0]) {
       for (final density in RaftDensity.values) {
         testWidgets(
-          '${dark ? 'dark' : 'light'} height$height $density source roles retain geometry and callbacks',
+          '${dark ? 'dark' : 'light'} height$height $density a57 Elegant roles retain geometry and callbacks',
           (tester) async {
             var activations = 0;
             final selected = ValueNotifier(false);
@@ -19,7 +19,10 @@ void main() {
             addTearDown(tester.view.resetDevicePixelRatio);
             await tester.pumpWidget(
               MaterialApp(
-                theme: raftTheme(dark: dark),
+                theme: raftTheme(
+                  pack: packForThemeId(elegantThemePackId),
+                  dark: dark,
+                ),
                 home: Scaffold(
                   body: RaftDensityScope(
                     density: density,
@@ -95,10 +98,7 @@ void main() {
               expect(widget.visualHeight, expected);
               // Sidebar.tsx row box on every density (no 48dp inflation).
               expect(tester.getSize(nav).height, expected + 4);
-              expect(
-                recipe.textStyle.fontFamily,
-                'packages/raft_ui/SpaceGrotesk',
-              );
+              expect(recipe.textStyle.fontFamily, 'packages/raft_ui/Inter');
               expect(recipe.textStyle.fontWeight, FontWeight.w500);
               expect(
                 recipe.textStyle.fontSize,

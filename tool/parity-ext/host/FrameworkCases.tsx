@@ -2,6 +2,7 @@
 // Only deterministic store inputs and an observational crop are supplied here;
 // rail widths, header heights and background colors belong to the product.
 import parityExtFwShell from "virtual:parity-ext/shell";
+import parityExtFwInputs from "virtual:parity-ext/framework";
 import { useLayoutEffect as parityExtFwLayoutEffect, useRef as parityExtFwRef, useState as parityExtFwState } from "react";
 
 type ParityExtFwProps = { raw: string; platform: string; preset: string; shell: string };
@@ -30,6 +31,9 @@ function parityExtFwProps(): ParityExtFwProps | null {
 
 function parityExtFwPrimeStores(p: ParityExtFwProps) {
   primeDirectVisualStores(p.raw);
+  // Explicitly retain primeDirectVisualStores' newer live frames on both hosts.
+  // The shared agent snapshot still says Product UX is working.
+  useAgentStore.setState({ agentActivities: parityExtFwInputs.agentActivities as never });
   const preset = (parityExtFwShell.presets as Record<string, {
     channels: string[]; joint: string[]; dms: string[]; selected: string | null;
     unread: Record<string, number>; drafts: Record<string, string>; mentions: string[];

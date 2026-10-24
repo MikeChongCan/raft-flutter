@@ -71,6 +71,9 @@ void main() {
           start,
           kind: PointerDeviceKind.mouse,
         );
+        await mouse.moveTo(start + const Offset(0, 3));
+        await t.pump();
+        expect(writes, isEmpty);
         final last = t.getRect(
           find.byKey(const ValueKey('server-menu-reorder-s3')),
         );
@@ -83,6 +86,9 @@ void main() {
         await mouse.up();
         await frames(t, () {});
         await t.pumpAndSettle();
+        // Drop animation completes before the asynchronous transport runs.
+        // Settle the real drag first, then drain the actual request.
+        await frames(t, () {});
         expect(writes, [
           {
             'serverOrder': ['s2', 's3', 's1'],
@@ -98,6 +104,7 @@ void main() {
         expect(writes.length, 1);
         await retire(t);
       },
+      variant: TargetPlatformVariant.only(TargetPlatform.linux),
     );
     testWidgets(
       '[K08h] ${dark ? 'dark' : 'light'} actual WorkspaceView server menu closes current without URI/history and delegates global chooser',
@@ -156,6 +163,7 @@ void main() {
         expect(find.byKey(const Key('server-switcher-menu')), findsNothing);
         await retire(t);
       },
+      variant: TargetPlatformVariant.only(TargetPlatform.linux),
     );
     testWidgets(
       '[K08i] ${dark ? 'dark' : 'light'} actual server menu Invite is capability gated and sends trimmed member email before Source administration route',
@@ -222,6 +230,7 @@ void main() {
         expect(find.text('Invite Human'), findsNothing);
         await retire(t);
       },
+      variant: TargetPlatformVariant.only(TargetPlatform.linux),
     );
   }
 }

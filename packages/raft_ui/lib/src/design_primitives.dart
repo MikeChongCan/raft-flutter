@@ -519,6 +519,10 @@ class RaftControlRecipe {
   double get focusOutlineOffset => 0;
   double get disabledOpacity => .4;
   Color foregroundFor({bool hovered = false}) => foreground;
+
+  /// Icons inherit the text foreground unless the component separates them.
+  Color iconForegroundFor({bool hovered = false}) =>
+      foregroundFor(hovered: hovered);
   Color backgroundForInteraction({
     bool hovered = false,
     bool pressed = false,
@@ -1175,7 +1179,7 @@ class _RaftControlState extends State<RaftControl> {
                                   widget.kind == RaftControlKind.textLink &&
                                       hovered
                                   ? t.strong
-                                  : recipe.foregroundFor(hovered: hovered),
+                                  : recipe.iconForegroundFor(hovered: hovered),
                               size: recipe.iconSize,
                             ),
                             child: DefaultTextStyle(

@@ -280,7 +280,9 @@ class RaftSidebarSectionActionRecipe extends _DisclosureRecipe {
   });
   final bool keyboardFocused;
   @override
-  Color get foreground => keyboardFocused ? tokens.strong : tokens.muted;
+  Color get foreground => keyboardFocused
+      ? tokens.strong
+      : tokens.colors['foreground-sidebar-section-control'] ?? tokens.muted;
   @override
   Color foregroundFor({bool hovered = false}) =>
       hovered ? tokens.strong : foreground;

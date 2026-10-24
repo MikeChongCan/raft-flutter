@@ -402,6 +402,17 @@ class RaftMountedSidebarNavigationRecipe extends RaftControlRecipe {
       ? tokens.ink
       : foreground;
   @override
+  Color iconForegroundFor({bool hovered = false}) {
+    if (active) return foregroundFor(hovered: hovered);
+    final key = role == RaftNavItemRole.saved
+        ? hovered || pointerPressed
+              ? 'foreground-sidebar-saved-icon-hover'
+              : 'foreground-sidebar-saved-icon'
+        : 'foreground-sidebar-entry-icon';
+    return tokens.colors[key] ?? foregroundFor(hovered: hovered);
+  }
+
+  @override
   Color get background =>
       !active ? Colors.transparent : tokens.colors['fill-muted']!;
   @override
