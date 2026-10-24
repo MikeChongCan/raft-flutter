@@ -28,6 +28,8 @@ import pathlib
 import re
 import sys
 
+from button_contract import button_colors
+
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 TOKENS = 'packages/raft_ui/lib/src/tokens'
 PACK = 'packages/raft_theme/assets/themes/raft.theme.json'
@@ -147,6 +149,31 @@ def stretch(families: list[str], mono: bool = False) -> str:
 # AUTHORED: the two tables below are the contract's decisions, not derived data.
 # §3.3–3.5 of docs/theme-contract.md lists where each number comes from.
 GEOMETRY_RAFT = {
+    # Shared Button source metrics, Cindy a0741fbf/c1ec691c.
+    'size.control.xs': 32,
+    'type.button.xs.size': 13,
+    'type.button.sm.size': 13,
+    'type.button.md.size': 13,
+    'type.button.lg.size': 15,
+    'type.button.sm.line': 18,
+    'type.button.md.line': 18,
+    'type.button.lg.line': 20,
+    'type.button.weight': 700,
+    'space.buttonInline.xs': 12,
+    'space.buttonInline.sm': 12,
+    'space.buttonInline.lg': 16,
+    'space.buttonGap.xs': 8,
+    'space.buttonGap.sm': 8,
+    'space.buttonGap.md': 8,
+    'space.buttonGap.lg': 8,
+    'size.buttonGlyph.xs': 16,
+    'size.buttonGlyph.sm': 16,
+    'size.buttonGlyph.lg': 18,
+    'size.buttonGlyph.iconMd': 18,
+    'size.buttonGlyph.iconLg': 22,
+    'size.buttonGlyph.iconXs': 18,
+    'size.buttonGlyph.iconSm': 18,
+    'opacity.buttonDisabled': 1,
     # Confirmation / Banner source contract, Cindy fe0074f6.
     'stroke.dialog': 0,
     'stroke.dialogRing': 1,
@@ -345,6 +372,10 @@ GEOMETRY_RAFT.update({
 })
 
 OPTIONS_RAFT = {
+    'button.hoverSurface': 'overlay',
+    'button.linkDecoration': 'underline',
+    'button.linkPadding': 'none',
+    'button.disabledSurface': 'muted', 'button.xsLine': 'fixed',
     'messageHeader.timePosition': 'trailing',
     'messageHeader.align': 'center',
     'control.edge': 'inkBorder', 'sticker.ring': 'dieCut', 'emphasis.fill': 'solid',
@@ -430,6 +461,7 @@ def build() -> dict:
             'line-select': 'line-strong', 'line-select-disabled': 'line-hairline',
         }.items():
             out[target] = out[source]
+        out.update(button_colors('raftDark' if palette is dark else 'raftLight', out))
         return out
 
     def stack(prefix: str) -> list[str]:
@@ -456,6 +488,10 @@ def build() -> dict:
                 'shadow.sticker': shadow_set['elevationSticker'],
                 'shadow.focusRing': shadow_set['focusRing'],
                 'shadow.control': 'none',
+                'shadow.buttonSuccess': 'none',
+                'shadow.buttonHover': 'none',
+                'shadow.buttonPressed': 'none',
+                'shadow.buttonDangerOutline': 'none',
             },
             'options': OPTIONS_RAFT,
         }

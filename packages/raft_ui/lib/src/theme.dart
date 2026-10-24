@@ -185,6 +185,18 @@ class RaftTokens extends ThemeExtension<RaftTokens> {
   RaftProductColors get product => tokenSet.product;
   RaftComponentColors get components => tokenSet.components;
   RaftThemeShadows get themeShadows => tokenSet.shadows;
+
+  /// Named component shadow layers from the resolved pack, in CSS paint order.
+  List<RaftCssShadow> shadowLayers(String role) => [
+    for (final layer in _mode?.shadows[role] ?? const <RaftShadowSpec>[])
+      RaftCssShadow(
+        inset: layer.inset,
+        offset: layer.offset,
+        blur: layer.blur,
+        spread: layer.spread,
+        color: layer.color,
+      ),
+  ];
   RaftThemeMetrics get metrics => tokenSet.metrics;
 
   Color get ink => colors['foreground']!;

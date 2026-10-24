@@ -155,6 +155,11 @@ const Map<String, Set<String>> raftStructuralOptions = {
   'confirm.explanation': {'dangerBanner', 'plain'},
   'spinner.ringShape': {'sweep', 'quarter'},
   'spinner.foreground': {'inherited', 'fixed'},
+  'button.disabledSurface': {'muted', 'opacity'},
+  'button.xsLine': {'fixed', 'inherited'},
+  'button.hoverSurface': {'overlay', 'variant'},
+  'button.linkDecoration': {'underline', 'none'},
+  'button.linkPadding': {'none', 'size'},
 };
 
 /// The type-scale slots a pack may fill (§3.4 of the contract).

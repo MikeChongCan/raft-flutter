@@ -29,6 +29,8 @@ import json
 import pathlib
 import sys
 
+from button_contract import button_colors, button_palette
+
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 VALUES = 'docs/theme-contract/values.json'
 THEMES = 'packages/raft_theme/assets/themes'
@@ -37,6 +39,10 @@ PACK_FORMAT = 'raft-theme/1'
 # AUTHORED: docs/theme-contract.md §4, one row per option. Raft's values live in
 # build_raft_pack.py's OPTIONS_RAFT; these two are the same table's other columns.
 OPTIONS_ELEGANT = {
+    'button.hoverSurface': 'variant',
+    'button.linkDecoration': 'none',
+    'button.linkPadding': 'size',
+    'button.disabledSurface': 'opacity', 'button.xsLine': 'inherited',
     'messageHeader.timePosition': 'inline',
     'messageHeader.align': 'baseline',
     'control.edge': 'ring', 'sticker.ring': 'none', 'emphasis.fill': 'soft',
@@ -59,6 +65,10 @@ OPTIONS_ELEGANT = {
     'spinner.ringShape': 'sweep', 'spinner.foreground': 'inherited',
 }
 OPTIONS_BRUTAL = {
+    'button.hoverSurface': 'variant',
+    'button.linkDecoration': 'none',
+    'button.linkPadding': 'size',
+    'button.disabledSurface': 'opacity', 'button.xsLine': 'inherited',
     'messageHeader.timePosition': 'inline',
     'messageHeader.align': 'center',
     'control.edge': 'inkBorder', 'sticker.ring': 'none', 'emphasis.fill': 'solid',
@@ -83,6 +93,31 @@ OPTIONS_BRUTAL = {
 # digits that the P2 baseline can now confirm or refute; they are carried as-is
 # until that reconciliation, which is its own change.
 GEOMETRY_ELEGANT = {
+    # Shared Button source metrics, Cindy a0741fbf/c1ec691c.
+    'size.control.xs': 24,
+    'type.button.xs.size': 11,
+    'type.button.sm.size': 12,
+    'type.button.md.size': 14,
+    'type.button.lg.size': 16,
+    'type.button.sm.line': 16,
+    'type.button.md.line': 20,
+    'type.button.lg.line': 24,
+    'type.button.weight': 500,
+    'space.buttonInline.xs': 8,
+    'space.buttonInline.sm': 10,
+    'space.buttonInline.lg': 14,
+    'space.buttonGap.xs': 4,
+    'space.buttonGap.sm': 5,
+    'space.buttonGap.md': 5.5,
+    'space.buttonGap.lg': 6,
+    'size.buttonGlyph.xs': 12,
+    'size.buttonGlyph.sm': 14,
+    'size.buttonGlyph.lg': 16,
+    'size.buttonGlyph.iconMd': 16,
+    'size.buttonGlyph.iconLg': 16,
+    'size.buttonGlyph.iconXs': 12,
+    'size.buttonGlyph.iconSm': 14,
+    'opacity.buttonDisabled': 0.4,
     # Confirmation / Banner source contract, Cindy fe0074f6.
     'stroke.dialog': 0,
     'stroke.dialogRing': 0,
@@ -215,6 +250,31 @@ GEOMETRY_ELEGANT = {
     'space.segmentGap': 6,
 }
 GEOMETRY_BRUTAL = {
+    # Shared Button source metrics, Cindy a0741fbf/c1ec691c.
+    'size.control.xs': 24,
+    'type.button.xs.size': 11,
+    'type.button.sm.size': 12,
+    'type.button.md.size': 14,
+    'type.button.lg.size': 14,
+    'type.button.sm.line': 16,
+    'type.button.md.line': 20,
+    'type.button.lg.line': 20,
+    'type.button.weight': 700,
+    'space.buttonInline.xs': 8,
+    'space.buttonInline.sm': 10,
+    'space.buttonInline.lg': 16,
+    'space.buttonGap.xs': 4,
+    'space.buttonGap.sm': 5,
+    'space.buttonGap.md': 5.5,
+    'space.buttonGap.lg': 6,
+    'size.buttonGlyph.xs': 12,
+    'size.buttonGlyph.sm': 14,
+    'size.buttonGlyph.lg': 16,
+    'size.buttonGlyph.iconMd': 16,
+    'size.buttonGlyph.iconLg': 16,
+    'size.buttonGlyph.iconXs': 12,
+    'size.buttonGlyph.iconSm': 14,
+    'opacity.buttonDisabled': 0.4,
     # Confirmation / Banner source contract, Cindy fe0074f6.
     'stroke.dialog': 2,
     'stroke.dialogRing': 0,
@@ -534,6 +594,11 @@ def collect(values: dict, column: str) -> tuple[dict, dict, dict]:
         if value is not None:
             shadows[name] = shadow(value)
 
+    # The human-readable dump rounds alpha (e.g. .071 -> .07). Preserve
+    # unchanged a57 source values, with file SHA recorded beside the layers.
+    original = json.loads((ROOT / 'tool/theme-adapters/original_shadows.json').read_text())
+    shadows.update(original['css'][column])
+
     type_metrics = {}
     for name, entry in values['extra']['type'].items():
         value = entry.get(column)
@@ -597,7 +662,7 @@ def pack(pack_id: str, name_en: str, name_zh: str, values: dict,
         colors['layer-banner-success'] = ('{palette.elegantBanner.success.dark}' if spec['column'] == 'elegantDark' else colors['success-soft'])
         colors['layer-banner-warning'] = ('{palette.elegantNotice.dark}' if spec['column'] == 'elegantDark' else colors['warning-soft'])
 
-        colors['line-dialog'] = colors['ink' if spec['column'] == 'brutal' else 'line-muted']
+        colors['line-dialog'] = colors['line-strong' if spec['column'] == 'brutal' else 'line-muted']
         colors['foreground-dialog-close'] = colors['ink' if spec['column'] == 'brutal' else 'foreground-placeholder']
         colors['line-banner'] = colors['line-strong']
         colors['foreground-confirm-name'] = colors['foreground-muted']
@@ -622,6 +687,8 @@ def pack(pack_id: str, name_en: str, name_zh: str, values: dict,
         # shadow in float sRGB. values.json's display-rounded .04 / #f3f3f7
         # changes antialiased switch-edge pixels, so retain the source precision.
         if spec['column'] == 'elegantDark':
+            # a57 semantic_colors.g.dart:1094, preserve float RGB/alpha.
+            colors['line-muted'] = 'rgb(240.576945 240.576945 241.18257 / 0.101961)'
             # a57b9dab shadows.g.dart xs: preserve authored alpha 0.045.
             shadows['xs'] = shadows['xs'].replace('/ 0.04)', '/ 0.045)', 1)
             colors['switch-shadow-bottom'] = (
@@ -630,11 +697,22 @@ def pack(pack_id: str, name_en: str, name_zh: str, values: dict,
             # ink-4. Rounding its alpha/RGB changes small ghost-hover pixels.
             colors['ink-4'] = (
                 'rgb(243.444675 243.444675 247.22862 / 0.039203)')
+        # a57 semantic_colors.g.dart:752. The display dump rounds RGB.
+        if spec['column'] == 'elegantLight':
+            colors['primary-edge'] = 'rgb(232.32132 196.60704 78.03561 / 0.7)'
+        # Shared Button elevation, independent of edge rings and press motion.
+        normal = shadows['sm'] if spec['column'] == 'brutal' else shadows['xs'] if spec['column'] == 'elegantDark' else 'none'
+        shadows['shadow.buttonSuccess'] = shadows['sm'] if spec['column'] == 'brutal' else 'none'
+        shadows['shadow.control'] = normal
+        shadows['shadow.buttonHover'] = shadows['md'] if spec['column'] == 'brutal' else normal
+        shadows['shadow.buttonPressed'] = shadows['xs'] if spec['column'] == 'brutal' else normal
+        shadows['shadow.buttonDangerOutline'] = normal if spec['column'] == 'elegantDark' else 'none'
+        colors.update(button_colors(spec['column'], colors))
         return {
             'colors': colors,
             # Only the Elegant source modes carry these legacy preservation
             # colors; Brutal dark inherits the whole Elegant mode.
-            'palette': ({'palette-orange-100': colors['task-status-todo-soft'],
+            'palette': {**({'palette-orange-100': colors['task-status-todo-soft'],
                          'palette-composerTaskLabel': 'rgba(0 0 0 / 0.6)',
                          'palette-messageMeta': 'rgba(0 0 0 / 0.4)'}
                 if spec['column'] == 'brutal' else {
@@ -645,7 +723,7 @@ def pack(pack_id: str, name_en: str, name_zh: str, values: dict,
                     'palette-elegantNotice-light': '#ffeadc',
                     # a57 recipe_utilities.g.dart _v609 actual Flutter paint color.
                     'palette-elegantNotice-dark': f'rgba({.534161 * 255:.9f} {.321382 * 255:.9f} {.207110 * 255:.9f} / 0.180368)',
-                }),
+                }), **button_palette(spec['column'])},
             'geometry': {**geometry_with_type(spec['geometry'], type_metrics),
                          **({'space.dialogBodyTop': 10} if spec['column'] == 'elegantDark' else {})},
             'font': {name: '{fonts.mono}' if spec['column'] == 'brutal' else '{fonts.sans}'

@@ -1,4 +1,4 @@
-// raft-ui 0.7.1 `Button` (dist `buttonVariants`): stickers (primary / accent / warning / danger), outline paper
+// raft-ui 0.7.0 `Button` (dist `buttonVariants`): stickers (primary / accent / warning / danger), outline paper
 // buttons, ghost, on-frame and link. Sizes 32 / 44 / 52 and the icon squares. Press and hover lay one overlay over
 // the resting colour; disabled and loading read `fill-muted`; keyboard focus draws the `focus-ring`.
 import 'package:flutter/material.dart';
@@ -11,8 +11,9 @@ import '../localization.dart';
 import '../recipes/button_variants.g.dart';
 import '../theme.dart';
 import '../tokens/tokens.dart';
-import 'css_box.dart';
-import 'pixel_spinner.dart';
+import 'button_surface.dart';
+import 'button_colors.dart';
+export 'button_colors.dart';
 import 'ui_tokens.dart';
 
 /// `variant` axis of `buttonVariants`. `accent` and `primary` are the same pink sticker.
@@ -124,226 +125,82 @@ class RaftButtonMetrics {
   final RaftTypeStyle text;
   final bool square;
 
-  static const _md = RaftButtonMetrics(
-    height: 32,
-    paddingX: 12,
-    iconStartPaddingLeft: 10,
-    iconEndPaddingRight: 10,
-    text: RaftTypeScale.footnote,
-    icon: 16,
-  );
-  static const _lg = RaftButtonMetrics(
-    height: 44,
-    paddingX: 16,
-    iconStartPaddingLeft: 14,
-    iconEndPaddingRight: 14,
-    text: RaftTypeScale.subhead,
-    icon: 18,
-  );
-  static const _xl = RaftButtonMetrics(
-    height: 52,
-    paddingX: 20,
-    iconStartPaddingLeft: 20,
-    iconEndPaddingRight: 20,
-    text: RaftTypeScale.body,
-    icon: 18,
-  );
-  static const _onFrame = RaftButtonMetrics(
-    height: 36,
-    paddingX: 10,
-    iconStartPaddingLeft: 10,
-    iconEndPaddingRight: 10,
-    text: RaftTypeScale.subhead,
-    icon: 16,
-  );
-  static const _iconMd = RaftButtonMetrics(
-    height: 32,
-    paddingX: 0,
-    iconStartPaddingLeft: 0,
-    iconEndPaddingRight: 0,
-    text: RaftTypeScale.footnote,
-    icon: 18,
-    square: true,
-  );
-  static const _iconLg = RaftButtonMetrics(
-    height: 44,
-    paddingX: 0,
-    iconStartPaddingLeft: 0,
-    iconEndPaddingRight: 0,
-    text: RaftTypeScale.subhead,
-    icon: 22,
-    square: true,
-  );
-  static const _iconOnFrame = RaftButtonMetrics(
-    height: 36,
-    paddingX: 0,
-    iconStartPaddingLeft: 0,
-    iconEndPaddingRight: 0,
-    text: RaftTypeScale.subhead,
-    icon: 20,
-    square: true,
-  );
-
-  /// Metrics for [size] under the current theme.
-  ///
-  /// Heights come from the contract's control tokens, so a theme that sizes its
-  /// controls differently reaches the button. The table stays the source of the
-  /// parts every look agrees on -- paddings, icon sizes, which type style a size
-  /// uses -- because measuring the three looks showed those are equal in all of
-  /// them (form, not theme).
-  ///
-  /// Verified values, from the Raft React specimen's DOM and from resolving the
-  /// recipe on a57b9dab:
-  ///   sm  Raft 32 / Elegant 28 / Brutal 28
-  ///   md  Raft 32 / Elegant 32 / Brutal 32   (form: equal, so no token needed)
-  ///   lg  Raft 44 / Elegant 36 / Brutal 40   (theme value)
+  /// Size axes from current Web and actual a57b9dab recipe probes.
+  /// Physical height overrides never choose a different typography axis.
   static RaftButtonMetrics of(
     RaftButtonSize size,
     RaftButtonVariant variant,
     RaftTokens t,
   ) {
-    final onFrame = variant == RaftButtonVariant.onFrame;
-    // Each size reads its own token. s/m/l are distinct tokens in the contract
-    // even though Raft's xs/sm/md happen to share one box.
-    final sm = t.size('size.control.sm', fallback: 32);
-    final md = t.size('size.control.md', fallback: 32);
-    final lg = t.size('size.control.lg', fallback: 44);
-    final frame = t.size('size.control.onFrame', fallback: 36);
-
-    RaftButtonMetrics sized(double height, RaftButtonMetrics base) =>
-        height == base.height
-        ? base
-        : RaftButtonMetrics(
-            height: height,
-            paddingX: base.paddingX,
-            iconStartPaddingLeft: base.iconStartPaddingLeft,
-            iconEndPaddingRight: base.iconEndPaddingRight,
-            text: base.text,
-            icon: base.icon,
-            gap: base.gap,
-            square: base.square,
-          );
-
-    return switch (size) {
-      // xs and sm read the small token; md reads the medium one. Raft renders
-      // all three at one height, which the Raft pack's equal token values
-      // reproduce, while Elegant and Brutal can differ per step.
-      RaftButtonSize.xs => sized(sm, _md),
-      RaftButtonSize.sm => sized(sm, _md),
-      RaftButtonSize.md => onFrame ? sized(frame, _onFrame) : sized(md, _md),
-      RaftButtonSize.lg => sized(lg, _lg),
-      // xl exists only in raft-ui 0.7.1 (52); the pre-theme looks never had it
-      // (RaftButtonRecipeSize has no xl at a57b9dab), so there is no measured
-      // Elegant/Brutal height. Nothing calls xl either, so there is no usage
-      // site to read an old size from. It therefore keeps Raft's box for every
-      // theme until a call site exists; then the value comes from whatever the
-      // old tree painted at that position. Deliberately NOT derived from lg.
-      RaftButtonSize.xl => _xl,
-      RaftButtonSize.inline => _md,
-      RaftButtonSize.iconXs || RaftButtonSize.iconSm || RaftButtonSize.iconMd =>
-        onFrame ? sized(frame, _iconOnFrame) : sized(md, _iconMd),
-      RaftButtonSize.iconLg => sized(lg, _iconLg),
+    final frame =
+        variant == RaftButtonVariant.onFrame &&
+        (size == RaftButtonSize.xs ||
+            size == RaftButtonSize.sm ||
+            size == RaftButtonSize.md ||
+            size == RaftButtonSize.iconXs ||
+            size == RaftButtonSize.iconSm ||
+            size == RaftButtonSize.iconMd);
+    final axis = switch (size) {
+      RaftButtonSize.xs || RaftButtonSize.iconXs => 'xs',
+      RaftButtonSize.sm || RaftButtonSize.iconSm => 'sm',
+      RaftButtonSize.lg || RaftButtonSize.iconLg => 'lg',
+      _ => 'md',
     };
+    final large = axis == 'lg';
+    final height = frame
+        ? t.size('size.control.onFrame', fallback: 36)
+        : size == RaftButtonSize.xl
+        ? 52.0
+        : t.size('size.control.$axis', fallback: large ? 44 : 32);
+    final nativeType = large ? RaftTypeScale.subhead : RaftTypeScale.footnote;
+    final fontSize = size == RaftButtonSize.xl
+        ? RaftTypeScale.body.fontSize
+        : frame
+        ? RaftTypeScale.subhead.fontSize
+        : t.size('type.button.$axis.size', fallback: nativeType.fontSize);
+    final line = size == RaftButtonSize.xl
+        ? RaftTypeScale.body.lineHeight
+        : frame
+        ? RaftTypeScale.subhead.lineHeight
+        : axis == 'xs'
+        ? 18.0
+        : t.size('type.button.$axis.line', fallback: nativeType.lineHeight);
+    final padding = size == RaftButtonSize.xl
+        ? 20.0
+        : frame
+        ? 10.0
+        : axis == 'md'
+        ? 12.0
+        : t.size('space.buttonInline.$axis', fallback: large ? 16 : 12);
+    final glyph = size == RaftButtonSize.xl
+        ? 18.0
+        : frame
+        ? (size.isIcon ? 20.0 : 16.0)
+        : size.isIcon
+        ? t.size('size.buttonGlyph.${size.name}', fallback: large ? 22 : 18)
+        : axis == 'md'
+        ? 16.0
+        : t.size('size.buttonGlyph.$axis', fallback: large ? 18 : 16);
+    return RaftButtonMetrics(
+      height: height,
+      paddingX: size.isIcon ? 0 : padding,
+      iconStartPaddingLeft: size.isIcon ? 0 : padding - 2,
+      iconEndPaddingRight: size.isIcon ? 0 : padding - 2,
+      text: RaftTypeStyle(
+        fontSize,
+        line,
+        fontWeight: t.size('type.button.weight', fallback: 700).round(),
+      ),
+      icon: glyph,
+      gap: frame || size == RaftButtonSize.xl
+          ? 8
+          : t.size('space.buttonGap.$axis', fallback: 8),
+      square: size.isIcon,
+    );
   }
 }
 
-/// Resolved colours of one variant in one state.
-class RaftButtonColors {
-  const RaftButtonColors({
-    required this.fill,
-    required this.border,
-    required this.foreground,
-    this.ringEdge,
-  });
-  final Color fill, border, foreground;
-
-  /// `ring-sticker-edge`: the die-cut ring outside a sticker.
-  final Color? ringEdge;
-
-  static RaftButtonColors resolve(
-    RaftUiColors ui,
-    RaftButtonVariant variant, {
-    required bool disabled,
-    required bool overlay,
-    bool iconSize = false,
-  }) {
-    // `disabled:border-transparent disabled:bg-transparent`: on-frame always, ghost only as an icon button.
-    if (disabled &&
-        (variant == RaftButtonVariant.onFrame ||
-            (variant == RaftButtonVariant.ghost && iconSize))) {
-      return RaftButtonColors(
-        fill: const Color(0x00000000),
-        border: const Color(0x00000000),
-        foreground: ui.foregroundDisabled,
-      );
-    }
-    if (disabled) {
-      if (variant == RaftButtonVariant.link) {
-        return RaftButtonColors(
-          fill: const Color(0x00000000),
-          border: const Color(0x00000000),
-          foreground: ui.foregroundDisabled,
-        );
-      }
-      return RaftButtonColors(
-        fill: ui.fillMuted,
-        border: raftChromeBlend(ui.lineHairline, ui.fillMuted),
-        foreground: raftChromeBlend(ui.foregroundDisabled, ui.fillMuted),
-      );
-    }
-    Color over(Color fill, Color pressed) =>
-        overlay ? raftChromeBlend(pressed, fill) : fill;
-    const clear = Color(0x00000000);
-    return switch (variant) {
-      RaftButtonVariant.primary || RaftButtonVariant.accent => RaftButtonColors(
-        fill: over(ui.attention, ui.stickerPressed),
-        border: ui.stickerInk,
-        foreground: ui.stickerInk,
-        ringEdge: ui.stickerEdge,
-      ),
-      RaftButtonVariant.warning => RaftButtonColors(
-        fill: over(ui.warning, ui.stickerPressed),
-        border: ui.stickerInk,
-        foreground: ui.stickerInk,
-        ringEdge: ui.stickerEdge,
-      ),
-      RaftButtonVariant.danger => RaftButtonColors(
-        fill: over(ui.danger, ui.stickerPressed),
-        border: ui.stickerInk,
-        foreground: ui.stickerInk,
-        ringEdge: ui.stickerEdge,
-      ),
-      RaftButtonVariant.dangerSecondary ||
-      RaftButtonVariant.dangerOutline => RaftButtonColors(
-        fill: over(ui.layerCard, ui.fillPressed),
-        border: ui.lineStrong,
-        foreground: ui.dangerStrong,
-      ),
-      RaftButtonVariant.ghost => RaftButtonColors(
-        fill: overlay ? ui.fillPressed : clear,
-        border: clear,
-        foreground: ui.foreground,
-      ),
-      RaftButtonVariant.onFrame => RaftButtonColors(
-        fill: overlay ? ui.fillFramePressed : clear,
-        border: clear,
-        foreground: ui.foregroundOnFrame,
-      ),
-      RaftButtonVariant.link => RaftButtonColors(
-        fill: clear,
-        border: clear,
-        foreground: ui.foreground,
-      ),
-      _ => RaftButtonColors(
-        fill: over(ui.layerCard, ui.fillPressed),
-        border: ui.lineStrong,
-        foreground: ui.foreground,
-      ),
-    };
-  }
-}
-
-/// raft-ui `Button`. [uiVariant] / [uiSize] are the 0.7.1 axes; the older [variant] / [tone] / [size] /
+/// raft-ui `Button`. [uiVariant] / [uiSize] are the current Web axes; the older [variant] / [tone] / [size] /
 /// [visualHeight] parameters map onto them for call sites that have not been converted.
 class RaftButton extends StatelessWidget {
   const RaftButton({
@@ -442,12 +299,17 @@ class RaftButton extends StatelessWidget {
       uiSize ??
       (size != null
           ? RaftButtonSize.fromRecipe(size!)
-          : (visualHeight <= 32 ? RaftButtonSize.md : RaftButtonSize.lg));
+          : (visualHeight <= 24
+                ? RaftButtonSize.xs
+                : visualHeight <= 28
+                ? RaftButtonSize.sm
+                : visualHeight <= 32
+                ? RaftButtonSize.md
+                : RaftButtonSize.lg));
 
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
-    final ui = t.ui;
     final variantValue = resolvedVariant;
     final sizeValue = resolvedSize;
     final baseMetrics = RaftButtonMetrics.of(sizeValue, variantValue, t);
@@ -472,16 +334,16 @@ class RaftButton extends StatelessWidget {
       semanticLabel: semanticLabel ?? (busy ? text : null),
       builder: (context, st) {
         final disabled = onPressed == null || busy;
-        final colors = RaftButtonColors.resolve(
-          ui,
+        final colors = RaftButtonColors.themed(
+          t,
           variantValue,
           iconSize: sizeValue.isIcon,
+          highContrast: MediaQuery.highContrastOf(context),
           disabled: disabled,
           overlay: (st.hovered || st.pressed) && !disabled,
         );
         final fg = foreground ?? colors.foreground;
         final inline = sizeValue == RaftButtonSize.inline;
-        final borderWidth = inline ? 0.0 : _borderWidth(context);
         final iconSize = metrics.icon;
         final gapValue = gap ?? (inline ? 4.0 : metrics.gap);
 
@@ -492,13 +354,28 @@ class RaftButton extends StatelessWidget {
           iconWidget = RaftSymbol(icon!, size: iconSize, color: fg);
         }
 
-        TextStyle labelStyle = t.scale(
-          metrics.text,
-          weight: FontWeight.w700,
-          color: fg,
-        );
+        TextStyle labelStyle = t.scale(metrics.text, color: fg);
+        if (inline) {
+          final inherited = DefaultTextStyle.of(context).style;
+          labelStyle = inherited.copyWith(
+            color: fg,
+            fontFamily: t.bodyFont,
+            fontFamilyFallback: t.fontFallback,
+            fontWeight: raftFontWeight(
+              t.size('type.button.weight', fallback: 700),
+            ),
+          );
+        } else if ((sizeValue == RaftButtonSize.xs ||
+                sizeValue == RaftButtonSize.iconXs) &&
+            t.option('button.xsLine', or: 'fixed') == 'inherited') {
+          labelStyle = labelStyle.copyWith(
+            height:
+                DefaultTextStyle.of(context).style.height ?? kTextHeightNone,
+          );
+        }
         labelStyle = RaftControlTypography.of(context, labelStyle);
-        if (variantValue == RaftButtonVariant.link) {
+        if (variantValue == RaftButtonVariant.link &&
+            t.option('button.linkDecoration', or: 'underline') == 'underline') {
           labelStyle = labelStyle.copyWith(
             decoration: TextDecoration.underline,
             decorationColor: fg,
@@ -540,15 +417,15 @@ class RaftButton extends StatelessWidget {
           ),
         );
         if (busy) {
-          content = Stack(
-            alignment: Alignment.center,
-            children: [
-              Visibility.maintain(visible: false, child: content),
-              RaftPixelSpinner(
-                color: fg,
-                semanticLabel: raftText(context, 'Loading'),
-              ),
-            ],
+          content = IconTheme.merge(
+            data: IconThemeData(color: fg),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Visibility.maintain(visible: false, child: content),
+                const RaftSpinner(),
+              ],
+            ),
           );
         }
 
@@ -569,36 +446,46 @@ class RaftButton extends StatelessWidget {
             : metrics.square
             ? EdgeInsets.zero
             : EdgeInsets.only(
-                left: variantValue == RaftButtonVariant.link ? 0 : start,
-                right: variantValue == RaftButtonVariant.link ? 0 : end,
+                left:
+                    variantValue == RaftButtonVariant.link &&
+                        t.option('button.linkPadding', or: 'none') == 'none'
+                    ? 0
+                    : start,
+                right:
+                    variantValue == RaftButtonVariant.link &&
+                        t.option('button.linkPadding', or: 'none') == 'none'
+                    ? 0
+                    : end,
               );
 
-        final rings = <RaftRing>[
-          if (colors.ringEdge != null) RaftRing(1.5, colors.ringEdge!),
-          if (st.focusVisible)
-            for (final layer in ui.focusRing.layers)
-              RaftRing(layer.spread, layer.color),
-        ];
-        // The focus ring sits outside the sticker ring: the larger layers draw below the 1.5px edge.
-        return RaftCssBox(
-          radius: inline ? 0 : 8,
-          fill: colors.fill,
-          borderWidth: borderWidth,
-          borderColor: colors.border,
-          rings: rings,
-          width: metrics.square
-              ? metrics.height
-              : (expand ? double.infinity : null),
-          height: metrics.square && !inline ? metrics.height : null,
-          minHeight: metrics.square || inline ? null : metrics.height,
+        final box = RaftButtonSurface(
+          variant: variantValue,
+          size: sizeValue,
+          metrics: metrics,
+          colors: colors,
+          state: st,
+          disabled: disabled,
           padding: padding,
-          alignment: Alignment.center,
+          expand: expand,
           child: content,
         );
+        if (t.option('button.disabledSurface', or: 'muted') == 'opacity') {
+          final opacity = busy || !disabled
+              ? 1.0
+              : t.size('opacity.buttonDisabled', fallback: 1);
+          return switch (opacityCompositing) {
+            RaftOpacityCompositing.layer => Opacity(
+              opacity: opacity,
+              child: box,
+            ),
+            RaftOpacityCompositing.alphaFilter => RaftCssOpacity(
+              opacity: opacity,
+              child: box,
+            ),
+          };
+        }
+        return box;
       },
     );
   }
-
-  static double _borderWidth(BuildContext context) =>
-      raftControlBorderPx(context, 1.5);
 }

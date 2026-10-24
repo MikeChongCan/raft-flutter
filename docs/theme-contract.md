@@ -908,3 +908,86 @@ layer-banner-destructive、layer-banner-warning、layer-banner-info、layer-bann
 palette.elegantNotice.dark，其余保存在 Elegant 专用的 palette.elegantBanner.destructive.dark、
 palette.elegantBanner.info.dark、palette.elegantBanner.success.dark。
 这些项只保存原编译样式的浮点绘制精度，不修改通用 danger-soft 等角色，也不新增配色。
+
+### 共享 Button：尺寸、状态和绘制角色
+
+此处的 Raft 参照为 Web v1.21.23（`db5e399f`）安装的 `raft-ui` **0.7.0**，
+入口是 `dist/dialog-CY6S-Xqf.mjs` 的 Button；前面的 0.7.1 说明属于早期参照记录。
+Elegant／Brutal 仍以 `a57b9dab` 为准。数值由尺寸轴决定，调用方的 `physicalHeight`
+只覆盖物理高度，不把 sm 字体切成 md。Brutal 深色完整继承 Elegant 深色。
+
+经 Cindy a0741fbf、c1ec691c 批准的差异如下；三列顺序是 Raft／Elegant／Brutal 浅色。
+
+| 名称 | Raft | Elegant | Brutal 浅色 |
+| --- | ---: | ---: | ---: |
+| `size.control.xs` | 32 | 24 | 24 |
+| `type.button.xs.size` | 13 | 11 | 11 |
+| `type.button.sm.size` | 13 | 12 | 12 |
+| `type.button.md.size` | 13 | 14 | 14 |
+| `type.button.lg.size` | 15 | 16 | 14 |
+| `type.button.sm.line` | 18 | 16 | 16 |
+| `type.button.md.line` | 18 | 20 | 20 |
+| `type.button.lg.line` | 20 | 24 | 20 |
+| `type.button.weight` | 700 | 500 | 700 |
+| `space.buttonInline.xs` | 12 | 8 | 8 |
+| `space.buttonInline.sm` | 12 | 10 | 10 |
+| `space.buttonInline.lg` | 16 | 14 | 16 |
+| `space.buttonGap.xs` | 8 | 4 | 4 |
+| `space.buttonGap.sm` | 8 | 5 | 5 |
+| `space.buttonGap.md` | 8 | 5.5 | 5.5 |
+| `space.buttonGap.lg` | 8 | 6 | 6 |
+| `size.buttonGlyph.xs` | 16 | 12 | 12 |
+| `size.buttonGlyph.sm` | 16 | 14 | 14 |
+| `size.buttonGlyph.lg` | 18 | 16 | 16 |
+| `size.buttonGlyph.iconXs` | 18 | 12 | 12 |
+| `size.buttonGlyph.iconSm` | 18 | 14 | 14 |
+| `size.buttonGlyph.iconMd` | 18 | 16 | 16 |
+| `size.buttonGlyph.iconLg` | 22 | 16 | 16 |
+| `opacity.buttonDisabled` | 1 | 0.4 | 0.4 |
+
+md 水平内边距 12、带前置／后置图标时相应侧减少 2、md 普通图标 16 是共同值。
+`inline` 继承环境字号和行高；旧外观的 xs 继承环境行高，Raft xs 的 18 为固定值。
+现有 sm／md／lg 控制高度继续生效；xl 保持当前 Web 的 52，不从旧 lg 推导新值。
+
+| 结构选项 | 取值 | Raft | Elegant／Brutal |
+| --- | --- | --- | --- |
+| `button.disabledSurface` | `muted` / `opacity` | muted | opacity |
+| `button.xsLine` | `fixed` / `inherited` | fixed | inherited |
+| `button.hoverSurface` | `overlay` / `variant` | overlay | variant |
+| `button.linkDecoration` | `underline` / `none` | underline | none |
+| `button.linkPadding` | `none` / `size` | none | size |
+
+后两项分别经 Cindy a7ff13b3、95bf2f18 批准。加载状态固定为全不透明并阻止激活；
+禁用状态的组透明度与加载状态分开。调用方的 `opacityCompositing` 继续选择普通透明层
+或 alpha 过滤，不能丢失已存在的合成边界。
+
+经 Cindy 29efd8b3 批准的 40 个颜色角色及各包取值存于
+`tool/theme-adapters/button_contract.json`，包括各 variant 的底色、悬停底色、前景色、
+强调按钮边线和 ghost 悬停边线。`emphasis.fill` 仅选择 primary／accent 的 solid／soft 底色。
+旧 `button-*` 别名保留；不能把它们全局重定向到新角色。无法引用既有角色的原版常量，
+只存入 Elegant 专用的 `palette.elegantButton.*.{light,dark}` 或 Brutal 专用的
+`palette.brutalButton.dangerSecondary.ink`，不扩展 Raft 调色板。
+
+Cindy 72a99839 批准的 `layer-button-danger-high-contrast`、
+`foreground-button-danger-high-contrast` 由系统高对比度偏好选择：Elegant 使用现有
+`button-danger-high-contrast(-foreground)`；Raft／Brutal 浅色引用普通 danger 组件颜色。
+Brutal 深色仍继承 Elegant。调用方显式前景色保持最高优先级。
+
+阴影与运动、环边独立（Cindy 362a0c7b、a7ff13b3）：
+
+| 阴影角色 | Raft | Elegant 浅色 | Elegant 深色 | Brutal 浅色 |
+| --- | --- | --- | --- | --- |
+| `shadow.control` | none | none | xs | sm |
+| `shadow.buttonHover` | none | none | xs | md |
+| `shadow.buttonPressed` | none | none | xs | xs |
+| `shadow.buttonDangerOutline` | none | none | xs | none |
+| `shadow.buttonSuccess` | none | none | none | sm |
+
+ghost／link 无实体阴影，success 保持其静态阴影；边环由 `control.edge` 单独决定。
+`press.effect` 只决定叠色以外的位移／缩放，不能选择整套渲染器或颜色。
+`control.sheen` 只决定渐变和内高光，`sticker.ring` 只决定实际贴纸外环。
+所有外观共用一个绘制投影，原版 recipe 仅作为环和高光的属性参照。
+
+`values.json` 是便于阅读的数据导出，会舍掉浮点精度。五档原版阴影的完整层数据和源文件 SHA
+保存在 `tool/theme-adapters/original_shadows.json`；适配器同时保留 Elegant primary-edge、
+深色 line-muted 等既有颜色项的原始浮点通道。不要用显示用的四舍五入值替换绘制值。
