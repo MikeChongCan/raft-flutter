@@ -332,55 +332,61 @@ class _SystemNotificationBellState extends State<SystemNotificationBell>
     final themes = InheritedTheme.capture(from: context, to: overlay.context);
     final entry = OverlayEntry(
       builder: (_) => themes.wrap(
-        Stack(
-          children: [
-            Positioned(
-              left: left.toDouble(),
-              top: top.toDouble(),
-              width: width,
-              height: height,
-              child: TapRegion(
-                groupId: this,
-                onTapOutside: (_) => close(),
-                child: RaftHoverRegion(
-                  onEnter: (_) => closeDelay?.cancel(),
-                  onExit: (_) {
-                    if (!widget.mobile) {
-                      closeDelay = Timer(
-                        const Duration(milliseconds: 120),
-                        close,
-                      );
-                    }
-                  },
-                  child: ListenableBuilder(
-                    listenable: store,
-                    builder: (context, _) => !current(captured)
-                        ? const SizedBox.shrink()
-                        : RaftNotificationCenter(
-                            key: const Key('system-notification-center'),
-                            width: width,
-                            height: height,
-                            autofocus: keyboard,
-                            countLabel: store.entries.isEmpty
-                                ? raftText(context, 'all clear')
-                                : raftFormat(
-                                    context,
-                                    store.entries.length == 1
-                                        ? '{count} item'
-                                        : '{count} items',
-                                    {'count': store.entries.length},
-                                  ),
-                            entries: [
-                              for (final entry in store.entries)
-                                display(entry, captured),
-                            ],
-                            onDismiss: close,
-                          ),
+        RaftBackDismiss(
+          // OverlayEntry is above the routes. Register with the opener's
+          // route so the workspace consumes Back before its business history.
+          routeContext: context,
+          onDismiss: close,
+          child: Stack(
+            children: [
+              Positioned(
+                left: left.toDouble(),
+                top: top.toDouble(),
+                width: width,
+                height: height,
+                child: TapRegion(
+                  groupId: this,
+                  onTapOutside: (_) => close(),
+                  child: RaftHoverRegion(
+                    onEnter: (_) => closeDelay?.cancel(),
+                    onExit: (_) {
+                      if (!widget.mobile) {
+                        closeDelay = Timer(
+                          const Duration(milliseconds: 120),
+                          close,
+                        );
+                      }
+                    },
+                    child: ListenableBuilder(
+                      listenable: store,
+                      builder: (context, _) => !current(captured)
+                          ? const SizedBox.shrink()
+                          : RaftNotificationCenter(
+                              key: const Key('system-notification-center'),
+                              width: width,
+                              height: height,
+                              autofocus: keyboard,
+                              countLabel: store.entries.isEmpty
+                                  ? raftText(context, 'all clear')
+                                  : raftFormat(
+                                      context,
+                                      store.entries.length == 1
+                                          ? '{count} item'
+                                          : '{count} items',
+                                      {'count': store.entries.length},
+                                    ),
+                              entries: [
+                                for (final entry in store.entries)
+                                  display(entry, captured),
+                              ],
+                              onDismiss: close,
+                            ),
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -594,80 +600,72 @@ class _SystemNotificationBellState extends State<SystemNotificationBell>
   static const attentionInset = (32.0 - 16.0) / 2 - 4;
 
   @override
-  Widget build(BuildContext context) => PopScope(
-    canPop: popup == null,
-    onPopInvokedWithResult: (didPop, _) {
-      if (!didPop && popup != null) close();
-    },
-    child: Listener(
-      onPointerDown: (_) => keyboardInput = false,
-      child: Focus(
-        focusNode: focus,
-        skipTraversal: true,
-        onKeyEvent: (_, event) {
-          if (event is KeyDownEvent &&
-              (event.logicalKey == LogicalKeyboardKey.enter ||
-                  event.logicalKey == LogicalKeyboardKey.space)) {
-            keyboardInput = true;
-          }
-          return KeyEventResult.ignored;
+  Widget build(BuildContext context) => Listener(
+    onPointerDown: (_) => keyboardInput = false,
+    child: Focus(
+      focusNode: focus,
+      skipTraversal: true,
+      onKeyEvent: (_, event) {
+        if (event is KeyDownEvent &&
+            (event.logicalKey == LogicalKeyboardKey.enter ||
+                event.logicalKey == LogicalKeyboardKey.space)) {
+          keyboardInput = true;
+        }
+        return KeyEventResult.ignored;
+      },
+      child: RaftHoverRegion(
+        onEnter: (_) {
+          if (!widget.mobile && !widget.topBar) unawaited(show());
         },
-        child: RaftHoverRegion(
-          onEnter: (_) {
-            if (!widget.mobile && !widget.topBar) unawaited(show());
-          },
-          onExit: (_) {
-            if (!widget.mobile && !widget.topBar) {
-              closeDelay = Timer(const Duration(milliseconds: 120), close);
-            }
-          },
-          child: TapRegion(
-            groupId: this,
-            child: Stack(
-              key: anchor,
-              clipBehavior: Clip.none,
-              children: [
-                RaftMobileNotificationButton(
-                  open: popup != null,
-                  semanticLabel: store.unreadCount == 0
-                      ? raftText(context, 'Notification Center')
-                      : raftFormat(
-                          context,
-                          'Notification Center ({count} active)',
-                          {'count': store.unreadCount},
-                        ),
-                  visualSize: widget.mobile ? 32 : 40,
-                  glyphSize: 16,
-                  // NotificationTrigger: the rail bell is a rail icon with the
-                  // shared attention composite. The mobile header chooses its
-                  // frame treatment through theme data; SDK defaults stay 32/16.
-                  rail: !widget.mobile && !widget.topBar,
-                  onFrame: widget.topBar,
-                  mobileHeader: widget.mobile,
-                  attention: !widget.mobile && store.unreadCount > 0,
-                  onPressed: () => popup == null
-                      ? show(
-                          keyboard:
-                              keyboardInput ||
-                              HardwareKeyboard.instance.logicalKeysPressed
-                                  .contains(LogicalKeyboardKey.enter) ||
-                              HardwareKeyboard.instance.logicalKeysPressed
-                                  .contains(LogicalKeyboardKey.space),
-                        )
-                      : close(),
-                ),
-                if (widget.mobile && store.unreadCount > 0)
-                  Positioned(
-                    right: attentionInset,
-                    top: attentionInset,
-                    child: IgnorePointer(
-                      child: RaftNotificationAttention(
-                        count: store.unreadCount,
+        onExit: (_) {
+          if (!widget.mobile && !widget.topBar) {
+            closeDelay = Timer(const Duration(milliseconds: 120), close);
+          }
+        },
+        child: TapRegion(
+          groupId: this,
+          child: Stack(
+            key: anchor,
+            clipBehavior: Clip.none,
+            children: [
+              RaftMobileNotificationButton(
+                open: popup != null,
+                semanticLabel: store.unreadCount == 0
+                    ? raftText(context, 'Notification Center')
+                    : raftFormat(
+                        context,
+                        'Notification Center ({count} active)',
+                        {'count': store.unreadCount},
                       ),
-                    ),
+                visualSize: widget.mobile ? 32 : 40,
+                glyphSize: 16,
+                // NotificationTrigger: the rail bell is a rail icon with the
+                // shared attention composite. The mobile header chooses its
+                // frame treatment through theme data; SDK defaults stay 32/16.
+                rail: !widget.mobile && !widget.topBar,
+                onFrame: widget.topBar,
+                mobileHeader: widget.mobile,
+                attention: !widget.mobile && store.unreadCount > 0,
+                onPressed: () => popup == null
+                    ? show(
+                        keyboard:
+                            keyboardInput ||
+                            HardwareKeyboard.instance.logicalKeysPressed
+                                .contains(LogicalKeyboardKey.enter) ||
+                            HardwareKeyboard.instance.logicalKeysPressed
+                                .contains(LogicalKeyboardKey.space),
+                      )
+                    : close(),
+              ),
+              if (widget.mobile && store.unreadCount > 0)
+                Positioned(
+                  right: attentionInset,
+                  top: attentionInset,
+                  child: IgnorePointer(
+                    child: RaftNotificationAttention(count: store.unreadCount),
                   ),
-              ],
-            ),
+                ),
+            ],
           ),
         ),
       ),
