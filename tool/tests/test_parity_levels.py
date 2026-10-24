@@ -36,6 +36,25 @@ class LevelTests(unittest.TestCase):
         self.assertEqual(levels.unassigned(['components.frame.desktop.rail.brutal', 'components.errors.toast.success.brutal']), [])
         self.assertEqual(levels.unassigned(['components.brand-new.thing.default.brutal']), [])  # not a known extension area
 
+    def test_raft_frame_plan_keeps_explicit_raft_theme_cases(self):
+        from argparse import Namespace
+        from unittest.mock import patch
+        cases = [
+            {'id': 'components.framework.desktop.navigation.default.raft-light', 'theme': 'raft-light'},
+            {'id': 'components.frame.desktop.rail.brutal-light', 'theme': 'brutal-light'},
+        ]
+        args = Namespace(level='frame', theme='raft', mode='light', fast=False,
+                         out='unused', cases=None, no_ext=False, no_official=True)
+        with patch.object(regress, 'manifests', return_value=(cases, cases)), \
+             patch.object(regress, 'official_cases', return_value=[]):
+            jobs = regress.plan(args)
+        self.assertEqual(jobs[0]['ext'], [c['id'] for c in cases])
+        args.theme = 'elegant'
+        with patch.object(regress, 'manifests', return_value=(cases, cases)), \
+             patch.object(regress, 'official_cases', return_value=[]):
+            jobs = regress.plan(args)
+        self.assertEqual(jobs[0]['ext'], [])
+
     def test_fast_pages_are_page_level_and_named(self):
         self.assertTrue(levels.is_fast_page('screens.auth.login'))
         self.assertFalse(levels.is_fast_page('components.ext-settings.billing.page.brutal'))

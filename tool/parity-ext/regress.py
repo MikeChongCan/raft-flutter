@@ -128,7 +128,10 @@ def plan(a):
             theme = EXT_THEME[look].get(mode)
             if theme is None:
                 continue
-            ext_ids = [c['id'] for c in ext_full if c['theme'] == theme and wanted(c, want_levels, a)
+            # Mounted framework cases declare their actual Raft identity,
+            # while older builders still use the historical storage names.
+            ext_themes = {theme, f'raft-{mode}'} if look == 'raft' else {theme}
+            ext_ids = [c['id'] for c in ext_full if c['theme'] in ext_themes and wanted(c, want_levels, a)
                        # dark / non-Raft dark runs keep the surface sampling for L3 (docs/parity.md "Theme sampling")
                        and (mode == 'light' or levels.level_of(c['id']) != levels.COMPONENT or c['id'] in sampled_ids)]
             off_ids = [c['id'] for c in official if wanted(c, want_levels, a)] if mode == 'light' or look != 'raft' else []
