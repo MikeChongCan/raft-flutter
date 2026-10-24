@@ -9,12 +9,13 @@
 //     --dart-define=RAFT_TEST_REPORT=<dir for the PNG captures and the run log>
 //
 // It spends model calls: exactly two agent turns (one answered, one stopped).
-// It archives the agents it created.
+// It archives the agents it created and restores the server's onboarding agent.
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:raft_client/raft_client.dart';
 import 'package:raft_ui/raft_ui.dart';
 
 import 'support/raftbench_session.dart';
@@ -105,11 +106,12 @@ void main() {
     await t.enterText(nameField.first, name);
     await t.pumpAndSettle();
     await t.tap(find.widgetWithText(RaftAgentDialogButton, 'Create Agent'));
+    // The dialog closes once the server has created the agent.
     await until(
       t,
-      () => find.text(name).evaluate().isNotEmpty,
+      () => find.byType(RaftAgentDialogCard).evaluate().isEmpty,
       seconds: 60,
-      what: 'the new agent in the directory',
+      what: 'the create dialog to close',
     );
     final rows = await w.client.get('/agents') as List;
     final agent = rows.cast<Map>().firstWhere((a) => a['name'] == name);
@@ -282,24 +284,59 @@ void main() {
           : 'spend card shows the provider failure warning',
     );
     await shot(t, '10-plan-spend-card');
+  });
 
-    // 8. Official identity: the cloud agent is made the server's onboarding
-    // agent (outside the app, in the local stack's database), then the app is
-    // opened again so the server record carries it.
+  testWidgets('cloud agent: official identity of the onboarding agent', (
+    t,
+  ) async {
+    final cfg = raftbenchConfig();
+    t.view.physicalSize = const Size(1440, 900);
+    t.view.devicePixelRatio = 1;
+    addTearDown(t.view.reset);
+    addTearDown(() => writeRunLog('run-identity.log'));
+    // The agent is created and made the onboarding agent before the app signs
+    // in, so the first server record the app reads carries it. No model turn.
+    final admin = RaftClient(
+      origin: cfg['origin'] as String,
+      sessionStore: MemorySessionStore(),
+    );
+    await admin.login(cfg['email'] as String, cfg['password'] as String);
+    admin.selectServer(cfg['serverId'] as String);
+    final name = 'cloud-id-${DateTime.now().millisecondsSinceEpoch % 1000000}';
+    final made = await admin.post(
+      '/agents',
+      data: {
+        'name': name,
+        'external': true,
+        'provider': 'antiproton',
+        'avatarUrl': 'pixel:bot-1',
+      },
+    ) as Map;
+    final id = made['id'] as String;
     Future<void> setOnboarding(String? agentId) async {
-      final psql = cfg['psql'] as String;
-      final result = await Process.run(psql, [
-        agentId == null
-            ? "UPDATE servers SET onboarding_agent_id = NULL WHERE id = '${cfg['serverId']}'"
-            : "UPDATE servers SET onboarding_agent_id = '$agentId' WHERE id = '${cfg['serverId']}'",
+      final result = await Process.run(cfg['psql'] as String, [
+        "UPDATE servers SET onboarding_agent_id = ${agentId == null ? 'NULL' : "'$agentId'"} WHERE id = '${cfg['serverId']}'",
       ]);
       expect(result.exitCode, 0);
     }
 
-    addTearDown(() => setOnboarding(null));
+    addTearDown(() async {
+      await setOnboarding(null);
+      try {
+        await admin.request(
+          'DELETE',
+          '/agents/$id',
+          data: {'workspace': 'keep'},
+        );
+        note('archived $id');
+      } catch (e) {
+        note('could not archive $id: ${e.runtimeType}');
+      }
+      await admin.dispose();
+    });
     await setOnboarding(id);
-    final w2 = await signIn(t, cfg);
-    w2.setSection('agents');
+    final w = await signIn(t, cfg);
+    w.setSection('agents');
     await t.pumpAndSettle();
     await until(
       t,
@@ -307,7 +344,7 @@ void main() {
           .byKey(ValueKey('desktop-directory-agent-$id'))
           .evaluate()
           .isNotEmpty,
-      what: 'the agent row after sign-in',
+      what: 'the agent row',
     );
     await t.tap(find.byKey(ValueKey('desktop-directory-agent-$id')));
     await t.pumpAndSettle();
@@ -329,7 +366,7 @@ void main() {
       what: 'the adoption to finish',
     );
     await t.pumpAndSettle();
-    final after = await w2.client.get('/agents/$id') as Map;
+    final after = await w.client.get('/agents/$id') as Map;
     note('after adoption displayName=${after['displayName']}');
     await shot(t, '13-identity-adopted');
   });
