@@ -130,6 +130,8 @@ const Map<String, Set<String>> raftStructuralOptions = {
   'sidebar.mobileSurface': {'canvas', 'sidebar'},
   'sidebarItem.sectionContent': {'uniform', 'sectionScoped'},
   'sidebar.textLayout': {'css', 'natural'},
+  'emptyState.textLayout': {'css', 'natural'},
+  'emptyState.defaultGlyph': {'messageSquare', 'forum'},
   'finder.boxLayout': {'css', 'natural'},
   'conversationHeader.metaFlow': {'stacked', 'inlineWide'},
   'conversationTabs.variant': {'default', 'underline'},
@@ -510,6 +512,7 @@ RaftModeValues? _mode(Object? raw, String where) {
       if (!const {
         'font.messageTime',
         'font.messageSubtitle',
+        'font.emptyTitle',
         'font.sidebarCount',
         'font.mobileWorkspaceTitle',
         'font.conversationHeaderTitle',

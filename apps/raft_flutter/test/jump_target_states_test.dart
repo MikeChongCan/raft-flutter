@@ -136,7 +136,7 @@ void main() {
                 reason: when,
               );
               expect(find.text('retained main channel'), findsNothing);
-              expect(find.text('Start the conversation'), findsNothing);
+              expect(find.text('No messages yet'), findsNothing);
               if (stage == 1) {
                 // A bare, chrome-less "Loading..." is not a stage.
                 expect(

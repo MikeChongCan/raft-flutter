@@ -65,7 +65,7 @@ void main() {
           await tester.pump(const Duration(milliseconds: 16));
           expect(paintedMessage(tester, 'old-79'), oldRect);
           expect(find.text('Loading thread…'), findsNothing);
-          expect(find.text('Start the conversation'), findsNothing);
+          expect(find.text('No messages yet'), findsNothing);
           expect(
             w.messageDomain.messages.map((r) => r.id),
             old.map((r) => r['id']),

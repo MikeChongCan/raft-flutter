@@ -42,6 +42,8 @@ PACK_FORMAT = 'raft-theme/1'
 # AUTHORED: docs/theme-contract.md §4, one row per option. Raft's values live in
 # build_raft_pack.py's OPTIONS_RAFT; these two are the same table's other columns.
 OPTIONS_ELEGANT = {
+    'emptyState.textLayout': 'natural',
+    'emptyState.defaultGlyph': 'forum',
     'mobileNav.boxLayout': 'natural', 'mobileNav.textLayout': 'natural',
     'mobileNav.selection': 'cell',
     'button.hoverSurface': 'variant',
@@ -78,6 +80,8 @@ OPTIONS_ELEGANT = {
     'spinner.ringShape': 'sweep', 'spinner.foreground': 'inherited',
 }
 OPTIONS_BRUTAL = {
+    'emptyState.textLayout': 'natural',
+    'emptyState.defaultGlyph': 'forum',
     'mobileNav.boxLayout': 'natural', 'mobileNav.textLayout': 'natural',
     'mobileNav.selection': 'cell',
     'button.hoverSurface': 'variant',
@@ -820,6 +824,21 @@ def pack(pack_id: str, name_en: str, name_zh: str, values: dict,
         shadows['shadow.buttonHover'] = shadows['md'] if spec['column'] == 'brutal' else normal
         shadows['shadow.buttonPressed'] = shadows['xs'] if spec['column'] == 'brutal' else normal
         shadows['shadow.buttonDangerOutline'] = normal if spec['column'] == 'elegantDark' else 'none'
+        # Frozen Composer draws sm.outer in declaration order (not CSS reverse),
+        # then the light ring. Encode that order for the shared data renderer.
+        import re
+        old_outer = [layer for layer in re.split(r',\s*(?![^()]*\))', shadows['sm'])
+                     if not layer.strip().startswith('inset') and layer != 'none']
+        frozen_idle = ', '.join(reversed(old_outer)) or 'none'
+        if spec['column'] == 'elegantDark':
+            shadows['shadow.composerIdle'] = 'none'
+            # a57 accent-400 #fe7da8, withValues(alpha: .7).
+            shadows['shadow.composerFocus'] = '0 0 0 0.5px rgba(254 125 168 / 0.7)'
+        else:
+            if spec['column'] == 'elegantLight':
+                frozen_idle = f"0 0 0 1px {colors['line-composer']}, {frozen_idle}"
+            shadows['shadow.composerIdle'] = frozen_idle
+            shadows['shadow.composerFocus'] = frozen_idle
         colors.update(framework_colors(spec['column'], colors))
         shadows['shadow.railSelected'] = (
             f"2px 2px 0 0 {colors['foreground-strong']}" if spec['column'] == 'brutal' else 'none')
@@ -852,7 +871,7 @@ def pack(pack_id: str, name_en: str, name_zh: str, values: dict,
                 }), **button_palette(spec['column'])},
             'geometry': {**geometry_with_type(spec['geometry'], type_metrics),
                          **({'space.dialogBodyTop': 10, 'opacity.railActionHover': 1} if spec['column'] == 'elegantDark' else {})},
-            'font': {**{name: '{fonts.mono}' if spec['column'] == 'brutal' else '{fonts.sans}'
+            'font': {'font.emptyTitle': '{fonts.heading}', **{name: '{fonts.mono}' if spec['column'] == 'brutal' else '{fonts.sans}'
                      for name in ('font.messageTime', 'font.messageSubtitle')},
                      'font.sidebarCount': '{fonts.sans}',
                      'font.mobileWorkspaceTitle': '{fonts.heading}',

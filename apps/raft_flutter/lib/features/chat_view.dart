@@ -3416,11 +3416,8 @@ class _RaftChatViewState extends PhonePageState<RaftChatView> {
                       ),
                     )
                   : RaftEmptyState(
-                      title: raftText(context, 'Start the conversation'),
-                      detail: raftText(
-                        context,
-                        'Send a message to this channel.',
-                      ),
+                      title: raftText(context, 'No messages yet'),
+                      detail: raftText(context, 'Start the conversation.'),
                     ),
             ),
           ),
@@ -3649,9 +3646,9 @@ class _RaftChatViewState extends PhonePageState<RaftChatView> {
                 ),
                 clearOnSubmit: true,
                 accessoryRow: composerAccessory(),
-                autofocus:
-                    thread &&
-                    RaftDensityScope.of(context) == RaftDensity.desktop,
+                // ChatPanel and ThreadPanel both default composerAutoFocus to
+                // true; MessageInput requests it only for hover-capable input.
+                autofocus: RaftDensityScope.of(context) == RaftDensity.desktop,
                 canAutofocus: () =>
                     presentationActive &&
                     currentComposer() &&

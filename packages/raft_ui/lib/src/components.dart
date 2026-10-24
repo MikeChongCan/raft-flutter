@@ -1,3 +1,5 @@
+export 'empty_state.dart';
+
 import 'raft/css_box.dart' show raftControlBorderPx;
 import 'interaction.dart';
 import 'hover_region.dart';
@@ -3795,46 +3797,4 @@ class RaftArchivedBadge extends StatelessWidget {
       ),
     );
   }
-}
-
-class RaftEmptyState extends StatelessWidget {
-  const RaftEmptyState({
-    super.key,
-    required this.title,
-    required this.detail,
-    this.icon = Icons.forum_outlined,
-    this.glyph,
-    this.action,
-  });
-  final String title, detail;
-  final IconData icon;
-
-  /// Lucide glyph; wins over [icon].
-  final RaftGlyph? glyph;
-  final Widget? action;
-  @override
-  Widget build(BuildContext context) => Center(
-    child: Padding(
-      padding: const EdgeInsets.all(32),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (glyph != null)
-            RaftIcon(glyph!, size: 40)
-          else
-            Icon(icon, size: 40),
-          const SizedBox(height: 18),
-          Text(
-            title,
-            style: Theme.of(context).textTheme.titleLarge,
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 8),
-          Text(detail, textAlign: TextAlign.center),
-          if (action != null)
-            Padding(padding: const EdgeInsets.only(top: 18), child: action),
-        ],
-      ),
-    ),
-  );
 }

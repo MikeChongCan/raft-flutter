@@ -9,6 +9,7 @@ import 'package:raft_flutter/features/workspace_view.dart';
 import 'package:raft_ui/raft_ui.dart';
 import 'package:raft_ui/test_themes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import 'support/app_services_fixture.dart';
 
 class _Client extends RaftClient {
@@ -171,7 +172,7 @@ void main() {
             expect(find.byType(RaftComposer), findsNothing);
             expect(find.byType(RaftChatView), findsNothing);
             expect(find.byKey(const Key('conversation-tabs')), findsNothing);
-            expect(find.text('Start the conversation'), findsNothing);
+            expect(find.text('No messages yet'), findsNothing);
             expect(find.text('Select a channel'), findsNothing);
             expect(find.text('Loading thread…'), findsNothing);
           }
@@ -204,7 +205,7 @@ void main() {
             expect(find.text('Select a channel'), findsOneWidget);
             expect(find.byType(RaftComposer), findsNothing);
             expect(find.byType(RaftChatView), findsNothing);
-            expect(find.text('Start the conversation'), findsNothing);
+            expect(find.text('No messages yet'), findsNothing);
             expect(
               find.descendant(
                 of: find.byType(RaftChannelResolutionBody),

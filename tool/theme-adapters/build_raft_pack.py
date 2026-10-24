@@ -406,6 +406,8 @@ GEOMETRY_RAFT.update({
 GEOMETRY_RAFT.update(RAFT_GEOMETRY)
 
 OPTIONS_RAFT = {
+    'emptyState.textLayout': 'css',
+    'emptyState.defaultGlyph': 'messageSquare',
     'mobileNav.boxLayout': 'css', 'mobileNav.textLayout': 'css',
     'button.hoverSurface': 'overlay',
     'button.linkDecoration': 'underline',
@@ -548,7 +550,7 @@ def build() -> dict:
                 'radius.dialog': radii['dialog'],
             }),
             'type': scale,
-            'font': {'font.messageTime': '{fonts.mono}',
+            'font': {'font.emptyTitle': '{fonts.sans}', 'font.messageTime': '{fonts.mono}',
                      'font.messageSubtitle': '{fonts.sans}', 'font.sidebarCount': '{fonts.mono}',
                      'font.mobileWorkspaceTitle': '{fonts.sans}',
                      'font.conversationHeaderTitle': '{fonts.sans}', 'font.conversationHeaderMeta': '{fonts.sans}'},
@@ -558,6 +560,8 @@ def build() -> dict:
                 'lg': shadow_set['elevationFloat'], 'xl': shadow_set['elevationFloat'],
                 'shadow.float': shadow_set['elevationFloat'],
                 'shadow.tooltip': shadow_set['elevationFloat'],
+                'shadow.composerIdle': 'none',
+                'shadow.composerFocus': shadow_set['focusRing'],
                 'shadow.sticker': shadow_set['elevationSticker'],
                 'shadow.focusRing': shadow_set['focusRing'],
                 'shadow.control': 'none',

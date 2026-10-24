@@ -14,7 +14,7 @@ import 'raft/button.dart';
 /// MessageInput normal/compact host, distinct from the generic RUI Composer.
 enum RaftComposerVariant { normal, compact }
 
-/// Mounted MessageInput + RUI Composer slots, pinned at 26f77ef / RUI 0.5.27.
+/// Mounted MessageInput + Composer slots; values come from the selected pack.
 /// The caller owns overlay positioning, loading and whether SafeArea was consumed.
 @immutable
 class RaftComposerRecipe {
@@ -43,7 +43,7 @@ class RaftComposerRecipe {
           16 + bottomSafeInset,
         );
   BoxDecoration get hostDecoration => BoxDecoration(
-    color: tokens.panel,
+    color: tokens.colors['layer-composer-host'] ?? tokens.panel,
     // `ConversationPanelFooter` hosts the composer with `!border-0` in v1.21.23.
     border: compact || tokens.size('stroke.channelFooter', fallback: 1) <= 0
         ? null
@@ -62,40 +62,31 @@ class RaftComposerRecipe {
   );
   double get shellGap => 8;
   double get shellRadius => tokens.size('radius.container', fallback: 8);
-  bool get bordered => tokens.option('control.edge', or: 'ring') == 'inkBorder';
+  bool get bordered => shellStroke > 0;
   double get shellStroke {
-    final width = tokens.size('stroke.control', fallback: 1.5);
+    final width = tokens.size('stroke.composerShell', fallback: 1.5);
     return RaftBorderSnap.emulatedDeviceScaleFactor
         ? width.floorToDouble()
         : (width * devicePixelRatio).floorToDouble() / devicePixelRatio;
   }
 
   BoxDecoration shellDecoration({required bool focused}) => BoxDecoration(
-    color: tokens.panel,
+    color: tokens.colors['layer-composer-shell'] ?? tokens.panel,
     borderRadius: BorderRadius.circular(shellRadius),
     border: bordered
         ? Border.all(color: tokens.colors['line-composer']!, width: shellStroke)
         : null,
-    boxShadow: bordered
-        ? tokens.option('press.effect', or: 'overlay') == 'offsetShadow'
-              ? focused
-                    ? tokens.focusShadows
-                    : tokens.shadows
-              : focused
-              ? tokens.focusShadows
-              : const []
-        : tokens.dark
-        ? [
-            if (focused)
-              BoxShadow(
-                color: tokens.colors['accent-400']!.withValues(alpha: .7),
-                spreadRadius: .5,
-              ),
-          ]
-        : [
-            ...tokens.shadows,
-            BoxShadow(color: tokens.colors['line-composer']!, spreadRadius: 1),
-          ],
+    // Named pack layers are CSS top-first; BoxDecoration paints bottom-first.
+    // Legacy packs encode their original paint order explicitly as data.
+    boxShadow: [
+      for (final layer
+          in tokens
+              .shadowLayers(
+                focused ? 'shadow.composerFocus' : 'shadow.composerIdle',
+              )
+              .reversed)
+        if (!layer.inset) layer.toBoxShadow(),
+    ],
   );
 
   double get editorMinimum => desktop

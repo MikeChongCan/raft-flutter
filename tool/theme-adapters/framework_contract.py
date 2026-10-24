@@ -6,6 +6,15 @@ the specified 1.5px remains data for the shared renderer to project.
 """
 
 RAFT_GEOMETRY = {
+    # Mounted ChatPanel EmptyState, raft-ui 0.7.0 index.mjs:11872.
+    'size.emptyGlyph': 36, 'space.emptyIconAfter': 16,
+    'space.emptyInline': 24, 'space.emptyBlock': 48,
+    'size.emptyContentMax': 384, 'size.emptyDescriptionMax': 300,
+    'space.emptyActionBefore': 20,
+    'type.emptyTitle.size': 17, 'type.emptyTitle.line': 22,
+    'type.emptyBody.size': 14, 'type.emptyBody.line': 20,
+    # Composer border-[1.5px]; frozen Elegant ring / Brutal ink border.
+    'stroke.composerShell': 1.5,
     # Mounted raft-ui drawer axis=x max-w-[420px]; a57 OverflowSheet was 448 / 544.
     'size.channelOverflowDrawer': 420,
     'type.mobileWorkspaceTitle.size': 17, 'type.mobileWorkspaceTitle.line': 22,
@@ -106,6 +115,14 @@ RAFT_GEOMETRY = {
 
 ELEGANT_GEOMETRY = {
     **RAFT_GEOMETRY,
+    # a57 generic RaftEmptyState uses Material titleLarge/bodyMedium.
+    'size.emptyGlyph': 40, 'space.emptyIconAfter': 18,
+    'space.emptyInline': 32, 'space.emptyBlock': 32,
+    'size.emptyContentMax': 0, 'size.emptyDescriptionMax': 0,
+    'space.emptyActionBefore': 18,
+    'type.emptyTitle.size': 18, 'type.emptyTitle.line': 28,
+    'type.emptyBody.size': 16, 'type.emptyBody.line': 24,
+    'stroke.composerShell': 0,
     'size.channelOverflowDrawer': 448,
     'type.mobileWorkspaceTitle.size': 16, 'type.mobileWorkspaceTitle.line': 24,
     'space.mobileWorkspaceGap': 6, 'space.mobileWorkspaceStart': 14,
@@ -198,6 +215,7 @@ ELEGANT_GEOMETRY = {
 
 BRUTAL_GEOMETRY = {
     **ELEGANT_GEOMETRY,
+    'stroke.composerShell': 2,
     'size.channelOverflowDrawer': 544,
     'size.conversationHeaderIcon': 36,
     'radius.conversationHeaderIcon': 0,
@@ -244,6 +262,12 @@ def framework_colors(column, colors):
     dark = column.endswith('Dark')
     transparent = '#00000000'
     return {
+        'foreground-empty-icon': colors['foreground-hint' if raft else 'foreground-strong'],
+        'foreground-empty-title': colors['foreground-muted' if raft else 'foreground'],
+        'foreground-empty-body': colors['foreground-hint' if raft else 'foreground'],
+        # Composer root bg-layer-card; mounted footer bg-layer-canvas.
+        'layer-composer-shell': colors['layer-card' if raft else 'layer-panel'],
+        'layer-composer-host': colors['layer-canvas' if raft else 'layer-panel'],
         'foreground-conversation-title': colors['ink'] if brutal else colors['foreground'],
         'foreground-conversation-meta': colors['foreground-hint'] if raft else 'rgba(0 0 0 / 0.5)' if brutal else colors['foreground-placeholder'],
         'foreground-conversation-icon': colors['sticker-ink'] if raft else colors['ink'] if brutal else colors['foreground-icon'],
