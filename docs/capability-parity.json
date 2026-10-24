@@ -1533,12 +1533,21 @@
    "area": "messages",
    "capability": "'Saved' badge in the message footer (click to remove from Saved)",
    "background": false,
-   "status": "missing",
+   "status": "covered",
    "webEntry": "MessageItemSavedIndicator in the message footer",
    "gate": "message is saved",
-   "flutterEntry": "",
-   "flutterRefs": [],
-   "justification": "No saved indicator on message rows in Flutter (chat_view.dart only reads isSaved for menu/toolbar labels).",
+   "flutterEntry": "message_saved_action.dart savedIndicatorOf -> packages/raft_ui message_saved_indicator.dart; chat_view.dart passes it to the message row",
+   "flutterRefs": [
+    {
+     "file": "apps/raft_flutter/lib/features/message_saved_action.dart",
+     "needle": "RaftMessageSavedIndicator("
+    },
+    {
+     "file": "apps/raft_flutter/lib/features/chat_view.dart",
+     "needle": "savedIndicator: savedIndicatorOf("
+    }
+   ],
+   "justification": "A saved message shows the Saved badge in its footer; pressing it unsaves (RaftMessageSavedIndicator, wired in chat_view.dart through savedIndicatorOf). Corrected 2026-10-24: the row still said no indicator existed.",
    "impact": "Users cannot see at a glance which messages they saved, or unsave from the row.",
    "size": "S"
   },
@@ -2067,17 +2076,21 @@
    "area": "threads",
    "capability": "Leave a thread realtime room when the thread panel closes",
    "background": true,
-   "status": "partial",
+   "status": "covered",
    "webEntry": "ThreadPanel cleanup (background)",
    "gate": "",
-   "flutterEntry": "raft_client never emits leave:channel",
+   "flutterEntry": "data/thread_rooms.dart ThreadRooms.leave",
    "flutterRefs": [
     {
      "file": "packages/raft_client/lib/src/client.dart",
-     "needle": "'join:channel'"
+     "needle": "'leave:channel'"
+    },
+    {
+     "file": "apps/raft_flutter/lib/data/thread_rooms.dart",
+     "needle": "leaveChannel("
     }
    ],
-   "justification": "Flutter joins rooms but never leaves them, so closed threads keep delivering frames until the socket reconnects.",
+   "justification": "A closed thread leaves its room (ThreadRooms.leave -> RaftClient.leaveChannel), like Web ThreadPanel. Corrected 2026-10-24: the row still said Flutter never leaves rooms.",
    "impact": "Extra realtime traffic and work for users who open many threads; no visible effect.",
    "size": "S"
   },
@@ -5789,7 +5802,7 @@
    "gate": "runtime option carries formDefinitionRef; applies when runtime_form_v2_web is off or runtime lacks v2 marker",
    "flutterEntry": "",
    "flutterRefs": [],
-   "justification": "Owner decision: Flutter uses the v2 runtime form protocol (runtime-forms/v2) for create and edit and never the v1 schema-backed path. Web uses v1 only while runtime_form_v2_web (default off) is off or a runtime lacks the v2 marker; the v2 route serves every runtime the app can create (checked against a local v1.21.23 server: claude, codex, builtin, pi, opencode, kimi-sdk, gemini and grok all answer a v2 form with live or static option sources).",
+   "justification": "Owner decision (plan section 1, 2026-10-21; recorded on this row 2026-10-24): Flutter uses the v2 runtime form protocol (runtime-forms/v2) for create and edit and never the v1 schema-backed path. Web uses v1 only while runtime_form_v2_web (default off) is off or a runtime lacks the v2 marker; the v2 route serves every runtime the app can create (checked against a local v1.21.23 server: claude, codex, builtin, pi, opencode, kimi-sdk, gemini and grok all answer a v2 form with live or static option sources).",
    "impact": "",
    "size": "M"
   },
@@ -5804,7 +5817,7 @@
    "gate": "as above",
    "flutterEntry": "",
    "flutterRefs": [],
-   "justification": "Owner decision: Flutter uses the v2 runtime form protocol (runtime-forms/v2) for create and edit and never the v1 schema-backed path. Web uses v1 only while runtime_form_v2_web (default off) is off or a runtime lacks the v2 marker; the v2 route serves every runtime the app can create (checked against a local v1.21.23 server: claude, codex, builtin, pi, opencode, kimi-sdk, gemini and grok all answer a v2 form with live or static option sources).",
+   "justification": "Owner decision (plan section 1, 2026-10-21; recorded on this row 2026-10-24): Flutter uses the v2 runtime form protocol (runtime-forms/v2) for create and edit and never the v1 schema-backed path. Web uses v1 only while runtime_form_v2_web (default off) is off or a runtime lacks the v2 marker; the v2 route serves every runtime the app can create (checked against a local v1.21.23 server: claude, codex, builtin, pi, opencode, kimi-sdk, gemini and grok all answer a v2 form with live or static option sources).",
    "impact": "",
    "size": "M"
   },
@@ -6989,7 +7002,7 @@
    "gate": "operational info visible (not remote-joint)",
    "flutterEntry": "removed",
    "flutterRefs": [],
-   "justification": "Web v1.21.23 removed the Created Agents section from the agent profile (a person's profile keeps it).",
+   "justification": "Web v1.21.23 removed the Created Agents section from the agent profile (a person's profile keeps it). Following Web; no owner choice was needed (recorded 2026-10-24).",
    "impact": "",
    "size": ""
   },
@@ -11407,7 +11420,7 @@
    "area": "files-attachments",
    "capability": "Attachment card download button on file/audio/image tiles",
    "background": false,
-   "status": "partial",
+   "status": "na",
    "webEntry": "MessageItem handleDownloadAttachment",
    "gate": "none",
    "flutterEntry": "attachment_transfers.dart download action ('Saved {name}')",
@@ -11417,7 +11430,7 @@
      "needle": "'Saved {name}'"
     }
    ],
-   "justification": "Intentional difference (owner decision 2026-10-21, docs/parity.md 'Attachment cards: no floating Share / Download icons'): Web v1.21.12 shows a hover Download on image tiles (MessageImageGalleryAction) and a secondary Download on audio chips; file chips only carry a decorative Download/Eye glyph. Flutter has no floating Share or Download icon on any message attachment card (image and file cards): the card opens the viewer, where Download stays (preview header, media viewer; a file with no preview saves on tap). Share moves into the viewer headers (document, PDF, CSV/XLSX, markdown, text, HTML previews; image and video viewer), only on platforms with a share sheet. The audio card keeps its Download icon, as Web does, because it has no viewer to open.",
+   "justification": "Intentional difference, owner decision (Kevin, 2026-10-21, PR #295; docs/parity.md \"Attachment cards: no floating Share / Download icons\"). Web v1.21.12 shows a hover Download on image tiles (MessageImageGalleryAction) and a secondary Download on audio chips; file chips only carry a decorative Download/Eye glyph. Flutter has no floating Share or Download icon on any message attachment card (image and file cards): the card opens the viewer, where Download stays (preview header, media viewer; a file with no preview saves on tap). Share moves into the viewer headers (document, PDF, CSV/XLSX, markdown, text, HTML previews; image and video viewer), only on platforms with a share sheet. The audio card keeps its Download icon, as Web does, because it has no viewer to open.",
    "impact": "Hovering or focusing an image or file card never reveals Share or Download; one tap opens the viewer and Download is there. Files with no preview (archives, code, diff/patch) save on tap and have no Share.",
    "size": "S"
   },
@@ -11567,7 +11580,7 @@
    "area": "files-attachments",
    "capability": "Video and audio attachments: inline player and full preview (play/pause, seek, volume, download)",
    "background": false,
-   "status": "partial",
+   "status": "na",
    "webEntry": "MessageItem inline players + MediaPreviewHost",
    "gate": "browser codec limits show 'Download to view'",
    "flutterEntry": "inline_attachment_media.dart (all platforms: RaftVideoPosterCard, poster + play, opens media_browser which autoplays), video_card_poster.dart (first frame without a server thumbnail), platform/attachment_player.dart, raft_ui video_viewer.dart",
@@ -11585,7 +11598,7 @@
      "needle": "class RaftVideoPosterCard"
     }
    ],
-   "justification": "Intentional difference (owner decision 2026-10-17, docs/parity.md 'Video cards'): every platform shows a shaped video poster with no inline playback session; clicking opens and plays in the media viewer. Bounded first-frame extraction remains when no server thumbnail exists; closing releases playback.",
+   "justification": "Intentional difference, owner decision (Kevin, 2026-10-17; docs/parity.md \"Video cards: posters on every platform\"): every platform shows a shaped video poster with no inline playback session; clicking opens and plays in the media viewer. Bounded first-frame extraction remains when no server thumbnail exists; closing releases playback.",
    "impact": "Phone users start a video with one tap into the viewer instead of playing in the message list; no player (decoder) is held while scrolling.",
    "size": "S"
   },
@@ -13125,7 +13138,7 @@
    "area": "account-profile",
    "capability": "Read the product release notes page (paged list with 'Current' and 'Retracted' badges)",
    "background": false,
-   "status": "partial",
+   "status": "na",
    "webEntry": "Settings > Release Notes (ReleaseNotesPanel, loadReleaseNotesPage); also reachable from the public server settings when signed in",
    "gate": "none",
    "flutterEntry": "workspace_settings.dart 'Release Notes' row -> ReleaseNotesView fed by platform/client_release_notes.dart (GitHub release asset)",
@@ -13139,7 +13152,7 @@
      "needle": "ReleaseNotesView"
     }
    ],
-   "justification": "Recorded intentional difference (docs/parity.md ~L1703-1707): Flutter shows the client app's own English-only release notes from the GitHub release asset, not the server's GET /release-notes (no server product notes, no cursor paging, no zh).",
+   "justification": "Intentional difference, owner-approved (docs/parity.md, \"Settings > Release Notes lists the client's own release notes\", in place since 2026-10-13): Flutter shows the client app's own English-only release notes from the GitHub release asset, not the server's GET /release-notes (no server product notes, no cursor paging, no zh).",
    "impact": "Every user: the page exists but lists the app's builds, not the Raft server/product release notes Web users read, and is English only.",
    "size": "S"
   },
@@ -14057,7 +14070,7 @@
    "area": "account-profile",
    "capability": "Release Notes page reachable from Settings and the public settings surface",
    "background": false,
-   "status": "partial",
+   "status": "na",
    "webEntry": "Settings nav > Release Notes",
    "gate": "",
    "flutterEntry": "workspace_settings.dart 'release-notes' (client notes, see GET /release-notes)",
@@ -14067,7 +14080,7 @@
      "needle": "'release-notes'"
     }
    ],
-   "justification": "See endpoint GET /release-notes: content source differs. The public settings surface shows the same page to a signed-in non-member.",
+   "justification": "Intentional difference, owner-approved (see endpoint GET /release-notes): the page exists and is reachable from Settings and the public settings surface, but its content source is the client's own release notes. The public settings surface shows the same page to a signed-in non-member.",
    "impact": "Same as endpoint entry.",
    "size": "S"
   },
@@ -17284,7 +17297,7 @@
    "gate": "none",
    "flutterEntry": "",
    "flutterRefs": [],
-   "justification": "Removed upstream in Web v1.21.23: the Agent access JWT card is gone from the installed app detail, the installed marketplace detail and the app editor. Agent JWT is built in for every App, so there is no setting to read. The server still answers GET only for the previous Web bundle and drops it in a later release.",
+   "justification": "Removed upstream in Web v1.21.23: the Agent access JWT card is gone from the installed app detail, the installed marketplace detail and the app editor. Agent JWT is built in for every App, so there is no setting to read. The server still answers GET only for the previous Web bundle and drops it in a later release. Following Web, no owner choice needed (plan section 1, 2026-10-21).",
    "impact": "",
    "size": ""
   },
@@ -17299,7 +17312,7 @@
    "gate": "none",
    "flutterEntry": "",
    "flutterRefs": [],
-   "justification": "Removed upstream in Web v1.21.23: the server answers PUT with 410 and changes nothing. Agent JWT is built in for every App, so Flutter removed the card (agent_jwt_settings.dart, raft_ui settings_agent_jwt.dart) and never calls it.",
+   "justification": "Removed upstream in Web v1.21.23: the server answers PUT with 410 and changes nothing. Agent JWT is built in for every App, so Flutter removed the card (agent_jwt_settings.dart, raft_ui settings_agent_jwt.dart) and never calls it. Following Web, no owner choice needed (plan section 1, 2026-10-21).",
    "impact": "",
    "size": ""
   },

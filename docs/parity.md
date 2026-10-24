@@ -8,6 +8,46 @@ home-grown differ. The Flutter app is plugged in as a **provider**: it writes
 captures in the official provider output contract and the official CLI does
 `diff`, `site` and all scoring.
 
+## Open owner decisions (Web v1.21.23 alignment, 2026-10-24)
+
+Nothing below is decided. Each item names what Kevin has to answer; the rows stay as they are
+(⚠️ / ❌ in `capability-parity.json`, `open` or unverified in `docs/behavior-parity/`) until he does.
+Numbers are the items of the v1.21.23 plan, section 3.
+
+| # | Question | What the answer needs | Rows it settles |
+| --- | --- | --- | --- |
+| 1 | Default appearance becomes Web's "Raft" look; Elegant and Brutal stay as selectable themes | A yes after the side-by-side screenshots (the theme work, task #228, is still changing pages) | the appearance rows and the visual baselines |
+| 3 | Native push (FCM / APNs) | The server needs a native push channel first; until then record it as a server-capability gap and do not schedule it | `ui:notifications.push-subscription`, `ui:notifications.web-push-controls` |
+| 5 | Web removed the Activity Done, Saved and DMs views (flag `activity_sidebar_inbox_v0`); the app still has them and the server still serves them | Keep and record as an intended difference (recommended), or remove to match Web | `BP-READ-080` (differs), `BP-READ-038` note, `GET /channels/inbox/done`, `POST /channels/inbox/undone` |
+| 6 | Open Raft https links in the app | The platform owner must host `assetlinks.json` and `apple-app-site-association` on the Raft domain; the app side is built and switched off (`RAFT_APP_LINKS`) | `ui:global-ui.routes-external-https-links` |
+| 7 | Product analytics (`POST /product-events/batch`) and the "Share usage data" switch | Record as an intended difference and remove the switch (recommended: today it does nothing), or decide to send events (a separate privacy decision) | `RAW analytics/track.ts`, `ui:global-ui.product-analytics-events` |
+| 8 | Web-only items to record as not applicable in one go: desktop download options, cookie consent and public visit counts, palette audit page, sidebar drag-and-drop probe, desktop multi-window, history menu | One "yes" | `ui:global-ui.desktop-server-windows` and the rows of the other items |
+| BP | Twelve behaviour rows without a recorded owner decision | A "confirm" that records them as intended differences or not applicable, with the date | `BP-READ-003`, `004`, `053`, `069`, `071`, `072`, `076`, `BP-RT-007`, `016`, `017`, `052`, `053` |
+| Invite | The private-app invite page (`/integration-invites/:token`) is a browser page for admins; record it as an intended difference like the other browser-hosted pages (recommended)? | A yes or no | `GET /integration-invites/:id`, `POST /integration-invites/:id/install`, `ui:global-ui.routes-integration-invite`, `ui:integrations.integration-invite-page` |
+
+Open differences that are only listed for review (not questions): the "open differences" sections for the public page,
+RaftBench, attachments and navigation further down. Two further differences wait on shell work, not on an owner answer:
+the Appearance tab for signed-out visitors (`ui:public.settings-appearance-signed-out`) and the public-page globe on
+the desktop (`ui:server.public-page-live-globe`).
+
+## Owner decisions for the Web v1.21.23 alignment
+
+| Date | Decision | Source | Where it is recorded |
+| --- | --- | --- | --- |
+| 2026-10-21 | Follow Web v1.21.23 in full, except the intentional differences recorded here and in `capability-parity.json` | Kevin, #raft-flutter `4c35558a` | `docs/upstream-sync.json`, `docs/upstream-reports/v1.21.12-to-v1.21.23.md` |
+| 2026-10-24 | Build the cloud (hosted) agent family, verified against a local antiproton server (plan item 2) | Kevin, `0b62aedd` | the cloud-agent rows are ✅ in `capability-parity.json` (`POST /agents` note, `GET /agents/:id/hosted-runtime`) |
+| 2026-10-23 | Build RaftBench in full (plan item 4; the plan had suggested ➖) | Kevin, `b9c81968` | section "RaftBench vs Web v1.21.23" below; RaftBench rows ✅ |
+| 2026-10-23 | Live sequence jumps keep no gap fetch (intended difference) | Kevin, `9c047186` | section "Live sequence jumps do not trigger a gap fetch"; `BP-READ-021`, `BP-RT-030` |
+| 2026-10-21 | No floating Share / Download icons on attachment cards | Kevin, PR #295 | section "Attachment cards"; `ui:files.attachment-card-download` ➖ |
+| 2026-10-17 | Video cards are posters on every platform | Kevin | section "Video cards"; `ui:files.video-audio-preview` ➖ |
+| 2026-10-17 | Forms are bottom sheets below 768 px and dialogs from 768 px (`RaftPresentationPolicy.form`) | product owner, commit `49315d69` | `docs/close-affordances.md` (the "approved" rows of the dialog family); not a capability row |
+| by 2026-10-13 | Settings > Release Notes shows the client's own release notes, not the server's `GET /release-notes` | owner-approved when the page was built; the plan of 2026-10-21 lists it as decided | the Release Notes bullet under "Navigation audit"; `GET /release-notes`, `ui:tabs.release-notes` ➖ |
+| by 2026-10-21 | The app uses the v2 runtime form protocol and never the v1 schema-backed path | owner decision listed in the plan (section 1) | `GET /servers/:id/machines/:id/runtime-form-definitions/:id` and its option-sources row ➖ |
+| 2026-10-24 | Agent access JWT card removed; Created Agents list removed from the agent profile | none needed: Web v1.21.23 removed both | `GET` / `PUT /integrations/clients/:id/agent-jwt`, `ui:agents.created-agents-list` ➖ |
+
+The visual baselines are not re-recorded by this alignment pass: the theme work (task #228) is still changing pages,
+so a new baseline would be out of date at once. They are re-recorded when that work lands.
+
 ## Authorized baseline fixture repair (2026-10-09)
 
 Human message `65b111e1` authorizes fixing defective test baselines. Five
@@ -1870,7 +1910,7 @@ tablet and phone:
 
 Why: a column of inline players holds one decoder and one stream per card; that costs scroll frames and
 resources, and a muted 16:9 player with its own controls is a second, smaller viewer next to the real one. The decision
-is recorded in `capability-parity.json` (`ui:files.video-audio-preview`, partial).
+is recorded in `capability-parity.json` (`ui:files.video-audio-preview`, ➖ intended difference).
 
 Poster without a server thumbnail (CLI uploads carry no `thumbnailUrl`, no width and no height; Web does not need
 one): the first frame is read from the video through the platform (Android `MediaMetadataRetriever` over a ranged
@@ -1971,7 +2011,7 @@ PR #295):
   actions on Web as well and not an overlay on a card.
 
 Parity cases that compare a message attachment card with Web differ only where Web draws the image hover Download.
-The row is `ui:files.attachment-card-download` in `capability-parity.json` (partial).
+The row is `ui:files.attachment-card-download` in `capability-parity.json` (➖, intended difference).
 
 ## Owner decisions 2026-10-21 (Kevin): differences from Web v1.21.12 that stay
 
@@ -1999,11 +2039,11 @@ behaviour checklists (`docs/behavior-parity/`).
 
 ## Public server page vs Web v1.21.23 (cindy/w23-pub): open differences
 
-Not owner decisions yet; each is listed so a reviewer can accept or send it back.
+Not owner decisions yet; each is listed so a reviewer can accept or send it back. Where a bullet is also an item of "Open owner decisions" at the top, that item is the open question.
 
 * Signed-out visitors get no Appearance tab on the public page (Web v1.21.23 shows it to everyone). The app follows the device theme while signed out and the appearance setting lives in the app root; the tab waits for the appearance rework.
 * Signed-out Language & Region shows the display language of the device and offers no other (Web keeps a local display language). Translation mode, target, default view, timezone and time format are saved on the device like Web.
-* No cookie banner, visitor id or public visit counts (`POST /public-visits/:slug`): Web-only browser statistics (plan decision).
+* No cookie banner, visitor id or public visit counts (`POST /public-visits/:slug`): Web-only browser statistics (plan decision 8, open).
 * The Chinese community page opens from the Help menu only; Web's redirect of a direct `/s/community-cn` link and the `community_cn_qr_page_view` event are not ported. The page has a Back control (a browser page has the browser's).
 * A native window has no per-page title: Web sets the document title of the Chinese community page; the app title bar keeps the app name.
 * The globe after the server name shows in the phone server selector only; the desktop top bar that carries it in Web is the shell package.
@@ -2012,7 +2052,7 @@ Not owner decisions yet; each is listed so a reviewer can accept or send it back
 
 RaftBench (owner / admin, `raftbench_overview_v0`) is ported in full: tasks and cost, conversation
 insights with their settings, progress, findings and evidence, the collapsed legacy phrase rules and
-the service-agent DM notice. Kevin decided on 2026-10-23 to build it (the plan had suggested recording
+the service-agent DM notice. Kevin decided on 2026-10-23 (`b9c81968`) to build it (the plan had suggested recording
 it as an intentional difference). What still differs, for a reviewer to accept or send back:
 
 * `/s/<slug>/raftbench` opens Settings > RaftBench (`settings/raftbench` inside the app); Web mounts the page as its own route under the Settings rail.
@@ -2028,14 +2068,14 @@ it as an intentional difference). What still differs, for a reviewer to accept o
 Web treats a live `message:new` whose `seq` is past the open window's tail as a
 gap: it holds the message in a pending-gap list, calls `syncGap` and stitches
 the window when the gap fills (BP-READ-021, BP-RT-030). Owner decision
-2026-10-23 (Kevin, after the v1.21.23 read-path port): **keep the difference**.
+2026-10-23 (Kevin, `9c047186`, after the v1.21.23 read-path port): **keep the difference**.
 Channel `seq` is sparse in the sync core, so a jump does not prove a missing
 message; the client heals real gaps through the heartbeat, `rooms:joined` and
 resume reads instead.
 
 ## Attachments and large files vs Web v1.21.23 (cindy/w23-files): differences
 
-Not owner decisions yet; each is listed so a reviewer can accept or send it back.
+Not owner decisions yet; each is listed so a reviewer can accept or send it back. Where a bullet is also an item of "Open owner decisions" at the top, that item is the open question.
 
 * Unfinished-uploads banner wording: Web says "This browser no longer has the original file ... let the original tab finish uploading"; the app says "This app ... the original window". The behaviour is the same (list the viewer's active sessions of the channel, hide rows a pending chip owns, Cancel upload).
 * Unfinished direct uploads are not persisted across an app restart: like Web's draft cache they live with the running session, so after a restart the banner is the way to cancel them.
@@ -2057,7 +2097,7 @@ Not owner decisions yet; each is listed so a reviewer can accept or send it back
 
 ## Navigation, search and platform vs Web v1.21.23 (cindy/w23-nav): open differences
 
-Not owner decisions yet; each is listed so a reviewer can accept or send it back.
+Not owner decisions yet; each is listed so a reviewer can accept or send it back. Where a bullet is also an item of "Open owner decisions" at the top, that item is the open question.
 
 * **Rail memory is wide-layout only.** Web restores the last location of Chat, Tasks, Members, Computers and Settings on every rail press; the app does the same on the desktop rail and keeps the phone tab bar opening tab roots (`docs/source-navigation-contract.md`, PUSH rule 7, owner decision 2026-10-11). A remembered conversation restores its thread beside it but not a `?msg=` highlight.
 * **"Find a conversation" shows on pointer desktops.** Web shows it in the Electron shell only; the desktop app is that shell's counterpart, so Linux, macOS and Windows windows in the wide layout get it, touch platforms and the phone Home list do not. The results float over the sidebar list as in Web; the visual-parity harness hides the box because its browser reference has none.
