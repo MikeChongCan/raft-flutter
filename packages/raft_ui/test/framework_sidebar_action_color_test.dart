@@ -106,6 +106,12 @@ void main() {
         );
         final context = t.element(icon),
             tokens = RaftTokens.of(t.element(icon));
+        // Mounted SidebarSectionControl's Button CSS overrides the Lucide
+        // size={16} attribute to 18px. Frozen a57 controls keep 14px.
+        expect(
+          t.widget<RaftIcon>(icon).size,
+          pack == raftThemePackId ? 18 : 14,
+        );
         // Current SidebarSectionControl is a ghost Button; a57's btn-flat-sm
         // keeps its muted default and brightens on hover/focus.
         expect(

@@ -3784,6 +3784,7 @@ class _WorkspaceViewState extends State<WorkspaceView>
                                 child: RaftNavItem(
                                   key: const Key('nav-activity'),
                                   role: RaftNavItemRole.activity,
+                                  precededByEntry: true,
                                   viewportHeight: MediaQuery.sizeOf(context)
                                       .height,
                                   label: tr('Activity'),
@@ -3805,6 +3806,7 @@ class _WorkspaceViewState extends State<WorkspaceView>
                             SliverToBoxAdapter(
                               child: SavedSidebarEntry(
                                 key: const Key('nav-saved'),
+                                precededByEntry: mobileHome,
                                 controller: w,
                                 onTap: () => select('saved'),
                               ),
@@ -3890,7 +3892,7 @@ class _WorkspaceViewState extends State<WorkspaceView>
     final scope = mobileAuthority, id = group.id;
     final sortable = !group.custom;
     final anchor = sortable ? sortAnchors.putIfAbsent(id, GlobalKey.new) : null;
-    // Sidebar.tsx renderSectionAddButton: Plus 14 on Channels
+    // SidebarSectionControl CSS computes an 18px glyph on Channels
     // (createChannels) and Joint channels (federateChannels) only; Pinned and
     // Direct messages carry just the sort menu.
     final VoidCallback? onAdd =
@@ -3905,7 +3907,7 @@ class _WorkspaceViewState extends State<WorkspaceView>
           key: anchor,
           testKey: ValueKey('sidebar-sort-$id'),
           label: tr('Sort'),
-          glyph: RaftGlyph.arrowUpDown, // Sidebar.tsx ArrowUpDown 14
+          glyph: RaftGlyph.arrowUpDown, // SidebarSectionControl computed 18px
           onPressed: sortingGroups.contains(id)
               ? null
               : () => sortSidebarGroup(group),

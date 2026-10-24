@@ -93,7 +93,8 @@ RAFT_GEOMETRY = {
     'stroke.sidebarHeading': 1,
     'stroke.sidebarFrame': 1,
     'size.sidebarSectionLine': 18, 'size.sidebarSectionGlyph': 14,
-    'size.sidebarSectionAction': 28, 'size.sidebarSectionActionGlyph': 16,
+    # SidebarSectionControl Button CSS wins over Lucide size={16}: computed18.
+    'size.sidebarSectionAction': 28, 'size.sidebarSectionActionGlyph': 18,
     'space.sidebarSectionTop': 16, 'space.sidebarSectionBottom': 6,
     'space.sidebarSectionGap': 6, 'space.sidebarSectionActions': 8,
     'type.sidebarSection.size': 13, 'type.sidebarSection.line': 18,

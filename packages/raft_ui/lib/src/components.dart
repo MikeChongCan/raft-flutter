@@ -821,6 +821,7 @@ class RaftNavItem extends StatelessWidget {
     this.labelSuffix,
     this.tag,
     this.role = RaftNavItemRole.generic,
+    this.precededByEntry = false,
     this.viewportHeight,
     this.count,
     this.conversationKind,
@@ -856,6 +857,11 @@ class RaftNavItem extends StatelessWidget {
   /// Chip between the label and the description (a Guest `RaftSidebarTag`).
   final Widget? tag;
   final RaftNavItemRole role;
+
+  /// An adjacent mounted entry in the sidebar's block flow. Its bottom margin
+  /// and this entry's top margin collapse, as they do in CSS. Flex-list rows
+  /// and standalone entries keep their full margins.
+  final bool precededByEntry;
   final double? viewportHeight;
 
   /// Saved total is metadata, independent of an unread/activity badge.
@@ -1447,7 +1453,12 @@ class RaftNavItem extends StatelessWidget {
             : '';
         return Padding(
           padding: EdgeInsets.only(
-            top: recipe.marginTop,
+            top: precededByEntry
+                ? (recipe.marginTop - recipe.marginBottom).clamp(
+                    0,
+                    double.infinity,
+                  )
+                : recipe.marginTop,
             bottom: recipe.marginBottom,
           ),
           child: Semantics(

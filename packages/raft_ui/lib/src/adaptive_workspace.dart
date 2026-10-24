@@ -438,7 +438,9 @@ class _RaftAdaptiveWorkspaceState extends State<RaftAdaptiveWorkspace> {
                     child: Container(
                       key: const Key('workspace-sidebar-panel'),
                       width: sidebarWidth,
-                      decoration: BoxDecoration(border: border),
+                      // CSS backgrounds cover the border box too. The inset
+                      // Material alone leaves translucent seams on the page.
+                      decoration: BoxDecoration(color: color, border: border),
                       child: Material(color: color, child: retainedSidebar),
                     ),
                   ),

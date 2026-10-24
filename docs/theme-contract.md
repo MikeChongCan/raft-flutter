@@ -1138,6 +1138,15 @@ rail 在栏下的导航顶部留 8px（矮屏 4px），没有栏时保留原间�
 悬停 foreground；选中态沿用原强前景。`RaftControlRecipe.iconForegroundFor`
 默认转发文字颜色，只有这些导航入口覆盖，其他配方维持原行为。
 
+分组排序／添加按钮的 `size.sidebarSectionActionGlyph` 按实际 DOM 的 18px：
+SidebarSectionControl 的 Button CSS 覆盖 Lucide 的 size=16 属性；旧两套保留 14px。
+侧栏外框自身也绘制侧栏底色，半透明分隔线与原版一样叠在该底色上。
+
+Search、Activity、Saved 在真实侧栏中按 CSS block flow 排列。相邻入口通过
+`RaftNavItem.precededByEntry` 合并上一项底边距和本项顶边距：Raft 的 `my-px`
+相邻间隔为 1px；单独入口保留完整边距。旧两套只有 4px 底边距，位置不变。
+会话分组中的 flex 列表不使用此合并。
+
 手机 Home 工作区选择器的 `mobileWorkspace.surface = sticker | polygon`：
 Raft 采用 Sidebar.tsx 的圆角墨色贴纸、黄色名称和整体 -2° 倾斜；短窗口采用
 36px 透明按钮和 frame 前景。Elegant／Brutal 保留原来的黑色多边形及紧凑 24px。

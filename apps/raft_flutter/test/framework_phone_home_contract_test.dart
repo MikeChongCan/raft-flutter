@@ -40,6 +40,37 @@ void main() {
         );
         await t.pumpWidget(const SizedBox.shrink());
       }, variant: TargetPlatformVariant.only(TargetPlatform.android));
+      testWidgets('phone Home $height/$dark collapses adjacent entry margins', (
+        t,
+      ) async {
+        final (w, _) = await pageFixture(t);
+        w.setSection('home');
+        await mountPage(
+          t,
+          w,
+          dark,
+          width: 390,
+          height: height,
+          browserHost: true,
+        );
+        Finder control(String key) => find.descendant(
+          of: find.byKey(Key(key)),
+          matching: find.byType(RaftControl),
+        );
+        final search = t.getRect(control('nav-search'));
+        final activity = control('nav-activity');
+        final saved = t.getRect(control('nav-saved'));
+        // Source Sidebar.tsx's block-flow my-px: adjacent margins collapse
+        // to one pixel. Tall rows are 46, short rows are 44.
+        final step = height <= 600 ? 45.0 : 47.0;
+        if (activity.evaluate().isNotEmpty) {
+          expect(t.getRect(activity).top - search.top, step);
+          expect(saved.top - search.top, step * 2);
+        } else {
+          expect(saved.top - search.top, step);
+        }
+        await t.pumpWidget(const SizedBox.shrink());
+      }, variant: TargetPlatformVariant.only(TargetPlatform.android));
       testWidgets('phone Home $height/$dark places the full frame bell', (
         t,
       ) async {

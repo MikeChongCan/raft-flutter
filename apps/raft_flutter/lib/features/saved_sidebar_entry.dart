@@ -243,9 +243,11 @@ class SavedSidebarEntry extends StatefulWidget {
     super.key,
     required this.controller,
     required this.onTap,
+    this.precededByEntry = false,
   });
   final WorkspaceController controller;
   final VoidCallback onTap;
+  final bool precededByEntry;
   @override
   State<SavedSidebarEntry> createState() => _SavedSidebarEntryState();
 }
@@ -311,6 +313,7 @@ class _SavedSidebarEntryState extends State<SavedSidebarEntry> {
     label: raftText(context, 'Saved'),
     glyph: RaftGlyph.bookmark,
     role: RaftNavItemRole.saved,
+    precededByEntry: widget.precededByEntry,
     viewportHeight: MediaQuery.sizeOf(context).height,
     count: saved.count,
     selected: w.section == 'saved',
