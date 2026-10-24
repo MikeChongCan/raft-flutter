@@ -718,3 +718,87 @@ Cindy fc426a64 批准任务勾选数值：
 调色板（Cindy c3468770、ab2343bd、fd3328fd）：`palette.elegantNotice.light` 为 #ffeadc；深色项保留 a57 `recipe_utilities.g.dart` 的 `_v609` 实际绘制值：`Color.from(alpha: 0.180368, red: 0.534161, green: 0.321382, blue: 0.207110)`。源码同时保存的 CSS 字面值 `oklch(0.5 0.08 50 / 0.18)` 经当前包解析器转换后并不等于这组浮点值，因此不使用 CSS 字面值或四舍五入后的 ARGB。两项只用于保留旧 Elegant 的像素，没有对应的 Web 值；只出现在 Elegant 源模式（Brutal 深色完整继承），Raft 包不加。`layer-composer-notice` 引用这些项；Brutal 浅色引用现有 palette-orange-100。
 
 任务勾选颜色（Cindy ab2343bd）：`foreground-composer-task` 为 Raft foreground／Elegant foreground-strong／Brutal ink 的 60%；`layer-composer-task-checked` 为 foreground／foreground-strong／ink；`line-composer-task` 为 line-strong／line-strong／ink。包格式不支持在引用上加透明度，Brutal 的标签值保存在专用调色板项 `composerTaskLabel`，组件不再乘透明度。旧两套共同的勾号尺寸 10、描边 4 保持常量。共享指示器仍由原来的单个交互控件承载，不增添焦点或勾选权威。
+
+### 消息行几何、头部与字体引用
+
+数值由 Cindy 53e94688 批准，a732e624 补充 `size.messageRowAvatarLarge`。
+Raft 取当前 Web v1.21.23 的 raft-ui 0.7.0 MessageItem 与挂载覆盖；Elegant／Brutal
+取 a57b9dab 原实现，不以当前共用的 0.5.52 数值代替原版。Brutal 深色完整沿 Elegant。
+紧凑宽度仍为 <768，thread 的原有内边距覆盖仍在 <1024 生效。
+
+| Name | Raft | Elegant | Brutal |
+|---|---:|---:|---:|
+| size.messageRowMin | 0 | 48 | 48 |
+| stroke.messageRow | 0 | 1 | 2 |
+| space.messageRowInline | 8 | 28 | 6 |
+| space.messageRowInlineCompact | 8 | 16 | 6 |
+| space.messageRowInlineThread | 8 | 12 | 6 |
+| space.messageRowTop | 8 | 14 | 4 |
+| space.messageRowTopCompact | 8 | 8 | 4 |
+| space.messageRowContinuationTop | 0 | 6 | 4 |
+| space.messageRowBottom | 8 | 12 | 4 |
+| space.messageRowBottomCompact | 8 | 6 | 4 |
+| space.messageRowFollowedCompactBottom | 8 | 2 | 4 |
+| space.messageRowFollowedCompactBottomCompact | 8 | 0 | 4 |
+| space.messageRowMarginInline | 0 | 0 | 12 |
+| space.messageRowMarginTop | 0 | 0 | 6 |
+| space.messageRowMarginBottom | 0 | 0 | 4 |
+| size.messageRowGutter | 35 | 36 | 36 |
+| size.messageRowGutterCompact | 35 | 32 | 36 |
+| size.messageRowAvatar | 35 | 36 | 36 |
+| size.messageRowAvatarLarge | 34 | 36 | 36 |
+| space.messageRowGapCompact | 12 | 8 | 12 |
+| space.messageHeaderReserve | 0 | 96 | 96 |
+| size.messageHeaderLine | 20 | 21 | 20 |
+| space.messageHeaderGap | 6 | 6 | 8 |
+| space.messageHeaderAfter | 1 | 6 | 0 |
+| space.messageHeaderAfterCompact | 1 | 4 | 0 |
+| space.messageBodyBottom | 0 | 6 | 0 |
+| space.messageBodyBottomCompact | 0 | 4 | 0 |
+| space.messageAttachmentsTop | 8 | 4 | 4 |
+| type.messageMeta.sm.line | 16 | 11 | 16 |
+| type.messageMeta.md.line | 16 | 12 | 16 |
+| type.messageMeta.lg.line | 16 | 14 | 16 |
+| type.messageMeta.tracking | 0 | -0.14 | 0 |
+
+桌面间距12、连续行最小高度0、页脚上间距6、Brutal 连续行上外边距0三套相同，保留常量。
+Raft lg 头像34来自 MessageItem.tsx 的 `[--mi-avatar:2.125rem]`，其余档35；原版头像均36。
+Raft 外壳底内边距8不因下一条消息分组改变；原有 followedBy、followsSystem 数据语义保留，
+已跟随其他消息且正文以代码块结束时的 1px 尾距也保留，不另造旧版几何。
+
+头部结构选项：
+
+- `messageHeader.timePosition = trailing | inline`（53e94688）：Raft trailing，旧两套 inline。
+  trailing 将时间放在末端，inline 保留名字、模型、说明、时间的顺序；大字均可换行。
+- `messageHeader.align = baseline | center`（626bac7e）：Raft／Brutal 浅色 center，Elegant baseline。
+
+颜色 `foreground-message-meta`（53e94688）：Raft 引用 foreground-hint，Elegant 保留原 muted 的
+0.7倍透明度，Brutal 浅色保留黑色0.4。后两者放进各自原模式专用调色板，不在组件叠乘透明度。
+
+`RaftTypeStyleSpec` 没有字体家族字段，因此不新增 messageTime.font 枚举。
+模式新增可选 `font` 映射，只接受以下已批准组件角色，值必须引用既有字体定义：
+
+```jsonc
+"font": {
+  "font.messageTime": "{fonts.mono}",
+  "font.messageSubtitle": "{fonts.sans}"
+}
+```
+
+`font.messageTime`（53e94688）为 Raft／Brutal 浅色 mono、Elegant sans；
+`font.messageSubtitle`（a52f5728）为 Raft／Elegant sans、Brutal 浅色 mono；深色 Brutal 沿 Elegant。
+只允许 `{fonts.sans}`、`{fonts.heading}`、`{fonts.mono}`，未知角色、裸字符串和未知家族拒绝并报 JSON 路径。
+引用随模式继承，也遵循原有系统字体偏好；不新增字体资产或第二套字体来源。
+
+原版三套的 mono 字体均为 Geist Mono（a57 metrics.g.dart），Brutal 的既有字体定义据此更正。
+
+
+按模式覆盖字体（Cindy 1d128e06）：`modes.light.fonts` / `modes.dark.fonts` 使用与顶层
+`fonts` 相同的 sans、heading、mono 角色与 `{family, stack, asset}` 格式。每个家族的优先级
+为模式内定义 > 当前包顶层 > 继承基准包；未写的家族继续继承。用户主动选择的系统字体仍优先
+于所有主题定义。模式与顶层共用名称、stack 和 asset 字段校验；本次没有新增字体导入器，
+JSON 解析不读取资产字节，文件大小与文件存在性仍须在未来导入阶段验证。
+Brutal 深色明确覆盖为 Elegant 的三组字体，避免只继承颜色、几何却保留浅色字体。
+
+头像上间距三套均为2：Raft 的挂载 MessageItem.tsx 内的 MessageSenderAvatar（2290、2338行）
+两条路径都是 `mt-0.5`，与 a57 原版一致。因此撤掉 `space.messageRowAvatarTop`，使用共同常量。

@@ -21,8 +21,8 @@ import 'theme.dart';
 import 'tooltip.dart' show RaftTooltip;
 import 'recipe_surface.dart' show RaftCssBoxDecoration;
 
-/// Where the row sits: the thread panel's wrapper lowers the header's
-/// right-side reserve (`--mi-hdr-pr: 2.5rem`) to 40.
+/// Where the row sits: legacy thread panels use their original inline inset.
+/// The current Raft header keeps its timestamp at the trailing edge.
 enum RaftMessageRowContext { main, thread }
 
 /// Rhythm marker (Web `messageGrouping.followedByFor`, rendered as
@@ -138,10 +138,10 @@ class RaftMessageSizeScope extends InheritedWidget {
       tier != oldWidget.tier;
 }
 
-/// Pinned raft-ui 0.5.52 MessageItem (Web v1.21.12) plus mounted
-/// MessageItem.tsx overrides. The adapter owns identity, grouping, pointer
-/// capability, and permissions. Every geometry value below is checked against
-/// the generated `RaftMessageItemRecipe` in message_row_recipe_test.dart.
+/// Current Web v1.21.23 MessageItem geometry and the original a57 Elegant /
+/// Brutal geometry, resolved through the theme contract. The adapter owns
+/// identity, grouping, pointer capability, and permissions. Source constants
+/// and the mounted header are covered by the message row contract tests.
 @immutable
 class RaftMessageRowRecipe {
   const RaftMessageRowRecipe(
@@ -179,76 +179,80 @@ class RaftMessageRowRecipe {
   bool get mobile => viewportWidth < 768;
   bool get attention => hovered || popupOpen;
   bool get toolbarVisible => hovered || focused || popupOpen;
-  double get borderWidth => 1;
-  double get minimumHeight => continuation ? 0 : 48;
+  double number(String name, double source) =>
+      tokens.size(name, fallback: source);
+  bool get trailingTime =>
+      tokens.option('messageHeader.timePosition', or: 'trailing') == 'trailing';
+  bool get baselineHeader =>
+      tokens.option('messageHeader.align', or: 'center') == 'baseline';
+  double get borderWidth => number('stroke.messageRow', 0);
+  double get minimumHeight =>
+      continuation ? 0 : number('size.messageRowMin', 0);
 
-  /// Brutal: `mt-1.5 mb-1 data-follows-system:mt-[5px]` (the compact row's
-  /// `mt-0` loses to the marker). Elegant has no margin. The Web dropped
-  /// brutal's `mx-3` in raft-ui 0.5.36.
-  EdgeInsets get margin => EdgeInsets.zero;
-
-  /// Brutal `px-1.5 py-1`. Elegant `px-[7px] pt-[17px] pb-3`, `max-md:pt-[13px]
-  /// max-md:pb-1.5`, compact `py-1.5`, `data-[followed-by=compact]:pb-0.5`,
-  /// `data-[followed-by=group]:pb-1.5`, `data-follows-system:pt-[12px]`.
-  EdgeInsets get padding => EdgeInsets.fromLTRB(
-    // ignore: raft_lints/off_grid_spacing -- Web messageItem px-[7px].
-    7,
-    followsSystem
-        ? 12
-        : continuation
-        ? 6
-        : mobile
-        // ignore: raft_lints/off_grid_spacing -- Web messageItem max-md:pt-[13px].
-        ? 13
-        // ignore: raft_lints/off_grid_spacing -- Web messageItem pt-[17px].
-        : 17,
-    // ignore: raft_lints/off_grid_spacing -- Web messageItem px-[7px].
-    7,
-    switch (followedBy) {
-      RaftMessageFollowedBy.compact => 2,
-      RaftMessageFollowedBy.group => 6,
-      null => continuation || mobile ? 6 : 12,
-    },
+  EdgeInsets get margin => EdgeInsets.fromLTRB(
+    number('space.messageRowMarginInline', 0),
+    continuation ? 0 : number('space.messageRowMarginTop', 0),
+    number('space.messageRowMarginInline', 0),
+    number('space.messageRowMarginBottom', 0),
   );
 
-  /// `gutter` and `avatarSlot`: 36, 32 below 768 in both themes.
-  double get gutterWidth => mobile ? 32 : 36;
+  EdgeInsets get padding {
+    final inline =
+        rowContext == RaftMessageRowContext.thread && viewportWidth < 1024
+        ? number('space.messageRowInlineThread', 8)
+        : mobile
+        ? number('space.messageRowInlineCompact', 8)
+        : number('space.messageRowInline', 8);
+    return EdgeInsets.fromLTRB(
+      inline,
+      continuation
+          ? number('space.messageRowContinuationTop', 0)
+          : mobile
+          ? number('space.messageRowTopCompact', 8)
+          : number('space.messageRowTop', 8),
+      inline,
+      continuation
+          ? number('space.messageRowBottomCompact', 8)
+          : followedBy == RaftMessageFollowedBy.compact
+          ? mobile
+                ? number('space.messageRowFollowedCompactBottomCompact', 8)
+                : number('space.messageRowFollowedCompactBottom', 8)
+          : mobile
+          ? number('space.messageRowBottomCompact', 8)
+          : number('space.messageRowBottom', 8),
+    );
+  }
 
-  /// The avatar image: `--mi-avatar` 2rem (34px on the large size tier),
-  /// `--mi-avatar-narrow` 1.75rem below 768.
-  double get avatarExtent => mobile
-      ? 28
-      : sizeTier == RaftMessageSizeTier.lg
-      ? 34
-      : 32;
-
-  /// The avatar is centred in the slot (`flex justify-center`).
-  double get avatarInset => (gutterWidth - avatarExtent) / 2;
-
-  /// MessageSenderAvatar `mt-0.5`, plus brutal's `--mi-avatar-shift` 3px.
-  double get avatarTop => 2 + (0);
-  double get gap => (!mobile) ? 12 : 8;
-
-  /// `pr-(--mi-hdr-pr,6rem)`; the thread panel sets `2.5rem`.
-  double get headerReserve =>
-      rowContext == RaftMessageRowContext.thread ? 40 : 96;
-  double get headerGap => 6;
-  double get headerLine => 21;
-
-  /// Elegant body `mt-1.5 mb-1.5` (`max-md:mt-1 mb-1`), none when compact; the
-  /// row's `data-followed-by` drops the bottom margin.
-  double get bodyGap => (continuation)
+  double get gutterWidth => mobile
+      ? number('size.messageRowGutterCompact', 35)
+      : number('size.messageRowGutter', 35);
+  double get avatarExtent => sizeTier == RaftMessageSizeTier.lg
+      ? number('size.messageRowAvatarLarge', 34)
+      : number('size.messageRowAvatar', 35);
+  // An original Elegant phone avatar can extend beyond its 32px slot. Its
+  // original OverflowBox starts at the slot's left edge; no negative Padding.
+  double get avatarInset => math.max(0, (gutterWidth - avatarExtent) / 2);
+  // MessageSenderAvatar's mounted mt-0.5 and both original themes agree.
+  double get avatarTop => 2;
+  double get gap => mobile ? number('space.messageRowGapCompact', 12) : 12;
+  double get headerReserve => number('space.messageHeaderReserve', 0);
+  double get headerGap => number('space.messageHeaderGap', 6);
+  double get headerLine => number('size.messageHeaderLine', 20);
+  double get bodyGap => continuation
       ? 0
       : mobile
-      ? 4
-      : 6;
-  double get bodyBottomGap => followedBy == null
-      ? bodyGap
-      // ignore: raft_lints/off_grid_spacing -- Web `mb-px`
-      : bodyEndsInCode
-      ? 1
-      : 0;
-  double get attachmentGap => 4;
+      ? number('space.messageHeaderAfterCompact', 1)
+      : number('space.messageHeaderAfter', 1);
+  double get bodyBottomGap => followedBy != null
+      ? bodyEndsInCode
+            ? 1
+            : 0
+      : continuation
+      ? 0
+      : mobile
+      ? number('space.messageBodyBottomCompact', 0)
+      : number('space.messageBodyBottom', 0);
+  double get attachmentGap => number('space.messageAttachmentsTop', 8);
 
   /// Whether the content ends with Web's `mb-px` (see the row build).
   bool trailingPixel({
@@ -308,11 +312,21 @@ class RaftMessageRowRecipe {
   /// and elegant keeps `leading-none`.
   TextStyle get time => TextStyle(
     locale: tokens.textLocale,
-    fontFamily: tokens.bodyFont,
+    fontFamily: tokens.fontFamily('font.messageTime', or: 'mono'),
+    fontFamilyFallback: tokens.fontFamilyFallback(
+      'font.messageTime',
+      or: 'mono',
+    ),
     fontSize: sizeTier.metaFor(tokens),
-    height: 1,
-    letterSpacing: -.14,
-    color: tokens.colors['foreground-hint']!,
+    height:
+        number('type.messageMeta.${sizeTier.tokenKey}.line', 16) /
+        sizeTier.metaFor(tokens),
+    letterSpacing: number('type.messageMeta.tracking', 0),
+    color: tokens.colors['foreground-message-meta'],
+  );
+  TextStyle get subtitleStyle => time.copyWith(
+    fontFamily: tokens.fontFamily('font.messageSubtitle'),
+    fontFamilyFallback: tokens.fontFamilyFallback('font.messageSubtitle'),
   );
   TextStyle get continuationTime => TextStyle(
     locale: tokens.textLocale,
@@ -873,7 +887,8 @@ class _RaftMessageRowState extends State<RaftMessageRow> {
         lineHeight: recipe.headerLine,
         reserve: recipe.headerReserve,
         gap: recipe.headerGap,
-        baseline: !false,
+        baseline: recipe.baselineHeader,
+        trailing: recipe.trailingTime,
         hasMetadata: widget.metadata != null,
         hasSubtitle: widget.subtitle != null && widget.subtitle!.isNotEmpty,
         children: [
@@ -901,7 +916,7 @@ class _RaftMessageRowState extends State<RaftMessageRow> {
                 overflow: wrapHeader
                     ? TextOverflow.clip
                     : TextOverflow.ellipsis,
-                style: recipe.time,
+                style: recipe.subtitleStyle,
               ),
             ),
           RaftCssText(
@@ -1402,12 +1417,13 @@ class _MessageHeader extends MultiChildRenderObjectWidget {
     required this.reserve,
     required this.gap,
     required this.baseline,
+    required this.trailing,
     required this.hasMetadata,
     required this.hasSubtitle,
     required this.wrap,
   });
   final double lineHeight, reserve, gap;
-  final bool baseline;
+  final bool baseline, trailing;
 
   /// The Web header is `[cluster(name, tail(model, description)), clock]`.
   /// The cluster and the tail are `min-w-0 overflow-hidden` flex items; the
@@ -1424,6 +1440,7 @@ class _MessageHeader extends MultiChildRenderObjectWidget {
     reserve,
     gap,
     baseline,
+    trailing,
     hasMetadata,
     hasSubtitle,
     wrap,
@@ -1438,6 +1455,7 @@ class _MessageHeader extends MultiChildRenderObjectWidget {
       reserve,
       gap,
       baseline,
+      trailing,
       hasMetadata,
       hasSubtitle,
       wrap,
@@ -1456,18 +1474,20 @@ class _RenderMessageHeader extends RenderBox
     this.reserve,
     this.gap,
     this.baseline,
+    this.trailing,
     this.hasMetadata,
     this.hasSubtitle,
     this.wrap,
   );
   double lineHeight, reserve, gap;
-  bool baseline, hasMetadata, hasSubtitle;
+  bool baseline, trailing, hasMetadata, hasSubtitle;
   bool wrap;
   void update(
     double height,
     double inset,
     double spacing,
     bool alignBaseline,
+    bool trailingClock,
     bool metadata,
     bool subtitle,
     bool wrapLines,
@@ -1476,6 +1496,7 @@ class _RenderMessageHeader extends RenderBox
         reserve == inset &&
         gap == spacing &&
         baseline == alignBaseline &&
+        trailing == trailingClock &&
         hasMetadata == metadata &&
         hasSubtitle == subtitle &&
         wrap == wrapLines) {
@@ -1485,6 +1506,7 @@ class _RenderMessageHeader extends RenderBox
     reserve = inset;
     gap = spacing;
     baseline = alignBaseline;
+    trailing = trailingClock;
     hasMetadata = metadata;
     hasSubtitle = subtitle;
     wrap = wrapLines;
@@ -1662,7 +1684,7 @@ class _RenderMessageHeader extends RenderBox
     if (subtitleIndex != null) {
       fit(subtitleIndex, subtitle, tailWidth - model - tailGap);
     }
-    final clockX = cluster + gap;
+    final clockX = trailing ? math.max(0.0, width - clock) : cluster + gap;
     final height = children.fold(
       0.0,
       (value, child) => value > child.size.height ? value : child.size.height,

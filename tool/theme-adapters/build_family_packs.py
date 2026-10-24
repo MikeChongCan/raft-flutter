@@ -37,6 +37,8 @@ PACK_FORMAT = 'raft-theme/1'
 # AUTHORED: docs/theme-contract.md §4, one row per option. Raft's values live in
 # build_raft_pack.py's OPTIONS_RAFT; these two are the same table's other columns.
 OPTIONS_ELEGANT = {
+    'messageHeader.timePosition': 'inline',
+    'messageHeader.align': 'baseline',
     'control.edge': 'ring', 'sticker.ring': 'none', 'emphasis.fill': 'soft',
     'iconButton.surface': 'generic', 'panelAction.surface': 'outline',
     # a57b9dab design_primitives.dart:141-145; resource_view.dart:2385,2393.
@@ -53,6 +55,8 @@ OPTIONS_ELEGANT = {
     'tooltip.arrow': 'yes', 'code.innerBorder': 'dashed', 'spinner.style': 'ring',
 }
 OPTIONS_BRUTAL = {
+    'messageHeader.timePosition': 'inline',
+    'messageHeader.align': 'center',
     'control.edge': 'inkBorder', 'sticker.ring': 'none', 'emphasis.fill': 'solid',
     'iconButton.surface': 'raised', 'panelAction.surface': 'outline',
     'sidebar.mobileSurface': 'canvas', 'resource.surface': 'canvas',
@@ -258,6 +262,73 @@ CASE_BRUTAL = {'heading': 'uppercase', 'label': 'uppercase', 'badge': 'uppercase
 
 # AUTHORED: docs/theme-contract.md §5.1. Families come from the P0 inventory;
 # the stacks keep the CJK fallbacks the app needs to avoid tofu.
+
+# Message row source contract, Cindy 53e94688.
+GEOMETRY_ELEGANT.update({'size.messageRowMin': 48,
+ 'stroke.messageRow': 1,
+ 'space.messageRowInline': 28,
+ 'space.messageRowInlineCompact': 16,
+ 'space.messageRowInlineThread': 12,
+ 'space.messageRowTop': 14,
+ 'space.messageRowTopCompact': 8,
+ 'space.messageRowContinuationTop': 6,
+ 'space.messageRowBottom': 12,
+ 'space.messageRowBottomCompact': 6,
+ 'space.messageRowFollowedCompactBottom': 2,
+ 'space.messageRowFollowedCompactBottomCompact': 0,
+ 'space.messageRowMarginInline': 0,
+ 'space.messageRowMarginTop': 0,
+ 'space.messageRowMarginBottom': 0,
+ 'size.messageRowGutter': 36,
+ 'size.messageRowGutterCompact': 32,
+ 'size.messageRowAvatar': 36,
+ 'space.messageRowGapCompact': 8,
+ 'space.messageHeaderReserve': 96,
+ 'size.messageHeaderLine': 21,
+ 'space.messageHeaderGap': 6,
+ 'space.messageHeaderAfter': 6,
+ 'space.messageHeaderAfterCompact': 4,
+ 'space.messageBodyBottom': 6,
+ 'space.messageBodyBottomCompact': 4,
+ 'space.messageAttachmentsTop': 4,
+ 'type.messageMeta.sm.line': 11,
+ 'type.messageMeta.md.line': 12,
+ 'type.messageMeta.lg.line': 14,
+ 'type.messageMeta.tracking': -0.14,
+ 'size.messageRowAvatarLarge': 36})
+GEOMETRY_BRUTAL.update({'size.messageRowMin': 48,
+ 'stroke.messageRow': 2,
+ 'space.messageRowInline': 6,
+ 'space.messageRowInlineCompact': 6,
+ 'space.messageRowInlineThread': 6,
+ 'space.messageRowTop': 4,
+ 'space.messageRowTopCompact': 4,
+ 'space.messageRowContinuationTop': 4,
+ 'space.messageRowBottom': 4,
+ 'space.messageRowBottomCompact': 4,
+ 'space.messageRowFollowedCompactBottom': 4,
+ 'space.messageRowFollowedCompactBottomCompact': 4,
+ 'space.messageRowMarginInline': 12,
+ 'space.messageRowMarginTop': 6,
+ 'space.messageRowMarginBottom': 4,
+ 'size.messageRowGutter': 36,
+ 'size.messageRowGutterCompact': 36,
+ 'size.messageRowAvatar': 36,
+ 'space.messageRowGapCompact': 12,
+ 'space.messageHeaderReserve': 96,
+ 'size.messageHeaderLine': 20,
+ 'space.messageHeaderGap': 8,
+ 'space.messageHeaderAfter': 0,
+ 'space.messageHeaderAfterCompact': 0,
+ 'space.messageBodyBottom': 0,
+ 'space.messageBodyBottomCompact': 0,
+ 'space.messageAttachmentsTop': 4,
+ 'type.messageMeta.sm.line': 16,
+ 'type.messageMeta.md.line': 16,
+ 'type.messageMeta.lg.line': 16,
+ 'type.messageMeta.tracking': 0,
+ 'size.messageRowAvatarLarge': 36})
+
 FONTS_ELEGANT = {
     'sans': {'family': 'Geist',
              'stack': ['Geist', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
@@ -279,8 +350,9 @@ FONTS_BRUTAL = {
     'heading': {'family': 'HankenGrotesk',
                 'stack': ['HankenGrotesk', 'PingFang SC', 'Hiragino Sans GB',
                           'Microsoft YaHei', 'Noto Sans SC', 'system-ui', 'sans-serif']},
-    'mono': {'family': 'Space Mono',
-             'stack': ['Space Mono', 'ui-monospace', 'monospace']},
+    # a57 metrics.g.dart:58-61: every original family uses Geist Mono.
+    'mono': {'family': 'Geist Mono',
+             'stack': ['Geist Mono', 'ui-monospace', 'monospace']},
 }
 
 # values.json keys its columns by these names.
@@ -411,6 +483,7 @@ def pack(pack_id: str, name_en: str, name_zh: str, values: dict,
         colors['line-composer-notice'] = colors['foreground-strong'] if spec['column'] == 'brutal' else '#00000000'
         colors['layer-auth-header'] = colors['layer-section-header-mobile']
         colors['foreground-message'] = colors['ink' if spec['column'] == 'brutal' else 'foreground-muted']
+        colors['foreground-message-meta'] = '{palette.messageMeta}'
         # Actual a57b9dab Select: muted Elegant text, solid Brutal text;
         # disabled keeps the same colors under the 0.4 group opacity.
         select_ink = 'foreground-strong' if spec['column'] == 'brutal' else 'foreground-muted'
@@ -440,13 +513,19 @@ def pack(pack_id: str, name_en: str, name_zh: str, values: dict,
             # Only the Elegant source modes carry these legacy preservation
             # colors; Brutal dark inherits the whole Elegant mode.
             'palette': ({'palette-orange-100': colors['task-status-todo-soft'],
-                         'palette-composerTaskLabel': 'rgba(0 0 0 / 0.6)'}
+                         'palette-composerTaskLabel': 'rgba(0 0 0 / 0.6)',
+                         'palette-messageMeta': 'rgba(0 0 0 / 0.4)'}
                 if spec['column'] == 'brutal' else {
+                    'palette-messageMeta': ('rgba(196 196 193 / 0.7)' if spec['column'] == 'elegantDark' else 'rgba(61 61 58 / 0.7)'),
                     'palette-elegantNotice-light': '#ffeadc',
                     # a57 recipe_utilities.g.dart _v609 actual Flutter paint color.
                     'palette-elegantNotice-dark': f'rgba({.534161 * 255:.9f} {.321382 * 255:.9f} {.207110 * 255:.9f} / 0.180368)',
                 }),
             'geometry': geometry_with_type(spec['geometry'], type_metrics),
+            'font': {name: '{fonts.mono}' if spec['column'] == 'brutal' else '{fonts.sans}'
+                     for name in ('font.messageTime', 'font.messageSubtitle')},
+            # Brutal dark is the complete Elegant mode, including its families.
+            **({'fonts': spec['fonts']} if spec['fonts'] != light['fonts'] else {}),
             'shadows': shadows,
             'case': spec['case'],
             'options': spec['options'],

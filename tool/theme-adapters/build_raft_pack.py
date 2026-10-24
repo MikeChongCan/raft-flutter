@@ -259,7 +259,44 @@ GEOMETRY_RAFT.update({
     'size.selectChevron': 16, 'stroke.selectChevron': 2,
 })
 
+
+# Message row source contract, Cindy 53e94688.
+GEOMETRY_RAFT.update({'size.messageRowMin': 0,
+ 'stroke.messageRow': 0,
+ 'space.messageRowInline': 8,
+ 'space.messageRowInlineCompact': 8,
+ 'space.messageRowInlineThread': 8,
+ 'space.messageRowTop': 8,
+ 'space.messageRowTopCompact': 8,
+ 'space.messageRowContinuationTop': 0,
+ 'space.messageRowBottom': 8,
+ 'space.messageRowBottomCompact': 8,
+ 'space.messageRowFollowedCompactBottom': 8,
+ 'space.messageRowFollowedCompactBottomCompact': 8,
+ 'space.messageRowMarginInline': 0,
+ 'space.messageRowMarginTop': 0,
+ 'space.messageRowMarginBottom': 0,
+ 'size.messageRowGutter': 35,
+ 'size.messageRowGutterCompact': 35,
+ 'size.messageRowAvatar': 35,
+ 'space.messageRowGapCompact': 12,
+ 'space.messageHeaderReserve': 0,
+ 'size.messageHeaderLine': 20,
+ 'space.messageHeaderGap': 6,
+ 'space.messageHeaderAfter': 1,
+ 'space.messageHeaderAfterCompact': 1,
+ 'space.messageBodyBottom': 0,
+ 'space.messageBodyBottomCompact': 0,
+ 'space.messageAttachmentsTop': 8,
+ 'type.messageMeta.sm.line': 16,
+ 'type.messageMeta.md.line': 16,
+ 'type.messageMeta.lg.line': 16,
+ 'type.messageMeta.tracking': 0,
+ 'size.messageRowAvatarLarge': 34})
+
 OPTIONS_RAFT = {
+    'messageHeader.timePosition': 'trailing',
+    'messageHeader.align': 'center',
     'control.edge': 'inkBorder', 'sticker.ring': 'dieCut', 'emphasis.fill': 'solid',
     'iconButton.surface': 'generic', 'panelAction.surface': 'ghost',
     'sidebar.mobileSurface': 'canvas', 'resource.surface': 'canvas',
@@ -313,6 +350,7 @@ def build() -> dict:
         out['line-composer-notice'] = out['line-hairline']
         out['layer-auth-header'] = out['layer-frame']
         out['foreground-message'] = out['foreground']
+        out['foreground-message-meta'] = out['foreground-hint']
         # Component aliases: values are existing roles, never new palette colors.
         for target, source in {
             'foreground-select': 'foreground',
@@ -338,6 +376,8 @@ def build() -> dict:
                 'radius.dialog': radii['dialog'],
             }),
             'type': scale,
+            'font': {'font.messageTime': '{fonts.mono}',
+                     'font.messageSubtitle': '{fonts.sans}'},
             'case': CASE_RAFT,
             'shadows': {
                 'xs': 'none', 'sm': 'none', 'md': 'none',

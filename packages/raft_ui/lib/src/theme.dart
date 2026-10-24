@@ -152,7 +152,7 @@ class RaftTokens extends ThemeExtension<RaftTokens> {
     // against; any other pack is resolved fresh from its values.
     final set = pack == null
         ? RaftTokenSet.of(id)
-        : RaftTokenSet.fromPack(id, mode: mode, fonts: themePack.fonts);
+        : RaftTokenSet.fromPack(id, mode: mode, fonts: mode.fonts);
     return RaftTokens(
       dark,
       // The pack's own names (0.7.1 roles, palette) sit on top of the legacy
@@ -271,6 +271,22 @@ class RaftTokens extends ThemeExtension<RaftTokens> {
   /// UI copy and failed the catalog test.
   String option(String name, {required String or}) =>
       _mode?.options[name] ?? or;
+
+  /// Resolve a component font reference through the active mode. System font
+  /// preferences apply to the referenced body/heading/mono family as usual.
+  String fontFamily(String token, {String or = 'sans'}) =>
+      switch (_mode?.fontRefs[token] ?? or) {
+        'mono' => monoFont,
+        'heading' => headingFont,
+        _ => bodyFont,
+      };
+
+  List<String> fontFamilyFallback(String token, {String or = 'sans'}) =>
+      systemFonts
+      ? fontFallback
+      : (_mode?.fontRefs[token] ?? or) == 'mono'
+      ? const ['monospace']
+      : fontFallback;
 
   /// The hyperlink underline every underlined run shares (Web `underline
   /// decoration-2 underline-offset-2`; no theme overrides it, so Brutal and

@@ -77,11 +77,12 @@ void main() {
           );
           expect(
             t.getSize(find.byType(RaftMessageRow)).height - withoutFooter,
-            20,
+            // Native body has no bottom margin; footer adds mt-1.5 plus20px.
+            26,
           );
           {
-            expect(withoutFooter, 83);
-            expect(t.getSize(find.byType(RaftMessageRow)).height, 103);
+            expect(withoutFooter, 57);
+            expect(t.getSize(find.byType(RaftMessageRow)).height, 83);
           }
           expect(t.takeException(), isNull);
         },

@@ -70,6 +70,8 @@ class RaftModeValues {
     this.palette = const {},
     this.geometry = const {},
     this.type = const {},
+    this.fontRefs = const {},
+    this.fonts = const {},
     this.caseTransforms = const {},
     this.shadows = const {},
     this.options = const {},
@@ -79,6 +81,12 @@ class RaftModeValues {
   final Map<String, Color> palette;
   final Map<String, double> geometry;
   final Map<String, RaftTypeStyleSpec> type;
+
+  /// Component font tokens reference existing font families per mode.
+  final Map<String, String> fontRefs;
+
+  /// Optional per-mode overrides of the pack's existing font families.
+  final Map<String, RaftFontSpec> fonts;
   final Map<String, RaftCaseTransform> caseTransforms;
   final Map<String, List<RaftShadowSpec>> shadows;
   final Map<String, String> options;
@@ -88,6 +96,8 @@ class RaftModeValues {
     palette: {...base.palette, ...palette},
     geometry: {...base.geometry, ...geometry},
     type: {...base.type, ...type},
+    fontRefs: {...base.fontRefs, ...fontRefs},
+    fonts: {...base.fonts, ...fonts},
     caseTransforms: {...base.caseTransforms, ...caseTransforms},
     shadows: {...base.shadows, ...shadows},
     options: {...base.options, ...options},
@@ -126,6 +136,8 @@ const Map<String, Set<String>> raftStructuralOptions = {
   'searchResult.selection': {'flat', 'card'},
   'messageReference.chipLayout': {'fixed', 'intrinsic'},
   'messageMenu.reactionDivider': {'shown', 'hidden'},
+  'messageHeader.timePosition': {'trailing', 'inline'},
+  'messageHeader.align': {'baseline', 'center'},
   'panelAction.surface': {'ghost', 'outline'},
   'mobileNav.style': {'floatingCapsule', 'docked'},
   'mobileNav.labels': {'iconsOnly', 'withLabels'},
@@ -216,21 +228,7 @@ class RaftThemePack {
     if (dark == null)
       throw RaftThemeException('modes.dark is required', where: origin);
 
-    final fonts = <String, RaftFontSpec>{};
-    final rawFonts = decoded['fonts'];
-    if (rawFonts != null) {
-      if (rawFonts is! Map)
-        throw RaftThemeException(
-          'fonts must be an object',
-          where: '$origin.fonts',
-        );
-      for (final entry in rawFonts.entries) {
-        fonts['${entry.key}'] = _font(
-          entry.value,
-          '$origin.fonts.${entry.key}',
-        );
-      }
-    }
+    final fonts = _fonts(decoded['fonts'], '$origin.fonts');
 
     final extendsId = decoded['extends'];
     if (extendsId != null && extendsId is! String) {
@@ -280,7 +278,9 @@ class RaftThemePack {
   /// This pack's values for [dark], with everything it does not set taken from
   /// [base] (the theme named by [extendsId]).
   RaftModeValues resolve({required bool dark, RaftThemePack? base}) {
-    final own = dark ? this.dark : light;
+    final selected = dark ? this.dark : light;
+    // A mode overrides the pack; omitted families continue through its base.
+    final own = selected.mergedWith(RaftModeValues(fonts: fonts));
     if (base == null) return own;
     return own.mergedWith(base.resolve(dark: dark));
   }
@@ -327,6 +327,8 @@ const Set<String> _modeKeys = {
   'palette',
   'geometry',
   'type',
+  'font',
+  'fonts',
   'case',
   'shadows',
   'options',
@@ -408,6 +410,29 @@ RaftModeValues? _mode(Object? raw, String where) {
       type[slot] = _typeStyle(entry.value, '$where.type.$slot');
     }
   }
+  final fontRefs = <String, String>{};
+  final rawFontRefs = raw['font'];
+  if (rawFontRefs != null && rawFontRefs is! Map) {
+    throw RaftThemeException('font is an object', where: '$where.font');
+  }
+  if (rawFontRefs is Map) {
+    for (final entry in rawFontRefs.entries) {
+      final token = '${entry.key}';
+      final path = '$where.font.$token';
+      if (token != 'font.messageTime' && token != 'font.messageSubtitle') {
+        throw RaftThemeException('unknown font token "$token"', where: path);
+      }
+      final ref = RegExp(r'^\{fonts\.(sans|heading|mono)\}$')
+          .firstMatch('${entry.value}');
+      if (ref == null) {
+        throw RaftThemeException(
+          'a font token references an existing family',
+          where: path,
+        );
+      }
+      fontRefs[token] = ref.group(1)!;
+    }
+  }
   final caseTransforms = <String, RaftCaseTransform>{};
   final rawCase = raw['case'];
   if (rawCase is! Map && rawCase != null) {
@@ -476,6 +501,8 @@ RaftModeValues? _mode(Object? raw, String where) {
     palette: palette,
     geometry: geometry,
     type: type,
+    fontRefs: fontRefs,
+    fonts: _fonts(raw['fonts'], '$where.fonts'),
     caseTransforms: caseTransforms,
     shadows: shadows,
     options: options,
@@ -533,18 +560,55 @@ RaftTypeStyleSpec _typeStyle(Object? raw, String where) {
   );
 }
 
+Map<String, RaftFontSpec> _fonts(Object? raw, String where) {
+  if (raw == null) return const {};
+  if (raw is! Map) {
+    throw RaftThemeException('fonts is an object', where: where);
+  }
+  final fonts = <String, RaftFontSpec>{};
+  for (final entry in raw.entries) {
+    final role = '${entry.key}';
+    if (!const {'sans', 'heading', 'mono'}.contains(role)) {
+      throw RaftThemeException(
+        'unknown font family role "$role"',
+        where: '$where.$role',
+      );
+    }
+    fonts[role] = _font(entry.value, '$where.$role');
+  }
+  return fonts;
+}
+
 RaftFontSpec _font(Object? raw, String where) {
-  if (raw is! Map)
+  if (raw is! Map) {
     throw RaftThemeException('a font is an object', where: where);
+  }
   final family = raw['family'];
-  if (family is! String || family.isEmpty) {
+  if (family is! String || family.trim().isEmpty) {
     throw RaftThemeException('family is required', where: where);
   }
   final stack = raw['stack'];
+  if (stack != null &&
+      (stack is! List ||
+          stack.any((item) => item is! String || item.trim().isEmpty))) {
+    throw RaftThemeException(
+      'stack is a list of font family names',
+      where: '$where.stack',
+    );
+  }
+  final asset = raw['asset'];
+  if (asset != null && (asset is! String || asset.isEmpty)) {
+    throw RaftThemeException(
+      'asset is a font asset name or null',
+      where: '$where.asset',
+    );
+  }
   return RaftFontSpec(
     family: family,
-    stack: stack is List ? [for (final item in stack) '$item'] : const [],
-    asset: raw['asset'] is String ? raw['asset'] as String : null,
+    stack: stack is List
+        ? [for (final item in stack) item as String]
+        : const [],
+    asset: asset as String?,
   );
 }
 

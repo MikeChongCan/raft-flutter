@@ -290,6 +290,7 @@ const String raftThemePackJson = r'''{
         "line-composer-notice": "rgba(20 17 17 / 0.149)",
         "layer-auth-header": "#ffd440",
         "foreground-message": "#141111",
+        "foreground-message-meta": "rgba(20 17 17 / 0.62)",
         "foreground-select": "#141111",
         "foreground-select-placeholder": "rgba(20 17 17 / 0.62)",
         "foreground-select-disabled": "rgba(20 17 17 / 0.302)",
@@ -525,7 +526,39 @@ const String raftThemePackJson = r'''{
         "opacity.selectDisabled": 1,
         "space.selectTriggerStart": 14,
         "size.selectChevron": 16,
-        "stroke.selectChevron": 2
+        "stroke.selectChevron": 2,
+        "size.messageRowMin": 0,
+        "stroke.messageRow": 0,
+        "space.messageRowInline": 8,
+        "space.messageRowInlineCompact": 8,
+        "space.messageRowInlineThread": 8,
+        "space.messageRowTop": 8,
+        "space.messageRowTopCompact": 8,
+        "space.messageRowContinuationTop": 0,
+        "space.messageRowBottom": 8,
+        "space.messageRowBottomCompact": 8,
+        "space.messageRowFollowedCompactBottom": 8,
+        "space.messageRowFollowedCompactBottomCompact": 8,
+        "space.messageRowMarginInline": 0,
+        "space.messageRowMarginTop": 0,
+        "space.messageRowMarginBottom": 0,
+        "size.messageRowGutter": 35,
+        "size.messageRowGutterCompact": 35,
+        "size.messageRowAvatar": 35,
+        "space.messageRowGapCompact": 12,
+        "space.messageHeaderReserve": 0,
+        "size.messageHeaderLine": 20,
+        "space.messageHeaderGap": 6,
+        "space.messageHeaderAfter": 1,
+        "space.messageHeaderAfterCompact": 1,
+        "space.messageBodyBottom": 0,
+        "space.messageBodyBottomCompact": 0,
+        "space.messageAttachmentsTop": 8,
+        "type.messageMeta.sm.line": 16,
+        "type.messageMeta.md.line": 16,
+        "type.messageMeta.lg.line": 16,
+        "type.messageMeta.tracking": 0,
+        "size.messageRowAvatarLarge": 34
       },
       "type": {
         "hero": [
@@ -601,6 +634,10 @@ const String raftThemePackJson = r'''{
           0.0
         ]
       },
+      "font": {
+        "font.messageTime": "{fonts.mono}",
+        "font.messageSubtitle": "{fonts.sans}"
+      },
       "case": {
         "heading": "none",
         "label": "none",
@@ -618,6 +655,8 @@ const String raftThemePackJson = r'''{
         "shadow.control": "none"
       },
       "options": {
+        "messageHeader.timePosition": "trailing",
+        "messageHeader.align": "center",
         "control.edge": "inkBorder",
         "sticker.ring": "dieCut",
         "emphasis.fill": "solid",
@@ -881,6 +920,7 @@ const String raftThemePackJson = r'''{
         "line-composer-notice": "rgba(250 250 247 / 0.102)",
         "layer-auth-header": "#0d0d0b",
         "foreground-message": "#e5e5e2",
+        "foreground-message-meta": "#9e9e9b",
         "foreground-select": "#e5e5e2",
         "foreground-select-placeholder": "#9e9e9b",
         "foreground-select-disabled": "#636360",
@@ -1116,7 +1156,39 @@ const String raftThemePackJson = r'''{
         "opacity.selectDisabled": 1,
         "space.selectTriggerStart": 14,
         "size.selectChevron": 16,
-        "stroke.selectChevron": 2
+        "stroke.selectChevron": 2,
+        "size.messageRowMin": 0,
+        "stroke.messageRow": 0,
+        "space.messageRowInline": 8,
+        "space.messageRowInlineCompact": 8,
+        "space.messageRowInlineThread": 8,
+        "space.messageRowTop": 8,
+        "space.messageRowTopCompact": 8,
+        "space.messageRowContinuationTop": 0,
+        "space.messageRowBottom": 8,
+        "space.messageRowBottomCompact": 8,
+        "space.messageRowFollowedCompactBottom": 8,
+        "space.messageRowFollowedCompactBottomCompact": 8,
+        "space.messageRowMarginInline": 0,
+        "space.messageRowMarginTop": 0,
+        "space.messageRowMarginBottom": 0,
+        "size.messageRowGutter": 35,
+        "size.messageRowGutterCompact": 35,
+        "size.messageRowAvatar": 35,
+        "space.messageRowGapCompact": 12,
+        "space.messageHeaderReserve": 0,
+        "size.messageHeaderLine": 20,
+        "space.messageHeaderGap": 6,
+        "space.messageHeaderAfter": 1,
+        "space.messageHeaderAfterCompact": 1,
+        "space.messageBodyBottom": 0,
+        "space.messageBodyBottomCompact": 0,
+        "space.messageAttachmentsTop": 8,
+        "type.messageMeta.sm.line": 16,
+        "type.messageMeta.md.line": 16,
+        "type.messageMeta.lg.line": 16,
+        "type.messageMeta.tracking": 0,
+        "size.messageRowAvatarLarge": 34
       },
       "type": {
         "hero": [
@@ -1192,6 +1264,10 @@ const String raftThemePackJson = r'''{
           0.0
         ]
       },
+      "font": {
+        "font.messageTime": "{fonts.mono}",
+        "font.messageSubtitle": "{fonts.sans}"
+      },
       "case": {
         "heading": "none",
         "label": "none",
@@ -1209,6 +1285,8 @@ const String raftThemePackJson = r'''{
         "shadow.control": "none"
       },
       "options": {
+        "messageHeader.timePosition": "trailing",
+        "messageHeader.align": "center",
         "control.edge": "inkBorder",
         "sticker.ring": "dieCut",
         "emphasis.fill": "solid",

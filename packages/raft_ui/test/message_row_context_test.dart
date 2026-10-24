@@ -41,25 +41,17 @@ void main() {
             ),
           );
           await t.pumpAndSettle();
-          // Web v1.21.12 (raft-ui 0.5.36+): the row carries 8 of its own
-          // (elegant 7 + 1 border, brutal 6 + 2) next to the wrapper's 12 at
-          // every width; the thread context no longer changes the padding.
-          final inset = 12 + (1 + 7);
-          final mobile = width < 768;
-          // The avatar (32, 28 below 768) is centred in the 36 (32) slot.
-          expect(
-            t.getTopLeft(find.byKey(const ValueKey('avatar'))).dx,
-            inset + 2,
-          );
+          // Web v1.21.23: px-2, a 35px slot/avatar, gap-3 at every width.
+          // The existing timeline wrapper contributes its separate 12px inset.
+          const inset = 12.0 + 8;
+          expect(t.getTopLeft(find.byKey(const ValueKey('avatar'))).dx, inset);
           expect(
             t.getSize(find.byKey(const ValueKey('avatar'))),
-            Size.square(mobile ? 28 : 32),
+            const Size.square(35),
           );
-          final expectedContent =
-              inset + (mobile ? 32 : 36) + (!mobile ? 12 : 8);
           expect(
             t.getTopLeft(find.byKey(const ValueKey('content'))).dx,
-            expectedContent,
+            inset + 35 + 12,
           );
           await t.tap(find.text('Public author'));
           await t.pump();

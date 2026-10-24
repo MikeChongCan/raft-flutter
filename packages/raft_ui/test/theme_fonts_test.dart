@@ -40,7 +40,7 @@ void main() {
       final t = _tokens(brutalThemePackId);
       expect(t.headingFont, 'packages/raft_ui/HankenGrotesk');
       expect(t.bodyFont, 'packages/raft_ui/HankenGrotesk');
-      expect(t.monoFont, 'packages/raft_ui/SpaceMono');
+      expect(t.monoFont, 'packages/raft_ui/GeistMono');
     });
 
     test('unknown user font families are not rewritten', () {

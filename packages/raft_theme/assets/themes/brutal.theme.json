@@ -35,9 +35,9 @@
       ]
     },
     "mono": {
-      "family": "Space Mono",
+      "family": "Geist Mono",
       "stack": [
-        "Space Mono",
+        "Geist Mono",
         "ui-monospace",
         "monospace"
       ]
@@ -217,6 +217,7 @@
         "line-composer-notice": "#141110",
         "layer-auth-header": "#ffd440",
         "foreground-message": "#000000",
+        "foreground-message-meta": "{palette.messageMeta}",
         "foreground-select": "#141110",
         "foreground-select-placeholder": "#141110",
         "foreground-select-disabled": "#141110",
@@ -227,7 +228,8 @@
       },
       "palette": {
         "palette-orange-100": "#fde6de",
-        "palette-composerTaskLabel": "rgba(0 0 0 / 0.6)"
+        "palette-composerTaskLabel": "rgba(0 0 0 / 0.6)",
+        "palette-messageMeta": "rgba(0 0 0 / 0.4)"
       },
       "geometry": {
         "size.composerTaskToggle": 16,
@@ -349,12 +351,48 @@
         "space.itemX": 12,
         "space.inset.panel": 8,
         "space.segmentGap": 4,
+        "size.messageRowMin": 48,
+        "stroke.messageRow": 2,
+        "space.messageRowInline": 6,
+        "space.messageRowInlineCompact": 6,
+        "space.messageRowInlineThread": 6,
+        "space.messageRowTop": 4,
+        "space.messageRowTopCompact": 4,
+        "space.messageRowContinuationTop": 4,
+        "space.messageRowBottom": 4,
+        "space.messageRowBottomCompact": 4,
+        "space.messageRowFollowedCompactBottom": 4,
+        "space.messageRowFollowedCompactBottomCompact": 4,
+        "space.messageRowMarginInline": 12,
+        "space.messageRowMarginTop": 6,
+        "space.messageRowMarginBottom": 4,
+        "size.messageRowGutter": 36,
+        "size.messageRowGutterCompact": 36,
+        "size.messageRowAvatar": 36,
+        "space.messageRowGapCompact": 12,
+        "space.messageHeaderReserve": 96,
+        "size.messageHeaderLine": 20,
+        "space.messageHeaderGap": 8,
+        "space.messageHeaderAfter": 0,
+        "space.messageHeaderAfterCompact": 0,
+        "space.messageBodyBottom": 0,
+        "space.messageBodyBottomCompact": 0,
+        "space.messageAttachmentsTop": 4,
+        "type.messageMeta.sm.line": 16,
+        "type.messageMeta.md.line": 16,
+        "type.messageMeta.lg.line": 16,
+        "type.messageMeta.tracking": 0,
+        "size.messageRowAvatarLarge": 36,
         "type.field.size": 16.0,
         "type.field.line": 24.0,
         "type.field.weight": 400.0,
         "type.cardTitle.size": 18.0,
         "type.cardTitle.line": 20.0,
         "type.cardTitle.weight": 700.0
+      },
+      "font": {
+        "font.messageTime": "{fonts.mono}",
+        "font.messageSubtitle": "{fonts.mono}"
       },
       "shadows": {
         "xs": "1px 1px 0px 0px #141110",
@@ -372,6 +410,8 @@
         "badge": "uppercase"
       },
       "options": {
+        "messageHeader.timePosition": "inline",
+        "messageHeader.align": "center",
         "control.edge": "inkBorder",
         "sticker.ring": "none",
         "emphasis.fill": "solid",
@@ -580,6 +620,7 @@
         "line-composer-notice": "#00000000",
         "layer-auth-header": "#242422",
         "foreground-message": "#c4c4c1",
+        "foreground-message-meta": "{palette.messageMeta}",
         "foreground-select": "#c4c4c1",
         "foreground-select-placeholder": "#c4c4c1",
         "foreground-select-disabled": "#c4c4c1",
@@ -589,6 +630,7 @@
         "line-select-disabled": "rgb(241 241 241 / 0.1)"
       },
       "palette": {
+        "palette-messageMeta": "rgba(196 196 193 / 0.7)",
         "palette-elegantNotice-light": "#ffeadc",
         "palette-elegantNotice-dark": "rgba(136.211055000 81.952410000 52.813050000 / 0.180368)"
       },
@@ -712,12 +754,82 @@
         "space.itemX": 10,
         "space.inset.panel": 26,
         "space.segmentGap": 6,
+        "size.messageRowMin": 48,
+        "stroke.messageRow": 1,
+        "space.messageRowInline": 28,
+        "space.messageRowInlineCompact": 16,
+        "space.messageRowInlineThread": 12,
+        "space.messageRowTop": 14,
+        "space.messageRowTopCompact": 8,
+        "space.messageRowContinuationTop": 6,
+        "space.messageRowBottom": 12,
+        "space.messageRowBottomCompact": 6,
+        "space.messageRowFollowedCompactBottom": 2,
+        "space.messageRowFollowedCompactBottomCompact": 0,
+        "space.messageRowMarginInline": 0,
+        "space.messageRowMarginTop": 0,
+        "space.messageRowMarginBottom": 0,
+        "size.messageRowGutter": 36,
+        "size.messageRowGutterCompact": 32,
+        "size.messageRowAvatar": 36,
+        "space.messageRowGapCompact": 8,
+        "space.messageHeaderReserve": 96,
+        "size.messageHeaderLine": 21,
+        "space.messageHeaderGap": 6,
+        "space.messageHeaderAfter": 6,
+        "space.messageHeaderAfterCompact": 4,
+        "space.messageBodyBottom": 6,
+        "space.messageBodyBottomCompact": 4,
+        "space.messageAttachmentsTop": 4,
+        "type.messageMeta.sm.line": 11,
+        "type.messageMeta.md.line": 12,
+        "type.messageMeta.lg.line": 14,
+        "type.messageMeta.tracking": -0.14,
+        "size.messageRowAvatarLarge": 36,
         "type.field.size": 14.0,
         "type.field.line": 20.0,
         "type.field.weight": 400.0,
         "type.cardTitle.size": 16.0,
         "type.cardTitle.line": 22.0,
         "type.cardTitle.weight": 500.0
+      },
+      "font": {
+        "font.messageTime": "{fonts.sans}",
+        "font.messageSubtitle": "{fonts.sans}"
+      },
+      "fonts": {
+        "sans": {
+          "family": "Geist",
+          "stack": [
+            "Geist",
+            "PingFang SC",
+            "Hiragino Sans GB",
+            "Microsoft YaHei",
+            "Noto Sans SC",
+            "system-ui",
+            "sans-serif"
+          ]
+        },
+        "heading": {
+          "family": "Inter",
+          "stack": [
+            "Inter",
+            "PingFang SC",
+            "Hiragino Sans GB",
+            "Microsoft YaHei",
+            "Noto Sans SC",
+            "system-ui",
+            "sans-serif"
+          ]
+        },
+        "mono": {
+          "family": "Geist Mono",
+          "stack": [
+            "Geist Mono",
+            "ui-monospace",
+            "monospace"
+          ]
+        }
       },
       "shadows": {
         "xs": "inset 0px 1px 0px 0px rgba(250 250 247 / 0.045) , 0px 0px 0px 1px rgba(0 0 0 / 0.4) , 0px 1px 3px 0px rgba(0 0 0 / 0.22)",
@@ -735,6 +847,8 @@
         "badge": "none"
       },
       "options": {
+        "messageHeader.timePosition": "inline",
+        "messageHeader.align": "baseline",
         "control.edge": "ring",
         "sticker.ring": "none",
         "emphasis.fill": "soft",

@@ -4,9 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_ui/src/message_body.dart' show raftBodyEndsInCode;
 import 'package:raft_ui/src/message_row_recipe.dart';
-import 'package:raft_ui/src/recipe_surface.dart';
-import 'package:raft_ui/src/recipes/message_item.g.dart';
-import 'package:raft_ui/src/recipes/recipe_runtime.dart';
 import 'package:raft_ui/src/theme.dart';
 import 'package:raft_ui/test_themes.dart';
 
@@ -150,12 +147,10 @@ void main() {
       'mounted avatar and content origins match source ${dark ? 'dark' : 'light'}',
       (tester) async {
         await tester.pumpWidget(host(dark: dark));
-        // Web v1.21.12 (raft-ui 0.5.52): the avatar reads 28 below 768
-        // (32 above), centred in the 32/36 slot; brutal has no row margin
-        // and shifts the image 3px down (`--mi-avatar-shift`).
-        expect(tester.getSize(find.byKey(avatarKey)), const Size(28, 28));
-        expect(tester.getTopLeft(find.byKey(avatarKey)), Offset(10, 16));
-        expect(tester.getTopLeft(find.byKey(bodyKey)).dx, 48);
+        // Web v1.21.23 px-2/gap-3 and its default 35px avatar/slot.
+        expect(tester.getSize(find.byKey(avatarKey)), const Size(35, 35));
+        expect(tester.getTopLeft(find.byKey(avatarKey)), const Offset(8, 10));
+        expect(tester.getTopLeft(find.byKey(bodyKey)).dx, 55);
         final body = tester.widget<Text>(find.byKey(bodyKey));
         expect(body.style, isNull);
         final resolved = DefaultTextStyle.of(
@@ -175,9 +170,9 @@ void main() {
       tester,
     ) async {
       await tester.pumpWidget(host(dark: dark, width: 1280));
-      expect(tester.getSize(find.byKey(avatarKey)), const Size(32, 32));
-      expect(tester.getTopLeft(find.byKey(avatarKey)), Offset(10, 20));
-      expect(tester.getTopLeft(find.byKey(bodyKey)).dx, 56);
+      expect(tester.getSize(find.byKey(avatarKey)), const Size(35, 35));
+      expect(tester.getTopLeft(find.byKey(avatarKey)), const Offset(8, 10));
+      expect(tester.getTopLeft(find.byKey(bodyKey)).dx, 55);
       expect(tester.takeException(), isNull);
     });
 
@@ -234,7 +229,7 @@ void main() {
       expect(find.byKey(avatarKey), findsNothing);
       expect(find.text('Public Agent'), findsNothing);
       expect(find.text('14:30'), findsOneWidget);
-      expect(tester.getTopLeft(find.byKey(bodyKey)), const Offset(48, 7));
+      expect(tester.getTopLeft(find.byKey(bodyKey)), const Offset(55, 0));
       expect(tester.takeException(), isNull);
     },
   );
@@ -284,20 +279,17 @@ void main() {
     },
   );
 
-  // The recipe is hand-written (it carries the mounted MessageItem.tsx
-  // overrides); every geometry value it owns is pinned to the generated raft-ui
-  // 0.5.52 `messageItem` recipe, so a raft-ui upgrade cannot drift silently.
+  // v1.21.23 source: messageItem recipe index.mjs:6596. Group markers
+  // still drive body/attachment semantics, but do not add old root padding.
   for (final dark in [false, true]) {
-    test('row geometry equals the generated messageItem recipe $dark', () {
+    test('row geometry follows the v1.21.23 messageItem source $dark', () {
       final t = raftTheme(dark: dark).extension<RaftTokens>()!;
-      final theme = RaftRecipeTheme.elegant;
       for (final width in [390.0, 767.0, 768.0, 1280.0]) {
         for (final continuation in [false, true]) {
           for (final followedBy in [null, ...RaftMessageFollowedBy.values]) {
             for (final followsSystem in [false, true]) {
               final label =
-                  '$dark width=$width continuation=$continuation '
-                  'followedBy=$followedBy followsSystem=$followsSystem';
+                  '$dark $width $continuation $followedBy $followsSystem';
               final recipe = RaftMessageRowRecipe(
                 t,
                 viewportWidth: width,
@@ -305,29 +297,19 @@ void main() {
                 followedBy: followedBy,
                 followsSystem: followsSystem,
               );
-              final s = RaftMessageItemRecipe.resolve(
-                theme: theme,
-                compact: continuation,
-                states: RaftRecipeStates({
-                  if (followedBy != null) 'data-followed-by=${followedBy.name}',
-                  if (followsSystem) 'data-follows-system',
-                }, width),
-                tokens: t.recipeTokens,
+              expect(
+                recipe.padding,
+                EdgeInsets.fromLTRB(8, continuation ? 0 : 8, 8, 8),
+                reason: label,
               );
-              expect(recipe.padding, s.root.padding, reason: label);
-              expect(recipe.margin, s.root.margin, reason: label);
-              expect(recipe.gap, s.root.columnGap, reason: label);
-              expect(recipe.minimumHeight, s.root.minHeight, reason: label);
-              expect(recipe.borderWidth, s.root.borderWidth.top, reason: label);
-              expect(recipe.gutterWidth, s.gutter.width, reason: label);
-              expect(recipe.gutterWidth, s.avatarSlot.width, reason: label);
-              final avatar = s.avatarSlot.target(
-                '& [data-slot=avatar][data-size=md]',
-              )!;
-              expect(recipe.avatarExtent, avatar.width, reason: label);
-              expect(recipe.avatarExtent, avatar.height, reason: label);
-              expect(recipe.avatarTop - 2, avatar.margin.top, reason: label);
-              expect(recipe.headerGap, s.header.columnGap, reason: label);
+              expect(recipe.margin, EdgeInsets.zero, reason: label);
+              expect(recipe.gap, 12, reason: label);
+              expect(recipe.minimumHeight, 0, reason: label);
+              expect(recipe.borderWidth, 0, reason: label);
+              expect(recipe.gutterWidth, 35, reason: label);
+              expect(recipe.avatarExtent, 35, reason: label);
+              expect(recipe.avatarTop, 2, reason: label);
+              expect(recipe.headerGap, 6, reason: label);
             }
           }
         }
@@ -347,13 +329,13 @@ void main() {
     expect([for (final x in RaftMessageSizeTier.values) x.meta], [11, 12, 14]);
     expect(at(RaftMessageSizeTier.sm, 1280).author.fontSize, 13);
     expect(at(RaftMessageSizeTier.lg, 1280).time.fontSize, 13);
-    // `--mi-avatar` 2rem, 34px on the large tier; `--mi-avatar-narrow` 28.
-    expect(at(RaftMessageSizeTier.md, 1280).avatarExtent, 32);
+    // Native recipe defaults35; MessageItem.tsx overrides only lg to34.
+    expect(at(RaftMessageSizeTier.md, 1280).avatarExtent, 35);
     expect(at(RaftMessageSizeTier.lg, 1280).avatarExtent, 34);
-    expect(at(RaftMessageSizeTier.lg, 390).avatarExtent, 28);
+    expect(at(RaftMessageSizeTier.lg, 390).avatarExtent, 34);
   });
 
-  test('header reserve, name weight and toolbar edge follow v1.21.12', () {
+  test('native header source and existing toolbar boundary', () {
     final b = raftTheme().extension<RaftTokens>()!;
     final e = raftTheme().extension<RaftTokens>()!;
     RaftMessageRowRecipe row(RaftTokens t, double w, [bool thread = false]) =>
@@ -364,10 +346,10 @@ void main() {
               ? RaftMessageRowContext.thread
               : RaftMessageRowContext.main,
         );
-    // `--mi-hdr-pr: 2.5rem` on the thread panel's row wrapper.
-    expect(row(e, 1280).headerReserve, 96);
-    expect(row(e, 1280, true).headerReserve, 40);
-    expect(row(e, 390, true).headerReserve, 40);
+    // 0.7 header has no reserved padding; timestamp uses ml-auto.
+    expect(row(e, 1280).headerReserve, 0);
+    expect(row(e, 1280, true).headerReserve, 0);
+    expect(row(e, 390, true).headerReserve, 0);
     // Current Web sender is 700; legacy families are covered separately.
     expect(row(e, 1280).author.fontWeight, FontWeight.w700);
     expect(row(b, 1280).author.fontWeight, FontWeight.w700);
@@ -407,44 +389,42 @@ void main() {
     expect(px(RaftMessageFollowedBy.group), isFalse);
   });
 
-  testWidgets(
-    'a followed-by row collapses its body margin and bottom padding',
-    (tester) async {
-      Future<double> height(RaftMessageFollowedBy? followedBy) async {
-        await tester.pumpWidget(
-          MaterialApp(
-            theme: raftTheme(),
-            home: MediaQuery(
-              data: const MediaQueryData(size: Size(1280, 480)),
-              child: Scaffold(
-                body: Align(
-                  alignment: Alignment.topLeft,
-                  child: SizedBox(
-                    width: 600,
-                    child: RaftMessageRow(
-                      author: 'Cindy',
-                      timestamp: '14:30',
-                      followedBy: followedBy,
-                      content: const Text('Body', key: bodyKey),
-                    ),
+  testWidgets('native followed-by markers retain the uniform root spacing', (
+    tester,
+  ) async {
+    Future<double> height(RaftMessageFollowedBy? followedBy) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: raftTheme(),
+          home: MediaQuery(
+            data: const MediaQueryData(size: Size(1280, 480)),
+            child: Scaffold(
+              body: Align(
+                alignment: Alignment.topLeft,
+                child: SizedBox(
+                  width: 600,
+                  child: RaftMessageRow(
+                    author: 'Cindy',
+                    timestamp: '14:30',
+                    followedBy: followedBy,
+                    content: const Text('Body', key: bodyKey),
                   ),
                 ),
               ),
             ),
           ),
-        );
-        return tester.getSize(find.byType(RaftMessageRow)).height;
-      }
+        ),
+      );
+      return tester.getSize(find.byType(RaftMessageRow)).height;
+    }
 
-      final last = await height(null);
-      final compact = await height(RaftMessageFollowedBy.compact);
-      final group = await height(RaftMessageFollowedBy.group);
-      // Elegant wide: padding-bottom 12 + body margin 6 at the list end,
-      // 2 + 0 before a continuation, 6 + 0 before a new group.
-      expect(last - compact, 16);
-      expect(last - group, 12);
-    },
-  );
+    final last = await height(null);
+    final compact = await height(RaftMessageFollowedBy.compact);
+    final group = await height(RaftMessageFollowedBy.group);
+    // Native body has no generic bottom margin and root py-2 is uniform.
+    expect(last - compact, 0);
+    expect(last - group, 0);
+  });
 
   test('a followed body that ends in code keeps Web mb-px', () {
     final t = raftTheme().extension<RaftTokens>()!;
@@ -458,8 +438,8 @@ void main() {
     expect(recipe(RaftMessageFollowedBy.compact, true).bodyBottomGap, 1);
     expect(recipe(RaftMessageFollowedBy.group, true).bodyBottomGap, 1);
     expect(recipe(RaftMessageFollowedBy.compact, false).bodyBottomGap, 0);
-    // The list end keeps the ordinary body margin.
-    expect(recipe(null, true).bodyBottomGap, 6);
+    // Only the mounted followed-by code-tail override contributes1px.
+    expect(recipe(null, true).bodyBottomGap, 0);
   });
 
   test('raftBodyEndsInCode follows the last block', () {
