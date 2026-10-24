@@ -1515,6 +1515,12 @@ class _FleetDetailState extends State<FleetDetail> {
             allowed('migrateAgents') &&
             w.agentMigrationEnabled &&
             row['machineId'] is String,
+        canShowCloudArrival:
+            access.canManage &&
+            allowed('migrateAgents') &&
+            w.agentMigrationEnabled &&
+            external &&
+            row['hostedRuntime'] is Map,
         onReportIssue:
             access.canManage &&
                 reportIssueEnabled(

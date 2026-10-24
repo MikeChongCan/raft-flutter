@@ -1,9 +1,15 @@
 // Web components/agentMigration/AgentMigrationDialog.tsx: the dialog that
 // picks the target computer and starts a migration.
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:raft_ui/raft_ui.dart';
 
+import '../data/agent_hosted_runtime.dart';
+import '../data/workspace_controller.dart';
+import 'agent_hosted_model_choice.dart';
+import 'agent_hosted_provider.dart';
 import 'agent_migration_panel.dart';
 import 'agent_migration_presentation.dart';
 
@@ -16,7 +22,25 @@ class AgentMigrationStartDialog extends StatefulWidget {
     required this.targets,
     required this.start,
     required this.openComputers,
+    this.controller,
+    this.hostedAvailable = false,
+    this.sourceName,
+    this.startHosted,
   });
+
+  /// The cloud is offered as a target (`agent_migration_hosted_v0`, the cloud
+  /// runtime on and configured: Web `useHostedMigrationAvailable`).
+  final bool hostedAvailable;
+
+  /// Reads the models a cloud agent can start on (only with [hostedAvailable]).
+  final WorkspaceController? controller;
+
+  /// The source computer's name, for the notes about what happens to it.
+  final String? sourceName;
+
+  /// Starts the move to the cloud on [hostedModel] (null: the provider's
+  /// default).
+  final Future<void> Function(String? hostedModel)? startHosted;
 
   /// Every other computer of the server (an offline one is listed; the server
   /// answers TARGET_COMPUTER_OFFLINE).
@@ -31,9 +55,26 @@ class AgentMigrationStartDialog extends StatefulWidget {
       _AgentMigrationStartDialogState();
 }
 
+/// The target picker's value for the cloud; never a machine id.
+const _cloudTarget = '__cloud__';
+
 class _AgentMigrationStartDialogState extends State<AgentMigrationStartDialog> {
   late String target = _firstTarget;
   MigrationPresentation? failure;
+  HostedModelsLoader? _models;
+  String? _hostedPick;
+  bool _picked = false;
+
+  bool get _hostedSelected =>
+      widget.hostedAvailable &&
+      widget.controller != null &&
+      (target == _cloudTarget || widget.targets.isEmpty);
+
+  @override
+  void dispose() {
+    _models?.dispose();
+    super.dispose();
+  }
 
   String get _firstTarget =>
       widget.targets.isEmpty ? '' : '${widget.targets.first['id']}';
@@ -42,7 +83,8 @@ class _AgentMigrationStartDialogState extends State<AgentMigrationStartDialog> {
   void didUpdateWidget(AgentMigrationStartDialog old) {
     super.didUpdateWidget(old);
     // Web: a target that is no longer offered falls back to the first one.
-    if (!widget.targets.any((m) => '${m['id']}' == target)) {
+    if (target != _cloudTarget &&
+        !widget.targets.any((m) => '${m['id']}' == target)) {
       target = _firstTarget;
     }
   }
@@ -56,19 +98,40 @@ class _AgentMigrationStartDialogState extends State<AgentMigrationStartDialog> {
       line: 14 * 1.625,
       color: t.strong,
     );
+    final cloud = _hostedSelected;
+    final models = cloud
+        ? (_models ??= HostedModelsLoader(widget.controller!)
+            ..addListener(() {
+              if (mounted) setState(() {});
+            }))
+        : null;
+    models?.ensure(true);
+    final view = models?.view;
+    final shownPick =
+        view == null || view.locked || !hostedModelPickerShown(view)
+        ? null
+        : (_picked ? _hostedPick : null);
+    final source = widget.sourceName ?? raftText(context, 'Unknown computer');
     return RaftFormDialog(
-      title: 'Move to another Computer',
+      title: widget.hostedAvailable ? 'Move agent' : 'Move to another Computer',
       fields: const [],
       submitLabel: failure?.recoveryOpenComputers == true
           ? 'Try Again'
+          : cloud
+          ? 'Move to the cloud'
           : 'Move to another Computer',
       busyLabel: 'Starting migration…',
-      submitEnabled: target.isNotEmpty,
+      submitEnabled:
+          (cloud || target.isNotEmpty) &&
+          !(cloud && models?.status == HostedModelsStatus.loading),
       extra: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           RaftField(
-            label: raftText(context, 'Target computer'),
+            label: raftText(
+              context,
+              widget.hostedAvailable ? 'Move to' : 'Target computer',
+            ),
             uppercase: false,
             // Web asks nothing when the dialog is closed after only a target
             // change: the picker's text stays out of the unsaved-input guard.
@@ -79,32 +142,75 @@ class _AgentMigrationStartDialogState extends State<AgentMigrationStartDialog> {
                 semanticLabel: raftText(context, 'Target computer'),
                 emptyLabel: 'No matches',
                 placeholder: raftText(context, 'No other computers available'),
-                enabled: widget.targets.isNotEmpty,
-                value: target,
+                enabled: widget.targets.isNotEmpty || widget.hostedAvailable,
+                value: cloud ? _cloudTarget : target,
                 items: [
                   for (final m in widget.targets)
                     RaftComboboxItem('${m['id']}', '${m['name']}'),
+                  if (widget.hostedAvailable)
+                    RaftComboboxItem(_cloudTarget, raftText(context, 'Cloud')),
                 ],
                 onSelected: (id) => setState(() => target = id),
               ),
             ),
           ),
+          if (cloud && hostedModelPickerShown(view)) ...[
+            const SizedBox(height: RaftSpace.x4),
+            RaftField(
+              label: raftText(context, 'Model'),
+              uppercase: false,
+              child: RaftUnsavedGuardIgnore(
+                child: HostedModelChoice(
+                  loader: models!,
+                  value: shownPick,
+                  onChanged: (id) => setState(() {
+                    _hostedPick = id;
+                    _picked = true;
+                  }),
+                ),
+              ),
+            ),
+          ],
           const SizedBox(height: RaftSpace.x4),
-          Text(
-            raftText(
-              context,
-              'Your agent will stop while it migrates, then start again on the new computer.',
+          if (cloud)
+            // Said before starting: the move to the cloud is final once
+            // confirmed.
+            Column(
+              key: const ValueKey('agent-migration-hosted-notes'),
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                for (final (i, note) in [
+                  'The agent stops on {source} while the cloud checks its files and you review what moves.',
+                  'Its workspace files will be stored in the cloud, and the copy on {source} will be archived.',
+                  "The current session context isn't carried over: the agent starts a new session in the cloud.",
+                  "You'll need to reconnect GitHub once after the move.",
+                  "Once you confirm the move, it can't be undone.",
+                ].indexed) ...[
+                  if (i > 0) const SizedBox(height: RaftSpace.x2),
+                  Text(
+                    '• ${raftFormat(context, note, {'source': source})}',
+                    style: body,
+                  ),
+                ],
+              ],
+            )
+          else ...[
+            Text(
+              raftText(
+                context,
+                'Your agent will stop while it migrates, then start again on the new computer.',
+              ),
+              style: body,
             ),
-            style: body,
-          ),
-          const SizedBox(height: RaftSpace.x2),
-          Text(
-            raftText(
-              context,
-              'Migrating moves the workspace files, including MEMORY.md and notes if any, to the new computer. The agent then starts a fresh session and picks up from MEMORY.md.',
+            const SizedBox(height: RaftSpace.x2),
+            Text(
+              raftText(
+                context,
+                'Migrating moves the workspace files, including MEMORY.md and notes if any, to the new computer. The agent then starts a fresh session and picks up from MEMORY.md.',
+              ),
+              style: body,
             ),
-            style: body,
-          ),
+          ],
         ],
       ),
       errorContent: (context, error) => error is AgentMigrationStartFailure
@@ -112,7 +218,11 @@ class _AgentMigrationStartDialogState extends State<AgentMigrationStartDialog> {
           : null,
       onSubmit: (_) async {
         try {
-          await widget.start(target);
+          if (cloud) {
+            await widget.startHosted!(hostedModelToSend(view, shownPick));
+          } else {
+            await widget.start(target);
+          }
         } on AgentMigrationStartFailure catch (e) {
           if (mounted) setState(() => failure = e.presentation);
           rethrow;

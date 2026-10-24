@@ -203,8 +203,13 @@ class RaftPlanBillingSection extends StatelessWidget {
     this.limitStats = const [],
     this.portalActions,
     this.manage,
+    this.afterPlan,
   });
   final String planName, planDescription;
+
+  /// Content between the plan card and the manage card (Web: the cloud agent
+  /// spend card, for who may read the billing summary).
+  final Widget? afterPlan;
   final List<RaftBillingNotice> notices;
   final List<String> included, notIncluded;
   final RaftBillingSeatUsage? seatUsage;
@@ -234,6 +239,11 @@ class RaftPlanBillingSection extends StatelessWidget {
             ),
             for (final notice in notices) _BillingNoticeCard(notice),
             _PlanCard(section: this),
+            if (afterPlan != null)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 24),
+                child: afterPlan,
+              ),
             if (manage != null) ...[
               RaftSettingsSectionHeader(
                 label: manage!.title,
@@ -1357,9 +1367,14 @@ class RaftBillingConfirmMessage extends StatelessWidget {
     required this.lead,
     required this.lines,
     required this.closing,
+    this.note,
   });
   final String lead;
   final List<String> lines, closing;
+
+  /// A muted line right after [lead] (`text-footnote text-foreground-muted`,
+  /// breaks anywhere: the checkout's promotion code review).
+  final String? note;
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
@@ -1374,6 +1389,17 @@ class RaftBillingConfirmMessage extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(lead),
+        if (note != null) ...[
+          const SizedBox(height: 8),
+          Text(
+            note!,
+            style: base.copyWith(
+              fontSize: 12,
+              height: 16 / 12,
+              color: RaftSettingsText(t).muted,
+            ),
+          ),
+        ],
         const SizedBox(height: 8),
         for (final line in lines) Text(line, style: mono),
         for (final paragraph in closing) ...[

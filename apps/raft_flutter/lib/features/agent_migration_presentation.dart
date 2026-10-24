@@ -10,6 +10,7 @@ import 'package:raft_client/raft_client.dart' show RaftApiException;
 
 import '../data/migration_error.dart';
 import 'agent_detail_view.dart' show sourceRuntimeDisplayNames;
+import 'agent_migration_hosted.dart';
 import 'computer_detail_view.dart' show computerFileSize;
 
 /// A catalog English [source] plus the values of its `{name}` placeholders. A
@@ -137,7 +138,8 @@ bool _has(Object? value) => value is String && value.isNotEmpty;
 /// Web state.ts `canCancelMigration`.
 bool canCancelMigration(Map<String, dynamic> migration) {
   final revision = migration['revision'];
-  return _cancellableStates.contains(migration['state']) &&
+  return !hostedCancelRefused(migration) &&
+      _cancellableStates.contains(migration['state']) &&
       revision is int &&
       revision > 0;
 }
@@ -145,6 +147,7 @@ bool canCancelMigration(Map<String, dynamic> migration) {
 /// Web state.ts `migrationProgressStep`: the state's floor, advanced by what
 /// the timestamps show happened.
 int migrationProgressStep(Map<String, dynamic> migration) {
+  if (isHostedMigration(migration)) return hostedMigrationProgressStep(migration);
   final step = _stateStep[migration['state']] ?? 0;
   if (step == migrationProgressSteps.length) return step;
   final observed = _has(migration['arrivedAt']) || _has(migration['flippedAt'])
@@ -162,7 +165,9 @@ int migrationProgressStep(Map<String, dynamic> migration) {
 bool migrationShownFailed(Map<String, dynamic> migration) =>
     migrationPhase(migration['state'] as String?) == 'failed' ||
     migration['state'] == 'starting' &&
-        migration['failureReason'] == 'auto_start_failed';
+        migration['failureReason'] == 'auto_start_failed' ||
+    // A switched move to the cloud that stalled needs attention like a failure.
+    hostedArrivalAttentionReason(migration) != null;
 
 // ----------------------------------------------------------------- labels
 
@@ -777,7 +782,7 @@ MigrationPresentation _failureReason(
       .where((m) => m['id'] == migration['targetMachineId'])
       .firstOrNull;
   final source = migrationComputerLabel(machines, migration['sourceMachineId']);
-  final target = migrationComputerLabel(machines, migration['targetMachineId']);
+  final target = migrationNoticeTargetLabel(machines, migration);
   String? text(String key) => migration[key] is String
       ? migration[key] as String
       : null;
@@ -797,6 +802,8 @@ MigrationPresentation _failureReason(
       technicalCode: fallback.technicalCode,
     );
   }
+  final lost = hostedTransportLost(migration, source);
+  if (lost != null) return lost;
   return migrationErrorPresentation(
     code: migrationFailureCopyCode(
       text('transportErrorCode'),
@@ -829,6 +836,12 @@ MigrationPresentation _failurePresentation(
   List<Map<String, dynamic>> machines,
   String Function(String value) formatTimestamp,
 ) {
+  final hosted = hostedFailureOverride(
+    migration,
+    machines,
+    () => _failureReason(migration, machines, formatTimestamp),
+  );
+  if (hosted != null) return hosted;
   final reason = _failureReason(migration, machines, formatTimestamp);
   if (_has(migration['flippedAt'])) {
     return reason.copyWith(
@@ -853,6 +866,12 @@ MigrationText _sourceStage(
   DateTime now,
 ) {
   if (_has(migration['transportControlRegisteredAt'])) {
+    if (isHostedMigration(migration)) {
+      return MigrationText(
+        'Uploading the workspace from {source} to the cloud.',
+        {'source': source},
+      );
+    }
     return MigrationText(
       'Uploading the workspace from {source} to send to {target}.',
       {'source': source, 'target': target},
@@ -904,7 +923,9 @@ MigrationNoticePresentation migrationNoticePresentation(
   required String Function(String value) formatTimestamp,
 }) {
   final source = migrationComputerLabel(machines, migration['sourceMachineId']);
-  final target = migrationComputerLabel(machines, migration['targetMachineId']);
+  final target = migrationNoticeTargetLabel(machines, migration);
+  final hosted = hostedNoticePresentation(migration, source);
+  if (hosted != null) return hosted;
   MigrationNoticePresentation status(MigrationText message) =>
       MigrationNoticePresentation(
         intent: MigrationIntent.info,
@@ -1044,6 +1065,7 @@ MigrationNoticePresentation migrationNoticePresentation(
 
 /// Web MigrationProgressPanel header: (message id source, uses {target}).
 String migrationPanelHeader(Map<String, dynamic> migration) {
+  if (isHostedMigration(migration)) return hostedPanelHeader(migration);
   final state = migration['state'] as String?;
   final phase = migrationPhase(state);
   final cancelRequested = state != null && state.startsWith('cancel_requested_');

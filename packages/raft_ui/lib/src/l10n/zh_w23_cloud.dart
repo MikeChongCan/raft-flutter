@@ -8,4 +8,9 @@ const Map<String, String> zhCatalogW23Cloud = <String, String>{
       "{total} 次（成功 {succeeded}，失败 {failed}）",
   "Partial data, as of {time}": "数据不完整，截至 {time}",
   "Runs on:": "运行位置：",
+  // `agent.migration.hosted.reviewFileCount` and `reviewMorePaths`, flattened
+  // to the singular / plural keys the review uses.
+  "{files} file ({size})": "{files} 个文件（{size}）",
+  "{files} files ({size})": "{files} 个文件（{size}）",
+  "and {count} more": "还有 {count} 个",
 };

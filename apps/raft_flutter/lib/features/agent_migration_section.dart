@@ -16,6 +16,9 @@ import '../data/migration_error.dart';
 import '../data/user_error.dart' show logUserError;
 import '../data/workspace_controller.dart';
 import 'agent_detail_view.dart' show agentTimeFormatter;
+import 'agent_hosted_provider.dart';
+import 'agent_migration_hosted.dart';
+import 'agent_migration_hosted_review.dart';
 import 'agent_migration_panel.dart';
 import 'agent_migration_presentation.dart';
 import 'agent_migration_start_dialog.dart';
@@ -33,8 +36,13 @@ class AgentMigrationSection extends StatefulWidget {
     required this.machines,
     this.now,
     this.openExternal,
+    this.arrivalOnly = false,
   });
   final WorkspaceController controller;
+
+  /// A cloud agent: the section only shows the end of the move that brought
+  /// the agent to the cloud (while it switches, and for a day after).
+  final bool arrivalOnly;
   final Map<String, dynamic> agent;
 
   /// Every computer of the server (empty while the list is in flight).
@@ -82,6 +90,15 @@ class _AgentMigrationSectionState
   /// Web `watchedActiveRef`: the run this section saw active.
   String? _watchedRef;
 
+  /// Web `watchedHostedSwitchRef`: the move to the cloud whose switch was seen.
+  String? _watchedHostedSwitch;
+
+  /// Whether the cloud is offered as a target (flag + provider probe).
+  late final HostedRuntimeAvailability _hosted = HostedRuntimeAvailability(
+    w,
+    migration: true,
+  );
+
   @override
   void initState() {
     super.initState();
@@ -89,6 +106,11 @@ class _AgentMigrationSectionState
     _planRevision = w.planRevision;
     w.addListener(_planChanged);
     startManagement();
+    if (!widget.arrivalOnly) {
+      _hosted
+        ..addListener(_statusChanged)
+        ..load();
+    }
   }
 
   void _bindStatus() {
@@ -111,6 +133,7 @@ class _AgentMigrationSectionState
   @override
   void dispose() {
     w.removeListener(_planChanged);
+    _hosted.dispose();
     _status
       ..removeListener(_statusChanged)
       ..dispose();
@@ -135,6 +158,17 @@ class _AgentMigrationSectionState
     _cancellable.value = canCancelMigration(migration);
     final phase = migrationPhase(migration['state'] as String?);
     final ref = migration['migrationRef'];
+    // The agent turns into a cloud agent at the switch (before completion), so
+    // the directory is re-read once when that is seen.
+    if (isHostedMigration(migration) &&
+        _has(migration['flippedAt']) &&
+        !widget.arrivalOnly &&
+        ref is String &&
+        ref == _watchedRef &&
+        _watchedHostedSwitch != ref) {
+      _watchedHostedSwitch = ref;
+      w.services.entityDirectory.reloadAgents();
+    }
     if (phase == 'active') {
       _watchedRef = ref is String ? ref : null;
     } else if (ref is String && ref == _watchedRef && phase != null) {
@@ -150,9 +184,11 @@ class _AgentMigrationSectionState
     unawaited(loadBilling());
   }
 
+  static bool _has(Object? value) => value is String && value.isNotEmpty;
+
   /// Web `loadBilling`: a failed read just leaves the gate undecided.
   Future<void> loadBilling() async {
-    if (w.server == null) return;
+    if (w.server == null || widget.arrivalOnly) return;
     final generation = w.client.generation;
     loadingBilling = true;
     try {
@@ -233,44 +269,54 @@ class _AgentMigrationSectionState
         .toList();
     var proRequired = false;
     final generation = w.client.generation, sourceAuthority = authority;
+    // One start for both targets: a computer, or the cloud.
+    Future<void> begin(
+      BuildContext dialogContext,
+      Map<String, dynamic> data,
+      String? computer,
+    ) async {
+      if (!accepts(generation) || sourceAuthority != authority) {
+        throw StateError('The active workspace changed. Reopen this form.');
+      }
+      try {
+        await w.command('POST', '/agents/$_agentId/migrate', data: data);
+      } catch (e) {
+        if (accepts(generation) &&
+            sourceAuthority == authority &&
+            invalidateDeniedMutation(e) &&
+            dialogContext.mounted) {
+          Navigator.of(dialogContext).pop(false);
+        }
+        // Web handleProRequired: the server is the authority on the
+        // plan. Closing the form without an error hands over to the
+        // upgrade prompt below.
+        if (isMigrationProPlanRequiredError(e)) {
+          proRequired = true;
+          return;
+        }
+        if (e is RaftApiException && const [401, 403].contains(e.status)) {
+          rethrow;
+        }
+        logUserError(e, where: 'agent migration start');
+        throw AgentMigrationStartFailure(
+          migrationStartErrorPresentation(e, _computers(computer)),
+        );
+      }
+    }
+
     await scopedDialog<bool>(
       form: true,
       (dialogContext) => AgentMigrationStartDialog(
         targets: targets,
         openComputers: (id) => unawaited(_openComputers(id)),
-        start: (target) async {
-          if (!accepts(generation) || sourceAuthority != authority) {
-            throw StateError('The active workspace changed. Reopen this form.');
-          }
-          try {
-            await w.command(
-              'POST',
-              '/agents/$_agentId/migrate',
-              data: {'targetComputer': target},
-            );
-          } catch (e) {
-            if (accepts(generation) &&
-                sourceAuthority == authority &&
-                invalidateDeniedMutation(e) &&
-                dialogContext.mounted) {
-              Navigator.of(dialogContext).pop(false);
-            }
-            // Web handleProRequired: the server is the authority on the
-            // plan. Closing the form without an error hands over to the
-            // upgrade prompt below.
-            if (isMigrationProPlanRequiredError(e)) {
-              proRequired = true;
-              return;
-            }
-            if (e is RaftApiException && const [401, 403].contains(e.status)) {
-              rethrow;
-            }
-            logUserError(e, where: 'agent migration start');
-            throw AgentMigrationStartFailure(
-              migrationStartErrorPresentation(e, _computers(target)),
-            );
-          }
-        },
+        controller: w,
+        hostedAvailable: _hosted.migrationAvailable,
+        sourceName: _computers(null).sourceName,
+        start: (target) =>
+            begin(dialogContext, {'targetComputer': target}, target),
+        startHosted: (model) => begin(dialogContext, {
+          'target': {'kind': 'hosted', 'hostedModel': ?model},
+        }, null),
       ),
     );
     if (proRequired) {
@@ -357,6 +403,9 @@ class _AgentMigrationSectionState
             ),
           }).text(context);
           final t = RaftTokens.of(context);
+          // A move to the cloud is canceled only before the switch, and only
+          // the source computer has to confirm.
+          final hosted = isHostedMigration(current);
           return RaftConfirmDialog(
             title: 'Cancel migration?',
             confirmLabel: 'Stop',
@@ -381,7 +430,9 @@ class _AgentMigrationSectionState
                 Text(
                   raftFormat(
                     context,
-                    'Raft will stop the migration from {source} to {target} and clean up on both computers. Your agent and its workspace stay on whichever computer has them now.',
+                    hosted
+                        ? 'Raft will stop moving the agent to the cloud. The agent and its workspace stay on {source}, and it goes back to work there.'
+                        : 'Raft will stop the migration from {source} to {target} and clean up on both computers. Your agent and its workspace stay on whichever computer has them now.',
                     {'source': source, 'target': target},
                   ),
                   style: RaftTypography.body(
@@ -395,10 +446,16 @@ class _AgentMigrationSectionState
                 MigrationReference(migrationRef: '${current['migrationRef']}'),
                 const SizedBox(height: RaftSpace.x3),
                 Text(
-                  raftText(
-                    context,
-                    'Canceling finishes only after both computers confirm. Keep both computers online until then.',
-                  ),
+                  hosted
+                      ? raftFormat(
+                          context,
+                          'Canceling finishes once {source} confirms. Keep it online until then.',
+                          {'source': source},
+                        )
+                      : raftText(
+                          context,
+                          'Canceling finishes only after both computers confirm. Keep both computers online until then.',
+                        ),
                 ),
               ],
             ),
@@ -417,6 +474,13 @@ class _AgentMigrationSectionState
     final shown = migration.isNotEmpty;
     final canRetry = migrationPhase(migration['state'] as String?) == 'failed';
     final statusError = _status.error;
+    final arrival = widget.arrivalOnly;
+    // A cloud agent keeps the section only to show the end of its move.
+    if (arrival &&
+        !hostedShowsArrival(migration, (widget.now ?? DateTime.now)())) {
+      return const SizedBox.shrink();
+    }
+    final summary = hostedReviewSummary(migration);
     return RaftPanelSection(
       children: [
         Column(
@@ -441,7 +505,8 @@ class _AgentMigrationSectionState
             ),
             // What migration does matters before one exists; once a
             // migration is shown, its block says it.
-            if (!shown || phase == 'completed' || phase == 'canceled') ...[
+            if (!arrival &&
+                (!shown || phase == 'completed' || phase == 'canceled')) ...[
               const SizedBox(height: RaftSpace.x1),
               Text(
                 raftText(
@@ -465,8 +530,30 @@ class _AgentMigrationSectionState
             now: (widget.now ?? DateTime.now)().toUtc(),
             formatTimestamp: agentTimeFormatter(context, w).shortDateTime,
             onCancel: () => run(cancel, refresh: false),
+            review: summary == null
+                ? null
+                : AgentMigrationHostedReview(
+                    key: ValueKey('hosted-review-${migration['migrationRef']}'),
+                    controller: w,
+                    migration: migration,
+                    summary: summary,
+                    source: MigrationText('{name}', {
+                      'name': migrationComputerLabel(
+                        widget.machines,
+                        migration['sourceMachineId'],
+                      ),
+                    }).text(context),
+                    deadline: migration['transferDeadlineAt'] is String
+                        ? agentTimeFormatter(
+                            context,
+                            w,
+                          ).shortDateTime(migration['transferDeadlineAt'])
+                        : null,
+                    onShowCancel: () => run(cancel, refresh: false),
+                    onRefresh: _status.reload,
+                  ),
           ),
-        if (statusError != null)
+        if (statusError != null && !arrival)
           RaftBanner(
             status: RaftBannerRecipeStatus.warning,
             size: RaftBannerRecipeSize.sm,
@@ -487,13 +574,17 @@ class _AgentMigrationSectionState
         if (error != null) RaftErrorBanner(error!, small: true),
         // While a migration runs, the progress block owns the only action
         // (Cancel).
-        if (!active)
+        if (!active && !arrival)
           Align(
             alignment: Alignment.centerRight,
             child: RaftButton(
               label: raftText(
                 context,
-                canRetry ? 'Try migration again' : 'Move to another Computer',
+                canRetry
+                    ? 'Try migration again'
+                    : _hosted.migrationAvailable
+                    ? 'Move agent'
+                    : 'Move to another Computer',
               ),
               tone: RaftButtonRecipeVariant.outline,
               size: RaftButtonRecipeSize.sm,

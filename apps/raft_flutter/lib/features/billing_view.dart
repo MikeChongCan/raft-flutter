@@ -9,6 +9,7 @@ import '../data/billing_plans.dart';
 
 import '../data/workspace_controller.dart';
 import '../platform/content_links.dart';
+import 'agent_hosted_spend.dart';
 import 'management_support.dart';
 
 export '../data/billing_plans.dart' show RaftBillingPlans;
@@ -274,8 +275,18 @@ class _BillingState extends ManagementState<BillingView> {
     }
   }
 
-  String _error(Object e, String fallback) =>
-      userErrorText(e, fallback: fallback, where: 'billing');
+  String _error(Object e, String fallback) => userErrorText(
+    e,
+    fallback: fallback,
+    // Web `promotion_code_unavailable` on checkout.
+    codeText: {
+      'promotion_code_unavailable': raftText(
+        context,
+        'This promotion code is unavailable. Check it or remove it to continue.',
+      ),
+    },
+    where: 'billing',
+  );
 
   Future<void> _mutate(
     _BillingAction kind,
@@ -550,6 +561,7 @@ class _BillingState extends ManagementState<BillingView> {
           '/billing/checkout',
           data: {
             'targetPlan': 'pro',
+            if (promotionCode.isNotEmpty) 'promotionCode': promotionCode,
             'billingInterval': annual ? 'annual' : 'monthly',
             'seatQuantity': requestedSeats,
             'humanSeatQuantity': requestedSeats,
@@ -628,6 +640,12 @@ class _BillingState extends ManagementState<BillingView> {
           confirmVariant: RaftButtonRecipeVariant.accent,
           content: RaftBillingConfirmMessage(
             lead: tr('You are about to start Pro checkout.'),
+            note: promotionCode.isEmpty
+                ? null
+                : tr(
+                    'Promotion code: {code}. The final discount is confirmed on Stripe Checkout.',
+                    {'code': promotionCode},
+                  ),
             lines: [
               '${tr('Seats')}: $draftSeats',
               '${tr('Capacity')}: ${humanCapacity(draftSeats)} ${agentCapacity(draftAgentSeats)}',
@@ -941,6 +959,10 @@ class _BillingState extends ManagementState<BillingView> {
         label: tr('See all features and compare plans'),
         onPressed: () => _launch(Uri.parse(RaftBillingPlans.comparePlansUrl)),
       ),
+      afterPlan:
+          managementMap(b?['permissions'])['canReadBillingSummary'] == true
+          ? AgentHostedSpendCard(controller: w)
+          : null,
       manage: !showManage
           ? null
           : RaftBillingManagePlan(
@@ -983,14 +1005,19 @@ class _BillingState extends ManagementState<BillingView> {
                 });
               },
               onSeatCommitted: commitSeats,
-              promotionLabel: manageSeatMode && seatDelta > 0
+              promotionLabel: checkoutMode || (manageSeatMode && seatDelta > 0)
                   ? tr('Promotion code (optional)')
                   : null,
-              promotionController: manageSeatMode && seatDelta > 0
+              promotionController:
+                  checkoutMode || (manageSeatMode && seatDelta > 0)
                   ? promotion
                   : null,
               onPromotionChanged: (_) => setState(() => seatPreview = null),
-              promotionHint: manageSeatMode && seatDelta > 0
+              promotionHint: checkoutMode
+                  ? tr(
+                      'Stripe checks this code at Checkout. Leave blank to enter a code there.',
+                    )
+                  : manageSeatMode && seatDelta > 0
                   ? tr('Enter a code approved for existing seat updates.')
                   : null,
               help: seatHelp,

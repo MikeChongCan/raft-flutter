@@ -77,6 +77,18 @@ const _copy = <String, String>{
       'One of these computers needs a Raft Computer update before it can move agents. Update Raft Computer on both to the latest version, restart them, wait for them to reconnect, then try again.',
   'TARGET_RUNTIME_DETECTION_PENDING':
       'The target computer is still detecting its runtimes. Try again in a moment.',
+  'HOSTED_TARGET_UNAVAILABLE':
+      'Moving agents to the cloud is not available on this server right now. Try again later, or move the agent to a computer.',
+  'HOSTED_TARGET_ALREADY_USED':
+      'This agent has already run in the cloud, so it cannot move there again.',
+  'HOSTED_TARGET_MODEL_INVALID':
+      'That model is not available for cloud agents on this server. Pick another model, or leave it on the default.',
+  'HOSTED_REVIEW_NOT_READY':
+      'This migration is not waiting for your confirmation any more. Refresh to see where it stands.',
+  'HOSTED_IMPORT_MEMORY_UNIMPORTABLE':
+      "The agent's MEMORY.md can't be brought to the cloud: it is too large, is not plain text, or the cloud refused it. Ask the agent to trim MEMORY.md to plain text, then try again.",
+  'MIGRATION_NOT_CANCELABLE':
+      'The agent already moved to the cloud, so this migration can no longer be canceled.',
   'TARGET_COMPUTER_OFFLINE':
       'The target computer is offline. Start Raft Computer on it and try again.',
   'MIGRATION_ALREADY_IN_PROGRESS':

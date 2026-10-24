@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:raft_ui/raft_ui.dart';
 
 import '../data/migration_error.dart';
+import 'agent_migration_hosted.dart';
 import 'agent_migration_presentation.dart';
 
 extension MigrationTextResolve on MigrationText {
@@ -24,6 +25,7 @@ class MigrationProgressPanel extends StatelessWidget {
     required this.now,
     required this.formatTimestamp,
     this.onCancel,
+    this.review,
   });
   final Map<String, dynamic> migration;
   final List<Map<String, dynamic>> machines;
@@ -31,9 +33,17 @@ class MigrationProgressPanel extends StatelessWidget {
   final String Function(String value) formatTimestamp;
   final VoidCallback? onCancel;
 
+  /// A move to the cloud waiting for the user's confirm: the review, whose own
+  /// Cancel sits beside Confirm (so the panel shows none).
+  final Widget? review;
+
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
+    final hosted = isHostedMigration(migration);
+    final steps = hosted
+        ? hostedMigrationProgressSteps
+        : migrationProgressSteps;
     final state = migration['state'] as String?;
     final phase = migrationPhase(state);
     final presentation = migrationNoticePresentation(
@@ -50,7 +60,7 @@ class MigrationProgressPanel extends StatelessWidget {
     final cancelRequested =
         state != null && state.startsWith('cancel_requested_');
     final target = MigrationText('{target}', {
-      'target': migrationComputerLabel(machines, migration['targetMachineId']),
+      'target': migrationNoticeTargetLabel(machines, migration),
     }).text(context);
     String withTarget(String source) =>
         raftFormat(context, source, {'target': target});
@@ -64,7 +74,7 @@ class MigrationProgressPanel extends StatelessWidget {
     final body = presentation.message;
     return Semantics(
       container: true,
-      label: withTarget('Migration to {target}'),
+      label: withTarget(hosted ? 'Move to the cloud' : 'Migration to {target}'),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -74,11 +84,16 @@ class MigrationProgressPanel extends StatelessWidget {
           ),
           const SizedBox(height: RaftSpace.x3),
           MigrationSteps(
+            labels: steps,
             current: completed
-                ? migrationProgressSteps.length - 1
+                ? steps.length - 1
                 : migrationProgressStep(migration),
             status: status,
-            semanticLabel: withTarget('Migration progress to {target}'),
+            semanticLabel: withTarget(
+              hosted
+                  ? 'Progress of the move to the cloud'
+                  : 'Migration progress to {target}',
+            ),
           ),
           const SizedBox(height: RaftSpace.x3),
           // Problems keep the warning banner; normal progress is plain text.
@@ -129,7 +144,16 @@ class MigrationProgressPanel extends StatelessWidget {
             const SizedBox(height: RaftSpace.x3),
             MigrationReference(migrationRef: '${migration['migrationRef']}'),
           ],
-          if (active && onCancel != null && canCancelMigration(migration)) ...[
+          if (review != null) ...[
+            const SizedBox(height: RaftSpace.x3),
+            // Its own semantics node: the review's alert must not merge with the
+            // status line above it (a live region).
+            Semantics(container: true, explicitChildNodes: true, child: review),
+          ],
+          if (review == null &&
+              active &&
+              onCancel != null &&
+              canCancelMigration(migration)) ...[
             const SizedBox(height: RaftSpace.x3),
             Align(
               alignment: Alignment.centerRight,
@@ -159,7 +183,11 @@ class MigrationSteps extends StatelessWidget {
     required this.current,
     required this.status,
     required this.semanticLabel,
+    this.labels = migrationProgressSteps,
   });
+
+  /// The step names (English source): the computer move's or the cloud's.
+  final List<String> labels;
   final int current;
   final MigrationStepStatus status;
   final String semanticLabel;
@@ -176,9 +204,7 @@ class MigrationSteps extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
-    final labels = [
-      for (final s in migrationProgressSteps) raftText(context, s),
-    ];
+    final labels = [for (final s in this.labels) raftText(context, s)];
     final style = RaftTypography.body(
       t,
       size: 14,

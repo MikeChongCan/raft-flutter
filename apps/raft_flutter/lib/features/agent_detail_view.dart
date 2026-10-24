@@ -119,6 +119,7 @@ class AgentDetailActions {
     this.onOpenMessage,
     this.onMessage,
     this.canMigrate = false,
+    this.canShowCloudArrival = false,
     this.onPermissions,
     this.onReportIssue,
   });
@@ -134,6 +135,11 @@ class AgentDetailActions {
   /// viewer manages a non-external agent that has a computer and
   /// `agent_migration_v0` is on).
   final bool canMigrate;
+
+  /// A cloud agent the viewer manages: mount the migration section to show the
+  /// end of the move that brought it to the cloud (Web `arrivalOnly`).
+  final bool canShowCloudArrival;
+
   /// Info rows: the Computer name opens that Computer; the creator opens
   /// their profile (`human` or `agent`).
   final ValueChanged<String>? onOpenComputer, onOpenChannel;
@@ -1395,6 +1401,18 @@ class _AgentDetailPanelState extends State<AgentDetailPanel> {
             agent: a,
             machines: widget.machines ?? const [],
             now: widget.clock,
+          ),
+        if (widget.actions.canShowCloudArrival &&
+            canEdit &&
+            external &&
+            _hostedRuntime != null)
+          AgentMigrationSection(
+            key: ValueKey('cloud-arrival-$agentId'),
+            controller: widget.controller,
+            agent: a,
+            machines: widget.machines ?? const [],
+            now: widget.clock,
+            arrivalOnly: true,
           ),
         // Web `agent.deletedAt && canViewPrivateAgentSurfaces`.
         if (a['deletedAt'] != null && _canViewPrivate)

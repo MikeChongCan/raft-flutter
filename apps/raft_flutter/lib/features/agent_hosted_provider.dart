@@ -41,12 +41,26 @@ class HostedRuntimeAvailability extends ChangeNotifier {
   /// A first answer arrived (the surface may stop treating "no" as unknown).
   bool get resolved => _resolved;
 
+  /// The last answer per workspace session, so reopening a profile or a dialog
+  /// does not ask again within [cacheFor]. Web keeps the flag in its store for
+  /// the session.
+  static final _answers = Expando<_Answer>('hosted availability');
+  static const cacheFor = Duration(seconds: 60);
+
   Future<void> load() async {
     final w = controller;
     final server = w.server;
     if (server == null) return;
     final request = ++_request;
     final authority = workspaceAuthority(w);
+    final known = _answers[w];
+    if (known != null &&
+        known.authority == authority &&
+        known.migration == migration &&
+        DateTime.now().difference(known.at) < cacheFor) {
+      _adopt(known.available, known.migrationFlag);
+      return;
+    }
     bool stale() =>
         _disposed || request != _request || authority != workspaceAuthority(w);
     var available = false, migrationFlag = false;
@@ -79,6 +93,12 @@ class HostedRuntimeAvailability extends ChangeNotifier {
       if (stale()) return;
       available = false;
     }
+    _answers[w] = _Answer(authority, migration, available, migrationFlag);
+    _adopt(available, migrationFlag);
+  }
+
+  void _adopt(bool available, bool migrationFlag) {
+    if (_disposed) return;
     if (available == _available &&
         migrationFlag == _migrationFlag &&
         _resolved) {
@@ -95,6 +115,14 @@ class HostedRuntimeAvailability extends ChangeNotifier {
     _disposed = true;
     super.dispose();
   }
+}
+
+class _Answer {
+  _Answer(this.authority, this.migration, this.available, this.migrationFlag)
+    : at = DateTime.now();
+  final String authority;
+  final bool migration, available, migrationFlag;
+  final DateTime at;
 }
 
 enum HostedModelsStatus { loading, error, ready }

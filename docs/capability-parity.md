@@ -11,9 +11,9 @@ Total capabilities: 795 (362 endpoint/network keys, 433 client-side).
 
 | Status | Count |
 | --- | ---: |
-| ✅ covered | 677 |
-| ⚠️ partial | 25 |
-| ❌ missing | 20 |
+| ✅ covered | 679 |
+| ⚠️ partial | 24 |
+| ❌ missing | 19 |
 | ➖ na | 73 |
 
 | Area | ✅ | ⚠️ | ❌ | ➖ |
@@ -24,8 +24,8 @@ Total capabilities: 795 (362 endpoint/network keys, 433 client-side).
 | DMs | 6 | 0 | 0 | 0 |
 | Members and roles | 23 | 0 | 0 | 0 |
 | Server settings and admin | 57 | 0 | 0 | 1 |
-| Billing | 7 | 1 | 0 | 0 |
-| Agents, computers, runtimes | 116 | 5 | 13 | 6 |
+| Billing | 8 | 0 | 0 | 0 |
+| Agents, computers, runtimes | 117 | 5 | 12 | 6 |
 | Integrations, apps, MCP | 78 | 0 | 4 | 9 |
 | Tasks | 35 | 0 | 0 | 5 |
 | Files and attachments | 26 | 4 | 0 | 0 |
@@ -308,7 +308,7 @@ Legend: ✅ covered (endpoint called and a reachable entry point with equivalent
 
 | | Capability | Id | Web entry | Flutter entry | Notes |
 | --- | --- | --- | --- | --- | --- |
-| ⚠️ | Hosted runtime spend for the billing cost card and the agent Cost area | `GET /billing/hosted-runtime-usage` | raftbench/costMetrics.ts and the settings cost card[gate: none] | raftbench_overview_controller.dart load() (RaftBench "Cloud agent cost" comparison) | Impact: No hosted runtime cost card in Billing or the agent page. RaftBench reads the daily buckets for its two-week spend comparison. The billing cost card and the agent Cost area that also read this endpoint are planned in WP-CLOUD. Size S |
+| ✅ | Hosted runtime spend for the billing cost card and the agent Cost area | `GET /billing/hosted-runtime-usage` | raftbench/costMetrics.ts and the settings cost card[gate: none] | agent_hosted_spend.dart AgentHostedSpendCard (Settings > Plan, owner/admin), plus the RaftBench cost comparison |  |
 | ✅ | Read plan and subscription state | `GET /billing/subscription` | Plan & Billing; also seat-limit hints in invite and create-agent dialogs[gate: viewBilling for the page] | billing_view.dart; workspace_menu_invite.dart; create_agent_dialog.dart |  |
 | ✅ | Read workspace usage (humans, agents, computers, channels vs plan limits) | `GET /servers/:id/usage` | Plan & Billing usage/seat rows, downgrade warning[gate: viewBilling] | billing_view.dart usage read -> seat usage bars |  |
 | ✅ | Cancel the Pro subscription at period end | `POST /billing/cancel` | Plan & Billing > 'Cancel subscription' + confirm[gate: viewBilling (owner/admin); owner-only for changes per server error] | billing_view.dart 'billing-cancel' action |  |
@@ -378,7 +378,7 @@ Legend: ✅ covered (endpoint called and a reachable entry point with equivalent
 | ✅ | Retry hosted-runtime provisioning ('Retry' in the hosted runtime status panel) | `POST /agents/:id/hosted-runtime/retry` | Profile > External setup > HostedRuntimeStatus 'Retry' (shown for failed/last-error states)[gate: external agent + canManageAgent + hostedRuntime state] | agent_hosted_status.dart AgentHostedRuntimeStatus._retry() (names the model again when retryNeedsModel) |  |
 | ✅ | Start moving an agent to another computer (AgentMigrationSection 'Migrate' > 'Move to another computer' dialog with a searchable target computer); Free plans see the upgrade dialog | `POST /agents/:id/migrate` | AgentDetailPanel > Profile > AgentMigrationSection > 'Migrate' (AgentMigrationDialog; AgentMigrationUpgradeDialog when plan is not Pro)[gate: agent_migration_v0 flag, agent has computer, canManageAgent, plan Pro] | agent_migration_section.dart AgentMigrationSection + agent_migration_start_dialog.dart (flag w.agentMigrationEnabled and migrateAgents capability in fleet_views.dart canMigrate) |  |
 | ✅ | Cancel an in-progress agent migration ('Cancel migration' + coordinated-cancel confirm) | `POST /agents/:id/migration/cancel` | AgentMigrationSection / MigrationProgressPanel > 'Cancel' action (AgentMigrationCancelDialog)[gate: agent_migration_v0 flag + agent has a computer + canManageAgent] | agent_migration_section.dart cancel() ('Cancel migration?') |  |
-| ❌ | Confirm moving an agent to the hosted runtime after review | `POST /agents/:id/migration/confirm-hosted` | components/agentMigration/HostedMigrationReview.tsx (flag agent_migration_hosted)[gate: none] |  | Impact: Hosted migration can only be confirmed on Web. New in Web v1.21.23 (pin move). Planned in WP-CLOUD (flag gated, default off). Size M |
+| ✅ | Confirm moving an agent to the hosted runtime after review | `POST /agents/:id/migration/confirm-hosted` | components/agentMigration/HostedMigrationReview.tsx (flag agent_migration_hosted)[gate: none] | agent_migration_hosted_review.dart AgentMigrationHostedReview._confirm() |  |
 | ❌ | Adopt the official onboarding identity ('Update official identity' > confirm review > 'Update identity' / 'Update identity and admin role') | `POST /agents/:id/onboarding-identity-adoption` | Profile > 'Update official identity' button > ConfirmDialog with grants-admin warning[gate: canManageAgent and preview.canAdopt] |  | Impact: Owners cannot refresh an official agent's identity/role from the app. No Flutter call or UI. Size S |
 | ✅ | Restart / reset an agent (restart, reset session, full reset) from the Reset dialog | `POST /agents/:id/reset` | Profile > Actions 'Restart / Reset' \| header menu \| Computer detail bulk 'Restart / Reset' \| Members sidebar agent context menu 'Restart / Reset'[gate: controlAgentRuntime; 'full' needs resetAgentWorkspace; members see runtime-only options] | fleet_views.dart restartReset() > RaftResetAgentDialog; Members row menu runMemberAgentCommand; computer_detail_view.dart bulk reset |  |
 | ⚠️ | Start a stopped managed agent | `POST /agents/:id/start` | Profile > Actions 'Start Agent' \| Profile header menu 'Start Agent' \| Computer detail bulk 'Start' \| Members sidebar agent context menu 'Start'[gate: controlAgentRuntime capability (or creator); not for external agents] | agent_detail_view.dart onStartStop + computer_detail_view.dart bulk start; fleet_views.dart runtimeCommand('start') \| Members row menu runMemberAgentCommand | Impact: Members-list users must open the profile to start an agent. All three Web entry points exist (profile, bulk, Members row menu). The profile Start keeps a confirm dialog that Web does not have; the Members row menu starts at once like Web. Size S |

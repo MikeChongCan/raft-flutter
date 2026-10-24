@@ -17452,14 +17452,19 @@
    "area": "agents-computers-runtimes",
    "capability": "Confirm moving an agent to the hosted runtime after review",
    "background": false,
-   "status": "missing",
+   "status": "covered",
    "webEntry": "components/agentMigration/HostedMigrationReview.tsx (flag agent_migration_hosted)",
    "gate": "none",
-   "flutterEntry": "",
-   "flutterRefs": [],
-   "justification": "New in Web v1.21.23 (pin move). Planned in WP-CLOUD (flag gated, default off).",
-   "impact": "Hosted migration can only be confirmed on Web.",
-   "size": "M"
+   "flutterEntry": "agent_migration_hosted_review.dart AgentMigrationHostedReview._confirm()",
+   "flutterRefs": [
+    {
+     "file": "apps/raft_flutter/lib/features/agent_migration_hosted_review.dart",
+     "needle": "hostedConfirmPath("
+    }
+   ],
+   "justification": "",
+   "impact": "",
+   "size": ""
   },
   {
    "kind": "endpoint",
@@ -17467,19 +17472,23 @@
    "area": "billing",
    "capability": "Hosted runtime spend for the billing cost card and the agent Cost area",
    "background": false,
-   "status": "partial",
+   "status": "covered",
    "webEntry": "raftbench/costMetrics.ts and the settings cost card",
    "gate": "none",
-   "flutterEntry": "raftbench_overview_controller.dart load() (RaftBench \"Cloud agent cost\" comparison)",
+   "flutterEntry": "agent_hosted_spend.dart AgentHostedSpendCard (Settings > Plan, owner/admin), plus the RaftBench cost comparison",
    "flutterRefs": [
+    {
+     "file": "apps/raft_flutter/lib/features/agent_hosted_spend.dart",
+     "needle": "hostedSpendPath"
+    },
     {
      "file": "apps/raft_flutter/lib/data/raftbench_overview_controller.dart",
      "needle": "'/billing/hosted-runtime-usage'"
     }
    ],
-   "justification": "RaftBench reads the daily buckets for its two-week spend comparison. The billing cost card and the agent Cost area that also read this endpoint are planned in WP-CLOUD.",
-   "impact": "No hosted runtime cost card in Billing or the agent page.",
-   "size": "S"
+   "justification": "",
+   "impact": "",
+   "size": ""
   },
   {
    "kind": "endpoint",
