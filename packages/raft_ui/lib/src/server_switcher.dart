@@ -221,6 +221,7 @@ class _RaftServerSwitcherState extends State<RaftServerSwitcher> {
                     ? Offset(rect.left + (0) - 8, rect.top + 4)
                     : Offset(rect.right - (0) + 8, rect.top + 4),
                 mobileWidth: widget.mobile ? size.width - 16 : null,
+                horizontalPadding: widget.topBar ? 8 : null,
                 leftOfAnchor: !widget.mobile && !widget.topBar && onRight,
               ),
               child: TapRegion(
@@ -368,10 +369,15 @@ class _ServerMenuPlacement extends SingleChildLayoutDelegate {
   const _ServerMenuPlacement(
     this.anchored, {
     this.mobileWidth,
+    this.horizontalPadding,
     this.leftOfAnchor = false,
   });
   final Offset anchored;
   final double? mobileWidth;
+
+  /// ServerSwitcherMenu.tsx:297 uses Popover collisionPadding={8}; the
+  /// top-bar trigger may reach either viewport edge (including in RTL).
+  final double? horizontalPadding;
 
   /// [anchored] is the menu's right edge, not its left.
   final bool leftOfAnchor;
@@ -379,7 +385,10 @@ class _ServerMenuPlacement extends SingleChildLayoutDelegate {
   BoxConstraints getConstraintsForChild(BoxConstraints constraints) =>
       BoxConstraints(
         minWidth: mobileWidth ?? 0,
-        maxWidth: math.min(mobileWidth ?? 256, constraints.maxWidth),
+        maxWidth: math.min(
+          mobileWidth ?? 256,
+          math.max(0, constraints.maxWidth - 2 * (horizontalPadding ?? 0)),
+        ),
         maxHeight: math.max(0, constraints.maxHeight - 16),
       );
   @override
@@ -389,8 +398,15 @@ class _ServerMenuPlacement extends SingleChildLayoutDelegate {
     final shift = overflow > 0
         ? math.min(overflow, math.max(0, anchored.dy - 8))
         : 0.0;
+    final x = leftOfAnchor ? anchored.dx - childSize.width : anchored.dx;
+    final padding = horizontalPadding;
     return Offset(
-      leftOfAnchor ? anchored.dx - childSize.width : anchored.dx,
+      padding == null
+          ? x
+          : x.clamp(
+              padding,
+              math.max(padding, size.width - childSize.width - padding),
+            ),
       anchored.dy - shift,
     );
   }
@@ -399,6 +415,7 @@ class _ServerMenuPlacement extends SingleChildLayoutDelegate {
   bool shouldRelayout(_ServerMenuPlacement old) =>
       old.anchored != anchored ||
       old.mobileWidth != mobileWidth ||
+      old.horizontalPadding != horizontalPadding ||
       old.leftOfAnchor != leftOfAnchor;
 }
 

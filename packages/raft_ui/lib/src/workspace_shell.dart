@@ -217,6 +217,9 @@ class RaftWorkspaceRailAction extends StatelessWidget {
             tokens: t.recipeTokens,
             width: size,
             height: size,
+            // This is icon-only chrome. Text scaling must not turn its finite
+            // square into a minimum height around an expanding Stack.
+            growWithText: false,
             padding: EdgeInsets.zero,
             decorationOverride: (base) => base.copyWith(
               color: selected
