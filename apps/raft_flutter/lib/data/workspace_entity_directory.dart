@@ -8,6 +8,7 @@ import 'computer_release_notes.dart';
 import 'computer_upgrade_in_flight.dart';
 import 'migration_error.dart' show migrationPhase;
 import 'runtime_error.dart' show spawnFailureCarrier, spawnLookupReason;
+import 'workspace_agent_presence.dart';
 
 enum WorkspaceEntityKind { agents, computers, members }
 
@@ -203,6 +204,7 @@ class WorkspaceEntityDirectory extends ChangeNotifier {
   final _upgradeDeadlines = <String, int>{};
   Timer? _upgradeTimer;
   final _dirty = <WorkspaceEntityKind>{}, _queued = <WorkspaceEntityKind>{};
+  final _presence = WorkspaceAgentPresenceCache();
   StreamSubscription<RaftEvent>? _subscription;
 
   /// Window in which catalog events (created/deleted/updated, machine
@@ -215,6 +217,7 @@ class WorkspaceEntityDirectory extends ChangeNotifier {
     final next = _readScope();
     if (next == _scope) return false;
     _scope = next;
+    _presence.invalidate();
     _connectedBefore = false;
     ++_epoch;
     _pending.clear();
@@ -623,10 +626,11 @@ class WorkspaceEntityDirectory extends ChangeNotifier {
     }
   }
 
-  void _authorsChanged(WorkspaceEntityKind kind) {
+  void _authorsChanged(WorkspaceEntityKind kind, [String? id]) {
     if (kind == WorkspaceEntityKind.computers) {
       _computerRevision++;
     } else if (kind == WorkspaceEntityKind.agents) {
+      _presence.invalidate(id);
       _authorAgents = null;
       _agentRevision++;
       _authorRevision++;
@@ -645,6 +649,25 @@ class WorkspaceEntityDirectory extends ChangeNotifier {
 
   Map<String, dynamic>? agent(String id) =>
       _lookup(WorkspaceEntityKind.agents, id);
+
+  /// The most recent admitted presence change. A null id replaces the catalog;
+  /// a reader that missed several revisions must recheck its observed senders.
+  ({int revision, String? id}) get agentPresenceChange {
+    synchronize();
+    return _presence.change;
+  }
+
+  /// Shared immutable sender fields, including historical deleted authors.
+  /// Permission checks precede every lookup, including a cached one.
+  WorkspaceAgentPresence? agentPresence(String id) {
+    synchronize();
+    if (_disposed || _scope?.allows(WorkspaceEntityKind.agents) != true) {
+      return null;
+    }
+    final row = _rows[WorkspaceEntityKind.agents]?[id] ?? _tombstones[id];
+    return row == null ? null : _presence.read(id, row);
+  }
+
   Map<String, dynamic>? computer(String id) =>
       _lookup(WorkspaceEntityKind.computers, id);
 
@@ -903,6 +926,7 @@ class WorkspaceEntityDirectory extends ChangeNotifier {
           return;
         }
         row.addAll(patch);
+        _presence.invalidate(id);
         _persist(WorkspaceEntityKind.agents);
         notifyListeners();
       // Source agentStore.applyAgentSeen: monotonic, no request.
@@ -950,7 +974,7 @@ class WorkspaceEntityDirectory extends ChangeNotifier {
               accepted != null &&
               !accepted.containsKey(id)) {
             accepted[id] = _copy(value);
-            _authorsChanged(WorkspaceEntityKind.agents);
+            _authorsChanged(WorkspaceEntityKind.agents, id);
             _persist(WorkspaceEntityKind.agents);
             notifyListeners();
           }
@@ -968,7 +992,7 @@ class WorkspaceEntityDirectory extends ChangeNotifier {
             ...row,
             'deletedAt': DateTime.now().toUtc().toIso8601String(),
           };
-          _authorsChanged(WorkspaceEntityKind.agents);
+          _authorsChanged(WorkspaceEntityKind.agents, id);
           _persist(WorkspaceEntityKind.agents);
           notifyListeners();
         }
@@ -1090,6 +1114,7 @@ class WorkspaceEntityDirectory extends ChangeNotifier {
   void _patchAgent(String id, bool Function(Map<String, dynamic> row) patch) {
     final row = _rows[WorkspaceEntityKind.agents]?[id];
     if (row != null && patch(row)) {
+      _presence.invalidate(id);
       _persist(WorkspaceEntityKind.agents);
       notifyListeners();
     }
@@ -1118,7 +1143,7 @@ class WorkspaceEntityDirectory extends ChangeNotifier {
       final next = {...old, ...patch};
       if (_sameValue(old, next)) return;
       rows![id as String] = next;
-      _authorsChanged(WorkspaceEntityKind.agents);
+      _authorsChanged(WorkspaceEntityKind.agents, id);
       _persist(WorkspaceEntityKind.agents);
       notifyListeners();
     };
@@ -1183,6 +1208,7 @@ class WorkspaceEntityDirectory extends ChangeNotifier {
   void dispose() {
     if (_disposed) return;
     _disposed = true;
+    _presence.invalidate();
     ++_epoch;
     _rows.clear();
     _tombstones.clear();
