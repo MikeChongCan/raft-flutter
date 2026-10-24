@@ -5035,14 +5035,19 @@
    "area": "agents-computers-runtimes",
    "capability": "Detach the GitHub connection from the agent ('Remove from this agent' + confirm)",
    "background": false,
-   "status": "missing",
+   "status": "covered",
    "webEntry": "AgentDetailPanel > Profile tab > External setup section > 'Connected accounts' (AgentConnections.tsx; only for hosted external agents whose hosted runtime state is active)",
    "gate": "external agent + canManageAgent (editAgents capability or agent creator) + hostedRuntime.state=active; section hides itself on 4xx",
-   "flutterEntry": "",
-   "flutterRefs": [],
-   "justification": "No Flutter call or UI.",
-   "impact": "Owners/admins/creators of hosted (antiproton) external agents cannot link or switch the agent's GitHub account from the mobile/desktop app; must use the Web client.",
-   "size": "S"
+   "flutterEntry": "agent_connections_section.dart _confirmDetach() / _detach()",
+   "flutterRefs": [
+    {
+     "file": "apps/raft_flutter/lib/features/agent_connections_section.dart",
+     "needle": "_confirmDetach("
+    }
+   ],
+   "justification": "",
+   "impact": "",
+   "size": ""
   },
   {
    "kind": "endpoint",
@@ -5050,14 +5055,23 @@
    "area": "agents-computers-runtimes",
    "capability": "Disconnect the whole GitHub connector ('Disconnect this connection' + confirm, with partial-failure Retry)",
    "background": false,
-   "status": "missing",
+   "status": "covered",
    "webEntry": "AgentDetailPanel > Profile tab > External setup section > 'Connected accounts' (AgentConnections.tsx; only for hosted external agents whose hosted runtime state is active)",
    "gate": "external agent + canManageAgent (editAgents capability or agent creator) + hostedRuntime.state=active; section hides itself on 4xx; current connector canManage",
-   "flutterEntry": "",
-   "flutterRefs": [],
-   "justification": "No Flutter call or UI.",
-   "impact": "Owners/admins/creators of hosted (antiproton) external agents cannot link or switch the agent's GitHub account from the mobile/desktop app; must use the Web client.",
-   "size": "S"
+   "flutterEntry": "agent_connections_section.dart _confirmDisconnect() / _disconnect() with the partial-disconnect Retry",
+   "flutterRefs": [
+    {
+     "file": "apps/raft_flutter/lib/data/agent_connections.dart",
+     "needle": "String agentConnectorPath("
+    },
+    {
+     "file": "apps/raft_flutter/lib/features/agent_connections_section.dart",
+     "needle": "_retryDisconnect("
+    }
+   ],
+   "justification": "",
+   "impact": "",
+   "size": ""
   },
   {
    "kind": "endpoint",
@@ -5329,14 +5343,23 @@
    "area": "agents-computers-runtimes",
    "capability": "Load an agent's GitHub connection status, available connectors and scopes",
    "background": false,
-   "status": "missing",
+   "status": "covered",
    "webEntry": "AgentDetailPanel > Profile tab > External setup section > 'Connected accounts' (AgentConnections.tsx; only for hosted external agents whose hosted runtime state is active) | AgentConnectionCallbackPage (foreign-user status read)",
    "gate": "external agent + canManageAgent (editAgents capability or agent creator) + hostedRuntime.state=active; section hides itself on 4xx",
-   "flutterEntry": "",
-   "flutterRefs": [],
-   "justification": "No Flutter call or UI; no agent-connection route exists in the app.",
-   "impact": "Owners/admins/creators of hosted (antiproton) external agents cannot link or switch the agent's GitHub account from the mobile/desktop app; must use the Web client.",
-   "size": "M",
+   "flutterEntry": "agent_connections_section.dart AgentConnectionsSection._read()",
+   "flutterRefs": [
+    {
+     "file": "apps/raft_flutter/lib/data/agent_connections.dart",
+     "needle": "String agentConnectionPath("
+    },
+    {
+     "file": "apps/raft_flutter/lib/features/agent_detail_view.dart",
+     "needle": "AgentConnectionsSection("
+    }
+   ],
+   "justification": "",
+   "impact": "",
+   "size": "",
    "topGap": 8
   },
   {
@@ -5497,14 +5520,19 @@
    "area": "agents-computers-runtimes",
    "capability": "Check whether the agent's official onboarding identity (name/avatar/description/admin role) can be adopted",
    "background": true,
-   "status": "missing",
+   "status": "covered",
    "webEntry": "Profile (top) > 'Update official identity' button preview (AgentProfileInfo effect) ",
    "gate": "canManageAgent",
-   "flutterEntry": "",
-   "flutterRefs": [],
-   "justification": "No Flutter call or UI.",
-   "impact": "Owners of official/onboarding agents never see the identity update prompt; low frequency.",
-   "size": "S"
+   "flutterEntry": "agent_identity_adoption.dart AgentOnboardingIdentity._read()",
+   "flutterRefs": [
+    {
+     "file": "apps/raft_flutter/lib/features/agent_identity_adoption.dart",
+     "needle": "identityAdoptionPath("
+    }
+   ],
+   "justification": "",
+   "impact": "",
+   "size": ""
   },
   {
    "kind": "endpoint",
@@ -6058,14 +6086,19 @@
    "area": "agents-computers-runtimes",
    "capability": "Start a GitHub connection for an agent ('Connect' / 'Connect a new GitHub account', optional 'Include private repositories' checkbox, then 'Continue to GitHub')",
    "background": false,
-   "status": "missing",
+   "status": "covered",
    "webEntry": "AgentDetailPanel > Profile tab > External setup section > 'Connected accounts' (AgentConnections.tsx; only for hosted external agents whose hosted runtime state is active)",
    "gate": "external agent + canManageAgent (editAgents capability or agent creator) + hostedRuntime.state=active; section hides itself on 4xx",
-   "flutterEntry": "",
-   "flutterRefs": [],
-   "justification": "No Flutter call or UI.",
-   "impact": "Owners/admins/creators of hosted (antiproton) external agents cannot link or switch the agent's GitHub account from the mobile/desktop app; must use the Web client.",
-   "size": "M"
+   "flutterEntry": "agent_connections_section.dart _start() then _continue() (system browser)",
+   "flutterRefs": [
+    {
+     "file": "apps/raft_flutter/lib/features/agent_connections_section.dart",
+     "needle": "_continue()"
+    }
+   ],
+   "justification": "",
+   "impact": "",
+   "size": ""
   },
   {
    "kind": "endpoint",
@@ -6073,14 +6106,14 @@
    "area": "agents-computers-runtimes",
    "capability": "Complete the GitHub OAuth return: confirm the pending connection on the /agent connection callback page",
    "background": false,
-   "status": "missing",
+   "status": "na",
    "webEntry": "pages/AgentConnectionCallbackPage.tsx (provider redirects back to Web; page auto-confirms, shows connected/expired/denied/foreign states, 'Back to agent' link)",
    "gate": "signed-in user must equal the user who started the flow",
    "flutterEntry": "",
    "flutterRefs": [],
-   "justification": "No Flutter callback route/deep link; Web-side redirect would land in a browser, not the app.",
-   "impact": "Even if Connect were added, the OAuth return needs an app deep link/universal link handler.",
-   "size": "M"
+   "justification": "The provider returns the browser to Raft's own Web landing page (/connections/callback), which confirms the pending connection for the signed-in user. The app opens that browser round trip and reads the connection again when the user returns; the pending id never reaches the app.",
+   "impact": "",
+   "size": ""
   },
   {
    "kind": "endpoint",
@@ -6180,14 +6213,19 @@
    "area": "agents-computers-runtimes",
    "capability": "Adopt the official onboarding identity ('Update official identity' > confirm review > 'Update identity' / 'Update identity and admin role')",
    "background": false,
-   "status": "missing",
+   "status": "covered",
    "webEntry": "Profile > 'Update official identity' button > ConfirmDialog with grants-admin warning",
    "gate": "canManageAgent and preview.canAdopt",
-   "flutterEntry": "",
-   "flutterRefs": [],
-   "justification": "No Flutter call or UI.",
-   "impact": "Owners cannot refresh an official agent's identity/role from the app.",
-   "size": "S"
+   "flutterEntry": "agent_identity_adoption.dart AgentOnboardingIdentity._adopt()",
+   "flutterRefs": [
+    {
+     "file": "apps/raft_flutter/lib/features/agent_identity_adoption.dart",
+     "needle": "'POST',"
+    }
+   ],
+   "justification": "",
+   "impact": "",
+   "size": ""
   },
   {
    "kind": "endpoint",
@@ -6506,14 +6544,19 @@
    "area": "agents-computers-runtimes",
    "capability": "Assign an existing GitHub connector to the agent ('Use GitHub connection' select)",
    "background": false,
-   "status": "missing",
+   "status": "covered",
    "webEntry": "AgentDetailPanel > Profile tab > External setup section > 'Connected accounts' (AgentConnections.tsx; only for hosted external agents whose hosted runtime state is active)",
    "gate": "external agent + canManageAgent (editAgents capability or agent creator) + hostedRuntime.state=active; section hides itself on 4xx; connector.canManage per option",
-   "flutterEntry": "",
-   "flutterRefs": [],
-   "justification": "No Flutter call or UI.",
-   "impact": "Owners/admins/creators of hosted (antiproton) external agents cannot link or switch the agent's GitHub account from the mobile/desktop app; must use the Web client.",
-   "size": "S"
+   "flutterEntry": "agent_connections_section.dart _assign()",
+   "flutterRefs": [
+    {
+     "file": "apps/raft_flutter/lib/features/agent_connections_section.dart",
+     "needle": "_assign("
+    }
+   ],
+   "justification": "",
+   "impact": "",
+   "size": ""
   },
   {
    "kind": "endpoint",
@@ -7287,14 +7330,19 @@
    "area": "agents-computers-runtimes",
    "capability": "'Update official identity' button and review dialog (grants-admin warning)",
    "background": false,
-   "status": "missing",
+   "status": "covered",
    "webEntry": "Profile top: Button 'Update official identity' -> ConfirmDialog 'Update identity' / 'Update identity and admin role'",
    "gate": "canManageAgent and preview.canAdopt",
-   "flutterEntry": "",
-   "flutterRefs": [],
-   "justification": "See POST /agents/:id/onboarding-identity-adoption.",
-   "impact": "Owners of official agents; rare.",
-   "size": "S"
+   "flutterEntry": "agent_identity_adoption.dart 'Update official identity' button and review dialog (grants-admin banner)",
+   "flutterRefs": [
+    {
+     "file": "apps/raft_flutter/lib/features/agent_identity_adoption.dart",
+     "needle": "Update official identity"
+    }
+   ],
+   "justification": "",
+   "impact": "",
+   "size": ""
   },
   {
    "kind": "ui",
@@ -7998,13 +8046,13 @@
    "area": "agents-computers-runtimes",
    "capability": "Return page for provider connections (/connections/callback?connection=..&status=pending): confirm or reject an agent's pending provider connection",
    "background": false,
-   "status": "missing",
+   "status": "na",
    "webEntry": "App.tsx route /connections/callback -> pages/AgentConnectionCallbackPage.tsx (POST/GET agent connection status)",
    "gate": "",
-   "flutterEntry": "No handler: grep 'connections' finds nothing in apps/raft_flutter/lib or packages/raft_client/lib",
-   "justification": "",
-   "impact": "Owners connecting an agent to an external provider (GitHub etc.): the return lands on the website, and the in-app agent page has no Connections section. Occasional.",
-   "size": "M",
+   "flutterEntry": "",
+   "justification": "The return page is Raft's Web landing page in the system browser, not an app route: the app only starts the round trip and reads the status when the user is back.",
+   "impact": "",
+   "size": "",
    "flutterRefs": []
   },
   {
@@ -17437,14 +17485,19 @@
    "area": "agents-computers-runtimes",
    "capability": "Read the hosted runtime state of a cloud agent (status, onboarding setup usable/failed)",
    "background": false,
-   "status": "missing",
+   "status": "covered",
    "webEntry": "HostedCindyFailedBanner and the hosted status panel",
    "gate": "none",
-   "flutterEntry": "",
-   "flutterRefs": [],
-   "justification": "New in Web v1.21.23 (pin move). Planned in WP-CLOUD (flag gated).",
-   "impact": "No hosted-runtime status panel or failed banner.",
-   "size": "M"
+   "flutterEntry": "agent_hosted_cindy_banner.dart HostedCindyFailedBanner (onboardingSetup, re-read every minute)",
+   "flutterRefs": [
+    {
+     "file": "apps/raft_flutter/lib/features/agent_hosted_cindy_banner.dart",
+     "needle": "hostedRuntimeStatePath("
+    }
+   ],
+   "justification": "",
+   "impact": "",
+   "size": ""
   },
   {
    "kind": "endpoint",
