@@ -252,6 +252,14 @@ class RaftTokens extends ThemeExtension<RaftTokens> {
   double get fieldRadius => _mode?.geometry['radius.field'] ?? 6;
   double get border => _mode?.geometry['stroke.container'] ?? 1;
 
+  /// Applies a theme's display casing without changing the authored string.
+  String displayCase(String slot, String text) =>
+      switch (_mode?.caseTransforms[slot]) {
+        RaftCaseTransform.uppercase => text.toUpperCase(),
+        RaftCaseTransform.lowercase => text.toLowerCase(),
+        _ => text,
+      };
+
   /// Any other numeric token, by contract name. Components read control sizes
   /// and stroke widths through this rather than repeating the Raft number as a
   /// literal, which is what kept two of three themes stuck on Raft's geometry.

@@ -85,17 +85,54 @@ class _DeleteServerConfirmState extends State<_DeleteServerConfirm> {
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
-    final text = RaftSettingsText(t);
-    // `<span className="font-bold">` inside the dialog copy.
-    final bold = RaftConfirmDialog.messageStyle(t)
-        .merge(text.title)
-        .copyWith(
-          fontSize: RaftConfirmDialog.messageStyle(t).fontSize,
-          height: RaftConfirmDialog.messageStyle(t).height,
-          color: RaftConfirmDialog.messageStyle(t).color,
+    final inherited = DefaultTextStyle.of(context).style;
+    final bold = inherited.copyWith(
+      fontWeight: raftFontWeight(
+        t.size('type.confirmName.weight', fallback: 700),
+      ),
+      color: t.colors['foreground-confirm-name'] ?? inherited.color,
+    );
+    final prompt = RaftTypography.inherited(
+      t,
+      size: t.size('type.confirmPrompt.size', fallback: 14),
+      line: t.size('type.confirmPrompt.line', fallback: 20),
+      weight: raftFontWeight(
+        t.size('type.confirmPrompt.weight', fallback: 400),
+      ),
+      color: t.colors['foreground-confirm-prompt'] ?? t.muted,
+    );
+    final mono =
+        RaftTypography.mono(
+          t,
+          size: t.size('type.confirmSlug.size', fallback: 14),
+          line: 20,
+          color: t.colors['foreground-confirm-slug'] ?? t.strong,
+        ).copyWith(
+          fontWeight: raftFontWeight(
+            t.size('type.confirmSlug.weight', fallback: 700),
+          ),
         );
-    // `text-sm text-foreground-muted theme-brutal:text-black/60 mb-2`
-    final prompt = text.bodyMuted;
+    final chip = t.option('confirm.slug', or: 'text') == 'chip';
+    final InlineSpan slug = chip
+        ? WidgetSpan(
+            alignment: PlaceholderAlignment.baseline,
+            baseline: TextBaseline.alphabetic,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: t.colors['layer-confirm-slug'] ?? t.colors['fill-muted'],
+                borderRadius: BorderRadius.circular(
+                  t.size('radius.sticker', fallback: 4),
+                ),
+              ),
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: t.size('space.confirmSlugInline', fallback: 4),
+                ),
+                child: RaftCssText(widget.slug, style: mono),
+              ),
+            ),
+          )
+        : TextSpan(text: widget.slug, style: mono);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -118,12 +155,14 @@ class _DeleteServerConfirmState extends State<_DeleteServerConfirm> {
         const SizedBox(height: RaftSpace.x4),
         Text.rich(
           // CSS gives the inline mono span the paragraph's 20px line box.
-          strutStyle: StrutStyle.fromTextStyle(prompt, forceStrutHeight: true),
+          strutStyle: chip
+              ? null
+              : StrutStyle.fromTextStyle(prompt, forceStrutHeight: true),
           TextSpan(
             style: prompt,
             children: [
               TextSpan(text: raftText(context, 'Type ')),
-              TextSpan(text: widget.slug, style: text.monoBold),
+              slug,
               TextSpan(text: raftText(context, ' to confirm:')),
             ],
           ),
@@ -134,8 +173,11 @@ class _DeleteServerConfirmState extends State<_DeleteServerConfirm> {
           prefix: '/',
           placeholder: widget.slug,
           mono: true,
+          autofocus: true,
           // Inherits the confirm copy's `text-foreground-muted`.
-          textColor: RaftConfirmDialog.messageStyle(t).color,
+          textColor:
+              t.colors['foreground-confirm-input'] ??
+              RaftConfirmDialog.messageStyle(t).color,
           onChanged: (v) => widget.matches.value = v == widget.slug,
         ),
       ],

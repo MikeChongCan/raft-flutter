@@ -147,6 +147,49 @@ def stretch(families: list[str], mono: bool = False) -> str:
 # AUTHORED: the two tables below are the contract's decisions, not derived data.
 # §3.3–3.5 of docs/theme-contract.md lists where each number comes from.
 GEOMETRY_RAFT = {
+    # Confirmation / Banner source contract, Cindy fe0074f6.
+    'stroke.dialog': 0,
+    'stroke.dialogRing': 1,
+    'space.bannerInline': 14,
+    'space.bannerGap': 10,
+    'type.bannerBody.line': 20,
+    'type.bannerBody.size': 14,
+    'type.bannerBody.tracking': 0,
+    'size.bannerGlyph': 20,
+    'radius.banner': 10,
+    'stroke.bannerBorder': 0,
+    'stroke.bannerRing': 1,
+    'type.confirmBody.size': 15,
+    'type.confirmBody.line': 20,
+    'type.confirmName.weight': 600,
+    'type.confirmPrompt.size': 13,
+    'type.confirmPrompt.line': 18,
+    'type.confirmPrompt.weight': 600,
+    'type.confirmSlug.size': 13,
+    'type.confirmSlug.weight': 600,
+    'space.confirmSlugInline': 4,
+    'size.confirmAction': 44,
+    # Shared Dialog slots, Web 0.7.0 / a57 runtime probes; Cindy 046ef0f7.
+    'space.dialogContentInline': 0,
+    'space.dialogContentBlock': 0,
+    'space.dialogPartGap': 0,
+    'space.dialogHeaderInline': 20,
+    'space.dialogHeaderTop': 20,
+    'space.dialogHeaderBottom': 0,
+    'space.dialogHeaderGap': 8,
+    'space.dialogBodyInline': 20,
+    'space.dialogBodyTop': 6,
+    'space.dialogBodyBottom': 20,
+    'space.dialogFooterInline': 20,
+    'space.dialogFooterTop': 0,
+    'space.dialogFooterBottom': 20,
+    'space.dialogFooterGap': 8,
+    'type.dialogTitle.size': 17,
+    'type.dialogTitle.line': 22,
+    'size.dialogClose': 32,
+    'size.dialogCloseGlyph': 18,
+    'space.dialogCloseOutset': 6,
+    'blur.dialogBackdrop': 0,
     # ComposerToolbarLabel / shared CheckboxIndicator, Cindy fc426a64.
     'size.composerTaskToggle': 32,
     'size.composerTaskCheckbox': 20,
@@ -317,10 +360,13 @@ OPTIONS_RAFT = {
     'mobileNav.style': 'docked', 'mobileNav.labels': 'iconsOnly', 'header.layout': 'overlay',
     'panel.edge': 'seam', 'nav.selection': 'sticker', 'tooltip.arrow': 'yes',
     'code.innerBorder': 'dashed', 'spinner.style': 'pixel',
+    'dialog.close': 'ghost', 'confirm.cancelSurface': 'ghost',
+    'banner.iconAlignment': 'start', 'banner.iconColor': 'foreground', 'confirm.slug': 'chip',
+    'confirm.explanation': 'dangerBanner',
     'spinner.ringShape': 'sweep', 'spinner.foreground': 'inherited',
 }
 
-CASE_RAFT = {'heading': 'none', 'label': 'none', 'badge': 'none'}
+CASE_RAFT = {'dialogShellTitle': 'none','heading': 'none', 'label': 'none', 'badge': 'none'}
 
 
 def build() -> dict:
@@ -360,6 +406,21 @@ def build() -> dict:
         out['foreground-message'] = out['foreground']
         out['foreground-message-meta'] = out['foreground-hint']
         out['foreground-spinner'] = out['foreground']
+        out['foreground-banner-body'] = out['foreground']
+        out['layer-banner-destructive'] = out['danger-soft']
+        out['layer-banner-warning'] = out['warning-soft']
+        out['layer-banner-info'] = out['info-soft']
+        out['layer-banner-success'] = out['success-soft']
+
+        out['line-dialog'] = out['line-seam']
+        out['foreground-dialog-close'] = out['foreground']
+        out['line-banner'] = out['line-hairline']
+        out['foreground-confirm-name'] = out['foreground']
+        out['foreground-confirm-prompt'] = out['foreground']
+        out['foreground-confirm-slug'] = out['foreground']
+        out['foreground-confirm-input'] = out['foreground']
+        out['layer-confirm-slug'] = out['fill-muted']
+
         # Component aliases: values are existing roles, never new palette colors.
         for target, source in {
             'foreground-select': 'foreground',

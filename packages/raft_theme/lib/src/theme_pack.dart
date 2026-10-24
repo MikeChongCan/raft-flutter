@@ -147,6 +147,12 @@ const Map<String, Set<String>> raftStructuralOptions = {
   'tooltip.arrow': {'yes', 'no'},
   'code.innerBorder': {'dashed', 'solid'},
   'spinner.style': {'pixel', 'ring'},
+  'dialog.close': {'ghost', 'outline'},
+  'confirm.cancelSurface': {'ghost', 'outline'},
+  'banner.iconAlignment': {'start', 'center'},
+  'banner.iconColor': {'foreground', 'intent'},
+  'confirm.slug': {'chip', 'text'},
+  'confirm.explanation': {'dangerBanner', 'plain'},
   'spinner.ringShape': {'sweep', 'quarter'},
   'spinner.foreground': {'inherited', 'fixed'},
 };
@@ -392,6 +398,12 @@ RaftModeValues? _mode(Object? raw, String where) {
           where: '$where.geometry.$token',
         );
       }
+      if (token.startsWith('blur.') && (!value.isFinite || value < 0)) {
+        throw RaftThemeException(
+          'a blur is nonnegative pixels',
+          where: '$where.geometry.$token',
+        );
+      }
       if (token.startsWith('duration.') &&
           (!value.isFinite || value <= 0 || value % 1 != 0)) {
         throw RaftThemeException(
@@ -457,7 +469,12 @@ RaftModeValues? _mode(Object? raw, String where) {
   if (rawCase is Map) {
     for (final entry in rawCase.entries) {
       final slot = '${entry.key}';
-      if (!const {'heading', 'label', 'badge'}.contains(slot)) {
+      if (!const {
+        'heading',
+        'label',
+        'badge',
+        'dialogShellTitle',
+      }.contains(slot)) {
         throw RaftThemeException(
           'unknown case slot "$slot"',
           where: '$where.case.$slot',

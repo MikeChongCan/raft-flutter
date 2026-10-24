@@ -234,7 +234,7 @@ Elegant/Brutal 需要同样一套槽位。槽位固定，值按主题；这样�
 ### 3.5 大小写
 
 `textTransform` 只改显示，不改文案字符串，所以它不推翻设计决策 0002（文案不再用全大写）：
-Raft 包把它填成 none，旧的两套各自保留自己的写法。三档分开，因为旧版只对大写一部分：
+Raft 包把它填成 none，旧的两套各自保留自己的写法。基础三档分开，因为旧版只对大写一部分；组件专用映射可在实测后单独批准：
 
 | 令牌 | 用在 | Raft | Elegant | Brutal |
 | --- | --- | --- | --- | --- |
@@ -828,3 +828,83 @@ Raft 的来源为 Web v1.21.23 实际安装的 raft-ui 0.7.0：xs／sm／md／lg
 4／5／6／8，间隙 1.5／2／2／3。原版圆环取 a57b9dab。
 共用夹具传来源尺寸档，不按主题改写。调用方显式物理尺寸优先；未传尺寸档时读取默认大小，
 inverse 在每套外观均保持白色。减弱动画时像素首格点亮，圆环静止；隐藏与卸载受 State vsync 生命周期约束。
+
+
+### Dialog 与确认说明（Cindy 046ef0f7 / 76ef3df8 / e02a1edc / fe0074f6）
+
+来源为当前 Web v1.21.23 实际安装的 raft-ui 0.7.0 Dialog / ConfirmDialog / Banner，
+与 a57b9dab 实际运行的同名组件。这里按部位投影既有 Dialog recipe，不增加“新旧渲染器”选项。
+Brutal 深色整套沿 Elegant 深色；模式内 geometry 覆盖沿用包的统一合并路径。
+
+| 数值 | Raft | Elegant | Brutal 浅色 |
+| --- | --- | --- | --- |
+| `space.dialogContentInline` / `space.dialogContentBlock` | 0 / 0 | 0 / 0 | 24 / 16 |
+| `space.dialogPartGap` | 0 | 0 | 16 |
+| `space.dialogHeaderInline` / `space.dialogHeaderTop` / `space.dialogHeaderBottom` | 20 / 20 / 0 | 24 / 12 / 12 | 0 / 0 / 0 |
+| `space.dialogHeaderGap` | 8 | 12 | 12 |
+| `space.dialogBodyInline` / `space.dialogBodyTop` / `space.dialogBodyBottom` | 20 / 6 / 20 | 24 / 20 / 20 | 0 / 8 / 8 |
+| `space.dialogFooterInline` / `space.dialogFooterTop` / `space.dialogFooterBottom` | 20 / 0 / 20 | 24 / 12 / 12 | 0 / 0 / 0 |
+| `space.dialogFooterGap` | 8 | 12 | 12 |
+| `type.dialogTitle.size` / `type.dialogTitle.line` | 17 / 22 | 16 / 24 | 18 / 18 |
+| `size.dialogClose` / `size.dialogCloseGlyph` | 32 / 18 | 28 / 16 | 32 / 20 |
+| `space.dialogCloseOutset` | 6 | 0 | 0 |
+| `blur.dialogBackdrop` | 0 | 2 | 0 |
+| `stroke.dialog` / `stroke.dialogRing` | 0 / 1 | 0 / 0 | 2 / 0 |
+| `size.confirmAction` | 44 | 28 | 28 |
+
+Elegant 深色的 `space.dialogBodyTop` 为10。`blur.*` 为有限、非负的像素值，负值须拒绝。
+关闭按钮的 outset 对应来源的负上下及右 margin，只缩小布局槽位；绘制与可点击范围必须保留。
+实体边会占布局空间，外圈不占；Elegant 原圈已在 xl 阴影里，不能重复描边。
+`line-dialog` 引用现有 line-seam／line-muted（未使用）／ink。
+`foreground-dialog-close` 引用 foreground／foreground-placeholder／ink（outline 自带颜色）。
+
+`dialog.close = ghost | outline` 为 ghost／ghost／outline，调用方显式 outlineClose 优先。
+现有 case 映射新增 `dialogShellTitle`：Raft none，旧两套 uppercase，仅供 RaftDialogShell 使用；
+普通 RaftDialogTitle 不因此改变。标题700是共同值。
+`confirm.explanation = dangerBanner | plain` 为 dangerBanner／plain／plain，仅选择说明的组合方式；
+显式 plainMessage 优先。`confirm.cancelSurface = ghost | outline` 为 ghost／outline／outline。
+三套确认操作均走共享 RaftButton，显式 actionSize 优先于默认高度，不通过无关主题选项选择按钮实现。
+
+#### Banner 的 md 档
+
+| 数值 | Raft | Elegant | Brutal 浅色 |
+| --- | --- | --- | --- |
+| `space.bannerInline` | 14 | 12 | 12 |
+| `space.bannerGap` | 10 | 8 | 12 |
+| `type.bannerBody.size` / `type.bannerBody.line` / `type.bannerBody.tracking` | 14 / 20 / 0 | 13 / 16 / -0.065 | 14 / 20 / 0 |
+| `size.bannerGlyph` | 20 | 16 | 18 |
+| `radius.banner` | 10 | 4 | 0 |
+| `stroke.bannerBorder` / `stroke.bannerRing` | 0 / 1 | 0 / 0 | 2 / 0 |
+
+上下内边距12、根继承行高20为共同值；description 的实际行高读取 type.bannerBody.line。
+sm／lg 密度仍沿各自来源，不从 md 反推。
+`line-banner` 引用现有 line-hairline／line-strong（未使用）／line-strong。
+`banner.iconAlignment = start | center` 为 start／center／center；带标题的原有顶对齐保留，
+调用方显式 centerAction 覆盖默认对齐。`banner.iconColor = foreground | intent` 为
+foreground／intent／foreground；背景与意图色仍引用已有状态角色，不增加调色板值。
+确认解释是静态说明，调用方使用 live=false；普通 Banner 的默认可访问性不变。
+
+#### 确认文案与 slug 提示
+
+| 数值 | Raft | Elegant | Brutal 浅色 |
+| --- | --- | --- | --- |
+| `type.confirmBody.size` / `type.confirmBody.line` | 15 / 20 | 14 / 22.75 | 14 / 22.75 |
+| `type.confirmName.weight` | 600 | 700 | 700 |
+| `type.confirmPrompt.size` / `type.confirmPrompt.line` / `type.confirmPrompt.weight` | 13 / 18 / 600 | 14 / 20 / 400 | 14 / 20 / 400 |
+| `type.confirmSlug.size` / `type.confirmSlug.weight` | 13 / 600 | 14 / 700 | 14 / 700 |
+| `space.confirmSlugInline` | 4 | 0 | 0 |
+
+slug 行高20为共同值。`confirm.slug = chip | text` 为 chip／text／text，chip 使用既有
+radius.sticker。foreground-confirm-name／foreground-confirm-prompt／foreground-confirm-input
+引用 foreground／foreground-muted／foreground-muted；foreground-confirm-slug 引用
+foreground／foreground-strong／foreground-strong，layer-confirm-slug 引用 fill-muted（旧两套不使用）。
+删除服务器的输入框自动聚焦是三套共有的产品行为，不是主题字段；精确 slug 校验与删除权限逻辑不变。
+
+
+Banner 文案颜色与深色精度补充（Cindy fca42af8 / cc2cdd85）：
+foreground-banner-body 为 foreground／foreground-muted／foreground。
+layer-banner-destructive、layer-banner-warning、layer-banner-info、layer-banner-success
+在 Raft 与 Brutal 浅色引用既有对应 soft 背景；Elegant 深色的 warning 复用
+palette.elegantNotice.dark，其余保存在 Elegant 专用的 palette.elegantBanner.destructive.dark、
+palette.elegantBanner.info.dark、palette.elegantBanner.success.dark。
+这些项只保存原编译样式的浮点绘制精度，不修改通用 danger-soft 等角色，也不新增配色。

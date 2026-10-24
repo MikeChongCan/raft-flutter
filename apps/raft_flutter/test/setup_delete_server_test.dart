@@ -123,19 +123,28 @@ void main() {
     await _settle(t);
     expect(find.text('Delete Server'), findsWidgets);
     final confirm = find.byKey(const Key('server-delete-confirm-button'));
-    expect(t.widget<RaftSettingsRecipeButton>(confirm).onPressed, isNull);
+    final editor = find.descendant(
+      of: find.byKey(const Key('server-delete-slug-input')),
+      matching: find.byType(EditableText),
+    );
+    expect(
+      t.widget<EditableText>(editor).focusNode.hasFocus,
+      isTrue,
+      reason: 'the source confirmation focuses the slug input on open',
+    );
+    expect(t.widget<RaftButton>(confirm).onPressed, isNull);
     await t.enterText(
       find.byKey(const Key('server-delete-slug-input')),
       'nope',
     );
     await t.pump();
-    expect(t.widget<RaftSettingsRecipeButton>(confirm).onPressed, isNull);
+    expect(t.widget<RaftButton>(confirm).onPressed, isNull);
     await t.enterText(
       find.byKey(const Key('server-delete-slug-input')),
       'raft',
     );
     await t.pump();
-    expect(t.widget<RaftSettingsRecipeButton>(confirm).onPressed, isNotNull);
+    expect(t.widget<RaftButton>(confirm).onPressed, isNotNull);
     expect(c.requests, isEmpty);
     await t.tap(confirm);
     await _settle(t);

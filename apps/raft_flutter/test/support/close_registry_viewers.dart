@@ -173,6 +173,7 @@ const viewerSurfaces = <CloseSurface>[
     },
     files: [
       'lib/features/workspace_settings.dart',
+      '../../packages/raft_ui/lib/src/settings_layout.dart',
       'lib/features/source_feedback_view.dart',
     ],
   ),

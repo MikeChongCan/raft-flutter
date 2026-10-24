@@ -18,6 +18,20 @@ RaftThemePack numeric(String token, num value) => RaftThemePack.parse(
   }),
 );
 void main() {
+  test('blur tokens use nonnegative pixels', () {
+    expect(
+      numeric('blur.dialogBackdrop', 0).light.geometry['blur.dialogBackdrop'],
+      0,
+    );
+    expect(
+      numeric('blur.dialogBackdrop', 2.5).light.geometry['blur.dialogBackdrop'],
+      2.5,
+    );
+    expect(
+      () => numeric('blur.dialogBackdrop', -0.1),
+      throwsA(isA<RaftThemeException>()),
+    );
+  });
   test('duration tokens accept positive whole milliseconds', () {
     for (final value in [1, 1000, 1000.0]) {
       expect(

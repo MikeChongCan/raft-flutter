@@ -8,6 +8,8 @@ import 'dart:ui' show ImageFilter, SemanticsRole;
 import 'package:flutter/material.dart';
 
 import '../design_primitives.dart';
+import '../dialog_slots.dart';
+import '../tap_slop.dart';
 import '../dismiss_scope.dart';
 import '../icons.dart';
 import '../localization.dart';
@@ -77,11 +79,11 @@ class RaftDialogSlots {
     );
     return RaftDialogSlots._(
       s.overlay,
-      s.content,
-      s.header,
-      s.body,
-      s.footer,
-      s.title,
+      raftDialogSlot(t, s.content, 'content'),
+      raftDialogSlot(t, s.header, 'header'),
+      raftDialogSlot(t, s.body, 'body'),
+      raftDialogSlot(t, s.footer, 'footer'),
+      raftDialogSlot(t, s.title, 'title'),
       s.description,
     );
   }
@@ -212,13 +214,15 @@ class RaftDialog extends StatelessWidget {
                   child: Material(
                     type: MaterialType.transparency,
                     textStyle: base,
-                    child: RaftRecipeBox(
-                      key: contentKey,
-                      style: s.content,
-                      tokens: rt,
-                      width: width,
-                      clip: true,
-                      child: _Gapped(gap: gap, child: body),
+                    child: RaftTapSlopHost(
+                      child: RaftRecipeBox(
+                        key: contentKey,
+                        style: s.content,
+                        tokens: rt,
+                        width: width,
+                        clip: true,
+                        child: _Gapped(gap: gap, child: body),
+                      ),
                     ),
                   ),
                 ),
@@ -410,14 +414,23 @@ class RaftDialogClose extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RaftGlyphButton(
-      glyph: RaftGlyph.x,
-      semanticLabel: raftText(context, semanticLabel),
-      tone: RaftButtonRecipeVariant.ghost,
-      size: RaftButtonRecipeSize.iconSm,
-      glyphSize: 16,
-      quiet: true,
-      onPressed: onPressed ?? () => Navigator.of(context).maybePop(),
+    final t = RaftTokens.of(context);
+    final outlined = t.option('dialog.close', or: 'ghost') == 'outline';
+    return RaftDialogCloseOutset(
+      child: RaftGlyphButton(
+        glyph: RaftGlyph.x,
+        semanticLabel: raftText(context, semanticLabel),
+        tone: outlined
+            ? RaftButtonRecipeVariant.outline
+            : RaftButtonRecipeVariant.ghost,
+        size: outlined
+            ? RaftButtonRecipeSize.iconMd
+            : RaftButtonRecipeSize.iconSm,
+        glyphSize: t.size('size.dialogCloseGlyph', fallback: 16),
+        quiet: !outlined,
+        restColor: t.colors['foreground-dialog-close'],
+        onPressed: onPressed ?? () => Navigator.of(context).maybePop(),
+      ),
     );
   }
 }
@@ -433,6 +446,7 @@ class RaftGlyphButton extends StatelessWidget {
     this.size = RaftButtonRecipeSize.iconSm,
     this.glyphSize,
     this.quiet = false,
+    this.restColor,
     this.tooltip,
   });
   final RaftGlyph glyph;
@@ -445,6 +459,7 @@ class RaftGlyphButton extends StatelessWidget {
   /// Elegant DialogClose overrides: no padding/background, placeholder ink
   /// that turns foreground-strong on hover.
   final bool quiet;
+  final Color? restColor;
   final String? tooltip;
 
   @override
@@ -472,7 +487,7 @@ class RaftGlyphButton extends StatelessWidget {
         final color = quiet
             ? (st.hovered
                   ? t.semantic.foregroundStrong
-                  : t.semantic.foregroundPlaceholder)
+                  : restColor ?? t.semantic.foregroundPlaceholder)
             : null;
         return RaftRecipeBox(
           style: s,
@@ -595,7 +610,7 @@ class RaftDialogBarrier extends StatelessWidget {
         // rounds 35.6 up to 36 and the tint tips two channels: pure black at
         // 0.6525 gives 35 there. Only for dialogs stacked on a Modal; over a
         // page the tinted token already matches.
-        final blur = 2.0;
+        final blur = t.size('blur.dialogBackdrop', fallback: 2);
         Widget layer = ColoredBox(color: color, child: const SizedBox.expand());
         if (blur > 0) {
           layer = BackdropFilter(

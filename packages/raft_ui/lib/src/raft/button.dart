@@ -361,6 +361,7 @@ class RaftButton extends StatelessWidget {
     this.uiVariant,
     this.uiSize,
     this.visualHeight = RaftMetrics.buttonMd,
+    this.physicalHeight,
     this.expand = false,
     this.focusNode,
     this.tooltip,
@@ -409,6 +410,10 @@ class RaftButton extends StatelessWidget {
   final RaftButtonSize? uiSize;
   final double visualHeight;
 
+  /// A caller-owned physical height; typography still follows the size axis.
+  /// Large text may grow past it, as with the normal size metrics.
+  final double? physicalHeight;
+
   /// `w-full` (stretch to the parent width; content stays centered).
   final bool expand;
   final FocusNode? focusNode;
@@ -445,7 +450,19 @@ class RaftButton extends StatelessWidget {
     final ui = t.ui;
     final variantValue = resolvedVariant;
     final sizeValue = resolvedSize;
-    final metrics = RaftButtonMetrics.of(sizeValue, variantValue, t);
+    final baseMetrics = RaftButtonMetrics.of(sizeValue, variantValue, t);
+    final metrics = physicalHeight == null
+        ? baseMetrics
+        : RaftButtonMetrics(
+            height: physicalHeight!,
+            paddingX: baseMetrics.paddingX,
+            iconStartPaddingLeft: baseMetrics.iconStartPaddingLeft,
+            iconEndPaddingRight: baseMetrics.iconEndPaddingRight,
+            text: baseMetrics.text,
+            icon: baseMetrics.icon,
+            gap: baseMetrics.gap,
+            square: baseMetrics.square,
+          );
     final text = raftText(context, label);
     return RaftInteractive(
       onPressed: onPressed,

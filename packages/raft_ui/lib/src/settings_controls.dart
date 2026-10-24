@@ -4,6 +4,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'dialog_slots.dart';
+import 'banner.dart';
+import 'raft/button.dart';
+import 'tap_slop.dart';
+
 import 'design_primitives.dart' hide RaftPanelHeaderRecipe;
 import 'error_presentation.dart';
 import 'form_presentation.dart';
@@ -511,6 +516,7 @@ class RaftSettingsPrefixedInput extends StatefulWidget {
     this.value,
     this.placeholder,
     this.readOnly = false,
+    this.autofocus = false,
     this.mono = false,
     this.onChanged,
     this.rootColor,
@@ -525,6 +531,7 @@ class RaftSettingsPrefixedInput extends StatefulWidget {
   final String? value;
   final String? placeholder;
   final bool readOnly, mono;
+  final bool autofocus;
   final ValueChanged<String>? onChanged;
 
   /// Callsite root overrides (`bg-*`, `border-*`, `shadow-none`) and the
@@ -620,6 +627,7 @@ class _RaftSettingsPrefixedInputState extends State<RaftSettingsPrefixedInput> {
                   autofillHints: null,
                   controller: controller,
                   focusNode: focus,
+                  autofocus: widget.autofocus,
                   readOnly: widget.readOnly,
                   enableInteractiveSelection: !widget.readOnly,
                   showCursor: !widget.readOnly,
@@ -660,11 +668,15 @@ class RaftConfirmDialog extends StatefulWidget {
     this.onConfirm,
     this.loadingLabel,
     this.confirmGlyph,
-    this.actionSize = RaftButtonRecipeSize.sm,
+    this.actionSize,
+    this.plainMessage = false,
   });
 
   /// ConfirmDialog `actionSize` (`xs` for confirmations in dense surfaces).
-  final RaftButtonRecipeSize actionSize;
+  final RaftButtonRecipeSize? actionSize;
+
+  /// Caller-owned rich content may opt out of the default explanation frame.
+  final bool plainMessage;
 
   /// ConfirmDialog `confirmIcon` (`<RotateCcw size={14} />`).
   final RaftGlyph? confirmGlyph;
@@ -712,8 +724,12 @@ class RaftConfirmDialog extends StatefulWidget {
   );
 
   /// `text-sm leading-relaxed text-foreground-muted` (font-normal body).
-  static TextStyle messageStyle(RaftTokens t) =>
-      RaftTypography.body(t, size: 14, line: 14 * 1.625, color: t.muted);
+  static TextStyle messageStyle(RaftTokens t) => RaftTypography.body(
+    t,
+    size: t.size('type.confirmBody.size', fallback: 14),
+    line: t.size('type.confirmBody.line', fallback: 22.75),
+    color: t.muted,
+  );
 
   @override
   State<RaftConfirmDialog> createState() => _RaftConfirmDialogState();
@@ -758,10 +774,29 @@ class _RaftConfirmDialogState extends State<RaftConfirmDialog> {
     final title = widget.title, message = widget.message;
     final content = widget.content, maxWidth = widget.maxWidth;
     final t = RaftTokens.of(context);
+    final actionHeight = t.size('size.confirmAction', fallback: 44);
+    final actionSize = widget.actionSize == null
+        ? actionHeight <= t.size('size.control.sm', fallback: 32)
+              ? RaftButtonSize.sm
+              : RaftButtonSize.lg
+        : RaftButtonSize.fromRecipe(widget.actionSize!);
     Widget body = DefaultTextStyle.merge(
       style: RaftConfirmDialog.messageStyle(t),
       child: content ?? RaftCssText(raftText(context, message ?? '')),
     );
+    if (!widget.plainMessage &&
+        widget.confirmVariant == RaftButtonRecipeVariant.danger &&
+        t.option('confirm.explanation', or: 'plain') == 'dangerBanner') {
+      body = RaftBanner(
+        status: RaftBannerRecipeStatus.destructive,
+        glyph: RaftGlyph.octagonAlert,
+        live: false,
+        descriptionBuilder: (style) => DefaultTextStyle.merge(
+          style: style,
+          child: content ?? RaftCssText(raftText(context, message ?? '')),
+        ),
+      );
+    }
     if (error case final error?) {
       body = Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -785,24 +820,31 @@ class _RaftConfirmDialogState extends State<RaftConfirmDialog> {
         body: body,
         footer: [
           if (widget.showCancel)
-            RaftSettingsRecipeButton(
+            RaftButton(
               label: widget.cancelLabel,
-              size: widget.actionSize,
-              disabledOpacity: .3,
+              uiSize: actionSize,
+              physicalHeight: widget.actionSize == null ? actionHeight : null,
+              uiVariant:
+                  t.option('confirm.cancelSurface', or: 'outline') == 'ghost'
+                  ? RaftButtonVariant.ghost
+                  : RaftButtonVariant.outline,
               onPressed: loading ? null : cancel,
             ),
           ValueListenableBuilder<bool>(
             valueListenable:
                 widget.confirmEnabled ?? const AlwaysStoppedAnimation(true),
-            builder: (context, enabled, _) => RaftSettingsRecipeButton(
+            builder: (context, enabled, _) => RaftButton(
               key: widget.confirmKey,
               label: loading
                   ? widget.loadingLabel ?? 'Working…'
                   : widget.confirmLabel,
               glyph: loading ? null : widget.confirmGlyph,
-              variant: widget.confirmVariant,
-              size: widget.actionSize,
-              disabledOpacity: .8,
+              leading: loading
+                  ? const RaftSpinner(recipeSize: RaftSpinnerRecipeSize.xs)
+                  : null,
+              tone: widget.confirmVariant,
+              uiSize: actionSize,
+              physicalHeight: widget.actionSize == null ? actionHeight : null,
               onPressed: enabled && !loading ? confirm : null,
             ),
           ),
@@ -888,70 +930,89 @@ class _RaftDialogShellState extends State<RaftDialogShell> {
     // Brutal: padded content with `gap-4`; Elegant: an unpadded popup whose
     // header (`px-6 py-3`), body (`px-6 py-5`) and footer (`px-6 py-3`) own
     // their padding and sit flush.
-    final gap = d.content.rowGap ?? (0.0);
-    final titleStyle = _slotText(t, d.title);
-    return Center(
-      child: Material(
-        type: MaterialType.transparency,
-        child: Container(
-          key: widget.surfaceKey,
-          width: (size.width - 32).clamp(0, maxWidth).toDouble(),
-          constraints: BoxConstraints(maxHeight: size.height - 32),
-          padding: d.content.padding,
-          decoration: d.content.decoration(tokens),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Padding(
-                padding: d.header.padding,
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(raftText(context, title), style: titleStyle),
-                    ),
-                    SizedBox(width: d.header.columnGap ?? 12),
-                    RaftSettingsRecipeButton(
-                      key: const Key('confirm-dialog-close'),
-                      label: '',
-                      glyph: RaftGlyph.x,
-                      // DialogClose: brutal `outline` / `icon-md`, X `size-5`.
-                      variant: widget.outlineClose
-                          ? RaftButtonRecipeVariant.outline
-                          : RaftButtonRecipeVariant.ghost,
-                      size: widget.outlineClose
-                          ? RaftButtonRecipeSize.iconMd
-                          : RaftButtonRecipeSize.iconSm,
-                      glyphSize: widget.outlineClose ? 20 : 16,
-                      restColor: widget.outlineClose
-                          ? null
-                          : t.colors['foreground-placeholder'],
-                      onPressed: raftGuardedClose(context, onClose),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: gap),
-              Flexible(
-                child: SingleChildScrollView(
-                  padding: d.body.padding,
-                  child: body,
-                ),
-              ),
-              SizedBox(height: gap),
-              Padding(
-                padding: d.footer.padding,
-                child: KeyedSubtree(
-                  key: _footer,
-                  child: Wrap(
-                    alignment: WrapAlignment.end,
-                    spacing: d.footer.columnGap ?? 12,
-                    runSpacing: d.footer.rowGap ?? 12,
-                    children: footer,
+    final contentStyle = raftDialogSlot(t, d.content, 'content');
+    final headerStyle = raftDialogSlot(t, d.header, 'header');
+    final bodyStyle = raftDialogSlot(t, d.body, 'body');
+    final footerStyle = raftDialogSlot(t, d.footer, 'footer');
+    final titleStyle = _slotText(t, raftDialogSlot(t, d.title, 'title'));
+    final gap = contentStyle.rowGap ?? 0;
+    final outlinedClose =
+        widget.outlineClose ||
+        t.option('dialog.close', or: 'ghost') == 'outline';
+    Widget close = RaftSettingsRecipeButton(
+      key: const Key('confirm-dialog-close'),
+      label: '',
+      glyph: RaftGlyph.x,
+      variant: outlinedClose
+          ? RaftButtonRecipeVariant.outline
+          : RaftButtonRecipeVariant.ghost,
+      size: outlinedClose
+          ? RaftButtonRecipeSize.iconMd
+          : RaftButtonRecipeSize.iconSm,
+      glyphSize: outlinedClose
+          ? 20
+          : t.size('size.dialogCloseGlyph', fallback: 16),
+      restColor: outlinedClose
+          ? null
+          : t.colors['foreground-dialog-close'] ??
+                t.colors['foreground-placeholder'],
+      onPressed: raftGuardedClose(context, onClose),
+    );
+    if (!widget.outlineClose) close = RaftDialogCloseOutset(child: close);
+    return RaftTapSlopHost(
+      child: Center(
+        child: Material(
+          type: MaterialType.transparency,
+          child: Container(
+            key: widget.surfaceKey,
+            width: (size.width - 32).clamp(0, maxWidth).toDouble(),
+            constraints: BoxConstraints(maxHeight: size.height - 32),
+            padding: contentStyle.padding,
+            decoration: contentStyle.decoration(tokens),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Padding(
+                  padding: headerStyle.padding,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          t.displayCase(
+                            'dialogShellTitle',
+                            raftText(context, title),
+                          ),
+                          style: titleStyle,
+                        ),
+                      ),
+                      SizedBox(width: headerStyle.columnGap ?? 12),
+                      close,
+                    ],
                   ),
                 ),
-              ),
-            ],
+                SizedBox(height: gap),
+                Flexible(
+                  child: SingleChildScrollView(
+                    padding: bodyStyle.padding,
+                    child: body,
+                  ),
+                ),
+                SizedBox(height: gap),
+                Padding(
+                  padding: footerStyle.padding,
+                  child: KeyedSubtree(
+                    key: _footer,
+                    child: Wrap(
+                      alignment: WrapAlignment.end,
+                      spacing: footerStyle.columnGap ?? 12,
+                      runSpacing: footerStyle.rowGap ?? 12,
+                      children: footer,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

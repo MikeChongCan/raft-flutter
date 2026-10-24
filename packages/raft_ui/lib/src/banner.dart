@@ -1,4 +1,5 @@
 import 'hover_region.dart';
+import 'banner_recipe.dart';
 
 import 'dart:ui' show SemanticsRole;
 
@@ -22,6 +23,7 @@ class RaftBanner extends StatelessWidget {
   const RaftBanner({
     super.key,
     this.description = '',
+    this.live = true,
     this.descriptionBuilder,
     this.title,
     this.status = RaftBannerRecipeStatus.warning,
@@ -82,13 +84,16 @@ class RaftBanner extends StatelessWidget {
   /// Leading part of [description] rendered `<strong>` (rich catalog copy).
   final String? strongPrefix;
   final String description;
+
+  /// False makes a dialog explanation static rather than a live alert.
+  final bool live;
   final String? title;
   final RaftBannerRecipeStatus status;
   final RaftBannerRecipeSize size;
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context), tokens = t.recipeTokens;
-    final recipe = RaftBannerRecipe.resolve(
+    final source = RaftBannerRecipe.resolve(
       theme: t.recipeTheme,
       status: status,
       size: size,
@@ -104,16 +109,18 @@ class RaftBanner extends StatelessWidget {
       ),
       tokens: tokens,
     );
+    final recipe = raftBannerSlots(t, source, size, status);
     final base = recipe.root.text(
       tokens,
       base: DefaultTextStyle.of(context).style,
     );
     return Semantics(
-      role: SemanticsRole.alert,
+      role: live ? SemanticsRole.alert : null,
       child: RaftRecipeBox(
         style: recipe.root,
         tokens: tokens,
         child: _withLeading(
+          context,
           recipe,
           tokens,
           Column(
@@ -177,6 +184,7 @@ class RaftBanner extends StatelessWidget {
   }
 
   Widget _withLeading(
+    BuildContext context,
     RaftBannerRecipeStyle recipe,
     RaftTokenResolver tokens,
     Widget content,
@@ -203,6 +211,7 @@ class RaftBanner extends StatelessWidget {
         // full-width row, end aligned (`mt-2` Brutal / `mt-1` Elegant).
         final below = action != null && box.maxWidth <= 384;
         final main = _rowOf(
+          context,
           stacked,
           gap,
           svg,
@@ -228,6 +237,7 @@ class RaftBanner extends StatelessWidget {
   }
 
   Widget _rowOf(
+    BuildContext context,
     bool stacked,
     double gap,
     RaftSlotStyle? svg,
@@ -241,27 +251,41 @@ class RaftBanner extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Expanded(
-            child: _rowOf(stacked, gap, svg, recipe, tokens, content, null),
+            child: _rowOf(
+              context,
+              stacked,
+              gap,
+              svg,
+              recipe,
+              tokens,
+              content,
+              null,
+            ),
           ),
           SizedBox(width: gap),
           action,
         ],
       );
     }
+    final t = RaftTokens.of(context);
+    final start = t.option('banner.iconAlignment', or: 'center') == 'start';
     return Row(
-      crossAxisAlignment: stacked
+      crossAxisAlignment: stacked || (start && !centerAction)
           ? CrossAxisAlignment.start
           : CrossAxisAlignment.center,
       children: [
         if (glyph != null) ...[
           Padding(
-            padding: EdgeInsets.only(top: stacked ? 2 : 0),
+            padding: EdgeInsets.only(top: stacked && !start ? 2 : 0),
             child: RaftIcon(
               glyph!,
-              size: svg?.width ?? 16,
-              color:
-                  svg?.textStyle(tokens).color ??
-                  recipe.root.textStyle(tokens).color,
+              size: size == RaftBannerRecipeSize.md
+                  ? t.size('size.bannerGlyph', fallback: 16)
+                  : svg?.width ?? 16,
+              color: t.option('banner.iconColor', or: 'intent') == 'foreground'
+                  ? t.ink
+                  : svg?.textStyle(tokens).color ??
+                        recipe.root.textStyle(tokens).color,
             ),
           ),
           SizedBox(width: gap),

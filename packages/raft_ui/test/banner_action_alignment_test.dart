@@ -5,7 +5,7 @@ import 'package:raft_ui/test_themes.dart';
 
 import '../../../tool/testing/vertical_alignment.dart';
 
-/// A banner row (icon, copy, trailing action) keeps its children on one
+/// An explicitly centered banner row (icon, copy, trailing action) keeps its children on one
 /// vertical centre, like Web's `items-center` grid with the `BannerAction`
 /// `flex items-center` group. Single-line copy only: a title and description
 /// stack, and Web then top-aligns the action across both rows (`row-span-2`).
@@ -35,6 +35,9 @@ void main() {
                           width: width,
                           child: RaftBanner(
                             key: const ValueKey('banner'),
+                            // Current Web defaults to items-start; callers such as the
+                            // machine-detail disk banner explicitly center their action.
+                            centerAction: true,
                             description: 'Reconnect to send',
                             size: size,
                             glyph: glyph,

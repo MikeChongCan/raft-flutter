@@ -87,12 +87,13 @@ void main() {
       }
     });
 
-    test('fills the whole type scale and all three case slots', () {
+    test('fills the whole type scale and all declared case slots', () {
       expect(pack.light.type.keys.toSet(), raftTypeSlots);
       expect(pack.light.caseTransforms.keys.toSet(), {
         'heading',
         'label',
         'badge',
+        'dialogShellTitle',
       });
       expect(pack.light.caseTransforms['label'], RaftCaseTransform.none);
     });

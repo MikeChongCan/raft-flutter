@@ -83,7 +83,7 @@ Future<void> mountSettingsWorkspace(
   expect(t.takeException(), isNull);
 }
 
-Future<void> rebuildOverlay(WidgetTester t) async {
+Future<void> rebuildOverlay(WidgetTester t, {bool confirming = false}) async {
   // Rebuilding the real root app updates Navigator's widget; Navigator calls
   // changedExternalState on its routes, rebuilding the DialogRoute page. Keep
   // the same home widget/observer, so the existing WorkspaceView and guard live
@@ -98,7 +98,14 @@ Future<void> rebuildOverlay(WidgetTester t) async {
     ),
   );
   expect(t.takeException(), isNull);
-  await t.pumpAndSettle();
+  if (confirming) {
+    // The archive request is intentionally held open. Its visible loading
+    // indicator keeps scheduling frames, so wait for the route transition only.
+    await t.pump(const Duration(milliseconds: 300));
+    expect(find.byType(RaftSpinner), findsOneWidget);
+  } else {
+    await t.pumpAndSettle();
+  }
   expect(t.takeException(), isNull);
 }
 
@@ -213,7 +220,7 @@ void main() {
         expect(w.channel!.archived, false);
         // The confirmation is in flight: a Navigator rebuild keeps the very
         // same drawer state behind it.
-        await rebuildOverlay(t);
+        await rebuildOverlay(t, confirming: true);
         expect(find.byType(ChannelSettings), findsOneWidget);
         expect(t.state(find.byType(ChannelSettings)), same(openingState));
         expect(find.byType(RaftConfirmDialog), findsOneWidget);

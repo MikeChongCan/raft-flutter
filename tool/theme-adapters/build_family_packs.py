@@ -53,6 +53,9 @@ OPTIONS_ELEGANT = {
     'mobileNav.style': 'floatingCapsule', 'mobileNav.labels': 'iconsOnly',
     'header.layout': 'overlay', 'panel.edge': 'seam', 'nav.selection': 'softFill',
     'tooltip.arrow': 'yes', 'code.innerBorder': 'dashed', 'spinner.style': 'ring',
+    'dialog.close': 'ghost', 'confirm.cancelSurface': 'outline',
+    'banner.iconAlignment': 'center', 'banner.iconColor': 'intent', 'confirm.slug': 'text',
+    'confirm.explanation': 'plain',
     'spinner.ringShape': 'sweep', 'spinner.foreground': 'inherited',
 }
 OPTIONS_BRUTAL = {
@@ -70,6 +73,9 @@ OPTIONS_BRUTAL = {
     'mobileNav.style': 'docked', 'mobileNav.labels': 'withLabels', 'header.layout': 'inFlow',
     'panel.edge': 'border', 'nav.selection': 'sticker', 'tooltip.arrow': 'no',
     'code.innerBorder': 'solid', 'spinner.style': 'ring',
+    'dialog.close': 'outline', 'confirm.cancelSurface': 'outline',
+    'banner.iconAlignment': 'center', 'banner.iconColor': 'foreground', 'confirm.slug': 'text',
+    'confirm.explanation': 'plain',
     'spinner.ringShape': 'quarter', 'spinner.foreground': 'fixed',
 }
 
@@ -77,6 +83,49 @@ OPTIONS_BRUTAL = {
 # digits that the P2 baseline can now confirm or refute; they are carried as-is
 # until that reconciliation, which is its own change.
 GEOMETRY_ELEGANT = {
+    # Confirmation / Banner source contract, Cindy fe0074f6.
+    'stroke.dialog': 0,
+    'stroke.dialogRing': 0,
+    'space.bannerInline': 12,
+    'space.bannerGap': 8,
+    'type.bannerBody.line': 16,
+    'type.bannerBody.size': 13,
+    'type.bannerBody.tracking': -0.065,
+    'size.bannerGlyph': 16,
+    'radius.banner': 4,
+    'stroke.bannerBorder': 0,
+    'stroke.bannerRing': 0,
+    'type.confirmBody.size': 14,
+    'type.confirmBody.line': 22.75,
+    'type.confirmName.weight': 700,
+    'type.confirmPrompt.size': 14,
+    'type.confirmPrompt.line': 20,
+    'type.confirmPrompt.weight': 400,
+    'type.confirmSlug.size': 14,
+    'type.confirmSlug.weight': 700,
+    'space.confirmSlugInline': 0,
+    'size.confirmAction': 28,
+    # Shared Dialog slots, Web 0.7.0 / a57 runtime probes; Cindy 046ef0f7.
+    'space.dialogContentInline': 0,
+    'space.dialogContentBlock': 0,
+    'space.dialogPartGap': 0,
+    'space.dialogHeaderInline': 24,
+    'space.dialogHeaderTop': 12,
+    'space.dialogHeaderBottom': 12,
+    'space.dialogHeaderGap': 12,
+    'space.dialogBodyInline': 24,
+    'space.dialogBodyTop': 20,
+    'space.dialogBodyBottom': 20,
+    'space.dialogFooterInline': 24,
+    'space.dialogFooterTop': 12,
+    'space.dialogFooterBottom': 12,
+    'space.dialogFooterGap': 12,
+    'type.dialogTitle.size': 16,
+    'type.dialogTitle.line': 24,
+    'size.dialogClose': 28,
+    'size.dialogCloseGlyph': 16,
+    'space.dialogCloseOutset': 0,
+    'blur.dialogBackdrop': 2,
     # ComposerToolbarLabel / shared CheckboxIndicator, Cindy fc426a64.
     'size.composerTaskToggle': 16,
     'size.composerTaskCheckbox': 14,
@@ -166,6 +215,49 @@ GEOMETRY_ELEGANT = {
     'space.segmentGap': 6,
 }
 GEOMETRY_BRUTAL = {
+    # Confirmation / Banner source contract, Cindy fe0074f6.
+    'stroke.dialog': 2,
+    'stroke.dialogRing': 0,
+    'space.bannerInline': 12,
+    'space.bannerGap': 12,
+    'type.bannerBody.line': 20,
+    'type.bannerBody.size': 14,
+    'type.bannerBody.tracking': 0,
+    'size.bannerGlyph': 18,
+    'radius.banner': 0,
+    'stroke.bannerBorder': 2,
+    'stroke.bannerRing': 0,
+    'type.confirmBody.size': 14,
+    'type.confirmBody.line': 22.75,
+    'type.confirmName.weight': 700,
+    'type.confirmPrompt.size': 14,
+    'type.confirmPrompt.line': 20,
+    'type.confirmPrompt.weight': 400,
+    'type.confirmSlug.size': 14,
+    'type.confirmSlug.weight': 700,
+    'space.confirmSlugInline': 0,
+    'size.confirmAction': 28,
+    # Shared Dialog slots, Web 0.7.0 / a57 runtime probes; Cindy 046ef0f7.
+    'space.dialogContentInline': 24,
+    'space.dialogContentBlock': 16,
+    'space.dialogPartGap': 16,
+    'space.dialogHeaderInline': 0,
+    'space.dialogHeaderTop': 0,
+    'space.dialogHeaderBottom': 0,
+    'space.dialogHeaderGap': 12,
+    'space.dialogBodyInline': 0,
+    'space.dialogBodyTop': 8,
+    'space.dialogBodyBottom': 8,
+    'space.dialogFooterInline': 0,
+    'space.dialogFooterTop': 0,
+    'space.dialogFooterBottom': 0,
+    'space.dialogFooterGap': 12,
+    'type.dialogTitle.size': 18,
+    'type.dialogTitle.line': 18,
+    'size.dialogClose': 32,
+    'size.dialogCloseGlyph': 20,
+    'space.dialogCloseOutset': 0,
+    'blur.dialogBackdrop': 0,
     # ComposerToolbarLabel / shared CheckboxIndicator, Cindy fc426a64.
     'size.composerTaskToggle': 16,
     'size.composerTaskCheckbox': 14,
@@ -259,8 +351,8 @@ GEOMETRY_BRUTAL = {
 
 # AUTHORED: docs/theme-contract.md §3.5. The contract fixes three slots; a theme
 # that has no opinion leaves the string alone.
-CASE_ELEGANT = {'heading': 'none', 'label': 'uppercase', 'badge': 'none'}
-CASE_BRUTAL = {'heading': 'uppercase', 'label': 'uppercase', 'badge': 'uppercase'}
+CASE_ELEGANT = {'dialogShellTitle': 'uppercase','heading': 'none', 'label': 'uppercase', 'badge': 'none'}
+CASE_BRUTAL = {'dialogShellTitle': 'uppercase','heading': 'uppercase', 'label': 'uppercase', 'badge': 'uppercase'}
 
 # AUTHORED: docs/theme-contract.md §5.1. Families come from the P0 inventory;
 # the stacks keep the CJK fallbacks the app needs to avoid tofu.
@@ -499,6 +591,21 @@ def pack(pack_id: str, name_en: str, name_zh: str, values: dict,
         colors['foreground-message'] = colors['ink' if spec['column'] == 'brutal' else 'foreground-muted']
         colors['foreground-message-meta'] = '{palette.messageMeta}'
         colors['foreground-spinner'] = colors['ink' if spec['column'] == 'brutal' else 'foreground']
+        colors['foreground-banner-body'] = colors['foreground' if spec['column'] == 'brutal' else 'foreground-muted']
+        colors['layer-banner-destructive'] = ('{palette.elegantBanner.destructive.dark}' if spec['column'] == 'elegantDark' else colors['danger-soft'])
+        colors['layer-banner-info'] = ('{palette.elegantBanner.info.dark}' if spec['column'] == 'elegantDark' else colors['info-soft'])
+        colors['layer-banner-success'] = ('{palette.elegantBanner.success.dark}' if spec['column'] == 'elegantDark' else colors['success-soft'])
+        colors['layer-banner-warning'] = ('{palette.elegantNotice.dark}' if spec['column'] == 'elegantDark' else colors['warning-soft'])
+
+        colors['line-dialog'] = colors['ink' if spec['column'] == 'brutal' else 'line-muted']
+        colors['foreground-dialog-close'] = colors['ink' if spec['column'] == 'brutal' else 'foreground-placeholder']
+        colors['line-banner'] = colors['line-strong']
+        colors['foreground-confirm-name'] = colors['foreground-muted']
+        colors['foreground-confirm-prompt'] = colors['foreground-muted']
+        colors['foreground-confirm-slug'] = colors['foreground-strong']
+        colors['foreground-confirm-input'] = colors['foreground-muted']
+        colors['layer-confirm-slug'] = colors['fill-muted']
+
         # Actual a57b9dab Select: muted Elegant text, solid Brutal text;
         # disabled keeps the same colors under the 0.4 group opacity.
         select_ink = 'foreground-strong' if spec['column'] == 'brutal' else 'foreground-muted'
@@ -532,11 +639,15 @@ def pack(pack_id: str, name_en: str, name_zh: str, values: dict,
                          'palette-messageMeta': 'rgba(0 0 0 / 0.4)'}
                 if spec['column'] == 'brutal' else {
                     'palette-messageMeta': ('rgba(196 196 193 / 0.7)' if spec['column'] == 'elegantDark' else 'rgba(61 61 58 / 0.7)'),
+                    'palette-elegantBanner-destructive-dark': 'rgba(198.253830000 48.559650000 36.180165000 / 0.180368)',
+                    'palette-elegantBanner-info-dark': 'rgba(0.153765000 94.616985000 121.406010000 / 0.180551)',
+                    'palette-elegantBanner-success-dark': 'rgba(20.536935000 115.217670000 63.901470000 / 0.180368)',
                     'palette-elegantNotice-light': '#ffeadc',
                     # a57 recipe_utilities.g.dart _v609 actual Flutter paint color.
                     'palette-elegantNotice-dark': f'rgba({.534161 * 255:.9f} {.321382 * 255:.9f} {.207110 * 255:.9f} / 0.180368)',
                 }),
-            'geometry': geometry_with_type(spec['geometry'], type_metrics),
+            'geometry': {**geometry_with_type(spec['geometry'], type_metrics),
+                         **({'space.dialogBodyTop': 10} if spec['column'] == 'elegantDark' else {})},
             'font': {name: '{fonts.mono}' if spec['column'] == 'brutal' else '{fonts.sans}'
                      for name in ('font.messageTime', 'font.messageSubtitle')},
             # Brutal dark is the complete Elegant mode, including its families.
