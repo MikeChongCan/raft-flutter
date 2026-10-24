@@ -44,7 +44,12 @@ void main() {
             var activations = 0;
             await tester.pumpWidget(
               MaterialApp(
-                theme: raftTheme(dark: dark),
+                // Keep the capsule contract on its owning theme. The docked
+                // default has a separate pixel/interaction regression below.
+                theme: raftTheme(
+                  pack: packForThemeId(elegantThemePackId),
+                  dark: dark,
+                ),
                 home: Scaffold(
                   body: RaftDensityScope(
                     density: density,
