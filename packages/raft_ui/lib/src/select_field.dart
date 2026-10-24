@@ -12,11 +12,11 @@ import 'dismiss_scope.dart';
 import 'icons.dart';
 import 'localization.dart';
 import 'recipe_surface.dart';
-import 'raft/ui_tokens.dart';
 import 'recipes/button_variants.g.dart';
 import 'recipes/recipe_runtime.dart';
 import 'recipes/select.g.dart';
 import 'theme.dart';
+import 'tokens/tokens.dart' show RaftCssShadow;
 
 /// `cn(a, b)` for two resolved slots: later declarations win (the class
 /// list order raft-ui passes to tailwind-merge).
@@ -133,11 +133,11 @@ class _RaftSelectFieldState<T> extends State<RaftSelectField<T>> {
             if (widget.invalid) 'data-invalid',
           ],
         );
-        // The offset-shadow structure uses the original raised recipe; the
-        // other control structures retain its ring base before token binding.
-        final raised =
-            t.option('press.effect', or: 'overlay') == 'offsetShadow';
-        final recipeTheme = raised ? RaftRecipeTheme.brutal : t.recipeTheme;
+        final edge = t.option('control.edge', or: 'ring');
+        final sheen = t.option('control.sheen', or: 'none') == 'gradient';
+        // One base supplies only the layout, ring and sheen. Elevation is
+        // independent data; a motion choice cannot select its paint recipe.
+        const recipeTheme = RaftRecipeTheme.elegant;
         final button = RaftButtonRecipe.resolve(
           theme: recipeTheme,
           variant: RaftButtonRecipeVariant.outline,
@@ -152,6 +152,52 @@ class _RaftSelectFieldState<T> extends State<RaftSelectField<T>> {
           tokens: rt,
         );
         final merged = raftMergeSlots(button, sel.trigger);
+        final shadows = <CssValue>[];
+        for (final layer in merged.boxShadow) {
+          if (layer is! RaftLiteralShadow) continue;
+          if (layer.inset ? sheen : edge == 'ring') {
+            shadows.add(
+              _selectShadow(
+                RaftCssShadow(
+                  inset: layer.inset,
+                  offset: layer.offset,
+                  blur: layer.blur,
+                  spread: layer.spread,
+                  color: layer.color.resolve(rt),
+                ),
+              ),
+            );
+          }
+        }
+        final shadowRole = st.focusVisible && enabled
+            ? 'shadow.selectFocus'
+            : st.hovered && enabled
+            ? 'shadow.selectHover'
+            : st.pressed && enabled
+            ? 'shadow.selectPressed'
+            : 'shadow.select';
+        shadows.addAll(t.shadowLayers(shadowRole).map(_selectShadow));
+        // Read the old cascade's transforms only; its other properties never
+        // decide this control's fill, edge, sheen or elevation.
+        final motion = t.option('press.effect', or: 'overlay');
+        final motionTheme = motion == 'offsetShadow'
+            ? RaftRecipeTheme.brutal
+            : RaftRecipeTheme.elegant;
+        final motionStyle = raftMergeSlots(
+          RaftButtonRecipe.resolve(
+            theme: motionTheme,
+            variant: RaftButtonRecipeVariant.outline,
+            size: RaftButtonRecipeSize.md,
+            states: states,
+            tokens: rt,
+          ).root,
+          RaftSelectRecipe.resolve(
+            theme: motionTheme,
+            chrome: widget.chrome,
+            states: states,
+            tokens: rt,
+          ).trigger,
+        );
         final s = RaftSlotStyle(
           {
             ...merged.properties,
@@ -161,6 +207,10 @@ class _RaftSelectFieldState<T> extends State<RaftSelectField<T>> {
                 fallback: 14,
               ),
               'px',
+            ),
+            'letter-spacing': CssNum(
+              t.size('type.selectValue.tracking', fallback: -.005),
+              'em',
             ),
             'line-height': CssNum(
               fieldChrome ? t.size('type.field.line', fallback: 20) : 20,
@@ -178,16 +228,24 @@ class _RaftSelectFieldState<T> extends State<RaftSelectField<T>> {
             'background-color': CssVar(
               '--layer-select',
               null,
-              enabled ? 'layerSelect' : 'layerSelectDisabled',
+              !enabled
+                  ? 'layerSelectDisabled'
+                  : st.hovered
+                  ? 'layerSelectHover'
+                  : 'layerSelect',
             ),
             if (!enabled)
               'opacity': CssNum(t.size('opacity.selectDisabled', fallback: .4)),
-            // Flat controls have no inherited inset sheen / outer ring. Raised
-            // controls keep their original shadow, independently of color.
-            if (!raised && t.option('control.sheen', or: 'none') == 'none')
-              'box-shadow': const CssKeyword('none'),
+            'box-shadow': CssList(shadows),
+            for (final name in ['transform', 'scale', 'translate'])
+              name: motion != 'overlay'
+                  ? motionStyle.properties[name] ?? const CssKeyword('none')
+                  : const CssKeyword('none'),
           },
-          merged.targets,
+          {
+            for (final entry in merged.targets.entries)
+              if (entry.key != '::before' || sheen) entry.key: entry.value,
+          },
           merged.classes,
           merged.tokens,
         );
@@ -207,16 +265,7 @@ class _RaftSelectFieldState<T> extends State<RaftSelectField<T>> {
             0,
           ),
           decorationOverride: (d) => d.copyWith(
-            boxShadow:
-                !raised &&
-                    t.option('control.sheen', or: 'none') == 'none' &&
-                    st.focusVisible
-                ? [
-                    for (final layer in t.ui.focusRing.layers)
-                      BoxShadow(color: layer.color, spreadRadius: layer.spread),
-                  ]
-                : d.boxShadow,
-            border: t.option('control.edge', or: 'ring') == 'inkBorder'
+            border: edge == 'inkBorder'
                 ? Border.all(
                     color:
                         t.colors[widget.invalid
@@ -483,3 +532,12 @@ class _SelectItemState<T> extends State<_SelectItem<T>> {
     );
   }
 }
+
+CssValue _selectShadow(RaftCssShadow layer) => CssSeq([
+  if (layer.inset) const CssKeyword('inset'),
+  CssNum(layer.offset.dx, 'px'),
+  CssNum(layer.offset.dy, 'px'),
+  CssNum(layer.blur, 'px'),
+  CssNum(layer.spread, 'px'),
+  CssColor(layer.color.toARGB32(), null, layer.color),
+]);

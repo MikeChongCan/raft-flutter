@@ -326,6 +326,7 @@ GEOMETRY_RAFT['size.composerSubmit'] = GEOMETRY_RAFT['size.control.sm']
 GEOMETRY_RAFT['size.selectTrigger'] = GEOMETRY_RAFT['size.control.lg']
 GEOMETRY_RAFT['type.selectValue.size'] = 15
 GEOMETRY_RAFT['type.selectValue.weight'] = 600
+GEOMETRY_RAFT['type.selectValue.tracking'] = -.005
 GEOMETRY_RAFT['type.selectPlaceholder.weight'] = 500
 GEOMETRY_RAFT.update({
     'opacity.selectDisabled': 1, 'space.selectTriggerStart': 14,
@@ -462,7 +463,8 @@ def build() -> dict:
             'foreground-select': 'foreground',
             'foreground-select-placeholder': 'foreground-hint',
             'foreground-select-disabled': 'foreground-disabled',
-            'layer-select': 'layer-card', 'layer-select-disabled': 'fill-muted',
+            'layer-select': 'layer-card', 'layer-select-hover': 'layer-card',
+            'layer-select-disabled': 'fill-muted',
             'line-select': 'line-strong', 'line-select-disabled': 'line-hairline',
         }.items():
             out[target] = out[source]
@@ -493,6 +495,10 @@ def build() -> dict:
                 'shadow.sticker': shadow_set['elevationSticker'],
                 'shadow.focusRing': shadow_set['focusRing'],
                 'shadow.control': 'none',
+                'shadow.select': 'none',
+                'shadow.selectHover': 'none',
+                'shadow.selectPressed': 'none',
+                'shadow.selectFocus': shadow_set['focusRing'],
                 'shadow.buttonSuccess': 'none',
                 'shadow.buttonHover': 'none',
                 'shadow.buttonPressed': 'none',

@@ -215,7 +215,7 @@ GEOMETRY_ELEGANT = {
     # SettingsProfileCard source values, approved Cindy 318b1d17.
     'radius.settingsCard': 0,
     # Original Select trigger measurement: 32px, 14/20 medium in both families.
-    'size.selectTrigger': 32, 'type.selectValue.size': 14, 'type.selectValue.weight': 500, 'type.selectPlaceholder.weight': 500,
+    'size.selectTrigger': 32, 'type.selectValue.size': 14, 'type.selectValue.weight': 500, 'type.selectValue.tracking': -.005, 'type.selectPlaceholder.weight': 500,
     # a57b9dab measured Select values; disabled:opacity-40 (not .5).
     'opacity.selectDisabled': .4, 'space.selectTriggerStart': 12,
     'size.selectChevron': 14, 'stroke.selectChevron': 1.5,
@@ -375,7 +375,7 @@ GEOMETRY_BRUTAL = {
     # SettingsProfileCard source values, approved Cindy 318b1d17.
     'radius.settingsCard': 0,
     # Original Select trigger measurement: 32px, 14/20 medium in both families.
-    'size.selectTrigger': 32, 'type.selectValue.size': 14, 'type.selectValue.weight': 700, 'type.selectPlaceholder.weight': 700,
+    'size.selectTrigger': 32, 'type.selectValue.size': 14, 'type.selectValue.weight': 700, 'type.selectValue.tracking': 0, 'type.selectPlaceholder.weight': 700,
     # a57b9dab measured Select values; disabled:opacity-40 (not .5).
     'opacity.selectDisabled': .4, 'space.selectTriggerStart': 12,
     'size.selectChevron': 14, 'stroke.selectChevron': 1.5,
@@ -688,6 +688,7 @@ def pack(pack_id: str, name_en: str, name_zh: str, values: dict,
             'foreground-select': select_ink, 'foreground-select-placeholder': select_ink,
             'foreground-select-disabled': select_ink,
             'layer-select': select_fill, 'layer-select-disabled': select_fill,
+            'layer-select-hover': select_fill if spec['column'] == 'brutal' else 'ink-2',
             'line-select': select_line, 'line-select-disabled': select_line,
         }.items():
             colors[target] = colors[source]
@@ -712,6 +713,11 @@ def pack(pack_id: str, name_en: str, name_zh: str, values: dict,
         normal = shadows['sm'] if spec['column'] == 'brutal' else shadows['xs'] if spec['column'] == 'elegantDark' else 'none'
         shadows['shadow.buttonSuccess'] = shadows['sm'] if spec['column'] == 'brutal' else 'none'
         shadows['shadow.control'] = normal
+        # Select elevation is independent of the shared press-motion option.
+        shadows['shadow.select'] = normal
+        shadows['shadow.selectHover'] = shadows['md'] if spec['column'] == 'brutal' else normal
+        shadows['shadow.selectPressed'] = shadows['xs'] if spec['column'] == 'brutal' else normal
+        shadows['shadow.selectFocus'] = normal if spec['column'] == 'brutal' else 'none'
         shadows['shadow.buttonHover'] = shadows['md'] if spec['column'] == 'brutal' else normal
         shadows['shadow.buttonPressed'] = shadows['xs'] if spec['column'] == 'brutal' else normal
         shadows['shadow.buttonDangerOutline'] = normal if spec['column'] == 'elegantDark' else 'none'

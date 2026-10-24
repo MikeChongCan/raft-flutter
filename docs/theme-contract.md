@@ -1026,3 +1026,20 @@ sheet 展示策略由产品决定，不属于主题选项，仍遵守 `close-aff
 在 PR 描述集中列出新增项；负责人在完整检查前统一审查。无需逐个等待名称批准。
 取值差异用数据，排布差异才用枚举；不按主题名判断，不借无关选项推断，
 旧外观的字面色存入对应包的专用调色板。
+
+### Select 阴影独立数据
+
+`shadow.select`、`shadow.selectHover`、`shadow.selectPressed`、
+`shadow.selectFocus` 分别表示默认、悬停、按下和键盘焦点的额外阴影。
+默认 Raft 前三者为空，焦点引用已有 focusRing；Elegant 及 Brutal 深色
+默认／悬停／按下引用原 xs，浅色 Elegant 为空，焦点由原 ring 负责；
+Brutal 浅色依次引用原 sm／md／xs／sm。
+边缘 ring 与 sheen 各读自己的选项，阴影不从 `press.effect` 推断。
+当 hover 和 active 同时成立时保留原 Select CSS 的 hover 层优先顺序。
+原 recipe 只提供其固定布局、ring、sheen 和对应运动属性，不选择整个绘制实现。
+
+`type.selectValue.tracking`（em 比例）：Raft／Elegant 及 Brutal 深色 −0.005，
+Brutal 浅色 0；保留原来的字距，不能借运动选项选择字号配方。
+
+`layer-select-hover`：Raft 仍用 layer-card，Elegant／Brutal 深色引用原 ink-2，
+Brutal 浅色保持 layer-panel。该颜色角色与运动选项无关。
