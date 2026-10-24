@@ -304,6 +304,7 @@ class RaftRecipeBox extends StatelessWidget {
     this.alignment,
     this.clip = false,
     this.applyText = true,
+    this.growWithText,
     this.applyOpacity = true,
     this.opacityCompositing = RaftOpacityCompositing.layer,
     this.applyTransform = true,
@@ -330,6 +331,10 @@ class RaftRecipeBox extends StatelessWidget {
   final AlignmentGeometry? alignment;
   final bool clip;
   final bool applyText, applyOpacity, applyTransform;
+
+  /// Whether a fixed height becomes a minimum when text grows. Defaults to
+  /// [applyText]; editors that style their own text can opt in separately.
+  final bool? growWithText;
   final RaftOpacityCompositing opacityCompositing;
   final BoxDecoration Function(BoxDecoration)? decorationOverride;
 
@@ -396,7 +401,8 @@ class RaftRecipeBox extends StatelessWidget {
     //
     // Above the default text size the recipe height is a minimum instead (CSS
     // `min-height`): the box grows with its text and nothing overflows.
-    final grows = h != null && applyText && RaftScaled.grows(context);
+    final grows =
+        h != null && (growWithText ?? applyText) && RaftScaled.grows(context);
     if (content != null && h != null && overflowCenter && !grows) {
       content = RaftCssOverflowY(child: content);
     }

@@ -664,6 +664,9 @@ class _RaftAgentTextInputState extends State<RaftAgentTextInput> {
         height: widget.multiline
             ? minHeight
             : t.size('size.fieldInput', fallback: 38),
+        // The editor owns its typography, but single-line input still grows
+        // with its text. Multiline input uses the explicit rows-based box.
+        growWithText: !widget.multiline,
         applyText: false,
         child: widget.trailing == null
             ? withKeys(editor)

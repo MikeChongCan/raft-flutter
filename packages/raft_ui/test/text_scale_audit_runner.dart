@@ -17,7 +17,7 @@ import 'dart:io';
 import 'dart:ui' show Size;
 
 import 'package:flutter/material.dart' show Locale, TargetPlatform;
-import 'package:flutter/widgets.dart' show Scrollable;
+import 'package:flutter/widgets.dart' show Scrollable, ValueKey;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_ui/raft_ui.dart';
 
@@ -29,10 +29,11 @@ final _actions = <String, Future<void> Function(WidgetTester)>{
   'dropdownViewportPreview': (t) async {
     await t.tap(find.byType(RaftAgentSelect<String>));
     await t.pumpAndSettle();
-    final list = find.ancestor(
-      of: find.byType(RaftMenuPanel),
+    final list = find.descendant(
+      of: find.byKey(const ValueKey('raft-select-popup')),
       matching: find.byType(Scrollable),
     );
+    expect(list, findsOneWidget);
     await t.scrollUntilVisible(
       find.text('Choice 39'),
       180,

@@ -1,6 +1,8 @@
 // Unit tests for the detector in tool/testing/text_scale_audit.dart, using
 // synthetic widgets with a known outcome (bad ones must be flagged, good ones
 // must stay clean), so a clean report from the surface sweeps means something.
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -31,7 +33,7 @@ Future<AuditReport> run(
     mode: mode,
     size: size,
     truncationBaseline: base,
-    screenshotDir: '/tmp/text-scale-audit/probe-unit',
+    screenshotDir: '${Directory.systemTemp.path}/text-scale-audit/probe-unit',
   );
 }
 

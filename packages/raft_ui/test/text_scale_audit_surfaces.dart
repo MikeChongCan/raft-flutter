@@ -966,6 +966,13 @@ final auditSurfaces = <AuditSurface>[
     Size(1000, 650),
   ),
   AuditSurface(
+    'confirmSlugPreview',
+    'Confirmation inline identifier',
+    confirmSlugPreview,
+    Size(640, 440),
+    representative: true,
+  ),
+  AuditSurface(
     'settingsControlsPreview',
     'Settings buttons keyboard focus and disabled',
     settingsControlsPreview,
