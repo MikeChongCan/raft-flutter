@@ -767,14 +767,21 @@ class _ComposerSuggestionsPreviewState
   @override
   Widget build(BuildContext context) => Column(
     children: [
-      const Padding(
-        padding: EdgeInsets.all(16),
-        child: Text(
-          'Type @same or #design. Arrow keys, Tab and Enter accept a suggestion. Ctrl+Enter sends.',
+      Expanded(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              const Padding(
+                padding: EdgeInsets.all(16),
+                child: Text(
+                  'Type @same or #design. Arrow keys, Tab and Enter accept a suggestion. Ctrl+Enter sends.',
+                ),
+              ),
+              Text(result),
+            ],
+          ),
         ),
       ),
-      Text(result),
-      const Spacer(),
       RaftComposer(
         initialDraft: '',
         onSend: (_) async => false,

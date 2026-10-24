@@ -3,6 +3,7 @@ import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 
 import 'design_primitives.dart';
 import 'message_table_border.dart';
+import 'message_row_recipe.dart' show RaftMessageSizeTier;
 import 'theme.dart';
 import 'tokens/tokens.dart';
 
@@ -35,12 +36,17 @@ class MessageContentSemantic {
 class MessageContentRecipe {
   MessageContentRecipe(
     this.tokens, {
-    this.fontSize = 14,
+    double? fontSize,
     this.document = false,
     this.mountedMessage = false,
     this.foreground,
     this.lineHeight,
-  }) : semantic = MessageContentSemantic(tokens);
+  }) : fontSize =
+           fontSize ??
+           (mountedMessage && !document
+               ? RaftMessageSizeTier.md.bodySizeFor(tokens)
+               : 14),
+       semantic = MessageContentSemantic(tokens);
 
   /// Caller line-height override (e.g. `leading-relaxed` comment bodies).
   final double? lineHeight;
@@ -61,19 +67,24 @@ class MessageContentRecipe {
             (document
                 ? 24
                 : mountedMessage
-                ? switch (fontSize) {
-                    12 => 16.0,
-                    16 => 24.0,
-                    _ => fontSize * 20 / 14,
-                  }
+                ? RaftMessageSizeTier.matchingDisplay(
+                        tokens,
+                        fontSize,
+                      )?.bodyLineFor(tokens) ??
+                      fontSize * 20 / 14
                 : fontSize * 20 / 14),
         // raft-ui messageItem `body`: brutal `text-sm text-black`.
         color:
             foreground ??
-            (mountedMessage && !document ? tokens.muted : tokens.strong),
+            (mountedMessage && !document
+                ? tokens.colors['foreground-message']
+                : tokens.strong),
       ).copyWith(
         fontFamily: document ? tokens.headingFont : tokens.bodyFont,
-        letterSpacing: mountedMessage && !document ? -fontSize * .01 : 0,
+        letterSpacing: mountedMessage && !document
+            ? fontSize *
+                  tokens.size('type.messageBody.tracking', fallback: -.01)
+            : 0,
       );
   TextStyle get toggle => RaftTypography.body(
     tokens,
@@ -106,10 +117,14 @@ class MessageContentRecipe {
       color: level == 6
           ? tokens.muted
           : foreground ??
-                (mountedMessage && !document ? tokens.muted : tokens.strong),
+                (mountedMessage && !document
+                    ? tokens.colors['foreground-message']
+                    : tokens.strong),
     ).copyWith(
       fontFamily: document ? tokens.headingFont : tokens.bodyFont,
-      letterSpacing: mountedMessage && !document ? -fontSize * .01 : 0,
+      letterSpacing: mountedMessage && !document
+          ? fontSize * tokens.size('type.messageBody.tracking', fallback: -.01)
+          : 0,
     );
   }
 

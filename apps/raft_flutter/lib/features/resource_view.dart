@@ -3651,13 +3651,24 @@ class _ResourceViewState extends State<ResourceView> {
           // `showMarkAllRead`: only while something is unread.
           if ((totalUnreadCount ?? 0) > 0 && activityScope.globalInbox) ...[
             const SizedBox(width: RaftResourceMetrics.activityToolbarGap),
-            RaftResourceMarkReadButton(
-              onPressed: () => command(
-                'POST',
-                '/channels/inbox/read-all',
-                sourceScope: scope,
+            if (RaftScaled.grows(context))
+              Flexible(
+                child: RaftResourceMarkReadButton(
+                  onPressed: () => command(
+                    'POST',
+                    '/channels/inbox/read-all',
+                    sourceScope: scope,
+                  ),
+                ),
+              )
+            else
+              RaftResourceMarkReadButton(
+                onPressed: () => command(
+                  'POST',
+                  '/channels/inbox/read-all',
+                  sourceScope: scope,
+                ),
               ),
-            ),
           ],
           if (extraFilters)
             RaftTooltip(

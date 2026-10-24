@@ -154,9 +154,8 @@ class RaftAuthShell extends StatelessWidget {
   }
 }
 
-/// AUTH_BRAND_TOP_BAR_CLASS: `h-panel-header border-b border-line-hairline
-/// bg-layer-panel px-4 theme-brutal:border-b-2 theme-brutal:border-black
-/// theme-brutal:bg-soft-signal`, RaftBrandLockup `h-5 w-auto`.
+/// AUTH_BRAND_TOP_BAR_CLASS: `h-panel-header border-b border-line-seam
+/// bg-layer-frame text-foreground-on-frame px-4`, RaftBrandLockup `h-5 w-auto`.
 class RaftAuthTopBar extends StatelessWidget {
   const RaftAuthTopBar({super.key, this.server, this.onServer});
 
@@ -174,7 +173,7 @@ class RaftAuthTopBar extends StatelessWidget {
     final t = RaftTokens.of(context);
     final width = MediaQuery.sizeOf(context).width;
     return RaftStatusBarSource(
-      color: t.panel,
+      color: t.colors['layer-auth-header'] ?? t.panel,
       child: Container(
         height: height,
         // `px-4 sm:px-6 md:px-8`.
@@ -182,7 +181,7 @@ class RaftAuthTopBar extends StatelessWidget {
           horizontal: width >= 768 ? 32 : (width >= 640 ? 24 : 16),
         ),
         decoration: BoxDecoration(
-          color: t.panel,
+          color: t.colors['layer-auth-header'] ?? t.panel,
           border: Border(bottom: BorderSide(color: t.semantic.lineHairline)),
         ),
         child: Row(

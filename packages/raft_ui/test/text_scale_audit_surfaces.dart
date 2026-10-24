@@ -96,6 +96,20 @@ class AuditSurface {
 
 final auditSurfaces = <AuditSurface>[
   AuditSurface(
+    'avatarContextsPreview',
+    'Profile and account avatar contexts',
+    avatarContextsPreview,
+    Size(390, 340),
+    representative: true,
+  ),
+  AuditSurface(
+    'resourceToolbarPreview',
+    'Resource toolbar',
+    resourceToolbarPreview,
+    Size(390, 240),
+    representative: true,
+  ),
+  AuditSurface(
     'computerConnectionLoadingPreview',
     'Loading connected computer details',
     computerConnectionLoadingPreview,

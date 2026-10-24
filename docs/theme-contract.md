@@ -105,6 +105,7 @@ dd6c1674 开始，交给 DeepDesign）。
 | `sticker-ink` / `sticker-paper` / `sticker-edge` / `sticker-pressed` | 保留 | “贴纸”是材质概念，不是主题名；Elegant 用不到就填 transparent 或与邻近角色同值 |
 | `layer-frame` / `foreground-on-frame*` / `fill-frame-pressed` | 保留 | Raft 深色框的中性层，Elegant/Brutal 填成与 `layer-canvas` / `foreground` 同值 |
 | `layer-panel-header` | Flutter 新增（Cindy be3134a7） | 共享面板页头：Raft 同 `layer-canvas`；旧两套沿用 a57b9dab 的原页头绘制，保留手机底色和桌面透明层。 |
+| `foreground-message` | Flutter 新增（Cindy 4e2f12b0） | 正文和发送者共用；Raft 同 foreground；Elegant 明暗同 foreground-muted；Brutal 浅色同现有 ink（原黑色），深色沿Elegant。 |
 | `layer-section-header-mobile` | Flutter 新增（Cindy b1ba932f） | 窄布局的分节页头：Raft 同 `layer-frame`；Elegant 同 `layer-panel`；Brutal 浅色同 a57b9dab 的 `color-soft-signal`，深色沿用 Elegant。桌面不读此角色。 |
 | `foreground-select` / `foreground-select-placeholder` | Flutter 新增（Cindy 50cb5231） | Raft：foreground / foreground-hint；Elegant 明暗：均 foreground-muted；Brutal 浅色：均 foreground-strong，深色沿 Elegant。 |
 | `foreground-select-disabled` | Flutter 新增（Cindy 50cb5231） | Raft：foreground-disabled；Elegant 明暗：foreground-muted；Brutal 浅色：foreground-strong，深色沿 Elegant。 |
@@ -637,3 +638,34 @@ Select 原版配对更正（Cindy 91d3ac48）：`type.selectValue.weight` 的 Br
 `type.selectPlaceholder.weight` Raft／Elegant500、Brutal浅色700，深色沿Elegant500。
 原a57实际recipe证明先前统一500错误，不能据已经丢失主题分支的当前组件反推原版。
 Elegant暗色xs阴影保留a57源alpha0.045，避免导出表显示精度0.04改变边缘像素。
+
+消息字号按当前 Web `src/store/appearanceStore.ts` 的 MESSAGE_*_SIZE_CLASSES/VALUES
+（Cindy 5eef1cad、4e2f12b0 批准），原三档偏好值 sm/md/lg 与存储逻辑不变。
+展示层使用如下数值；调用方显式物理字号及行高优先，文档字级独立：
+
+| 令牌 | Raft | Elegant | Brutal 浅色 |
+| --- | --- | --- | --- |
+| `type.messageBody.sm.size/line` | 14/20 | 12/16 | 12/16 |
+| `type.messageBody.md.size/line` | 16/24 | 14/20 | 14/20 |
+| `type.messageBody.lg.size/line` | 18/28 | 16/24 | 16/24 |
+| `type.messageSender.sm.size/line` | 13/20 | 12/12 | 12/20 |
+| `type.messageSender.md.size/line` | 15/20 | 14/14 | 14/20 |
+| `type.messageSender.lg.size/line` | 17/20 | 16/16 | 16/20 |
+| `type.messageSender.weight` | 700 | 500 | 700 |
+| `type.messageBody.tracking`（em） | 0 | -0.01 | 0 |
+| `type.messageMeta.lg.size` | 13 | 14 | 14 |
+| `type.messagePreview.sm.size` | 12 | 11 | 11 |
+| `type.messagePreview.md.size` | 13 | 12.5 | 12.5 |
+| `type.messagePreviewTime.md.size` | 12 | 11.5 | 11.5 |
+
+Meta sm11/md12、preview lg14、previewTime sm11/lg13 三套相同，保持常量。
+Brutal 深色整套沿 Elegant。消息发送者控件的物理最小行高跟随上述 line，
+大字号允许自然增高；不能只放大文字却保留14px裁切盒。
+
+### 消息引用标签结构（Cindy 972c9666）
+
+`messageReference.chipLayout = fixed | intrinsic`：Raft 为 fixed，Elegant／Brutal 为 intrinsic。fixed 沿用实际 Web 0.7.0 的 22px 最小高度、20px 行高、0.875em 字号、2px 图文间距和 6px 水平内边距（有图标时左侧 3px）；系统大字下随内容增高。自我提及与消息引用文字复用 `sticker.ring`／`radius.sticker`，绘制 1.5px 内外圈，不增加布局尺寸。
+
+### 登录页头与快捷反应分隔线（Cindy dbb08097）
+
+`layer-auth-header`：Raft 引用 layer-frame，Elegant 保持 panel，Brutal 浅色保持原 soft-signal，深色沿 Elegant；登录页所有宽度共用此角色。`messageMenu.reactionDivider = shown | hidden`：Raft shown、旧两套 hidden，仅在有快捷反应且下面有菜单项时显示原有分隔线。

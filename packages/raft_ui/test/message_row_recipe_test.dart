@@ -161,8 +161,8 @@ void main() {
         final resolved = DefaultTextStyle.of(
           tester.element(find.byKey(bodyKey)),
         ).style;
-        expect(resolved.fontSize, 14);
-        expect(resolved.height, 20 / 14);
+        expect(resolved.fontSize, 16);
+        expect(resolved.height, 24 / 16);
         expect(
           resolved.fontFamily,
           RaftTokens.of(tester.element(find.byKey(bodyKey))).headingFont,
@@ -345,8 +345,8 @@ void main() {
     // Name 12/14/16, meta and time 11/12/14.
     expect([for (final x in RaftMessageSizeTier.values) x.name], [12, 14, 16]);
     expect([for (final x in RaftMessageSizeTier.values) x.meta], [11, 12, 14]);
-    expect(at(RaftMessageSizeTier.sm, 1280).author.fontSize, 12);
-    expect(at(RaftMessageSizeTier.lg, 1280).time.fontSize, 14);
+    expect(at(RaftMessageSizeTier.sm, 1280).author.fontSize, 13);
+    expect(at(RaftMessageSizeTier.lg, 1280).time.fontSize, 13);
     // `--mi-avatar` 2rem, 34px on the large tier; `--mi-avatar-narrow` 28.
     expect(at(RaftMessageSizeTier.md, 1280).avatarExtent, 32);
     expect(at(RaftMessageSizeTier.lg, 1280).avatarExtent, 34);
@@ -368,9 +368,9 @@ void main() {
     expect(row(e, 1280).headerReserve, 96);
     expect(row(e, 1280, true).headerReserve, 40);
     expect(row(e, 390, true).headerReserve, 40);
-    // Elegant sender 600 (was 500); brutal stays 700.
-    expect(row(e, 1280).author.fontWeight, FontWeight.w600);
-    expect(row(b, 1280).author.fontWeight, FontWeight.w600);
+    // Current Web sender is 700; legacy families are covered separately.
+    expect(row(e, 1280).author.fontWeight, FontWeight.w700);
+    expect(row(b, 1280).author.fontWeight, FontWeight.w700);
     // Elegant notes (meta, time) read `foreground-hint`.
     expect(row(e, 1280).time.color, e.colors['foreground-hint']);
     // MessageHoverToolbar `right-2`, `max-md:right-0.5`, brutal `-right-1.5`.

@@ -57,7 +57,8 @@ void main() {
           final author = find.byWidgetPredicate(
             (w) => w is RaftControl && w.kind == RaftControlKind.textLink,
           );
-          expect(t.getSize(author).height, 14);
+          // Web MessageItem sender keeps its 20px line box.
+          expect(t.getSize(author).height, 20);
           await t.tap(author);
           expect(mentions, 1);
           await mount(true);
@@ -79,8 +80,8 @@ void main() {
             20,
           );
           {
-            expect(withoutFooter, 77);
-            expect(t.getSize(find.byType(RaftMessageRow)).height, 97);
+            expect(withoutFooter, 83);
+            expect(t.getSize(find.byType(RaftMessageRow)).height, 103);
           }
           expect(t.takeException(), isNull);
         },

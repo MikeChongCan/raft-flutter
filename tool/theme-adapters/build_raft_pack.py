@@ -147,6 +147,15 @@ def stretch(families: list[str], mono: bool = False) -> str:
 # AUTHORED: the two tables below are the contract's decisions, not derived data.
 # §3.3–3.5 of docs/theme-contract.md lists where each number comes from.
 GEOMETRY_RAFT = {
+    # Web appearanceStore.ts + MessageItem text roles (Cindy 5eef1cad/4e2f12b0).
+    'type.messageBody.sm.size': 14, 'type.messageBody.sm.line': 20,
+    'type.messageBody.md.size': 16, 'type.messageBody.md.line': 24,
+    'type.messageBody.lg.size': 18, 'type.messageBody.lg.line': 28,
+    'type.messageSender.sm.size': 13, 'type.messageSender.md.size': 15, 'type.messageSender.lg.size': 17,
+    'type.messageSender.sm.line': 20, 'type.messageSender.md.line': 20, 'type.messageSender.lg.line': 20,
+    'type.messageSender.weight': 700, 'type.messageBody.tracking': 0,
+    'type.messageMeta.lg.size': 13, 'type.messagePreview.sm.size': 12,
+    'type.messagePreview.md.size': 13, 'type.messagePreviewTime.md.size': 12,
     # a57b9dab switch/control bounds; 0 keeps the Raft hit-only expander.
     'size.touchLayoutMin': 0,
     # Actual Web v1.21.23 AvatarSlot DOM (profile-hero / profile-tile / panel-header).
@@ -218,7 +227,7 @@ OPTIONS_RAFT = {
     'iconButton.surface': 'generic', 'panelAction.surface': 'ghost',
     'sidebar.mobileSurface': 'canvas', 'resource.surface': 'canvas',
     'resource.rows': 'flat', 'resource.badge': 'sticker', 'resource.markRead': 'ghost',
-    'listGroup.frame': 'plain', 'task.status': 'square', 'searchResult.selection': 'flat',
+    'listGroup.frame': 'plain', 'task.status': 'square', 'searchResult.selection': 'flat', 'messageReference.chipLayout': 'fixed', 'messageMenu.reactionDivider': 'shown',
     'press.effect': 'overlay', 'control.sheen': 'none', 'avatar.shape': 'square',
     'indicator.border': 'none', 'switch.shape': 'pill', 'checkbox.mark': 'fillCheck',
     'field.style': 'border', 'tabs.selected': 'sticker', 'segmented.selected': 'sticker',
@@ -258,6 +267,8 @@ def build() -> dict:
             if token.startswith(('palette-', 'deprecated-', 'color-')):
                 continue
             out.setdefault(token, value)
+        out['layer-auth-header'] = out['layer-frame']
+        out['foreground-message'] = out['foreground']
         # Component aliases: values are existing roles, never new palette colors.
         for target, source in {
             'foreground-select': 'foreground',

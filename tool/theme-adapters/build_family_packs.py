@@ -42,7 +42,7 @@ OPTIONS_ELEGANT = {
     # a57b9dab design_primitives.dart:141-145; resource_view.dart:2385,2393.
     'sidebar.mobileSurface': 'sidebar', 'resource.surface': 'sidebar',
     'resource.rows': 'cards', 'resource.badge': 'pill', 'resource.markRead': 'outline',
-    'listGroup.frame': 'framed', 'task.status': 'symbol', 'searchResult.selection': 'card',
+    'listGroup.frame': 'framed', 'task.status': 'symbol', 'searchResult.selection': 'card', 'messageReference.chipLayout': 'intrinsic', 'messageMenu.reactionDivider': 'hidden',
     'press.effect': 'scale', 'control.sheen': 'gradient', 'avatar.shape': 'circle',
     'indicator.border': 'none', 'switch.shape': 'pill', 'checkbox.mark': 'strokeCheck',
     'field.style': 'inset', 'tabs.selected': 'tint', 'segmented.selected': 'tint',
@@ -57,7 +57,7 @@ OPTIONS_BRUTAL = {
     'iconButton.surface': 'raised', 'panelAction.surface': 'outline',
     'sidebar.mobileSurface': 'canvas', 'resource.surface': 'canvas',
     'resource.rows': 'cards', 'resource.badge': 'pill', 'resource.markRead': 'outline',
-    'listGroup.frame': 'framed', 'task.status': 'symbol', 'searchResult.selection': 'card',
+    'listGroup.frame': 'framed', 'task.status': 'symbol', 'searchResult.selection': 'card', 'messageReference.chipLayout': 'intrinsic', 'messageMenu.reactionDivider': 'hidden',
     'press.effect': 'offsetShadow', 'control.sheen': 'none', 'avatar.shape': 'square',
     'indicator.border': 'ink', 'switch.shape': 'square', 'checkbox.mark': 'thickStroke',
     'field.style': 'border', 'tabs.selected': 'sticker', 'segmented.selected': 'sticker',
@@ -71,6 +71,15 @@ OPTIONS_BRUTAL = {
 # digits that the P2 baseline can now confirm or refute; they are carried as-is
 # until that reconciliation, which is its own change.
 GEOMETRY_ELEGANT = {
+    # Web appearanceStore.ts / pre-theme display tiers (Cindy 5eef1cad/4e2f12b0).
+    'type.messageBody.sm.size': 12, 'type.messageBody.sm.line': 16,
+    'type.messageBody.md.size': 14, 'type.messageBody.md.line': 20,
+    'type.messageBody.lg.size': 16, 'type.messageBody.lg.line': 24,
+    'type.messageSender.sm.size': 12, 'type.messageSender.md.size': 14, 'type.messageSender.lg.size': 16,
+    'type.messageMeta.lg.size': 14, 'type.messagePreview.sm.size': 11,
+    'type.messagePreview.md.size': 12.5, 'type.messagePreviewTime.md.size': 11.5,
+    'type.messageSender.sm.line': 12, 'type.messageSender.md.line': 14, 'type.messageSender.lg.line': 16,
+    'type.messageSender.weight': 500, 'type.messageBody.tracking': -.01,
     # a57b9dab switch/control bounds; 0 keeps the Raft hit-only expander.
     'size.touchLayoutMin': 48,
     # a57b9dab AvatarSlot profileTile and panelHeader.
@@ -116,6 +125,15 @@ GEOMETRY_ELEGANT = {
     'space.segmentGap': 6,
 }
 GEOMETRY_BRUTAL = {
+    # Web appearanceStore.ts / pre-theme display tiers (Cindy 5eef1cad/4e2f12b0).
+    'type.messageBody.sm.size': 12, 'type.messageBody.sm.line': 16,
+    'type.messageBody.md.size': 14, 'type.messageBody.md.line': 20,
+    'type.messageBody.lg.size': 16, 'type.messageBody.lg.line': 24,
+    'type.messageSender.sm.size': 12, 'type.messageSender.md.size': 14, 'type.messageSender.lg.size': 16,
+    'type.messageMeta.lg.size': 14, 'type.messagePreview.sm.size': 11,
+    'type.messagePreview.md.size': 12.5, 'type.messagePreviewTime.md.size': 11.5,
+    'type.messageSender.sm.line': 20, 'type.messageSender.md.line': 20, 'type.messageSender.lg.line': 20,
+    'type.messageSender.weight': 700, 'type.messageBody.tracking': 0,
     # a57b9dab switch/control bounds; 0 keeps the Raft hit-only expander.
     'size.touchLayoutMin': 48,
     # a57b9dab AvatarSlot profileTile and panelHeader.
@@ -309,6 +327,8 @@ def pack(pack_id: str, name_en: str, name_zh: str, values: dict,
         colors['layer-section-header-mobile'] = (colors['color-soft-signal']
                                    if spec['column'] == 'brutal'
                                    else colors['layer-panel'])
+        colors['layer-auth-header'] = colors['layer-section-header-mobile']
+        colors['foreground-message'] = colors['ink' if spec['column'] == 'brutal' else 'foreground-muted']
         # Actual a57b9dab Select: muted Elegant text, solid Brutal text;
         # disabled keeps the same colors under the 0.4 group opacity.
         select_ink = 'foreground-strong' if spec['column'] == 'brutal' else 'foreground-muted'

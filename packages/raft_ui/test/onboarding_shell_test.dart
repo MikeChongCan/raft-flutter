@@ -18,6 +18,50 @@ Widget _host(Size size, {Widget? preview}) => MediaQuery(
 );
 
 void main() {
+  for (final (id, light) in [
+    (raftThemePackId, const Color(0xffffd440)),
+    (elegantThemePackId, const Color(0xffffffff)),
+    (brutalThemePackId, const Color(0xffffd440)),
+  ]) {
+    testWidgets(
+      '$id auth header keeps its source fill at phone and desktop widths',
+      (t) async {
+        t.view.devicePixelRatio = 1;
+        addTearDown(t.view.reset);
+        for (final dark in [false, true]) {
+          for (final width in [390.0, 1280.0]) {
+            t.view.physicalSize = Size(width, 844);
+            await t.pumpWidget(
+              MaterialApp(
+                theme: raftTheme(pack: packForThemeId(id), dark: dark),
+                home: const Scaffold(body: RaftAuthTopBar()),
+              ),
+            );
+            await t.pumpAndSettle();
+            final surface = t.widget<Container>(
+              find
+                  .descendant(
+                    of: find.byType(RaftAuthTopBar),
+                    matching: find.byWidgetPredicate(
+                      (w) => w is Container && w.decoration is BoxDecoration,
+                    ),
+                  )
+                  .first,
+            );
+            final expected = dark
+                ? (id == raftThemePackId
+                      ? const Color(0xff0d0d0b)
+                      : const Color(0xff242422))
+                : light;
+            expect((surface.decoration! as BoxDecoration).color, expected);
+            expect(t.getSize(find.byType(RaftAuthTopBar)).height, 62);
+            expect(t.takeException(), isNull);
+          }
+        }
+        await t.pumpWidget(const SizedBox());
+      },
+    );
+  }
   testWidgets('lg width with a preview splits form panel and dot pane', (
     tester,
   ) async {

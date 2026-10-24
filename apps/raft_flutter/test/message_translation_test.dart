@@ -154,8 +154,8 @@ void main() {
       expect(batches.single['messageIds'], unorderedEquals(['m1', 'm2']));
       expect(batches.single['targetLanguage'], 'en');
       expect(batches.single['mode'], 'auto');
-      // The skeleton keeps exactly one 14/20 body line.
-      expect(t.getSize(_placeholder('m1')).height, closeTo(20, .001));
+      // The Raft skeleton keeps exactly one source md 16/24 body line.
+      expect(t.getSize(_placeholder('m1')).height, closeTo(24, .001));
 
       reply.complete();
       await _settle(t);

@@ -52,9 +52,16 @@ class _ResourceToolbarPreviewState extends State<_ResourceToolbarPreview> {
               ),
             ),
             const SizedBox(width: 8),
-            RaftResourceMarkReadButton(
-              onPressed: () => setState(() => marked++),
-            ),
+            if (RaftScaled.grows(context))
+              Flexible(
+                child: RaftResourceMarkReadButton(
+                  onPressed: () => setState(() => marked++),
+                ),
+              )
+            else
+              RaftResourceMarkReadButton(
+                onPressed: () => setState(() => marked++),
+              ),
           ],
         ),
         const SizedBox(height: 16),

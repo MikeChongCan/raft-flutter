@@ -231,21 +231,20 @@ class _RaftPulseState extends State<RaftPulse>
 /// className="inline-block w-44 max-w-full align-middle"` on the body's
 /// first line box, so the row keeps one body line while it waits.
 class RaftMessageTranslationSkeleton extends StatelessWidget {
-  const RaftMessageTranslationSkeleton({super.key, this.fontSize = 14});
+  const RaftMessageTranslationSkeleton({super.key, this.fontSize});
 
   /// Message body font size (the line box follows the body's line height).
-  final double fontSize;
+  final double? fontSize;
 
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
-    final line =
-        MessageContentRecipe(
-          t,
-          fontSize: fontSize,
-          mountedMessage: true,
-        ).body.height! *
-        fontSize;
+    final style = MessageContentRecipe(
+      t,
+      fontSize: fontSize,
+      mountedMessage: true,
+    ).body;
+    final line = style.height! * style.fontSize!;
     return SizedBox(
       key: const ValueKey('message-translation-skeleton'),
       height: line,

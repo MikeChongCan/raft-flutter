@@ -34,7 +34,7 @@ class _SearchSurfacesState extends State<_SearchSurfaces> {
             children: [
               RaftThreadIcon(size: 10),
               SizedBox(width: 8),
-              Text('A thread message result'),
+              Expanded(child: Text('A thread message result')),
             ],
           ),
         ),

@@ -64,7 +64,7 @@ class RaftInlineThreadRecipe {
   TextStyle get sender => TextStyle(
     fontFamily: tokens.bodyFont,
     fontFamilyFallback: tokens.systemFonts ? tokens.fontFallback : null,
-    fontSize: sizeTier.preview,
+    fontSize: sizeTier.previewFor(tokens),
     height: 1.25,
     fontWeight: FontWeight.w600,
     // `messageReplies.sender`: brutal black/70, elegant foreground-muted.
@@ -81,7 +81,7 @@ class RaftInlineThreadRecipe {
   /// brutal black/40.
   TextStyle get clock => TextStyle(
     fontFamily: tokens.bodyFont,
-    fontSize: sizeTier.previewTime,
+    fontSize: sizeTier.previewTimeFor(tokens),
     height: 1.25,
     color: tokens.dark
         ? tokens.colors['foreground-placeholder']

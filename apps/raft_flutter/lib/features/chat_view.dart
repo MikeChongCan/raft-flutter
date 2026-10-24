@@ -12,6 +12,7 @@ import 'package:raft_client/raft_client.dart';
 import 'package:raft_ui/raft_ui.dart';
 
 import 'mobile_route_gate.dart';
+import 'message_type_scale.dart';
 export 'mobile_route_gate.dart' show MobileChatDirectRead;
 import 'message_timeline.dart';
 import 'history_reading_anchor.dart';
@@ -177,9 +178,12 @@ class _RaftChatViewState extends PhonePageState<RaftChatView> {
   void scheduleBodyPreparation(BuildContext context) {
     if (kDebugMode || !presentationActive) return;
     final tokens = RaftTokens.of(context);
-    final fontSize = PersonalPresentationScope.bodyFontSize(
+    final fontSize = messagePreferenceDisplaySize(
       context,
-      w.client.user?.string('preferredMessageBodyFontSize'),
+      PersonalPresentationScope.bodyFontSize(
+        context,
+        w.client.user?.string('preferredMessageBodyFontSize'),
+      ),
     );
     final inputs = (
       workspaceAuthority(w),
@@ -2708,9 +2712,12 @@ class _RaftChatViewState extends PhonePageState<RaftChatView> {
       );
     }
     final times = timeFormatter;
-    final fontSize = PersonalPresentationScope.bodyFontSize(
+    final fontSize = messagePreferenceDisplaySize(
       context,
-      w.client.user?.string('preferredMessageBodyFontSize'),
+      PersonalPresentationScope.bodyFontSize(
+        context,
+        w.client.user?.string('preferredMessageBodyFontSize'),
+      ),
     );
     final translation = w.services.translations.present(m);
     // Web useTranslationBatch: auto mode asks for the rows in the built

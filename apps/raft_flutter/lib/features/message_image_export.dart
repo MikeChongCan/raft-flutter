@@ -1,3 +1,5 @@
+import 'message_type_scale.dart';
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math' as math;
@@ -131,13 +133,12 @@ Future<bool?> previewMessageImage(
   authorityChanges?.addListener(revoke);
   Uint8List? png;
   try {
-    final fontSize = switch (w.client.user?.string(
-      'preferredMessageBodyFontSize',
-    )) {
+    final fontSize = messagePreferenceDisplaySize(context, switch (w.client.user
+        ?.string('preferredMessageBodyFontSize')) {
       'sm' => 12.0,
       'lg' => 16.0,
       _ => 14.0,
-    };
+    });
     final children = <Widget>[];
     for (final row in messages) {
       final m = row.message;

@@ -89,6 +89,10 @@ class RaftMessageContextMenu extends StatelessWidget {
     final children = <Widget>[
       if (onReact != null)
         _QuickReactionRow(onReact: onReact!, label: reactionLabel),
+      if (onReact != null &&
+          groups.isNotEmpty &&
+          t.option('messageMenu.reactionDivider', or: 'hidden') == 'shown')
+        divider(),
       for (var i = 0; i < groups.length; i++) ...[
         if (i > 0) divider(),
         for (final item in groups[i])

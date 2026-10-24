@@ -253,11 +253,11 @@ void main() {
     expect(store.value.fontSize, 16);
     expect(
       t.widget<RaftMessageTile>(find.byType(RaftMessageTile)).bodyFontSize,
-      16,
+      18,
     );
     expect(
       t.widget<RaftMessageBody>(find.byType(RaftMessageBody)).fontSize,
-      16,
+      18,
     );
     for (final name in [
       'appearance-live-activity',

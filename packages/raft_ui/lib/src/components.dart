@@ -1271,7 +1271,7 @@ class RaftMessageTile extends StatelessWidget {
     this.collapseLongMessages = true,
     this.initiallyExpanded = false,
     this.onMessageExpanded,
-    this.bodyFontSize = 14,
+    this.bodyFontSize,
     this.body,
     this.hoverToolbar,
     this.selectionLeading,
@@ -1320,7 +1320,7 @@ class RaftMessageTile extends StatelessWidget {
 
   /// The reader's expand or collapse. Null when the row does not track it.
   final void Function(bool expanded, BuildContext row)? onMessageExpanded;
-  final double bodyFontSize;
+  final double? bodyFontSize;
 
   /// Business adapters may supply a richer body without replacing message
   /// actions, thread controls, attachments, or reactions.
@@ -1376,11 +1376,13 @@ class RaftMessageTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
+    final effectiveBodyFontSize =
+        bodyFontSize ?? RaftMessageSizeTier.md.bodySizeFor(t);
     final recipe = RaftMessageRowRecipe(
       t,
       viewportWidth: MediaQuery.sizeOf(context).width,
       rowContext: rowContext,
-      sizeTier: RaftMessageSizeTier.of(bodyFontSize),
+      sizeTier: RaftMessageSizeTier.forDisplay(t, effectiveBodyFontSize),
     );
     return RaftMessageRow(
       author: author,
@@ -1410,7 +1412,7 @@ class RaftMessageTile extends StatelessWidget {
       followedBy: followedBy,
       followsSystem: followsSystem,
       bodyEndsInCode: followedBy != null && raftBodyEndsInCode(content),
-      sizeTier: RaftMessageSizeTier.of(bodyFontSize),
+      sizeTier: RaftMessageSizeTier.forDisplay(t, effectiveBodyFontSize),
       coarsePointer: coarsePointer,
       popupOpen: popupOpen,
       highlighted: highlighted,
@@ -1503,7 +1505,7 @@ class RaftMessageTile extends StatelessWidget {
                   styleSheet:
                       MessageContentRecipe(
                             t,
-                            fontSize: bodyFontSize,
+                            fontSize: effectiveBodyFontSize,
                             mountedMessage: true,
                           )
                           .stylesheet(context)
@@ -2889,14 +2891,37 @@ class _RaftComposerState extends State<RaftComposer> {
                                 key: const ValueKey('composer-editor-slot'),
                                 constraints: BoxConstraints(
                                   minHeight: recipe.editorMinimum,
-                                  // Six lines at the default size; the cap
-                                  // grows with the text so scaled lines
-                                  // are not cut off.
-                                  maxHeight: RaftScaled.extent(
-                                    context,
-                                    recipe.editorMaximum,
-                                    fontSize: recipe.editorText.fontSize ?? 14,
-                                  ),
+                                  // Default Web viewport: 128px. Above 1x,
+                                  // leave room for six complete scaled lines
+                                  // plus the editor's unscaled inset.
+                                  maxHeight:
+                                      RaftScaled.extent(
+                                        context,
+                                        // Keep complete editable lines at large
+                                        // accessibility sizes. The default Web
+                                        // viewport remains capped at 128px.
+                                        RaftScaled.grows(context)
+                                            ? (6 *
+                                                      (recipe
+                                                              .editorText
+                                                              .fontSize ??
+                                                          14) *
+                                                      (recipe
+                                                              .editorText
+                                                              .height ??
+                                                          1))
+                                                  .clamp(
+                                                    recipe.editorMaximum,
+                                                    double.infinity,
+                                                  )
+                                                  .toDouble()
+                                            : recipe.editorMaximum,
+                                        fontSize:
+                                            recipe.editorText.fontSize ?? 14,
+                                      ) +
+                                      (RaftScaled.grows(context)
+                                          ? recipe.editorInset.vertical
+                                          : 0),
                                 ),
                                 child: RaftComposerExpandable(
                                   text: controller.text,

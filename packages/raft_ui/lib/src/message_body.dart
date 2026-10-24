@@ -4,6 +4,7 @@ import 'mermaid_toolbar_recipe.dart';
 import 'message_markdown.dart';
 import 'message_tokens.dart';
 import 'message_reference_chip.dart';
+import 'message_row_recipe.dart' show RaftMessageSizeTier;
 
 import 'dart:async';
 import 'dart:convert';
@@ -385,7 +386,7 @@ class RaftMessageBody extends StatelessWidget {
     this.onLink,
     this.references = const [],
     this.taskHref,
-    this.fontSize = 14,
+    this.fontSize,
     this.foregroundColor,
     this.documentMode = false,
     this.mountedMessage = false,
@@ -487,7 +488,7 @@ class RaftMessageBody extends StatelessWidget {
   final bool Function(int number)? knownTaskNumber;
   final Future<void> Function(String)? onCopyCode;
   final Future<void> Function(String, Uint8List)? onExportDiagram;
-  final double fontSize;
+  final double? fontSize;
   final Color? foregroundColor;
   final bool documentMode;
   final bool mountedMessage;
@@ -499,6 +500,11 @@ class RaftMessageBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
+    final fontSize =
+        this.fontSize ??
+        (mountedMessage && !documentMode
+            ? RaftMessageSizeTier.md.bodySizeFor(t)
+            : 14.0);
     // A host without its own handler gets the app's (Web `MarkdownLink`); an
     // export render stays inert.
     final onLink =

@@ -4,6 +4,40 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_ui/raft_ui.dart';
 
 void main() {
+  for (final id in [raftThemePackId, elegantThemePackId, brutalThemePackId]) {
+    testWidgets('$id quick reactions have the source section separation', (
+      t,
+    ) async {
+      await t.pumpWidget(
+        MaterialApp(
+          theme: raftTheme(pack: packForThemeId(id)),
+          home: Scaffold(
+            body: Center(
+              child: RaftMessageContextMenu(
+                onReact: (_) {},
+                sections: [
+                  [
+                    RaftMessageContextMenuItem(
+                      label: 'Copy',
+                      icon: const SizedBox(),
+                      onPressed: () {},
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+      final quick = t.getRect(
+        find.byKey(const ValueKey('message-menu-reaction-quick-row')),
+      );
+      final first = t.getRect(find.widgetWithText(RaftMenuButtonItem, 'Copy'));
+      expect(first.top - quick.bottom, id == raftThemePackId ? 13 : 2);
+      expect(t.takeException(), isNull);
+      await t.pumpWidget(const SizedBox());
+    });
+  }
   for (final (id, regular, compact, popup) in [
     (raftThemePackId, 36.0, 32.0, 240.0),
     (elegantThemePackId, 28.0, 28.0, 192.0),

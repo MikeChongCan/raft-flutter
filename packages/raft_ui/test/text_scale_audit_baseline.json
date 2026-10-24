@@ -44,9 +44,9 @@
   ],
   "real|light|android-zh|sourcePhoneNotificationSettingsPreview|zh-2.0x": [
     "escapes: Stops notifications from Preview for your account. Other servers are unchanged.",
-    "escapes: 保存",
-    "escapes: 开启通知",
-    "escapes: 静音此服务器",
+    "escapes: \u4fdd\u5b58",
+    "escapes: \u5f00\u542f\u901a\u77e5",
+    "escapes: \u9759\u97f3\u6b64\u670d\u52a1\u5668",
     "overflow: A RenderFlex overflowed by 335 pixels on the bottom."
   ],
   "real|light|android-zh|workingAgentsChannelHeaderPreview|zh-2.0x": [
@@ -61,19 +61,11 @@
   "real|light|communityAgreementPreview|3.1x": [
     "overflow: A RenderFlex overflowed by 50 pixels on the right."
   ],
-  "real|light|composerSuggestionsPreview|3.1x": [
-    "escapes: Choose the human or agent identity before sending.",
-    "escapes: Message",
-    "overflow: A RenderFlex overflowed by 274 pixels on the bottom."
-  ],
   "real|light|expandedComposerPhonePreview|3.1x": [
-    "inkClipped: ## Plan\n\n**Ship** Friday\n- tests\n- 中文"
+    "inkClipped: ## Plan\n\n**Ship** Friday\n- tests\n- \u4e2d\u6587"
   ],
   "real|light|mobileServerSwitcherPreview|3.1x": [
     "inkClipped: Visual Server"
-  ],
-  "real|light|searchSurfacesPreview|3.1x": [
-    "overflow: A RenderFlex overflowed by 5.0 pixels on the right."
   ],
   "tall|light|channelHeaderPreview|1.0x": [
     "inkClipped: A public description can wrap without hiding the channel identity."
@@ -84,8 +76,5 @@
   "tall|light|channelHeaderPreview|zh-2.0x": [
     "escapes: Public channel",
     "inkClipped: A public description can wrap without hiding the channel identity."
-  ],
-  "tall|light|composerEditableLineBoxPreview|1.3x": [
-    "inkClipped: Review the Android composer crop before release."
   ]
 }

@@ -43,6 +43,53 @@ enum RaftMessageSizeTier {
       ? lg
       : md;
 
+  String get tokenKey => switch (this) {
+    sm => 'sm',
+    md => 'md',
+    lg => 'lg',
+  };
+
+  /// Resolves an existing preference tier without changing its stored value.
+  double bodySizeFor(RaftTokens tokens) => tokens.size(
+    'type.messageBody.$tokenKey.size',
+    fallback: switch (this) {
+      sm => 12,
+      md => 14,
+      lg => 16,
+    },
+  );
+  double bodyLineFor(RaftTokens tokens) => tokens.size(
+    'type.messageBody.$tokenKey.line',
+    fallback: switch (this) {
+      sm => 16,
+      md => 20,
+      lg => 24,
+    },
+  );
+  double nameFor(RaftTokens tokens) =>
+      tokens.size('type.messageSender.$tokenKey.size', fallback: name);
+  double nameLineFor(RaftTokens tokens) =>
+      tokens.size('type.messageSender.$tokenKey.line', fallback: name);
+  double metaFor(RaftTokens tokens) => this == lg
+      ? tokens.size('type.messageMeta.lg.size', fallback: meta)
+      : meta;
+  double previewFor(RaftTokens tokens) => this == lg
+      ? preview
+      : tokens.size('type.messagePreview.$tokenKey.size', fallback: preview);
+  double previewTimeFor(RaftTokens tokens) => this == md
+      ? tokens.size('type.messagePreviewTime.md.size', fallback: previewTime)
+      : previewTime;
+
+  /// Physical sizes are caller overrides; classify them in the active scale.
+  static RaftMessageSizeTier forDisplay(RaftTokens tokens, double size) =>
+      matchingDisplay(tokens, size) ?? of(size);
+  static RaftMessageSizeTier? matchingDisplay(RaftTokens tokens, double size) {
+    for (final tier in values) {
+      if (tier.bodySizeFor(tokens) == size) return tier;
+    }
+    return null;
+  }
+
   /// `getMessageNameSizeClass`.
   double get name => switch (this) {
     sm => 12,
@@ -241,15 +288,19 @@ class RaftMessageRowRecipe {
     locale: tokens.textLocale,
     // Mounted host uses font-display, not Elegant's generic font-sans (Geist).
     fontFamily: tokens.headingFont,
-    fontSize: 14,
-    height: 20 / 14,
-    letterSpacing: -.14,
-    color: tokens.muted,
+    fontSize: sizeTier.bodySizeFor(tokens),
+    height: sizeTier.bodyLineFor(tokens) / sizeTier.bodySizeFor(tokens),
+    letterSpacing:
+        sizeTier.bodySizeFor(tokens) *
+        tokens.size('type.messageBody.tracking', fallback: -.01),
+    color: tokens.colors['foreground-message'],
   );
   TextStyle get author => body.copyWith(
-    fontSize: sizeTier.name,
-    height: 1,
-    fontWeight: FontWeight.w600,
+    fontSize: sizeTier.nameFor(tokens),
+    height: sizeTier.nameLineFor(tokens) / sizeTier.nameFor(tokens),
+    fontWeight: raftFontWeight(
+      tokens.size('type.messageSender.weight', fallback: 600),
+    ),
   );
 
   /// Meta, time and the description: the size class (`text-[12px]`) replaces
@@ -258,7 +309,7 @@ class RaftMessageRowRecipe {
   TextStyle get time => TextStyle(
     locale: tokens.textLocale,
     fontFamily: tokens.bodyFont,
-    fontSize: sizeTier.meta,
+    fontSize: sizeTier.metaFor(tokens),
     height: 1,
     letterSpacing: -.14,
     color: tokens.colors['foreground-hint']!,
@@ -794,7 +845,7 @@ class _RaftMessageRowState extends State<RaftMessageRow> {
         kind: RaftControlKind.textLink,
         shadow: false,
         // The name's line: brutal 20/14 of the size, elegant `leading-none`.
-        visualHeight: recipe.sizeTier.name,
+        visualHeight: recipe.sizeTier.nameLineFor(recipe.tokens),
         minimumTargetSize: 0,
         padding: EdgeInsets.zero,
         child: Text(
