@@ -1123,6 +1123,8 @@ rail 在栏下的导航顶部留 8px（矮屏 4px），没有栏时保留原间�
 
 `space.sidebarContentTopWithoutHeader` 指无侧栏标题时列表上内边距（Raft 8，
 旧两套保留 12）；有标题仍用现有 `space.sidebarContentTop`（Raft 4）。
+顶栏搜索的快捷键提示及扩展触控命中区读取 `RaftInteraction`：触控隐藏键盘提示，
+指针显示提示；不按窗口宽度决定，也支持显式输入方式覆盖。
 顶部搜索菜单读取真实搜索框的全局位置，顶部与搜索框顶部重合；窗口居中，
 宽度至少为搜索框或 min(720px,92vw)，高度沿用 min(680px,80vh) 并留底边 24px。
 没有顶部搜索框时保留原来的居中回退位置。

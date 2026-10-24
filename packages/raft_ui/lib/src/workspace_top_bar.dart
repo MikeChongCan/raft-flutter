@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'design_primitives.dart';
 import 'icons.dart';
+import 'interaction.dart';
 import 'localization.dart';
 import 'raft/css_box.dart' show raftControlBorderPx;
 import 'shortcut_platform.dart';
@@ -117,28 +118,29 @@ class RaftWorkspaceSearchTrigger extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          DecoratedBox(
-            decoration: BoxDecoration(
-              border: Border.all(color: t.colors['line-hairline']!),
-              borderRadius: BorderRadius.circular(3),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: Text(
-                globalSearchShortcutLabel(),
-                style: RaftTypography.mono(
-                  t,
-                  size: 12,
-                  line: 16,
-                  color: t.colors['foreground-hint'],
+          if (RaftInteraction.of(context).pointer)
+            DecoratedBox(
+              decoration: BoxDecoration(
+                border: Border.all(color: t.colors['line-hairline']!),
+                borderRadius: BorderRadius.circular(3),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: Text(
+                  globalSearchShortcutLabel(),
+                  style: RaftTypography.mono(
+                    t,
+                    size: 12,
+                    line: 16,
+                    color: t.colors['foreground-hint'],
+                  ),
                 ),
               ),
             ),
-          ),
         ],
       ),
     );
-    return RaftDensityScope.of(context) == RaftDensity.touch
+    return RaftInteraction.of(context).touch
         ? RaftTapSlopAnchor(
             minSize: const Size.square(RaftMetrics.touchTarget),
             child: control,
