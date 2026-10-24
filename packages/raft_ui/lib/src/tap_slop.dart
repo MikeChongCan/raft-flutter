@@ -101,10 +101,21 @@ class RenderTapSlopHost extends RenderProxyBox {
       }
     }
     if (best != null && bestVisual != null) {
-      // Nearest point inside the anchor (the far edges are outside a box).
+      // A neighboring target must not take a pointer from editable input.
+      // Probe at the actual position before routing blank-space touches.
+      final direct = BoxHitTestResult();
+      if (super.hitTest(direct, position: position) &&
+          direct.path.any((entry) => entry.target is RenderEditable)) {
+        return super.hitTest(result, position: position);
+      }
+      // Inset both closed and open edges: a fractional ancestor transform
+      // can round the exact near edge just below zero during the inverse
+      // hit-test transform. The routing point must be strictly inside.
+      final insetX = math.min(1e-3, bestVisual.width / 2);
+      final insetY = math.min(1e-3, bestVisual.height / 2);
       final inside = Offset(
-        position.dx.clamp(bestVisual.left, bestVisual.right - 1e-3),
-        position.dy.clamp(bestVisual.top, bestVisual.bottom - 1e-3),
+        position.dx.clamp(bestVisual.left + insetX, bestVisual.right - insetX),
+        position.dy.clamp(bestVisual.top + insetY, bestVisual.bottom - insetY),
       );
       if (super.hitTest(result, position: inside)) return true;
     }
