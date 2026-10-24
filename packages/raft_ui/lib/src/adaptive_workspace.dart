@@ -778,6 +778,7 @@ class RaftWorkspaceRail extends StatelessWidget {
     required this.workspaceName,
     required this.onWorkspace,
     this.workspaceTooltip = 'Switch Server',
+    this.topBar = false,
     this.workspaceHeader,
     this.footer,
     this.thinDivider = false,
@@ -793,6 +794,9 @@ class RaftWorkspaceRail extends StatelessWidget {
   /// The rail stands in for the phone's bottom bar: touch buttons keep their
   /// full target (Elegant's compact visual density would shave 8 dp off).
   final bool phone;
+
+  /// The global bar owns the workspace trigger and starts the navigation below it.
+  final bool topBar;
   final String selected, workspaceName, workspaceTooltip;
   final ValueChanged<String> onSelected;
   final VoidCallback onWorkspace;
@@ -893,14 +897,18 @@ class RaftWorkspaceRail extends StatelessWidget {
                     // A phone's 48 dp targets need the whole 56 dp column.
                     padding: EdgeInsets.fromLTRB(
                       phone ? 0 : t.size('space.railInline', fallback: 0),
-                      t.size(
-                        MediaQuery.sizeOf(context).height <= 600
-                            ? 'space.railNavTopCompact'
-                            : 'space.railNavTop',
-                        fallback: nav.padding
-                            .resolve(Directionality.of(context))
-                            .top,
-                      ),
+                      topBar
+                          ? MediaQuery.sizeOf(context).height <= 600
+                                ? 4
+                                : 8
+                          : t.size(
+                              MediaQuery.sizeOf(context).height <= 600
+                                  ? 'space.railNavTopCompact'
+                                  : 'space.railNavTop',
+                              fallback: nav.padding
+                                  .resolve(Directionality.of(context))
+                                  .top,
+                            ),
                       phone ? 0 : t.size('space.railInline', fallback: 0),
                       t.size('space.railNavBottom', fallback: 8),
                     ),

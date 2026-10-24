@@ -6,6 +6,7 @@ the specified 1.5px remains data for the shared renderer to project.
 """
 
 RAFT_GEOMETRY = {
+    'space.sidebarContentTopWithoutHeader': 8,
     'stroke.sidebarItemRing': 1.5,
     'stroke.sidebarCountRing': 1.5,
     'stroke.sidebarMentionRing': 1.5,
@@ -96,6 +97,7 @@ RAFT_GEOMETRY = {
 
 ELEGANT_GEOMETRY = {
     **RAFT_GEOMETRY,
+    'space.sidebarContentTopWithoutHeader': 12,
     'stroke.sidebarItemRing': 0,
     'stroke.sidebarCountRing': 0,
     'stroke.sidebarMentionRing': 0,
@@ -243,6 +245,7 @@ def framework_colors(column, colors):
         'foreground-sidebar-item': colors['foreground'] if raft else colors['foreground-muted'],
         'foreground-sidebar-item-active': colors['sticker-ink'] if raft else colors['foreground-strong'],
         'foreground-sidebar-item-icon': colors['foreground-hint'] if raft else colors['foreground-icon'],
+        'foreground-sidebar-item-icon-active': colors['sticker-ink'] if raft else colors['foreground-icon'],
         'layer-sidebar-item-active': colors['brand-400'] if raft else colors['fill-muted'],
         'layer-sidebar-item-hover': colors['fill-pressed'] if raft else colors['ink-6'] if dark else colors['fill-strong'],
         'line-sidebar-item-active': colors['sticker-ink'] if raft else transparent,

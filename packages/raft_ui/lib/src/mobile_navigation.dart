@@ -695,6 +695,7 @@ class RaftMobileNotificationButton extends StatelessWidget {
     this.visualSize = 32,
     this.glyphSize = 16,
     this.rail = false,
+    this.onFrame = false,
     this.attention = false,
   });
   final VoidCallback? onPressed;
@@ -711,10 +712,12 @@ class RaftMobileNotificationButton extends StatelessWidget {
   /// AppRailItemAttention composite the other rail items use. [glyphSize] is
   /// ignored then.
   final bool rail, attention;
+  final bool onFrame;
   @override
   Widget build(BuildContext context) {
-    if (rail) {
+    if (rail || onFrame) {
       return RaftWorkspaceRailAction(
+        extent: onFrame ? 36 : null,
         label: raftText(context, semanticLabel),
         glyph: RaftGlyph.bell,
         selected: open,

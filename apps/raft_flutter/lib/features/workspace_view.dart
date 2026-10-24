@@ -118,9 +118,13 @@ class WorkspaceView extends StatefulWidget {
     this.onChooseServer,
     this.onSwitchServer,
     this.mobileRoutePage = false,
+    this.browserHost = kIsWeb,
     this.mobileHost,
   });
   final WorkspaceController controller;
+
+  /// Host chrome and responsive navigation follow the browser entry contract.
+  final bool browserHost;
 
   final bool mobileRoutePage;
   final Object? mobileHost;
@@ -533,6 +537,7 @@ class _WorkspaceViewState extends State<WorkspaceView>
   /// dialog route live across openings.
   late final QuickSwitcherHost quickSwitcher = QuickSwitcherHost(
     controller: w,
+    searchAnchor: workspaceSearchRect,
     actions: QuickSwitcherActions(
       openConversation: openQuickSwitcherConversation,
       openDirectory: openQuickSwitcherDirectory,
@@ -637,7 +642,8 @@ class _WorkspaceViewState extends State<WorkspaceView>
 
   /// The working-agents summary (faces and count, opening Working now). It
   /// listens to the activity itself, so the shell never rebuilds for it.
-  Widget workingSummary() => NativeWorkingAgentsSummary(
+  Widget workingSummary({bool onFrame = false}) => NativeWorkingAgentsSummary(
+    onFrame: onFrame,
     activities: liveActivities,
     presentation: presentation,
     origin: w.client.origin,
@@ -645,10 +651,52 @@ class _WorkspaceViewState extends State<WorkspaceView>
   );
   bool get wide => !RaftAdaptiveWorkspace.compactOf(context);
 
+  bool get showWorkspaceTopBar => raftShowsWorkspaceTopBar(
+    tokens: RaftTokens.of(context),
+    width: MediaQuery.sizeOf(context).width,
+    nativeWindowChrome:
+        !widget.browserHost &&
+        switch (defaultTargetPlatform) {
+          TargetPlatform.linux ||
+          TargetPlatform.macOS ||
+          TargetPlatform.windows => true,
+          _ => false,
+        },
+  );
+
+  final workspaceSearchAnchor = GlobalKey();
+  Rect? workspaceSearchRect() {
+    if (!mounted || !showWorkspaceTopBar) return null;
+    final box =
+        workspaceSearchAnchor.currentContext?.findRenderObject() as RenderBox?;
+    return box == null || !box.hasSize
+        ? null
+        : box.localToGlobal(Offset.zero) & box.size;
+  }
+
+  Widget workspaceTopBar() => RaftWorkspaceTopBar(
+    key: const ValueKey('workspace-top-bar'),
+    searchKey: workspaceSearchAnchor,
+    workspace: workspaceServerMenu(topBar: true),
+    onSearch: openSearchFromRail,
+    trailing: [
+      workingSummary(onFrame: true),
+      SystemNotificationBell(
+        key: const Key('topbar-notifications'),
+        controller: w,
+        mobile: false,
+        topBar: true,
+        onBilling: () => select('billing'),
+        onFeedback: () => openHelpSettings('feedback'),
+      ),
+    ],
+  );
+
   /// The phone layout shows the desktop left rail instead of the bottom tab
   /// bar (wide foldable, landscape phone, 600-767 dp; see [RaftWindowClass]).
   /// Held with the layout while a full-bleed overlay owns state in the tree.
   bool get railNavigation {
+    if (widget.browserHost) return false;
     final live = RaftAdaptiveWorkspace.phoneRailOf(
       context,
       side: railSideStore.side,
@@ -1769,6 +1817,7 @@ class _WorkspaceViewState extends State<WorkspaceView>
                   right: !railShown || !railOnRight,
                   child: Column(
                     children: [
+                      if (showWorkspaceTopBar) workspaceTopBar(),
                       if (!wide && rootTab == 'computers' && !thread)
                       // With the rail the header sits beside it, in the content.
                       ...[
@@ -2779,7 +2828,10 @@ class _WorkspaceViewState extends State<WorkspaceView>
       phone: !wide,
       itemAreaKey: railItemArea,
       thinDivider: w.location.route == RaftRoute.activity,
-      destinations: railDestinations,
+      topBar: showWorkspaceTopBar,
+      destinations: railDestinations
+          .where((d) => !showWorkspaceTopBar || d.id != 'search')
+          .toList(),
       selected: DesktopNavigationPolicy.forSection(
         w.location.route == RaftRoute.settings ? 'settings' : w.section,
       ).railMode,
@@ -2788,16 +2840,19 @@ class _WorkspaceViewState extends State<WorkspaceView>
           : selectRailDestination(id),
       workspaceName: w.server?.name ?? 'Raft',
       workspaceTooltip: tr('Switch Server'),
-      workspaceHeader: workspaceServerMenu(),
+      workspaceHeader: showWorkspaceTopBar
+          ? const SizedBox.shrink()
+          : workspaceServerMenu(),
       onWorkspace: () => showWorkspaceSwitcher(),
       footer: RaftWorkspaceRailFooter(
         children: [
-          SystemNotificationBell(
-            controller: w,
-            mobile: false,
-            onBilling: () => select('billing'),
-            onFeedback: () => openHelpSettings('feedback'),
-          ),
+          if (!showWorkspaceTopBar)
+            SystemNotificationBell(
+              controller: w,
+              mobile: false,
+              onBilling: () => select('billing'),
+              onFeedback: () => openHelpSettings('feedback'),
+            ),
           RaftWorkspaceHelpMenu(
             key: const Key('rail-help'),
             label: tr('Help'),
@@ -2864,10 +2919,11 @@ class _WorkspaceViewState extends State<WorkspaceView>
           );
   }
 
-  Widget workspaceServerMenu({bool mobile = false}) {
+  Widget workspaceServerMenu({bool mobile = false, bool topBar = false}) {
     final scope = mobileAuthority;
     return RaftServerSwitcher(
       mobile: mobile,
+      topBar: topBar,
       publicPageLive: serverPublicPageLive(w),
       attention: w.servers.any(
         (s) => s.id != w.server?.id && (activityCountOf(s.id) ?? 0) > 0,
@@ -3640,7 +3696,7 @@ class _WorkspaceViewState extends State<WorkspaceView>
   Widget sidebar({bool mobileHome = false}) {
     final edgeToEdgeHome =
         mobileHome &&
-        !kIsWeb &&
+        !widget.browserHost &&
         (defaultTargetPlatform == TargetPlatform.android ||
             defaultTargetPlatform == TargetPlatform.iOS);
     final recipe = RaftSidebarRecipe(
@@ -3668,8 +3724,8 @@ class _WorkspaceViewState extends State<WorkspaceView>
                 serverSwitcher: workspaceServerMenu(mobile: true),
                 workingSummary: RaftWideHeaderAction(child: workingSummary()),
               )
-            else
-              // The desktop has no top bar here, so the working summary sits
+            else if (!showWorkspaceTopBar)
+              // Without the top bar, the working summary sits
               // at the end of the Chat heading.
               RaftChatSidebarHeading(
                 label: tr('Chat'),
@@ -3700,7 +3756,7 @@ class _WorkspaceViewState extends State<WorkspaceView>
                     slivers: [
                       SliverPadding(
                         padding: recipe.contentInset(
-                          headerInFlow: true,
+                          headerInFlow: !showWorkspaceTopBar,
                           bottomBar: !railNavigation,
                           bottomInset: edgeToEdgeHome
                               ? raftSystemBottomInset(context)

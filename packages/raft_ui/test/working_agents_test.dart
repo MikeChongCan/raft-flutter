@@ -296,6 +296,7 @@ void main() {
         glyph: RaftGlyph.user,
         conversationKind: RaftConversationNavKind.directMessage,
         description: description,
+        metaText: 'Codex CLI',
         unread: unread,
         activityText: activity,
         onTap: () {},
@@ -303,19 +304,21 @@ void main() {
     );
 
     testWidgets(
-      'what it is doing replaces the runtime on the right, in place',
+      'what it is doing replaces runtime metadata while description stays',
       (t) async {
         final handle = t.ensureSemantics();
         final activity = ValueNotifier<String?>(null);
         addTearDown(activity.dispose);
         await pump(t, row(activity: activity));
         expect(find.text('codex'), findsOneWidget);
+        expect(find.text('Codex CLI'), findsOneWidget);
         expect(find.byKey(const Key('nav-item-activity')), findsNothing);
         final before = t.getSize(find.byType(RaftNavItem));
 
         activity.value = 'Editing Flow.tsx · #25';
         await t.pump();
-        expect(find.text('codex'), findsNothing);
+        expect(find.text('codex'), findsOneWidget);
+        expect(find.text('Codex CLI'), findsNothing);
         expect(find.text('Editing Flow.tsx · #25'), findsOneWidget);
         expect(
           t.getSize(find.byType(RaftNavItem)),
@@ -330,13 +333,18 @@ void main() {
           closeTo(t.getRect(find.byType(RaftNavItem)).right - 6, 8),
         );
         // Hidden from assistive technology: the row's name stays the name.
-        expect(find.bySemanticsLabel('Bugen'), findsOneWidget);
+        expect(
+          t.getSemantics(find.byType(RaftControl)).getSemanticsData().label,
+          'Bugen codex',
+        );
         expect(find.bySemanticsLabel(RegExp('Editing')), findsNothing);
 
         activity.value = null;
         await t.pump();
         expect(find.text('codex'), findsOneWidget);
+        expect(find.text('Codex CLI'), findsOneWidget);
         handle.dispose();
+        await t.pumpWidget(const SizedBox.shrink());
       },
     );
 

@@ -996,14 +996,18 @@ class RaftNavItem extends StatelessWidget {
                 strokeWidth: conversation?.glyphStrokeWidth ?? 2,
                 color: _dimmed
                     ? t.colors['foreground-placeholder']
-                    : t.colors['foreground-sidebar-item-icon'],
+                    : t.colors[selected && conversationKind != null
+                          ? 'foreground-sidebar-item-icon-active'
+                          : 'foreground-sidebar-item-icon'],
               )
             : RaftSymbol(
                 icon!,
                 size: conversation?.glyphSize ?? (18),
                 color: _dimmed
                     ? t.colors['foreground-placeholder']
-                    : t.colors['foreground-sidebar-item-icon'],
+                    : t.colors[selected && conversationKind != null
+                          ? 'foreground-sidebar-item-icon-active'
+                          : 'foreground-sidebar-item-icon'],
               ));
     Widget wrappedTitle(BuildContext context) {
       final style =

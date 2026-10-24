@@ -95,6 +95,7 @@ class QuickSwitcher extends StatefulWidget {
     this.onSnapshot,
     this.authority = '',
     this.clock,
+    this.searchAnchor,
   });
 
   /// Notifies when the workspace behind [data] changes.
@@ -121,14 +122,17 @@ class QuickSwitcher extends StatefulWidget {
   final String authority;
   final DateTime Function()? clock;
 
+  /// The mounted top search field, read again when viewport layout changes.
+  final Rect? Function()? searchAnchor;
+
   /// Source OVERLAY_MESSAGE_PREVIEW_LIMIT and MAX_ENTITY_RESULTS.
   static const messagePreviewLimit = 5;
   static const entityLimit = 50;
   static const debounce = Duration(milliseconds: 200);
 
   /// Source searchOverlayCardStyle fallback placement and size.
-  static Rect cardRect(Size viewport) =>
-      RaftQuickSwitcherMetrics.cardRect(viewport);
+  static Rect cardRect(Size viewport, {Rect? anchor}) =>
+      RaftQuickSwitcherMetrics.cardRect(viewport, anchor: anchor);
 
   @override
   State<QuickSwitcher> createState() => _QuickSwitcherState();
@@ -433,7 +437,10 @@ class _QuickSwitcherState extends State<QuickSwitcher> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
-    final card = QuickSwitcher.cardRect(size);
+    final card = QuickSwitcher.cardRect(
+      size,
+      anchor: widget.searchAnchor?.call(),
+    );
     return Stack(
       children: [
         Positioned.fromRect(

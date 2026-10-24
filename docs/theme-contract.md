@@ -1109,3 +1109,20 @@ separately from the pure-black outer borders.
 `stroke.sidebarCountRing`、`stroke.sidebarMentionRing` 定义（Raft 1.5，旧两套 0）；
 颜色角色 `line-sidebar-item-ring`、`line-sidebar-count-ring`、`line-sidebar-mention-ring`
 在 Raft 引用现有 `sticker-edge`，旧两套透明。描边绘制在盒外，不改变布局。
+
+`foreground-sidebar-item-icon-active` 是选中会话行的图标颜色：Raft 引用现有
+`sticker-ink`，旧两套保留 `foreground-icon`；普通、未选中行保留原颜色。
+
+浏览器框架的顶部栏由 `shell.browserTopBar = shown | hidden` 选择：Raft shown，
+旧两套 hidden。仅在宽布局且宿主没有原生桌面标题栏时挂载；手机不挂载。
+MainLayout/AppTopBar 的新栏固定 48px，控件 36px；搜索框 clamp(360px,32vw,520px)
+并居中于窗口。新组件只在 Raft 挂载，尺寸来自锁定 Web；旧外观没有相应组件。
+它复用当前工作区切换菜单、全局搜索、通知及 Working now 的状态与动作。
+顶部栏接管工作区、搜索、通知后，rail 和侧栏省去这些重复入口和 Chat 标题；
+rail 在栏下的导航顶部留 8px（矮屏 4px），没有栏时保留原间距。
+
+`space.sidebarContentTopWithoutHeader` 指无侧栏标题时列表上内边距（Raft 8，
+旧两套保留 12）；有标题仍用现有 `space.sidebarContentTop`（Raft 4）。
+顶部搜索菜单读取真实搜索框的全局位置，顶部与搜索框顶部重合；窗口居中，
+宽度至少为搜索框或 min(720px,92vw)，高度沿用 min(680px,80vh) 并留底边 24px。
+没有顶部搜索框时保留原来的居中回退位置。

@@ -133,6 +133,7 @@ const Map<String, Set<String>> raftStructuralOptions = {
   'finder.boxLayout': {'css', 'natural'},
   'conversationHeader.metaFlow': {'stacked', 'inlineWide'},
   'conversationTabs.variant': {'default', 'underline'},
+  'shell.browserTopBar': {'shown', 'hidden'},
   'rail.attentionRendering': {'indicator', 'masked'},
   'resource.surface': {'canvas', 'sidebar'},
   'resource.rows': {'flat', 'cards'},

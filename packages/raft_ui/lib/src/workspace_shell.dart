@@ -144,6 +144,7 @@ class RaftWorkspaceRailAction extends StatelessWidget {
     this.icon,
     required this.onPressed,
     this.navigation = false,
+    this.extent,
     this.badge,
     this.selected = false,
     this.focusNode,
@@ -154,6 +155,9 @@ class RaftWorkspaceRailAction extends StatelessWidget {
   final RaftGlyph? glyph;
   final Widget? icon;
   final bool navigation;
+
+  /// The same frame action in a top bar has a 36px box.
+  final double? extent;
   final Widget? badge;
   final VoidCallback? onPressed;
   final bool selected, showTooltip, attention;
@@ -165,7 +169,7 @@ class RaftWorkspaceRailAction extends StatelessWidget {
       t,
       viewportHeight: MediaQuery.sizeOf(context).height,
     );
-    final size = recipe.itemSize;
+    final size = extent ?? recipe.itemSize;
     Widget iconFor() => icon ?? RaftIcon(glyph!, size: recipe.glyphSize);
     final control = RaftInteractive(
       semanticLabel: label,

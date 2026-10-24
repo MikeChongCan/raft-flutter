@@ -153,7 +153,13 @@ class _FaceIn extends StatelessWidget {
 /// Hidden (no zero) when nobody is working. Its accessible name is the full
 /// sentence ("2 agents working").
 class RaftWorkingSummary extends StatefulWidget {
-  const RaftWorkingSummary({super.key, required this.agents, this.onOpenAgent});
+  const RaftWorkingSummary({
+    super.key,
+    required this.agents,
+    this.onOpenAgent,
+    this.onFrame = false,
+  });
+  final bool onFrame;
 
   /// Working agents in the order they started.
   final List<RaftWorkingAgent> agents;
@@ -253,6 +259,7 @@ class _RaftWorkingSummaryState extends State<RaftWorkingSummary> {
                 ? const SizedBox(height: 32)
                 : _SummaryButton(
                     label: label,
+                    onFrame: widget.onFrame,
                     selected: open,
                     onPressed: () => setOpen(!open),
                     // The count is fixed chrome: bounded at 1.35x like badges.
@@ -290,11 +297,13 @@ class _SummaryButton extends StatelessWidget {
     required this.child,
     required this.onPressed,
     this.selected = false,
+    this.onFrame = false,
   });
   final String label;
   final Widget child;
   final VoidCallback onPressed;
   final bool selected;
+  final bool onFrame;
 
   @override
   Widget build(BuildContext context) {
@@ -311,13 +320,13 @@ class _SummaryButton extends StatelessWidget {
         tooltip: label,
         button: false,
         builder: (context, state) => Container(
-          height: 32,
-          padding: const EdgeInsets.symmetric(horizontal: 8),
+          height: onFrame ? 36 : 32,
+          padding: EdgeInsets.symmetric(horizontal: onFrame ? 6 : 8),
           decoration: BoxDecoration(
             color: state.hovered || state.pressed || selected
-                ? t.colors['fill-muted']
+                ? t.colors[onFrame ? 'fill-frame-pressed' : 'fill-muted']
                 : Colors.transparent,
-            borderRadius: BorderRadius.circular(6),
+            borderRadius: BorderRadius.circular(onFrame ? t.radius : 6),
             border: state.focusVisible ? Border.all(color: t.strong) : null,
           ),
           alignment: Alignment.center,

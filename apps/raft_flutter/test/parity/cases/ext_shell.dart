@@ -201,6 +201,7 @@ class _HostState extends State<_Host> {
   @override
   Widget build(BuildContext context) => withAppServices(
     WorkspaceView(
+      browserHost: widget.ctx.props['shell'] == 'browser',
       controller: w,
       presentation: presentation,
       appearance: RaftAppearance(

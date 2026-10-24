@@ -74,6 +74,7 @@ class QuickSwitcherHost {
     RecentConversationStore? recents,
     SearchMemoryStore? searchMemory,
     this.clock,
+    this.searchAnchor,
   }) : w = controller,
        recents = recents ?? RecentConversationStore(),
        searchMemory = searchMemory ?? SearchMemoryStore(clock: clock) {
@@ -90,6 +91,7 @@ class QuickSwitcherHost {
   /// with the visits, from the first frame.
   final railMemory = RailLocationMemory();
   final DateTime Function()? clock;
+  final Rect? Function()? searchAnchor;
   RawDialogRoute<void>? route;
   String? openedAuthority, lastVisit, lastVisitScope;
   bool _disposed = false;
@@ -255,9 +257,14 @@ class QuickSwitcherHost {
       transitionDuration: Duration.zero,
       pageBuilder: (_, _, _) => RaftQuickSwitcherLayer(
         child: QuickSwitcher(
-          listenable: Listenable.merge([w, w.services.entityDirectory, recents]),
+          listenable: Listenable.merge([
+            w,
+            w.services.entityDirectory,
+            recents,
+          ]),
           data: data,
           clock: clock,
+          searchAnchor: searchAnchor,
           seed: seeded,
           authority: openedAuthority!,
           onStateChanged: saveState,

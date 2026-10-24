@@ -30,6 +30,7 @@ class SystemNotificationBell extends StatefulWidget {
     required this.onBilling,
     this.onFeedback,
     this.mobile = true,
+    this.topBar = false,
     this.store,
   });
   final WorkspaceController controller;
@@ -39,6 +40,7 @@ class SystemNotificationBell extends StatefulWidget {
   /// Settings. Without it the notice shows the feedback view in a pushed page.
   final VoidCallback? onFeedback;
   final bool mobile;
+  final bool topBar;
   final SystemNotificationStore? store;
   @override
   State<SystemNotificationBell> createState() => _SystemNotificationBellState();
@@ -319,12 +321,12 @@ class _SystemNotificationBellState extends State<SystemNotificationBell>
     final maxTop = math.max(minTop, size.height - bottom - height - 8);
     // A rail on the window's right opens toward the content (to its left).
     final railOnRight = !widget.mobile && RaftRailEdgeScope.onRightOf(context);
-    final left = widget.mobile
+    final left = widget.mobile || widget.topBar
         ? (anchorRect.right - width).clamp(minLeft, maxLeft)
         : railOnRight
         ? (anchorRect.left - 8 - width).clamp(minLeft, maxLeft)
         : (anchorRect.right + 8).clamp(minLeft, maxLeft);
-    final top = widget.mobile
+    final top = widget.mobile || widget.topBar
         ? (anchorRect.bottom + 8).clamp(minTop, maxTop)
         : (anchorRect.bottom - height).clamp(minTop, maxTop);
     final themes = InheritedTheme.capture(from: context, to: overlay.context);
@@ -612,10 +614,10 @@ class _SystemNotificationBellState extends State<SystemNotificationBell>
         },
         child: RaftHoverRegion(
           onEnter: (_) {
-            if (!widget.mobile) unawaited(show());
+            if (!widget.mobile && !widget.topBar) unawaited(show());
           },
           onExit: (_) {
-            if (!widget.mobile) {
+            if (!widget.mobile && !widget.topBar) {
               closeDelay = Timer(const Duration(milliseconds: 120), close);
             }
           },
@@ -639,7 +641,8 @@ class _SystemNotificationBellState extends State<SystemNotificationBell>
                   // NotificationTrigger: the rail bell is a rail icon with the
                   // shared attention composite; the mobile navbar keeps its
                   // 16px muted bell and Status dot.
-                  rail: !widget.mobile,
+                  rail: !widget.mobile && !widget.topBar,
+                  onFrame: widget.topBar,
                   attention: !widget.mobile && store.unreadCount > 0,
                   onPressed: () => popup == null
                       ? show(

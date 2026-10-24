@@ -48,6 +48,7 @@ class _MobileWorkspaceContent extends WorkspaceView {
     super.sharing,
     super.presentation,
     super.mobileTabbar,
+    super.browserHost,
     super.railSide,
     super.onChooseServer,
     super.onSwitchServer,

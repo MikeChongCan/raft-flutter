@@ -63,11 +63,13 @@ class NativeWorkingAgentsSummary extends StatelessWidget {
     required this.presentation,
     required this.origin,
     required this.onOpenAgent,
+    this.onFrame = false,
   });
   final ChatAgentPresentation activities;
   final PersonalPresentationStore presentation;
   final String origin;
   final ValueChanged<String> onOpenAgent;
+  final bool onFrame;
 
   @override
   Widget build(BuildContext context) => QuietListenableBuilder(
@@ -75,6 +77,7 @@ class NativeWorkingAgentsSummary extends StatelessWidget {
     builder: (context, _) {
       if (!presentation.value.liveActivity) return const SizedBox.shrink();
       return RaftWorkingSummary(
+        onFrame: onFrame,
         agents: workingAgentEntries(context, activities, origin),
         onOpenAgent: onOpenAgent,
       );

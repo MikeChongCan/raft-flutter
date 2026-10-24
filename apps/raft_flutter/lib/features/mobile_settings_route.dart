@@ -60,6 +60,7 @@ class _MobileWorkspaceRouteState extends State<_MobileWorkspaceRoute> {
     routeWasActive = now;
     final page = _MobileWorkspaceContent(
       controller: source,
+      browserHost: host.widget.browserHost,
       mobileHost: host,
       appearance: host.widget.appearance,
       onAppearance: host.widget.onAppearance,

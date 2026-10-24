@@ -1,4 +1,8 @@
 import 'sidebar_text.dart';
+import 'tap_slop.dart';
+import 'public_page_mark.dart';
+import 'raft/button.dart';
+import 'raft/avatar.dart';
 
 import 'dart:math' as math;
 
@@ -27,6 +31,8 @@ import 'text_scaling.dart' show RaftChrome;
 import 'theme.dart';
 import 'sized_image.dart';
 import 'tooltip.dart' show RaftTooltip;
+
+part 'server_switcher_top_bar.dart';
 
 /// Accepted records and actions are supplied by the application, never the SDK.
 @immutable
@@ -79,6 +85,7 @@ class RaftServerSwitcher extends StatefulWidget {
     required this.actions,
     this.onReorder,
     this.mobile = false,
+    this.topBar = false,
     this.headerActions = const [],
     this.attention = false,
     this.logo,
@@ -106,6 +113,9 @@ class RaftServerSwitcher extends StatefulWidget {
   final List<RaftServerMenuRow> rows;
   final List<RaftMenuEntry> actions;
   final void Function(int oldIndex, int newIndex)? onReorder;
+
+  /// Places the existing menu below the browser workspace trigger.
+  final bool topBar;
   final bool mobile;
   final List<Widget> headerActions;
   @override
@@ -178,7 +188,17 @@ class _RaftServerSwitcherState extends State<RaftServerSwitcher> {
     final onRight = RaftRailEdgeScope.onRightOf(context);
     return TapRegion(
       groupId: this,
-      onTapOutside: (_) => widget.controller.close(),
+      onTapOutside: (event) {
+        final box = anchor.currentContext?.findRenderObject() as RenderBox?;
+        // The bar owns the full 48px touch target around its 36px trigger.
+        if (widget.topBar &&
+            box != null &&
+            RaftDensityScope.of(context) == RaftDensity.touch) {
+          final rect = (box.localToGlobal(Offset.zero) & box.size).inflate(6);
+          if (rect.contains(event.position)) return;
+        }
+        widget.controller.close();
+      },
       child: OverlayPortal(
         controller: portal,
         overlayChildBuilder: (context) {
@@ -191,13 +211,15 @@ class _RaftServerSwitcherState extends State<RaftServerSwitcher> {
               delegate: _ServerMenuPlacement(
                 // AppRailRoot's CSS right border is part of its border box;
                 // AppRailHeader's positioned containing block excludes it.
-                widget.mobile
+                widget.topBar
+                    ? Offset(rect.left, rect.bottom + 8)
+                    : widget.mobile
                     ? Offset(8, rect.bottom - (1) + 4)
                     : onRight
                     ? Offset(rect.left + (0) - 8, rect.top + 4)
                     : Offset(rect.right - (0) + 8, rect.top + 4),
                 mobileWidth: widget.mobile ? size.width - 16 : null,
-                leftOfAnchor: !widget.mobile && onRight,
+                leftOfAnchor: !widget.mobile && !widget.topBar && onRight,
               ),
               child: TapRegion(
                 groupId: this,
@@ -225,8 +247,24 @@ class _RaftServerSwitcherState extends State<RaftServerSwitcher> {
         },
         child: SizedBox(
           key: anchor,
-          height: RaftLayoutMetrics.shellHeaderHeight(t, size.height),
-          child: widget.mobile
+          height: widget.topBar
+              ? 36
+              : RaftLayoutMetrics.shellHeaderHeight(t, size.height),
+          child: widget.topBar
+              ? _TopBarServerTrigger(
+                  rows: widget.rows,
+                  workspaceName: widget.workspaceName,
+                  avatarUrl: widget.workspaceAvatarUrl,
+                  publicPageLive: widget.publicPageLive,
+                  attention: widget.attention,
+                  focusNode: triggerFocus,
+                  open: widget.controller.isOpen,
+                  onPressed: () => widget.controller.isOpen
+                      ? widget.controller.close()
+                      : widget.controller.open(),
+                  onReorder: widget.onReorder,
+                )
+              : widget.mobile
               ? RaftMobileRootHeader(
                   leading: RaftMobileServerSelector(
                     key: const Key('mobile-server-selector'),

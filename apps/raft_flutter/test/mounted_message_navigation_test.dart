@@ -1,8 +1,8 @@
 import 'dart:async';
-import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_client/raft_client.dart';
 import 'package:raft_flutter/data/raft_location.dart';
@@ -76,8 +76,10 @@ Future<void> mountPage(
   WorkspaceController w,
   bool dark, {
   double width = 1440,
+  double height = 900,
+  bool browserHost = kIsWeb,
 }) async {
-  tester.view.physicalSize = Size(width, 900);
+  tester.view.physicalSize = Size(width, height);
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
   await tester.pumpWidget(
@@ -85,6 +87,7 @@ Future<void> mountPage(
       theme: raftTheme(dark: dark),
       home: withAppServices(
         WorkspaceView(
+          browserHost: browserHost,
           controller: w,
           appearance: RaftAppearance(),
           onAppearance: (_) async {},

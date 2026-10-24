@@ -25,14 +25,17 @@ abstract final class RaftQuickSwitcherMetrics {
 
   /// Source searchOverlayCardStyle fallback: `width: min(720px, 92vw)`,
   /// `height: min(680px, 80vh)`, top `max(8vh + 16px, (100vh - height) / 2)`
-  /// and never past the window bottom (24px margin).
-  static Rect cardRect(Size viewport) {
-    final width = math.min(maxWidth, viewport.width * .92);
-    final natural = math.min(maxHeight, viewport.height * .8);
-    final top = math.max(
-      viewport.height * .08 + 16,
-      (viewport.height - natural) / 2,
+  /// and never past the window bottom (24px margin). With a published search
+  /// field, the panel starts at its top edge and is at least as wide as it.
+  static Rect cardRect(Size viewport, {Rect? anchor}) {
+    final width = math.max(
+      anchor?.width ?? 0,
+      math.min(maxWidth, viewport.width * .92),
     );
+    final natural = math.min(maxHeight, viewport.height * .8);
+    final top =
+        anchor?.top ??
+        math.max(viewport.height * .08 + 16, (viewport.height - natural) / 2);
     final height = math.max(0.0, math.min(natural, viewport.height - top - 24));
     return Rect.fromLTWH((viewport.width - width) / 2, top, width, height);
   }

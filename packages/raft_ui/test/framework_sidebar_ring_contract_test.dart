@@ -70,6 +70,19 @@ void main() {
           ),
         );
         await t.pumpAndSettle();
+        final selectedRow = find.byKey(const ValueKey(true));
+        final tokens = RaftTokens.of(t.element(selectedRow));
+        final glyph = t.widget<RaftIcon>(
+          find
+              .descendant(of: selectedRow, matching: find.byType(RaftIcon))
+              .first,
+        );
+        expect(
+          glyph.color,
+          tokens.colors[pack == raftThemePackId
+              ? 'sticker-ink'
+              : 'foreground-sidebar-item-icon'],
+        );
         final boundary = t.renderObject<RenderRepaintBoundary>(
           find.byKey(boundaryKey),
         );

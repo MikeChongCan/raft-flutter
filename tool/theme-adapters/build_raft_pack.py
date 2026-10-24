@@ -417,6 +417,7 @@ OPTIONS_RAFT = {
     'sidebar.textLayout': 'css',
     'finder.boxLayout': 'css',
     'conversationHeader.metaFlow': 'stacked', 'conversationTabs.variant': 'default',
+    'shell.browserTopBar': 'shown',
     'rail.attentionRendering': 'indicator',
     'avatar.sidebarHumanFallback': 'user',
     'sidebar.mobileSurface': 'canvas', 'resource.surface': 'canvas',
