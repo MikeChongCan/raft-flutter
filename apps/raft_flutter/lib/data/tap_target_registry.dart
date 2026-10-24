@@ -241,36 +241,27 @@ abstract final class TapTargetRegistry {
   /// `test/tap_target_registry_test.dart` until it is listed here with the
   /// test that taps it.
   static const containers = <TapContainer>[
-    TapContainer(
-      'message-timeline',
-      'features/chat_view.dart',
-      ['RaftMessageTile', 'RaftInlineThreadSurface', 'RaftThreadRepliesBadge'],
-      'tap_target_matrix_test.dart (every host)',
-    ),
-    TapContainer(
-      'workspace-hosts',
-      'features/workspace_view.dart',
-      ['RaftChatView'],
-      'tap_target_matrix_test.dart (thread panel, Activity / Search detail)',
-    ),
-    TapContainer(
-      'channel-panel',
-      'features/conversation_panel.dart',
-      ['RaftChatView'],
-      'tap_target_matrix_test.dart (chat, Activity, Search hosts)',
-    ),
+    TapContainer('message-timeline', 'features/chat_view.dart', [
+      'RaftMessageTile',
+      'RaftInlineThreadSurface',
+      'RaftThreadRepliesBadge',
+    ], 'tap_target_matrix_test.dart (every host)'),
+    TapContainer('workspace-hosts', 'features/workspace_view.dart', [
+      'RaftChatView',
+    ], 'tap_target_matrix_test.dart (thread panel, Activity / Search detail)'),
+    TapContainer('channel-panel', 'features/conversation_panel.dart', [
+      'RaftChatView',
+    ], 'tap_target_matrix_test.dart (chat, Activity, Search hosts)'),
     TapContainer(
       'task-discussion',
       'features/task_surface.dart',
       ['RaftChatView'],
       'tap_target_matrix_test.dart (task discussion carries onTask / onViewBilling)',
     ),
-    TapContainer(
-      'public-server',
-      'features/public_server_view.dart',
-      ['RaftMessageTile', 'RaftThreadRepliesBadge'],
-      'public_server_view_test.dart (reply badge opens the thread)',
-    ),
+    TapContainer('public-server', 'features/public_server_view.dart', [
+      'RaftMessageTile',
+      'RaftThreadRepliesBadge',
+    ], 'public_server_view_test.dart (reply badge opens the thread)'),
     TapContainer(
       'activity-saved-rows',
       'features/resource_view.dart',
@@ -278,23 +269,20 @@ abstract final class TapTargetRegistry {
       'activity_row_interaction_test.dart; tap_target_matrix_test.dart (Saved rows)',
     ),
     TapContainer(
-      'search-rows',
-      'features/resource_search.dart',
-      ['RaftSearchResultSurface'],
-      'desktop_preview_single_location_test.dart',
+      'activity-card-rows',
+      'features/activity_card_row.dart',
+      ['RaftConversationCard'],
+      'activity_row_interaction_test.dart; activity_conversation_list_test.dart (Activity card and list rows)',
     ),
-    TapContainer(
-      'image-export',
-      'features/message_image_export.dart',
-      ['RaftMessageTile'],
-      'inert by design: off-screen render for the exported image',
-    ),
-    TapContainer(
-      'appearance-sample',
-      'features/appearance_section.dart',
-      ['RaftMessageTile'],
-      'inert by design: static sample row in Appearance settings',
-    ),
+    TapContainer('search-rows', 'features/resource_search.dart', [
+      'RaftSearchResultSurface',
+    ], 'desktop_preview_single_location_test.dart'),
+    TapContainer('image-export', 'features/message_image_export.dart', [
+      'RaftMessageTile',
+    ], 'inert by design: off-screen render for the exported image'),
+    TapContainer('appearance-sample', 'features/appearance_section.dart', [
+      'RaftMessageTile',
+    ], 'inert by design: static sample row in Appearance settings'),
   ];
 
   /// Widgets whose construction makes a file a message container.

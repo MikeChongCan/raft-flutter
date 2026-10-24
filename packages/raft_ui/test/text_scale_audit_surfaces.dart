@@ -18,6 +18,7 @@ import 'package:raft_ui/basic_component_previews.dart';
 import 'package:raft_ui/channel_header_previews.dart';
 import 'package:raft_ui/channel_management_previews.dart';
 import 'package:raft_ui/channel_resolution_previews.dart';
+import 'package:raft_ui/conversation_finder_previews.dart';
 import 'package:raft_ui/chat_composition_previews.dart';
 import 'package:raft_ui/combobox_previews.dart';
 import 'package:raft_ui/collapsible_section_previews.dart';
@@ -113,6 +114,12 @@ final auditSurfaces = <AuditSurface>[
     dropdownViewportPreview,
     Size(390, 720),
     representative: true,
+  ),
+  AuditSurface(
+    'conversationFinderPreview',
+    'Find a conversation',
+    conversationFinderPreview,
+    Size(280, 360),
   ),
   AuditSurface(
     'activityCompactScopePreview',
