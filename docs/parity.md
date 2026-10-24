@@ -16,7 +16,6 @@ Numbers are the items of the v1.21.23 plan, section 3.
 
 | # | Question | What the answer needs | Rows it settles |
 | --- | --- | --- | --- |
-| 1 | Default appearance becomes Web's "Raft" look; Elegant and Brutal stay as selectable themes | A yes after the side-by-side screenshots (the theme work, task #228, is still changing pages) | the appearance rows and the visual baselines |
 | 3 | Native push (FCM / APNs) | The server needs a native push channel first; until then record it as a server-capability gap and do not schedule it | `ui:notifications.push-subscription`, `ui:notifications.web-push-controls` |
 | 5 | Web removed the Activity Done, Saved and DMs views (flag `activity_sidebar_inbox_v0`); the app still has them and the server still serves them | Keep and record as an intended difference (recommended), or remove to match Web | `BP-READ-080` (differs), `BP-READ-038` note, `GET /channels/inbox/done`, `POST /channels/inbox/undone` |
 | 6 | Open Raft https links in the app | The platform owner must host `assetlinks.json` and `apple-app-site-association` on the Raft domain; the app side is built and switched off (`RAFT_APP_LINKS`) | `ui:global-ui.routes-external-https-links` |
@@ -35,6 +34,7 @@ the desktop (`ui:server.public-page-live-globe`).
 | Date | Decision | Source | Where it is recorded |
 | --- | --- | --- | --- |
 | 2026-10-21 | Follow Web v1.21.23 in full, except the intentional differences recorded here and in `capability-parity.json` | Kevin, #raft-flutter `4c35558a` | `docs/upstream-sync.json`, `docs/upstream-reports/v1.21.12-to-v1.21.23.md` |
+| 2026-10-24 | Default appearance is Web's "Raft" look; Elegant and Brutal stay as selectable themes (plan item 1). The theme was merged when no case scored below the previous client; remaining low-similarity pages are being fixed against the official 96% pass bar (task #228) | Kevin, `18e37fbf` (plan approved), `367b04d0` (merge, continue the low pages) | PR #424 (integration `24d0c88e`); release v1.21.23+1 |
 | 2026-10-24 | Build the cloud (hosted) agent family, verified against a local antiproton server (plan item 2) | Kevin, `0b62aedd` | the cloud-agent rows are ✅ in `capability-parity.json` (`POST /agents` note, `GET /agents/:id/hosted-runtime`) |
 | 2026-10-23 | Build RaftBench in full (plan item 4; the plan had suggested ➖) | Kevin, `b9c81968` | section "RaftBench vs Web v1.21.23" below; RaftBench rows ✅ |
 | 2026-10-23 | Live sequence jumps keep no gap fetch (intended difference) | Kevin, `9c047186` | section "Live sequence jumps do not trigger a gap fetch"; `BP-READ-021`, `BP-RT-030` |
