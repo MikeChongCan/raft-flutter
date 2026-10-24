@@ -3646,9 +3646,12 @@ class _RaftChatViewState extends PhonePageState<RaftChatView> {
                 ),
                 clearOnSubmit: true,
                 accessoryRow: composerAccessory(),
-                // ChatPanel and ThreadPanel both default composerAutoFocus to
-                // true; MessageInput requests it only for hover-capable input.
-                autofocus: RaftDensityScope.of(context) == RaftDensity.desktop,
+                // Main conversations take initial keyboard focus. Selecting a
+                // channel in Activity/Search keeps focus in that list until the
+                // user enters the preview's composer; threads keep their policy.
+                autofocus:
+                    (thread || w.section == 'chat' || w.section == 'home') &&
+                    RaftDensityScope.of(context) == RaftDensity.desktop,
                 canAutofocus: () =>
                     presentationActive &&
                     currentComposer() &&

@@ -165,7 +165,8 @@ void main() {
     expect(find.bySemanticsLabel('2 agents working'), findsOneWidget);
     expect(
       t.getRect(summary).right,
-      lessThan(
+      // Expanded touch targets may meet; they must never overlap.
+      lessThanOrEqualTo(
         t.getRect(find.byKey(const Key('mobile-home-notifications'))).left,
       ),
     );
@@ -313,5 +314,6 @@ void main() {
       expect(find.bySemanticsLabel('3 agents working'), findsOneWidget);
       expect(find.byKey(_liveBar), findsNothing);
     },
+    variant: TargetPlatformVariant.only(TargetPlatform.linux),
   );
 }

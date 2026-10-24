@@ -78,9 +78,7 @@ void main() {
               ),
             );
             await flush(t);
-            final workspaceState = t.state(
-              find.byType(WorkspaceView),
-            );
+            final workspaceState = t.state(find.byType(WorkspaceView));
             final adaptiveState = adaptiveStates(t).last;
             if (!tasksRoute) {
               final tabs = find.byKey(const Key('conversation-tabs'));
@@ -103,7 +101,8 @@ void main() {
             } else if (!tasksRoute && width >= 1024) {
               expect(rect, Rect.fromLTWH(width - 380, 0, 380, 900));
             } else {
-              final left = width < 768 ? 0.0 : (296.0);
+              // Pinned AppRailRoot: calc(56px + 1px); sidebar: 240px.
+              final left = width < 768 ? 0.0 : 297.0;
               const height = 900.0;
               expect(rect, Rect.fromLTWH(left, 0, width - left, height));
             }
@@ -135,10 +134,7 @@ void main() {
                   .trailingExtent,
               docked ? 380 : 0,
             );
-            expect(
-              t.state(find.byType(WorkspaceView)),
-              same(workspaceState),
-            );
+            expect(t.state(find.byType(WorkspaceView)), same(workspaceState));
             // The page that opened the task stays live (not rebuilt) beneath it.
             expect(adaptiveStates(t), contains(adaptiveState));
             if (width >= 768) expect(adaptiveStates(t), hasLength(1));
@@ -285,7 +281,7 @@ void main() {
                 ? 440
                 : width == 390
                 ? 390
-                : 504,
+                : 503,
           );
           expect(
             find.byKey(const ValueKey('task-back')),

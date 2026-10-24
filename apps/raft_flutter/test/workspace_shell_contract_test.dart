@@ -86,7 +86,8 @@ void main() {
         final search = t.getRect(find.byKey(const ValueKey('rail-search'))),
             chat = t.getRect(find.byKey(const ValueKey('rail-chat')));
         expect(chat.top - search.top, 46);
-        expect(search.top, 72);
+        // AppRailHeader 56px plus the nav's pt-2.5 (10px).
+        expect(search.top, 66);
         w.server = RaftRecord({...w.server!.json, 'role': 'guest'});
         w.notifyListeners();
         await frames(t, () {});
@@ -278,7 +279,8 @@ void main() {
           matching: find.byType(RaftAvatar),
         );
         expect(avatar, findsOneWidget);
-        expect(t.getSize(avatar), const Size(18, 18));
+        // AvatarSlot sidebar-list=2xs; pinned avatar recipe is size-[19px].
+        expect(t.getSize(avatar), const Size(19, 19));
         final content = t.widget<RaftAvatarContent>(
           find.descendant(of: row, matching: find.byType(RaftAvatarContent)),
         );
@@ -287,19 +289,19 @@ void main() {
           of: row,
           matching: find.byType(RaftControl),
         );
-        final controlHeight = 34.0;
-        final trailingMargin = 2.0;
+        final controlHeight = 36.0;
+        final trailingMargin = 1.0;
         expect(t.getSize(control).height, controlHeight);
         expect(t.getSize(row).height, controlHeight + trailingMargin);
-        expect(t.getRect(control).top, t.getRect(row).top);
+        expect(t.getRect(control).top, t.getRect(row).top + 1);
         final title = t.widget<Text>(
           find.descendant(of: row, matching: find.text('Cindy')),
         );
-        expect(title.style!.fontSize, 14);
+        expect(title.style!.fontSize, 15);
         expect(title.style!.fontWeight, FontWeight.w700);
         expect(
           title.style!.color,
-          RaftTokens.of(t.element(row)).colors['foreground-muted'],
+          RaftTokens.of(t.element(row)).colors['foreground'],
         );
         final desc = t.widget<Text>(
           find.descendant(
@@ -307,9 +309,9 @@ void main() {
             matching: find.text('Keeps release notes aligned.'),
           ),
         );
-        expect(desc.style!.fontSize, 12);
-        expect(desc.style!.height, 16 / 12);
-        expect(desc.style!.fontWeight, FontWeight.w500);
+        expect(desc.style!.fontSize, 13);
+        expect(desc.style!.height, 18 / 13);
+        expect(desc.style!.fontWeight, FontWeight.w400);
         api.routes['GET /agents'] = (_) => [
           {
             'id': 'agent1',

@@ -74,7 +74,13 @@ class _ActivityFindScopeState extends State<ActivityFindScope> {
   void claim() {
     if (!mounted || !widget.enabled || node.hasFocus) return;
     final primary = FocusManager.instance.primaryFocus;
-    if (primary == null || primary is FocusScopeNode) {
+    // Activating Activity through the rail leaves its button focused. The
+    // newly opened panel owns find; preserve focused editors and other panels.
+    final navigation = primary?.context
+        ?.findAncestorWidgetOfExactType<RaftWorkspaceRailAction>();
+    if (primary == null ||
+        primary is FocusScopeNode ||
+        navigation?.navigation == true) {
       node.requestFocus();
     }
   }
