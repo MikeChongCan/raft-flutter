@@ -1023,7 +1023,25 @@ const String raftThemePackJson = r'''{
         "type.inputAddon.line": 20,
         "type.inputAddon.weight": 400,
         "type.sectionEyebrow.size": 13,
-        "type.sectionEyebrow.line": 18
+        "type.sectionEyebrow.line": 18,
+        "size.channelJoin": 44,
+        "space.channelJoinInline": 16,
+        "type.channelJoin.size": 15,
+        "type.channelJoin.line": 20,
+        "size.channelJoinGlyph": 18,
+        "space.channelJoinGap": 8,
+        "size.authSubmit": 52,
+        "space.authSubmitInline": 20,
+        "type.authSubmit.size": 16,
+        "type.authSubmit.line": 24,
+        "size.authSubmitGlyph": 18,
+        "space.authSubmitGap": 8,
+        "size.standaloneContinue": 44,
+        "space.standaloneContinueInline": 16,
+        "type.standaloneContinue.size": 15,
+        "type.standaloneContinue.line": 20,
+        "size.standaloneContinueGlyph": 18,
+        "space.standaloneContinueGap": 8
       },
       "type": {
         "hero": [
@@ -1205,7 +1223,6 @@ const String raftThemePackJson = r'''{
         "toast.style": "hud",
         "button.surface": "ported",
         "banner.style": "raft",
-        "channelFooter.joinSize": "lg",
         "composerAttachment.style": "raft",
         "surfaceItem.style": "raft",
         "avatarListRow.style": "raft",
@@ -1221,7 +1238,6 @@ const String raftThemePackJson = r'''{
         "messageToolbar.style": "raft",
         "avatar.humanFallback": "icon",
         "skeleton.avatarShape": "rounded",
-        "auth.submitSize": "xl",
         "auth.links": "underlined",
         "auth.fieldLabel": "tokens",
         "publicServer.sidebar": "shared",
@@ -1240,8 +1256,7 @@ const String raftThemePackJson = r'''{
         "rootError.look": "web23",
         "onboarding.heading": "web23",
         "onboarding.preview": "sticker",
-        "agentActivity.look": "web23",
-        "standalone.buttonSize": "lg"
+        "agentActivity.look": "web23"
       }
     },
     "dark": {
@@ -2205,7 +2220,25 @@ const String raftThemePackJson = r'''{
         "type.inputAddon.line": 20,
         "type.inputAddon.weight": 400,
         "type.sectionEyebrow.size": 13,
-        "type.sectionEyebrow.line": 18
+        "type.sectionEyebrow.line": 18,
+        "size.channelJoin": 44,
+        "space.channelJoinInline": 16,
+        "type.channelJoin.size": 15,
+        "type.channelJoin.line": 20,
+        "size.channelJoinGlyph": 18,
+        "space.channelJoinGap": 8,
+        "size.authSubmit": 52,
+        "space.authSubmitInline": 20,
+        "type.authSubmit.size": 16,
+        "type.authSubmit.line": 24,
+        "size.authSubmitGlyph": 18,
+        "space.authSubmitGap": 8,
+        "size.standaloneContinue": 44,
+        "space.standaloneContinueInline": 16,
+        "type.standaloneContinue.size": 15,
+        "type.standaloneContinue.line": 20,
+        "size.standaloneContinueGlyph": 18,
+        "space.standaloneContinueGap": 8
       },
       "type": {
         "hero": [
@@ -2387,7 +2420,6 @@ const String raftThemePackJson = r'''{
         "toast.style": "hud",
         "button.surface": "ported",
         "banner.style": "raft",
-        "channelFooter.joinSize": "lg",
         "composerAttachment.style": "raft",
         "surfaceItem.style": "raft",
         "avatarListRow.style": "raft",
@@ -2403,7 +2435,6 @@ const String raftThemePackJson = r'''{
         "messageToolbar.style": "raft",
         "avatar.humanFallback": "icon",
         "skeleton.avatarShape": "rounded",
-        "auth.submitSize": "xl",
         "auth.links": "underlined",
         "auth.fieldLabel": "tokens",
         "publicServer.sidebar": "shared",
@@ -2422,8 +2453,7 @@ const String raftThemePackJson = r'''{
         "rootError.look": "web23",
         "onboarding.heading": "web23",
         "onboarding.preview": "sticker",
-        "agentActivity.look": "web23",
-        "standalone.buttonSize": "lg"
+        "agentActivity.look": "web23"
       }
     }
   }

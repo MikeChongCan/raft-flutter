@@ -106,12 +106,16 @@ class RaftRecipeButton extends StatelessWidget {
     this.underline = false,
     this.autoHeight = false,
     this.squareExtent,
+    this.metricsKey,
   });
 
   /// A product icon button that is smaller than the raft-ui icon size (the
   /// feedback attachment's remove badge): the ported surface keeps its recipe
   /// look at this extent instead of the 32px `icon-xs`.
   final double? squareExtent;
+
+  /// Component-specific size/type values, shared by both surface renderers.
+  final String? metricsKey;
 
   /// Callsite `underline`.
   final bool underline;
@@ -168,7 +172,11 @@ class RaftRecipeButton extends StatelessWidget {
     final t = RaftTokens.of(context);
     final variantValue = RaftButtonVariant.fromRecipe(variant);
     final sizeValue = RaftButtonSize.fromRecipe(size);
-    final base = RaftButtonMetrics.of(sizeValue, variantValue, t);
+    final base = RaftButtonMetrics.of(
+      sizeValue,
+      variantValue,
+      t,
+    ).forComponent(t, metricsKey);
     final step = textStep;
     final metrics = RaftButtonMetrics(
       height: squareExtent ?? base.height,
@@ -314,6 +322,19 @@ class RaftRecipeButton extends StatelessWidget {
     var decoration = root.decoration(tokens);
 
     final base = root.textStyle(tokens);
+    final profile = RaftButtonMetrics(
+      height: root.height ?? 0,
+      paddingX: root.padding.left,
+      iconStartPaddingLeft: root.padding.left,
+      iconEndPaddingRight: root.padding.right,
+      text: RaftTypeStyle(
+        base.fontSize ?? 14,
+        (base.fontSize ?? 14) * (base.height ?? 1),
+      ),
+      icon:
+          glyphSize ?? root.target("& svg:not([class*='size-'])")?.width ?? 16,
+      gap: gap ?? root.columnGap ?? 0,
+    ).forComponent(t, metricsKey);
     final color = foreground ?? base.color ?? t.ink;
     final step = textStep;
     final text = RaftControlTypography.of(
@@ -321,16 +342,24 @@ class RaftRecipeButton extends StatelessWidget {
       base.copyWith(
         color: color,
         fontWeight: fontWeight ?? base.fontWeight,
-        fontSize: step?.$1 ?? base.fontSize,
-        height: step == null ? base.height : step.$2 / step.$1,
+        fontSize:
+            step?.$1 ??
+            (metricsKey == null ? base.fontSize : profile.text.fontSize),
+        height: step == null
+            ? (metricsKey == null ? base.height : profile.text.height)
+            : step.$2 / step.$1,
         leadingDistribution: TextLeadingDistribution.even,
         decoration: underline ? TextDecoration.underline : null,
       ),
     );
     final wraps = autoHeight || RaftScaled.grows(context);
     final svg = root.target("& svg:not([class*='size-'])");
-    final iconSize = glyphSize ?? svg?.width ?? 16;
-    final resolvedGap = gap ?? root.columnGap ?? 0;
+    final iconSize = metricsKey == null
+        ? glyphSize ?? svg?.width ?? 16
+        : profile.icon;
+    final resolvedGap = metricsKey == null
+        ? gap ?? root.columnGap ?? 0
+        : profile.gap;
     Widget content =
         child ??
         Row(
@@ -367,15 +396,23 @@ class RaftRecipeButton extends StatelessWidget {
     // With a fixed CSS height the flex item is centred in the content box;
     // symmetric vertical padding (even when it overflows, e.g. `h-7 py-2`)
     // therefore only matters horizontally.
-    final resolvedPadding = padding ?? root.padding;
+    final resolvedPadding =
+        padding ??
+        (metricsKey == null
+            ? root.padding
+            : root.padding.copyWith(
+                left: profile.paddingX,
+                right: profile.paddingX,
+              ));
+    final boxHeight = metricsKey == null ? root.height : profile.height;
     // Above the default text size the recipe height is a minimum (CSS
     // `min-height`) and the label wraps, so the button grows with its text.
-    final grows = root.height != null && wraps;
+    final grows = boxHeight != null && wraps;
     Widget box = Container(
-      height: grows ? null : root.height,
-      constraints: grows ? BoxConstraints(minHeight: root.height!) : null,
+      height: grows ? null : boxHeight,
+      constraints: grows ? BoxConstraints(minHeight: boxHeight) : null,
       width: expand ? double.infinity : root.width,
-      padding: root.height == null
+      padding: boxHeight == null
           ? resolvedPadding
           : grows
           ? EdgeInsets.fromLTRB(
@@ -966,14 +1003,15 @@ class RaftProductFormField extends StatelessWidget {
             t,
             size: labelSize,
             line: t.size('type.fieldLabel.line', fallback: 18),
-            weight: FontWeight.values[(t.size(
-                          'type.fieldLabel.weight',
-                          fallback: 600,
-                        ) /
-                        100 -
-                    1)
-                .round()
-                .clamp(0, 8)],
+            weight:
+                FontWeight.values[(t.size(
+                              'type.fieldLabel.weight',
+                              fallback: 600,
+                            ) /
+                            100 -
+                        1)
+                    .round()
+                    .clamp(0, 8)],
             color: t.colors['foreground-field-label'],
           ).copyWith(fontFamily: family ?? t.headingFont)
         : raftCssTextStyle(

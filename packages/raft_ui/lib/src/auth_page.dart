@@ -513,14 +513,9 @@ class RaftAuthWideButton extends StatelessWidget {
     final button = RaftButton(
       label: label,
       variant: variant,
-      // Web v1.21.23 submit buttons are `size="xl"` (auth.submitSize); the
-      // secondary wide buttons stay `lg`.
+      // The submit has its own component metrics; secondary actions keep lg.
       size: RaftButtonRecipeSize.lg,
-      uiSize:
-          variant == RaftControlVariant.accent &&
-              RaftTokens.of(context).option('auth.submitSize', or: 'xl') == 'xl'
-          ? RaftButtonSize.xl
-          : null,
+      metricsKey: variant == RaftControlVariant.accent ? 'authSubmit' : null,
       expand: true,
       onPressed: onPressed,
       leading: leading,
@@ -1035,16 +1030,18 @@ class RaftAuthHandleGroup extends StatelessWidget {
               ),
               child: Text(
                 '@',
-                style: RaftTypography.mono(
-                  t,
-                  size: t.size('type.inputAddon.size', fallback: 13),
-                  line: t.size('type.inputAddon.line', fallback: 20),
-                  color: t.colors['foreground-input-addon'],
-                ).copyWith(
-                  fontWeight: t.size('type.inputAddon.weight', fallback: 400) >= 600
-                      ? FontWeight.w700
-                      : FontWeight.w400,
-                ),
+                style:
+                    RaftTypography.mono(
+                      t,
+                      size: t.size('type.inputAddon.size', fallback: 13),
+                      line: t.size('type.inputAddon.line', fallback: 20),
+                      color: t.colors['foreground-input-addon'],
+                    ).copyWith(
+                      fontWeight:
+                          t.size('type.inputAddon.weight', fallback: 400) >= 600
+                          ? FontWeight.w700
+                          : FontWeight.w400,
+                    ),
               ),
             ),
             Expanded(child: child),

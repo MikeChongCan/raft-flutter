@@ -146,13 +146,14 @@ void main() {
 
   Widget authApp({
     String mode = 'login',
+    String themeId = raftThemePackId,
     Locale? locale,
     void Function(String)? onLogin,
   }) => MaterialApp(
     locale: locale,
     supportedLocales: const [Locale('en'), Locale('zh')],
     localizationsDelegates: GlobalMaterialLocalizations.delegates,
-    theme: raftTheme(),
+    theme: raftTheme(pack: packForThemeId(themeId)),
     home: AuthView(
       origin: 'https://example.invalid',
       initialMode: mode,
@@ -208,7 +209,7 @@ void main() {
   testWidgets('text links are not underlined at rest, only on hover', (
     tester,
   ) async {
-    await tester.pumpWidget(authApp());
+    await tester.pumpWidget(authApp(themeId: elegantThemePackId));
     bool underlined(String label) => tester
         .widget<RaftUnderlinedText>(
           find.widgetWithText(RaftUnderlinedText, label),
@@ -225,6 +226,28 @@ void main() {
     await tester.pump();
     expect(underlined('Forgot password?'), isTrue);
     expect(underlined('Create one'), isFalse);
+  });
+
+  testWidgets('current Raft auth links stay underlined at rest and on hover', (
+    tester,
+  ) async {
+    await tester.pumpWidget(authApp());
+    bool underlined(String label) => tester
+        .widget<RaftUnderlinedText>(
+          find.widgetWithText(RaftUnderlinedText, label),
+        )
+        .underline;
+    expect(underlined('Forgot password?'), isTrue);
+    expect(underlined('Create one'), isTrue);
+    final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
+    await mouse.addPointer(location: Offset.zero);
+    addTearDown(mouse.removePointer);
+    await mouse.moveTo(
+      tester.getCenter(find.byKey(const Key('login-forgot-password'))),
+    );
+    await tester.pump();
+    expect(underlined('Forgot password?'), isTrue);
+    expect(underlined('Create one'), isTrue);
   });
 
   testWidgets('login prompt follows the zh Web wording without a gap', (
@@ -245,7 +268,10 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           key: ValueKey(dark),
-          theme: raftTheme(dark: dark),
+          theme: raftTheme(
+            pack: packForThemeId(elegantThemePackId),
+            dark: dark,
+          ),
           home: AuthView(
             origin: 'https://example.invalid',
             onLogin: (b, e, p) async {},
@@ -268,6 +294,31 @@ void main() {
     expect(lightColor, lightTokens.strong);
     expect(lightWeight, FontWeight.w500);
   });
+
+  for (final dark in [false, true]) {
+    testWidgets('current Raft auth field uses source field typography/$dark', (
+      tester,
+    ) async {
+      final theme = raftTheme(dark: dark);
+      final tokens = theme.extension<RaftTokens>()!;
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: theme,
+          home: AuthView(
+            origin: 'https://example.invalid',
+            onLogin: (b, e, p) async {},
+            onRegister: (b, e, p, a) async {},
+          ),
+        ),
+      );
+      final style = tester.widget<Text>(find.text('Email').first).style!;
+      expect(style.color, tokens.colors['foreground-field-label']);
+      expect(style.fontWeight, FontWeight.w600);
+      expect(style.fontSize, 13);
+      expect(style.height, 18 / 13);
+      await tester.pumpWidget(const SizedBox());
+    });
+  }
 
   // RegisterPage (task #724): a disabled Continue says why.
   testWidgets('register: the disabled Continue states the legal reason', (

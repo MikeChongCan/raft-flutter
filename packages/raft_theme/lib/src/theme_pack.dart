@@ -178,7 +178,6 @@ const Map<String, Set<String>> raftStructuralOptions = {
   'toast.style': {'recipe', 'hud'},
   'button.surface': {'recipe', 'ported'},
   'banner.style': {'recipe', 'raft'},
-  'channelFooter.joinSize': {'md', 'lg'},
   'composerAttachment.style': {'recipe', 'raft'},
   'surfaceItem.style': {'recipe', 'raft'},
   'avatarListRow.style': {'recipe', 'raft'},
@@ -195,9 +194,7 @@ const Map<String, Set<String>> raftStructuralOptions = {
   'avatar.humanFallback': {'initials', 'icon'},
   'skeleton.avatarShape': {'rounded', 'circle'},
   // Page lane (Web v1.21.23 pages; tool/theme-adapters/pages_lane.py).
-  'auth.submitSize': {'xl', 'lg'},
   'auth.links': {'underlined', 'hover'},
-  'standalone.buttonSize': {'lg', 'md'},
   'auth.fieldLabel': {'tokens', 'recipe'},
   'publicServer.sidebar': {'shared', 'legacy'},
   'publicServer.banner': {'stacked', 'row'},

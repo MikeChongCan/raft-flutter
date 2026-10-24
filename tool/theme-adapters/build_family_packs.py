@@ -29,7 +29,7 @@ import json
 import pathlib
 import sys
 
-from button_contract import button_colors, button_palette
+from button_contract import button_colors, button_palette, component_geometry
 from framework_contract import ELEGANT_GEOMETRY, BRUTAL_GEOMETRY, framework_colors
 import components_lane
 import pages_lane
@@ -622,7 +622,9 @@ COLUMN = {
 
 
 GEOMETRY_ELEGANT.update(ELEGANT_GEOMETRY)
+GEOMETRY_ELEGANT.update(component_geometry('elegantLight'))
 GEOMETRY_BRUTAL.update(BRUTAL_GEOMETRY)
+GEOMETRY_BRUTAL.update(component_geometry('brutal'))
 
 
 def load_values() -> dict:

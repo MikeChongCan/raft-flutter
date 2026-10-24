@@ -53,9 +53,6 @@ _GEOMETRY = {
 
 # ---------------------------------------------------------------- options
 _OPTIONS = {
-    # How wide the auth submit buttons are drawn: Web v1.21.23 LoginPage /
-    # RegisterPage use `size="xl"`, a57b9dab used `lg`.
-    'auth.submitSize': ('xl', 'lg'),
     # TextLink (v1.21.23): ink text with a permanent 1.5px underline 3px below
     # the baseline; a57b9dab: coloured, underlined on hover only.
     'auth.links': ('underlined', 'hover'),
@@ -117,7 +114,6 @@ _OPTIONS = {
     # pixels and no diagnostics header (v1.21.23) or the a57b9dab list.
     'agentActivity.look': ('web23', 'legacy'),
     # The one button of the not-found page: `size="lg"` (44) in v1.21.23.
-    'standalone.buttonSize': ('lg', 'md'),
 }
 
 # ---------------------------------------------------------------- colours

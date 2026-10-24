@@ -46,8 +46,6 @@ _OPTIONS = {
     # Banner: raft-ui 0.7 `banner` (one box, only padding / gap / text per density,
     # BannerAction in its own row, description font-normal); the recipe before.
     'banner.style': ('raft', 'recipe'),
-    # The Join CTA of the channel footer: `Button size="lg"` (v1.21.23); `md` before.
-    'channelFooter.joinSize': ('lg', 'md'),
     # Composer attachments: raft-ui 0.7 `composerAttachment` (fill-muted chips with a
     # hairline, an always-visible remove square, layer-card washes, a soft failure
     # row); the generated recipe before.
@@ -108,7 +106,6 @@ OPTION_VALUES = {
     'toast.style': ('hud', 'recipe'),
     'button.surface': ('ported', 'recipe'),
     'banner.style': ('raft', 'recipe'),
-    'channelFooter.joinSize': ('lg', 'md'),
     'composerAttachment.style': ('raft', 'recipe'),
     'surfaceItem.style': ('raft', 'recipe'),
     'avatarListRow.style': ('raft', 'recipe'),

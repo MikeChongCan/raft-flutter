@@ -88,9 +88,8 @@ class RaftServerAccessDeniedPage extends StatelessWidget {
               serverName == null ? 'Choose a Server' : 'Go to My Server',
             ),
             variant: RaftControlVariant.outline,
-            size: t.option('standalone.buttonSize', or: 'lg') == 'lg'
-                ? RaftButtonRecipeSize.lg
-                : RaftButtonRecipeSize.md,
+            size: RaftButtonRecipeSize.md,
+            metricsKey: 'standaloneContinue',
             onPressed: onContinue,
           ),
         ],

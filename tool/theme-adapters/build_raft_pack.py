@@ -28,7 +28,7 @@ import pathlib
 import re
 import sys
 
-from button_contract import button_colors
+from button_contract import button_colors, component_geometry
 from framework_contract import RAFT_GEOMETRY, framework_colors
 import components_lane
 import pages_lane
@@ -450,6 +450,8 @@ OPTIONS_RAFT.update(pages_lane.options_raft())
 
 CASE_RAFT = {'dialogShellTitle': 'none','heading': 'none', 'label': 'none', 'badge': 'none'}
 
+
+GEOMETRY_RAFT.update(component_geometry('raft'))
 
 def build() -> dict:
     mapping = role_mapping(read(f'{TOKENS}/raft_token_mapping.dart'))

@@ -125,6 +125,28 @@ class RaftButtonMetrics {
   final RaftTypeStyle text;
   final bool square;
 
+  /// Component-specific values refine a size without selecting another size
+  /// axis. A caller chooses its semantic component; the pack supplies numbers.
+  RaftButtonMetrics forComponent(RaftTokens t, String? component) {
+    if (component == null) return this;
+    final padding = t.size('space.${component}Inline', fallback: paddingX);
+    return RaftButtonMetrics(
+      height: t.size('size.$component', fallback: height),
+      paddingX: padding,
+      iconStartPaddingLeft: padding - (paddingX - iconStartPaddingLeft),
+      iconEndPaddingRight: padding - (paddingX - iconEndPaddingRight),
+      text: RaftTypeStyle(
+        t.size('type.$component.size', fallback: text.fontSize),
+        t.size('type.$component.line', fallback: text.lineHeight),
+        fontWeight: text.fontWeight,
+        letterSpacingEm: text.letterSpacingEm,
+      ),
+      icon: t.size('size.${component}Glyph', fallback: icon),
+      gap: t.size('space.${component}Gap', fallback: gap),
+      square: square,
+    );
+  }
+
   /// Size axes from current Web and actual a57b9dab recipe probes.
   /// Physical height overrides never choose a different typography axis.
   static RaftButtonMetrics of(
@@ -219,6 +241,7 @@ class RaftButton extends StatelessWidget {
     this.uiSize,
     this.visualHeight = RaftMetrics.buttonMd,
     this.physicalHeight,
+    this.metricsKey,
     this.expand = false,
     this.focusNode,
     this.tooltip,
@@ -271,6 +294,9 @@ class RaftButton extends StatelessWidget {
   /// Large text may grow past it, as with the normal size metrics.
   final double? physicalHeight;
 
+  /// Component geometry/type namespace; independent of the theme identity.
+  final String? metricsKey;
+
   /// `w-full` (stretch to the parent width; content stays centered).
   final bool expand;
   final FocusNode? focusNode;
@@ -312,7 +338,11 @@ class RaftButton extends StatelessWidget {
     final t = RaftTokens.of(context);
     final variantValue = resolvedVariant;
     final sizeValue = resolvedSize;
-    final baseMetrics = RaftButtonMetrics.of(sizeValue, variantValue, t);
+    final baseMetrics = RaftButtonMetrics.of(
+      sizeValue,
+      variantValue,
+      t,
+    ).forComponent(t, metricsKey);
     final metrics = physicalHeight == null
         ? baseMetrics
         : RaftButtonMetrics(
