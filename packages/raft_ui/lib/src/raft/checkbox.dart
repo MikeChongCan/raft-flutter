@@ -15,6 +15,23 @@ enum RaftCheckboxMark { check, minus }
 /// `shape` of `Checkbox` / `CheckboxIndicator`.
 enum RaftCheckboxShape { square, circle }
 
+/// Authored inline variants of the shared indicator. Null fields keep the
+/// standard CheckboxIndicator appearance; this never adds another control.
+@immutable
+class RaftCheckboxIndicatorStyle {
+  const RaftCheckboxIndicatorStyle({
+    this.fill,
+    this.borderColor,
+    this.markColor,
+    this.borderWidth,
+    this.radius,
+    this.markSize,
+    this.markStrokeWidth,
+  });
+  final Color? fill, borderColor, markColor;
+  final double? borderWidth, radius, markSize, markStrokeWidth;
+}
+
 /// The presentational graphic (`data-slot="checkbox-indicator-graphic"`, aria-hidden).
 ///
 /// [size] is 20 in raft-ui (`size-5`); the lucide mark is 14 (`size-3.5`) at that size and keeps its 0.7 ratio.
@@ -28,6 +45,7 @@ class RaftCheckboxIndicator extends StatelessWidget {
     this.previewOnHover = false,
     this.hovered = false,
     this.size = 20,
+    this.style,
   });
 
   final bool checked, disabled, previewOnHover;
@@ -37,6 +55,9 @@ class RaftCheckboxIndicator extends StatelessWidget {
   final RaftCheckboxMark mark;
   final RaftCheckboxShape shape;
   final double size;
+
+  /// An authored inline variant, without changing the default checkbox.
+  final RaftCheckboxIndicatorStyle? style;
 
   @override
   Widget build(BuildContext context) {
@@ -68,12 +89,14 @@ class RaftCheckboxIndicator extends StatelessWidget {
       // The square form is the theme's sticker corner; the circle form is a true
       // circle at any size, which is why the official `rounded-full` stays
       // `size / 2` rather than becoming a token.
-      radius: shape == RaftCheckboxShape.circle
-          ? size / 2
-          : t.size('radius.sticker', fallback: 4),
-      fill: fill,
-      borderWidth: raftControlBorderPx(context, 1.5),
-      borderColor: border,
+      radius:
+          style?.radius ??
+          (shape == RaftCheckboxShape.circle
+              ? size / 2
+              : t.size('radius.sticker', fallback: 4)),
+      fill: style?.fill ?? fill,
+      borderWidth: style?.borderWidth ?? raftControlBorderPx(context, 1.5),
+      borderColor: style?.borderColor ?? border,
       width: size,
       height: size,
       alignment: Alignment.center,
@@ -82,8 +105,9 @@ class RaftCheckboxIndicator extends StatelessWidget {
               mark == RaftCheckboxMark.minus
                   ? RaftGlyph.minus
                   : RaftGlyph.check,
-              size: size * .7,
-              color: ink,
+              size: style?.markSize ?? size * .7,
+              strokeWidth: style?.markStrokeWidth ?? 2,
+              color: style?.markColor ?? ink,
             )
           : null,
     );

@@ -14,6 +14,7 @@ import 'recipes/button_variants.g.dart';
 import 'recipes/recipe_runtime.dart';
 import 'recipes/token_binding.dart';
 import 'theme.dart';
+import 'raft/css_box.dart';
 
 /// Local outcome of a pending mention action (Web
 /// `PendingMentionActionLocalState`).
@@ -401,6 +402,56 @@ class RaftComposerNotice extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
+    if (t.option('sticker.ring', or: 'none') == 'dieCut') {
+      final font = t.size('type.composerNotice.size', fallback: 13);
+      final text = Text(
+        message,
+        style: TextStyle(
+          fontFamily: t.bodyFont,
+          fontFamilyFallback: t.fontFallback,
+          fontSize: font,
+          height: t.size('type.composerNotice.line', fallback: 18) / font,
+          fontWeight: raftFontWeight(
+            t.size('type.composerNotice.weight', fallback: 400),
+          ),
+          color: t.colors['foreground-composer-notice'],
+          leadingDistribution: TextLeadingDistribution.even,
+        ),
+      );
+      return Semantics(
+        liveRegion: true,
+        child: RaftCssBox(
+          width: double.infinity,
+          radius: t.size('radius.composerNotice', fallback: 10),
+          fill: t.colors['layer-composer-notice'],
+          insetRingWidth: t.size('stroke.composerNotice', fallback: 1),
+          insetRingColor: t.colors['line-composer-notice'],
+          padding: EdgeInsets.fromLTRB(
+            t.size('space.composerNoticeStart', fallback: 12),
+            t.size('space.composerNoticeTop', fallback: 8),
+            t.size('space.composerNoticeEnd', fallback: 12),
+            t.size('space.composerNoticeBottom', fallback: 8),
+          ),
+          child: onDismiss == null
+              ? text
+              : Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(child: text),
+                    const SizedBox(width: 8),
+                    RaftButton(
+                      label: '',
+                      glyph: RaftGlyph.x,
+                      uiVariant: RaftButtonVariant.ghost,
+                      uiSize: RaftButtonSize.iconXs,
+                      tooltip: dismissLabel,
+                      onPressed: onDismiss,
+                    ),
+                  ],
+                ),
+        ),
+      );
+    }
     if (onDismiss != null) {
       // Banner with `actions`: the public composition (grid action cell, the
       // `@max-[24rem]` drop below the copy, status colours).
@@ -429,7 +480,9 @@ class RaftComposerNotice extends StatelessWidget {
     }
     final resolver = RaftRecipeTokens(t);
     final s = RaftBannerRecipe.resolve(
-      theme: RaftRecipeTheme.elegant,
+      theme: t.option('press.effect', or: 'scale') == 'offsetShadow'
+          ? RaftRecipeTheme.brutal
+          : RaftRecipeTheme.elegant,
       status: RaftBannerRecipeStatus.warning,
       size: RaftBannerRecipeSize.sm,
       states: RaftRecipeStates({if (t.dark) RaftRecipeStates.dark}),
@@ -439,17 +492,40 @@ class RaftComposerNotice extends StatelessWidget {
       liveRegion: true,
       child: Container(
         width: double.infinity,
-        padding: s.root.padding,
-        decoration: s.root.decoration(resolver),
+        padding: EdgeInsets.fromLTRB(
+          t.size('space.composerNoticeStart', fallback: 12),
+          t.size('space.composerNoticeTop', fallback: 8),
+          t.size('space.composerNoticeEnd', fallback: 12),
+          t.size('space.composerNoticeBottom', fallback: 8),
+        ),
+        decoration: s.root
+            .decoration(resolver)
+            .copyWith(
+              color: t.colors['layer-composer-notice'],
+              border: t.size('stroke.composerNotice', fallback: 1) > 0
+                  ? Border.all(
+                      color: t.colors['line-composer-notice']!,
+                      width: t.size('stroke.composerNotice', fallback: 1),
+                    )
+                  : const Border(),
+              borderRadius: BorderRadius.circular(
+                t.size('radius.composerNotice', fallback: 10),
+              ),
+            ),
         child: Text(
           message,
           style: s.description
               .textStyle(resolver)
               .copyWith(
                 fontFamily: t.headingFont,
-                fontSize: 12,
-                height: 16 / 12,
-                fontWeight: FontWeight.w700,
+                fontSize: t.size('type.composerNotice.size', fallback: 13),
+                height:
+                    t.size('type.composerNotice.line', fallback: 18) /
+                    t.size('type.composerNotice.size', fallback: 13),
+                fontWeight: raftFontWeight(
+                  t.size('type.composerNotice.weight', fallback: 400),
+                ),
+                color: t.colors['foreground-composer-notice'],
                 leadingDistribution: TextLeadingDistribution.even,
               ),
         ),

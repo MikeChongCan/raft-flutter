@@ -34,6 +34,7 @@ class RaftComposerExpandable extends StatelessWidget {
     required this.recipe,
     required this.onExpand,
     required this.builder,
+    this.editorInset,
   });
 
   /// Lines at which the expand button appears ("more than two lines").
@@ -41,6 +42,10 @@ class RaftComposerExpandable extends StatelessWidget {
 
   final String text;
   final RaftComposerRecipe recipe;
+
+  /// The authored input inset after allocating a CSS negative action margin.
+  /// Counting lines and placing the input must use the same available width.
+  final EdgeInsets? editorInset;
   final VoidCallback? onExpand;
 
   /// Builds the editor with the inset it must use.
@@ -69,7 +74,7 @@ class RaftComposerExpandable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scaler = MediaQuery.textScalerOf(context);
-    final base = recipe.editorInset;
+    final base = editorInset ?? recipe.editorInset;
     return LayoutBuilder(
       builder: (context, constraints) {
         final width = constraints.maxWidth - base.horizontal - _slot;

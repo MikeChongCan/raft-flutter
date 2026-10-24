@@ -71,6 +71,41 @@ OPTIONS_BRUTAL = {
 # digits that the P2 baseline can now confirm or refute; they are carried as-is
 # until that reconciliation, which is its own change.
 GEOMETRY_ELEGANT = {
+    # ComposerToolbarLabel / shared CheckboxIndicator, Cindy fc426a64.
+    'size.composerTaskToggle': 16,
+    'size.composerTaskCheckbox': 14,
+    'space.composerTaskGap': 6,
+    'type.composerTaskLabel.size': 12,
+    'type.composerTaskLabel.line': 16,
+    'type.composerTaskLabel.weight': 700,
+
+    # Web 0.7.0 + actual a57 composer probes; Cindy 16e23df0.
+    'space.composerShellInline': 0,
+    'space.composerShellTop': 0,
+    'space.composerShellBottom': 0,
+    'space.composerEditorInline': 12,
+    'space.composerEditorTop': 12,
+    'space.composerToolbarInline': 10,
+    'space.composerToolbarTop': 4,
+    'space.composerToolbarBottom': 10,
+    'space.composerToolbarShiftY': 4,
+    'space.composerFirstActionOffset': 0,
+    'space.composerActionGap': 6,
+    'space.composerMetaGap': 12,
+    'size.composerEditorMinimumDesktop': 40,
+    'size.composerAction': 28,
+    'size.composerSubmit': 28,
+    'size.composerGlyph': 14,
+    'type.composerNotice.size': 12,
+    'type.composerNotice.line': 16,
+    'type.composerNotice.weight': 700,
+    'radius.composerNotice': 4,
+    'stroke.composerNotice': 0,
+    'space.composerNoticeTop': 10,
+    'space.composerNoticeEnd': 8,
+    'space.composerNoticeBottom': 10,
+    'space.composerNoticeStart': 10,
+
     # Web appearanceStore.ts / pre-theme display tiers (Cindy 5eef1cad/4e2f12b0).
     'type.messageBody.sm.size': 12, 'type.messageBody.sm.line': 16,
     'type.messageBody.md.size': 14, 'type.messageBody.md.line': 20,
@@ -125,6 +160,41 @@ GEOMETRY_ELEGANT = {
     'space.segmentGap': 6,
 }
 GEOMETRY_BRUTAL = {
+    # ComposerToolbarLabel / shared CheckboxIndicator, Cindy fc426a64.
+    'size.composerTaskToggle': 16,
+    'size.composerTaskCheckbox': 14,
+    'space.composerTaskGap': 6,
+    'type.composerTaskLabel.size': 12,
+    'type.composerTaskLabel.line': 16,
+    'type.composerTaskLabel.weight': 700,
+
+    # Web 0.7.0 + actual a57 composer probes; Cindy 16e23df0.
+    'space.composerShellInline': 8,
+    'space.composerShellTop': 8,
+    'space.composerShellBottom': 8,
+    'space.composerEditorInline': 0,
+    'space.composerEditorTop': 0,
+    'space.composerToolbarInline': 0,
+    'space.composerToolbarTop': 0,
+    'space.composerToolbarBottom': 0,
+    'space.composerToolbarShiftY': 0,
+    'space.composerFirstActionOffset': 0,
+    'space.composerActionGap': 8,
+    'space.composerMetaGap': 12,
+    'size.composerEditorMinimumDesktop': 40,
+    'size.composerAction': 26,
+    'size.composerSubmit': 28,
+    'size.composerGlyph': 14,
+    'type.composerNotice.size': 12,
+    'type.composerNotice.line': 16,
+    'type.composerNotice.weight': 700,
+    'radius.composerNotice': 0,
+    'stroke.composerNotice': 2,
+    'space.composerNoticeTop': 8,
+    'space.composerNoticeEnd': 8,
+    'space.composerNoticeBottom': 8,
+    'space.composerNoticeStart': 8,
+
     # Web appearanceStore.ts / pre-theme display tiers (Cindy 5eef1cad/4e2f12b0).
     'type.messageBody.sm.size': 12, 'type.messageBody.sm.line': 16,
     'type.messageBody.md.size': 14, 'type.messageBody.md.line': 20,
@@ -327,6 +397,18 @@ def pack(pack_id: str, name_en: str, name_zh: str, values: dict,
         colors['layer-section-header-mobile'] = (colors['color-soft-signal']
                                    if spec['column'] == 'brutal'
                                    else colors['layer-panel'])
+        colors['line-composer'] = colors['ink' if spec['column'] == 'brutal' else 'ink-6']
+        colors['foreground-composer-task'] = ('{palette.composerTaskLabel}'
+            if spec['column'] == 'brutal' else colors['foreground-strong'])
+        colors['layer-composer-task-checked'] = colors['ink' if spec['column'] == 'brutal' else 'foreground-strong']
+        colors['line-composer-task'] = colors['ink' if spec['column'] == 'brutal' else 'line-strong']
+        # Existing a57 compiled Banner colors, measured in all four appearances.
+        # These are role values from that recipe, not new palette entries.
+        colors['layer-composer-notice'] = ('{palette.orange.100}' if spec['column'] == 'brutal'
+            else '{palette.elegantNotice.dark}' if spec['column'] == 'elegantDark'
+            else '{palette.elegantNotice.light}')
+        colors['foreground-composer-notice'] = colors['foreground-strong' if spec['column'] == 'brutal' else 'foreground-muted']
+        colors['line-composer-notice'] = colors['foreground-strong'] if spec['column'] == 'brutal' else '#00000000'
         colors['layer-auth-header'] = colors['layer-section-header-mobile']
         colors['foreground-message'] = colors['ink' if spec['column'] == 'brutal' else 'foreground-muted']
         # Actual a57b9dab Select: muted Elegant text, solid Brutal text;
@@ -355,6 +437,15 @@ def pack(pack_id: str, name_en: str, name_zh: str, values: dict,
                 'rgb(243.444675 243.444675 247.22862 / 0.039203)')
         return {
             'colors': colors,
+            # Only the Elegant source modes carry these legacy preservation
+            # colors; Brutal dark inherits the whole Elegant mode.
+            'palette': ({'palette-orange-100': colors['task-status-todo-soft'],
+                         'palette-composerTaskLabel': 'rgba(0 0 0 / 0.6)'}
+                if spec['column'] == 'brutal' else {
+                    'palette-elegantNotice-light': '#ffeadc',
+                    # a57 recipe_utilities.g.dart _v609 actual Flutter paint color.
+                    'palette-elegantNotice-dark': f'rgba({.534161 * 255:.9f} {.321382 * 255:.9f} {.207110 * 255:.9f} / 0.180368)',
+                }),
             'geometry': geometry_with_type(spec['geometry'], type_metrics),
             'shadows': shadows,
             'case': spec['case'],

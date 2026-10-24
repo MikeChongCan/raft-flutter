@@ -147,6 +147,41 @@ def stretch(families: list[str], mono: bool = False) -> str:
 # AUTHORED: the two tables below are the contract's decisions, not derived data.
 # §3.3–3.5 of docs/theme-contract.md lists where each number comes from.
 GEOMETRY_RAFT = {
+    # ComposerToolbarLabel / shared CheckboxIndicator, Cindy fc426a64.
+    'size.composerTaskToggle': 32,
+    'size.composerTaskCheckbox': 20,
+    'space.composerTaskGap': 8,
+    'type.composerTaskLabel.size': 14,
+    'type.composerTaskLabel.line': 20,
+    'type.composerTaskLabel.weight': 600,
+
+    # Web 0.7.0 + actual a57 composer probes; Cindy 16e23df0.
+    'space.composerShellInline': 12,
+    'space.composerShellTop': 12,
+    'space.composerShellBottom': 8,
+    'space.composerEditorInline': 2,
+    'space.composerEditorTop': 0,
+    'space.composerToolbarInline': 0,
+    'space.composerToolbarTop': 0,
+    'space.composerToolbarBottom': 0,
+    'space.composerToolbarShiftY': 0,
+    'space.composerFirstActionOffset': -5,
+    'space.composerActionGap': 8,
+    'space.composerMetaGap': 8,
+    'size.composerEditorMinimumDesktop': 24,
+    'size.composerAction': 32,
+    'size.composerSubmit': 32,
+    'size.composerGlyph': 18,
+    'type.composerNotice.size': 13,
+    'type.composerNotice.line': 18,
+    'type.composerNotice.weight': 400,
+    'radius.composerNotice': 10,
+    'stroke.composerNotice': 1,
+    'space.composerNoticeTop': 8,
+    'space.composerNoticeEnd': 12,
+    'space.composerNoticeBottom': 8,
+    'space.composerNoticeStart': 12,
+
     # Web appearanceStore.ts + MessageItem text roles (Cindy 5eef1cad/4e2f12b0).
     'type.messageBody.sm.size': 14, 'type.messageBody.sm.line': 20,
     'type.messageBody.md.size': 16, 'type.messageBody.md.line': 24,
@@ -213,6 +248,8 @@ GEOMETRY_RAFT = {
 
 # Select uses the same h-11 tier, not an independent authored 44 (Cindy 511917e6).
 # Pack geometry stores numbers, so this alias is resolved by the generator.
+GEOMETRY_RAFT['size.composerAction'] = GEOMETRY_RAFT['size.control.sm']
+GEOMETRY_RAFT['size.composerSubmit'] = GEOMETRY_RAFT['size.control.sm']
 GEOMETRY_RAFT['size.selectTrigger'] = GEOMETRY_RAFT['size.control.lg']
 GEOMETRY_RAFT['type.selectValue.size'] = 15
 GEOMETRY_RAFT['type.selectValue.weight'] = 600
@@ -267,6 +304,13 @@ def build() -> dict:
             if token.startswith(('palette-', 'deprecated-', 'color-')):
                 continue
             out.setdefault(token, value)
+        out['line-composer'] = out['line-strong']
+        out['foreground-composer-task'] = out['foreground']
+        out['layer-composer-task-checked'] = out['foreground']
+        out['line-composer-task'] = out['line-strong']
+        out['layer-composer-notice'] = out['warning-soft']
+        out['foreground-composer-notice'] = out['foreground']
+        out['line-composer-notice'] = out['line-hairline']
         out['layer-auth-header'] = out['layer-frame']
         out['foreground-message'] = out['foreground']
         # Component aliases: values are existing roles, never new palette colors.

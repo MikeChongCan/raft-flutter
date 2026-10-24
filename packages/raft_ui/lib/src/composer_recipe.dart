@@ -7,6 +7,9 @@ import 'localization.dart';
 import 'recipe_surface.dart';
 import 'recipes/composer_suggestion_list.g.dart';
 import 'theme.dart';
+import 'raft/css_box.dart';
+import 'raft/ui_tokens.dart';
+import 'raft/button.dart';
 
 /// MessageInput normal/compact host, distinct from the generic RUI Composer.
 enum RaftComposerVariant { normal, compact }
@@ -20,12 +23,13 @@ class RaftComposerRecipe {
     required this.desktop,
     this.variant = RaftComposerVariant.normal,
     this.bottomSafeInset = 0,
+    this.devicePixelRatio = 1,
   }) : assert(bottomSafeInset >= 0);
 
   final RaftTokens tokens;
   final bool desktop;
   final RaftComposerVariant variant;
-  final double bottomSafeInset;
+  final double bottomSafeInset, devicePixelRatio;
   bool get compact => variant == RaftComposerVariant.compact;
 
   // MessageInput2490; index.css755. The recipe stays pure: RaftComposer passes
@@ -46,15 +50,37 @@ class RaftComposerRecipe {
             top: BorderSide(color: tokens.colors['line-muted']!, width: 1),
           ),
   );
-  EdgeInsets get shellInset => EdgeInsets.zero;
+  EdgeInsets get shellInset => EdgeInsets.fromLTRB(
+    tokens.size('space.composerShellInline', fallback: 12),
+    tokens.size('space.composerShellTop', fallback: 12),
+    tokens.size('space.composerShellInline', fallback: 12),
+    tokens.size('space.composerShellBottom', fallback: 8),
+  );
   double get shellGap => 8;
   double get shellRadius => tokens.size('radius.container', fallback: 8);
+  bool get bordered => tokens.option('control.edge', or: 'ring') == 'inkBorder';
+  double get shellStroke {
+    final width = tokens.size('stroke.control', fallback: 1.5);
+    return RaftBorderSnap.emulatedDeviceScaleFactor
+        ? width.floorToDouble()
+        : (width * devicePixelRatio).floorToDouble() / devicePixelRatio;
+  }
+
   BoxDecoration shellDecoration({required bool focused}) => BoxDecoration(
     color: tokens.panel,
     borderRadius: BorderRadius.circular(shellRadius),
-    // CSS ring sits outside the border box: use a spread shadow, never an
-    // interior Flutter Border that changes the editor's content bounds.
-    boxShadow: tokens.dark
+    border: bordered
+        ? Border.all(color: tokens.colors['line-composer']!, width: shellStroke)
+        : null,
+    boxShadow: bordered
+        ? tokens.option('press.effect', or: 'overlay') == 'offsetShadow'
+              ? focused
+                    ? tokens.focusShadows
+                    : tokens.shadows
+              : focused
+              ? tokens.focusShadows
+              : const []
+        : tokens.dark
         ? [
             if (focused)
               BoxShadow(
@@ -64,14 +90,20 @@ class RaftComposerRecipe {
           ]
         : [
             ...tokens.shadows,
-            BoxShadow(color: tokens.colors['ink-6']!, spreadRadius: 1),
+            BoxShadow(color: tokens.colors['line-composer']!, spreadRadius: 1),
           ],
   );
 
-  // MessageInput product override wins over generic Elegant min-h-16.
-  double get editorMinimum => desktop ? 40 : 20;
+  double get editorMinimum => desktop
+      ? tokens.size('size.composerEditorMinimumDesktop', fallback: 24)
+      : tokens.size('type.composerInput.line', fallback: 24);
   double get editorMaximum => 128;
-  EdgeInsets get editorInset => const EdgeInsets.fromLTRB(12, 12, 12, 0);
+  EdgeInsets get editorInset => EdgeInsets.fromLTRB(
+    tokens.size('space.composerEditorInline', fallback: 2),
+    tokens.size('space.composerEditorTop', fallback: 0),
+    tokens.size('space.composerEditorInline', fallback: 2),
+    0,
+  );
   TextStyle get editorText => RaftTypography.heading(
     tokens,
     size: desktop
@@ -82,14 +114,22 @@ class RaftComposerRecipe {
   ).copyWith(color: tokens.strong);
   TextStyle get placeholder =>
       editorText.copyWith(color: tokens.colors['foreground-placeholder']);
-  EdgeInsets get toolbarInset => const EdgeInsets.fromLTRB(10, 4, 10, 10);
-  Offset get toolbarPaintOffset => const Offset(0, 4);
+  EdgeInsets get toolbarInset => EdgeInsets.fromLTRB(
+    tokens.size('space.composerToolbarInline', fallback: 0),
+    tokens.size('space.composerToolbarTop', fallback: 0),
+    tokens.size('space.composerToolbarInline', fallback: 0),
+    tokens.size('space.composerToolbarBottom', fallback: 0),
+  );
+  Offset get toolbarPaintOffset =>
+      Offset(0, tokens.size('space.composerToolbarShiftY', fallback: 0));
+  double get firstActionOffset =>
+      tokens.size('space.composerFirstActionOffset', fallback: -5);
   double get toolbarGap => 8;
-  double get actionGap => 6;
-  double get metaGap => 12; // Actual task + submit wrapper, MessageInput2970.
-  double get actionFace => 28;
-  double get submitFace => 28;
-  double get glyphSize => 14;
+  double get actionGap => tokens.size('space.composerActionGap', fallback: 8);
+  double get metaGap => tokens.size('space.composerMetaGap', fallback: 8);
+  double get actionFace => tokens.size('size.composerAction', fallback: 32);
+  double get submitFace => tokens.size('size.composerSubmit', fallback: 32);
+  double get glyphSize => tokens.size('size.composerGlyph', fallback: 18);
 
   // composer-suggestion.recipe.ts / index.mjs13809–13910.
   double get suggestionMaximum => 204;
@@ -237,8 +277,9 @@ class _RaftComposerActionState extends State<RaftComposerAction> {
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
-    final size = widget.submit ? 28.0 : 28.0;
-    // Web sizes these buttons 26-28px with no touch inflation; Android's
+    final recipe = RaftComposerRecipe(t, desktop: false);
+    final size = widget.submit ? recipe.submitFace : recipe.actionFace;
+    // Web uses 32px; legacy buttons keep their 26/28px face. Android's
     // 48dp guideline is met by routing nearby touches to them instead
     // (RaftTapSlopHost in the composer). Desktop keeps the exact box.
     final touch = RaftDensityScope.of(context) == RaftDensity.touch;
@@ -254,20 +295,87 @@ class _RaftComposerActionState extends State<RaftComposerAction> {
           visualWidth: size,
           visualHeight: size,
           minimumTargetSize: size,
-          padding: widget.submit ? EdgeInsets.zero : null,
+          padding: EdgeInsets.zero,
           variant: widget.submit
               ? RaftControlVariant.accent
               : RaftControlVariant.ghost,
-          recipe: widget.submit ? null : _ComposerAttachRecipe(t),
+          recipe: widget.submit
+              ? t.option('sticker.ring', or: 'none') == 'dieCut'
+                    ? _ComposerSubmitRecipe(
+                        t,
+                        disabled: widget.onPressed == null || widget.busy,
+                        stroke: raftControlBorderPx(
+                          context,
+                          t.size('stroke.control', fallback: 1.5),
+                        ),
+                      )
+                    : null
+              : _ComposerAttachRecipe(t),
           busy: widget.busy,
           semanticLabel: raftText(context, widget.tooltip),
           tooltip: raftText(context, widget.tooltip),
           onPressed: widget.onPressed,
           child: widget.busy || widget.spinner
               ? const RaftSpinner()
-              : RaftIcon(widget.glyph, size: 14),
+              : RaftIcon(widget.glyph, size: recipe.glyphSize),
         ),
       ),
     );
   }
+}
+
+// Shared native Button colors, with the composer's pointer-focus policy kept
+// by RaftControl. A disabled Send is fully opaque and uses the disabled fill.
+class _ComposerSubmitRecipe extends RaftControlRecipe {
+  const _ComposerSubmitRecipe(
+    super.tokens, {
+    required this.disabled,
+    required this.stroke,
+  }) : super(variant: RaftControlVariant.accent);
+  final bool disabled;
+  final double stroke;
+  RaftButtonColors colors({bool overlay = false}) => RaftButtonColors.resolve(
+    tokens.ui,
+    RaftButtonVariant.accent,
+    disabled: disabled,
+    overlay: overlay,
+    iconSize: true,
+  );
+  @override
+  bool get transformsOnInteraction => false;
+  @override
+  double get disabledOpacity => 1;
+  @override
+  Color get background => colors().fill;
+  @override
+  Color backgroundForInteraction({
+    bool hovered = false,
+    bool pressed = false,
+  }) => colors(overlay: hovered || pressed).fill;
+  @override
+  Color get foreground => colors().foreground;
+  @override
+  Color foregroundFor({bool hovered = false}) => foreground;
+  @override
+  BorderSide side({bool hovered = false}) =>
+      BorderSide(color: colors().border, width: stroke);
+  @override
+  BorderRadius get radius =>
+      BorderRadius.circular(tokens.size('radius.control', fallback: 8));
+  @override
+  EdgeInsets get padding => EdgeInsets.zero;
+  @override
+  Gradient? get overlayGradient => null;
+  @override
+  double get insetHighlightAlpha => 0;
+  @override
+  List<BoxShadow> shadows({
+    bool hovered = false,
+    bool pressed = false,
+    bool focused = false,
+  }) => [
+    if (colors().ringEdge case final edge?)
+      BoxShadow(color: edge, spreadRadius: stroke),
+    if (focused) ...tokens.focusShadows,
+  ];
 }

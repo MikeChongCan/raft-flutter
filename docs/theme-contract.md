@@ -669,3 +669,52 @@ Brutal 深色整套沿 Elegant。消息发送者控件的物理最小行高跟�
 ### 登录页头与快捷反应分隔线（Cindy dbb08097）
 
 `layer-auth-header`：Raft 引用 layer-frame，Elegant 保持 panel，Brutal 浅色保持原 soft-signal，深色沿 Elegant；登录页所有宽度共用此角色。`messageMenu.reactionDivider = shown | hidden`：Raft shown、旧两套 hidden，仅在有快捷反应且下面有菜单项时显示原有分隔线。
+
+### 输入框外壳、操作行和通知条（Cindy 16e23df0）
+
+外壳复用 `control.edge`，不新增 composer.frame。数值来自当前 Web 0.7.0 的真实 DOM 与 a57 原版四组组件探测；通知条原内边距按左／上／右／下为 Elegant 10／10／8／10、Brutal 8／8／8／8。原版 recipe 的既有填充色和文字色通过角色引用保存；需要原样保留的数值仅进入已批准的专用调色板项。
+
+| 数值 | Raft | Elegant | Brutal 浅色 |
+| --- | ---: | ---: | ---: |
+| `space.composerShellInline` | 12 | 0 | 8 |
+| `space.composerShellTop` | 12 | 0 | 8 |
+| `space.composerShellBottom` | 8 | 0 | 8 |
+| `space.composerEditorInline` | 2 | 12 | 0 |
+| `space.composerEditorTop` | 0 | 12 | 0 |
+| `space.composerToolbarInline` | 0 | 10 | 0 |
+| `space.composerToolbarTop` | 0 | 4 | 0 |
+| `space.composerToolbarBottom` | 0 | 10 | 0 |
+| `space.composerToolbarShiftY` | 0 | 4 | 0 |
+| `space.composerFirstActionOffset` | -5 | 0 | 0 |
+| `space.composerActionGap` | 8 | 6 | 8 |
+| `space.composerMetaGap` | 8 | 12 | 12 |
+| `size.composerEditorMinimumDesktop` | 24 | 40 | 40 |
+| `size.composerAction` | 32 | 28 | 26 |
+| `size.composerSubmit` | 32 | 28 | 28 |
+| `size.composerGlyph` | 18 | 14 | 14 |
+| `type.composerNotice.size` | 13 | 12 | 12 |
+| `type.composerNotice.line` | 18 | 16 | 16 |
+| `type.composerNotice.weight` | 400 | 700 | 700 |
+| `radius.composerNotice` | 10 | 4 | 0 |
+| `stroke.composerNotice` | 1 | 0 | 2 |
+| `space.composerNoticeTop` | 8 | 10 | 8 |
+| `space.composerNoticeEnd` | 12 | 8 | 8 |
+| `space.composerNoticeBottom` | 8 | 10 | 8 |
+| `space.composerNoticeStart` | 12 | 10 | 8 |
+
+`size.composerAction` 和 `size.composerSubmit` 在 Raft 生成器中引用已有 size.control.sm。深色 Brutal 沿用 Elegant。颜色角色 line-composer、layer-composer-notice、foreground-composer-notice、line-composer-notice 复用相应源码既有颜色。
+
+Cindy fc426a64 批准任务勾选数值：
+
+| 数值 | Raft | Elegant | Brutal 浅色 |
+| --- | ---: | ---: | ---: |
+| `size.composerTaskToggle` | 32 | 16 | 16 |
+| `size.composerTaskCheckbox` | 20 | 14 | 14 |
+| `space.composerTaskGap` | 8 | 6 | 6 |
+| `type.composerTaskLabel.size` | 14 | 12 | 12 |
+| `type.composerTaskLabel.line` | 20 | 16 | 16 |
+| `type.composerTaskLabel.weight` | 600 | 700 | 700 |
+
+调色板（Cindy c3468770、ab2343bd、fd3328fd）：`palette.elegantNotice.light` 为 #ffeadc；深色项保留 a57 `recipe_utilities.g.dart` 的 `_v609` 实际绘制值：`Color.from(alpha: 0.180368, red: 0.534161, green: 0.321382, blue: 0.207110)`。源码同时保存的 CSS 字面值 `oklch(0.5 0.08 50 / 0.18)` 经当前包解析器转换后并不等于这组浮点值，因此不使用 CSS 字面值或四舍五入后的 ARGB。两项只用于保留旧 Elegant 的像素，没有对应的 Web 值；只出现在 Elegant 源模式（Brutal 深色完整继承），Raft 包不加。`layer-composer-notice` 引用这些项；Brutal 浅色引用现有 palette-orange-100。
+
+任务勾选颜色（Cindy ab2343bd）：`foreground-composer-task` 为 Raft foreground／Elegant foreground-strong／Brutal ink 的 60%；`layer-composer-task-checked` 为 foreground／foreground-strong／ink；`line-composer-task` 为 line-strong／line-strong／ink。包格式不支持在引用上加透明度，Brutal 的标签值保存在专用调色板项 `composerTaskLabel`，组件不再乘透明度。旧两套共同的勾号尺寸 10、描边 4 保持常量。共享指示器仍由原来的单个交互控件承载，不增添焦点或勾选权威。

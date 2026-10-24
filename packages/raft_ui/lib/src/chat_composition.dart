@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 
 import 'design_primitives.dart';
 import 'raft/tabs.dart';
+import 'raft/checkbox.dart';
 import 'viewport_breakpoints.dart';
 import 'icons.dart';
 import 'panel_layout.dart' show RaftCssText;
@@ -860,12 +861,18 @@ class _ComposerTaskControlRecipe extends _ConversationTabControlRecipe {
   @override
   Color get background => Colors.transparent;
   @override
-  Color get foreground => tokens.strong;
+  Color get foreground => tokens.colors['foreground-composer-task']!;
   @override
   Color foregroundFor({bool hovered = false}) => foreground;
   @override
-  TextStyle get textStyle =>
-      RaftTypography.body(tokens, size: 12, line: 16, weight: FontWeight.w700);
+  TextStyle get textStyle => RaftTypography.body(
+    tokens,
+    size: tokens.size('type.composerTaskLabel.size', fallback: 14),
+    line: tokens.size('type.composerTaskLabel.line', fallback: 20),
+    weight: raftFontWeight(
+      tokens.size('type.composerTaskLabel.weight', fallback: 600),
+    ),
+  );
 }
 
 /// Controlled checkbox presentation for RaftComposer.taskAction. This never
@@ -907,6 +914,8 @@ class _ComposerTaskToggleState extends State<RaftComposerTaskToggle> {
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
+    final native = t.option('checkbox.mark', or: 'fillCheck') == 'fillCheck';
+    final face = t.size('size.composerTaskToggle', fallback: 32);
     return TextFieldTapRegion(
       child: Semantics(
         label: widget.label,
@@ -920,10 +929,10 @@ class _ComposerTaskToggleState extends State<RaftComposerTaskToggle> {
         child: ExcludeSemantics(
           child: RaftControl(
             key: const ValueKey('composer-as-task-toggle'),
-            minimumTargetSize: 16,
+            minimumTargetSize: face,
             focusNode: focus,
             focusOnPointer: false,
-            visualHeight: 16,
+            visualHeight: face,
             padding: EdgeInsets.zero,
             shadow: false,
             tooltip: widget.tooltip,
@@ -934,28 +943,30 @@ class _ComposerTaskToggleState extends State<RaftComposerTaskToggle> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Container(
-                  width: 14,
-                  height: 14,
-                  decoration: BoxDecoration(
-                    color: widget.checked ? t.strong : t.panel,
-                    border: Border.all(
-                      color: t.colors['line-strong']!,
-                      width: 1,
-                    ),
-                  ),
-                  child: widget.checked
-                      ? Center(
-                          child: RaftIcon(
-                            RaftGlyph.check,
-                            size: 10,
-                            strokeWidth: 4,
-                            color: t.colors['foreground-inverse'],
-                          ),
-                        )
-                      : null,
+                RaftCheckboxIndicator(
+                  checked: widget.checked,
+                  disabled: native && widget.onChanged == null,
+                  size: t.size('size.composerTaskCheckbox', fallback: 20),
+                  style: native
+                      ? null
+                      : RaftCheckboxIndicatorStyle(
+                          fill: widget.checked
+                              ? t.colors['layer-composer-task-checked']
+                              : t.panel,
+                          borderColor: t.colors['line-composer-task'],
+                          markColor: t.colors['foreground-inverse'],
+                          radius: 0,
+                          borderWidth:
+                              t.option('checkbox.mark', or: 'strokeCheck') ==
+                                  'thickStroke'
+                              ? 2
+                              : 1,
+                          // Both a57 optional appearances use the same mark.
+                          markSize: 10,
+                          markStrokeWidth: 4,
+                        ),
                 ),
-                const SizedBox(width: 6),
+                SizedBox(width: t.size('space.composerTaskGap', fallback: 8)),
                 Text(widget.label),
               ],
             ),

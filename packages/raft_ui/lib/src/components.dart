@@ -2820,7 +2820,13 @@ class _RaftComposerState extends State<RaftComposer> {
           RaftLayoutMetrics.desktopBreakpoint,
       variant: widget.variant,
       bottomSafeInset: widget.bottomSafeInset ?? raftBottomInset(context),
+      devicePixelRatio: MediaQuery.devicePixelRatioOf(context),
     );
+    final firstActionOffset =
+        !recipe.compact &&
+            (widget.onImagePick != null || widget.onAttach != null)
+        ? recipe.firstActionOffset
+        : 0.0;
     final busy = sending || widget.submitBusy;
     final submitEnabled = submitReady;
     // A composer under a covered route stops counting.
@@ -2882,7 +2888,12 @@ class _RaftComposerState extends State<RaftComposer> {
                           decoration: recipe.shellDecoration(
                             focused: composerFocused,
                           ),
-                          padding: recipe.shellInset,
+                          // CSS's first-action negative margin must also be
+                          // in the parent's hit bounds; a paint translation
+                          // alone hides the leftmost five pixels from taps.
+                          padding: recipe.shellInset.copyWith(
+                            left: recipe.shellInset.left + firstActionOffset,
+                          ),
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -2926,6 +2937,11 @@ class _RaftComposerState extends State<RaftComposer> {
                                 child: RaftComposerExpandable(
                                   text: controller.text,
                                   recipe: recipe,
+                                  editorInset: recipe.editorInset.copyWith(
+                                    left:
+                                        recipe.editorInset.left -
+                                        firstActionOffset,
+                                  ),
                                   onExpand: widget.enabled && !busy
                                       ? openExpanded
                                       : null,

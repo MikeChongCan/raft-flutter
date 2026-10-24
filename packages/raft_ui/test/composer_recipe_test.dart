@@ -57,16 +57,16 @@ void main() {
         final image = tester.getRect(action('Attach Media'));
         final file = tester.getRect(action('Attach File'));
         final send = tester.getRect(action('Send'));
-        final size = 28.0;
+        final size = 32.0;
         expect(image.size, Size.square(size));
         expect(file.size, Size.square(size));
-        expect(send.size, const Size.square(28));
-        expect(file.left - image.right, 6);
+        expect(send.size, const Size.square(32));
+        expect(file.left - image.right, 8);
         expect(
           tester
               .getSize(find.byKey(const ValueKey('composer-toolbar-slot')))
               .height,
-          42,
+          32,
         );
         await tester.tap(find.byType(TextField));
         await tester.tapAt(Offset(image.left + 1, image.center.dy));
@@ -103,14 +103,15 @@ void main() {
         await tester.tapAt(Offset(send.center.dx, send.bottom - 1));
         await tester.pump();
         expect(sends, 1);
-        // 28dp Send keeps its visual box but accepts a 48dp touch target.
-        await tester.tapAt(Offset(send.right + 9, send.center.dy));
+        // Source 32dp Send keeps its visual box but accepts a 48dp touch target.
+        // The inside probe stays one pixel within the 8px added on each edge.
+        await tester.tapAt(Offset(send.right + 7, send.center.dy));
         await tester.pump();
         expect(sends, 2);
-        await tester.tapAt(Offset(send.center.dx, send.top - 9));
+        await tester.tapAt(Offset(send.center.dx, send.top - 7));
         await tester.pump();
         expect(sends, 3);
-        await tester.tapAt(Offset(send.left - 9, send.center.dy));
+        await tester.tapAt(Offset(send.left - 7, send.center.dy));
         await tester.pump();
         expect(sends, 4);
         // Beyond 48dp nothing reroutes to it.
@@ -140,7 +141,7 @@ void main() {
           bottomSafeInset: 7,
         );
         expect(recipe.hostInset, const EdgeInsets.fromLTRB(20, 8, 20, 23));
-        expect(recipe.editorMinimum, 20);
+        expect(recipe.editorMinimum, 24);
         expect(recipe.editorMaximum, 128);
         expect(recipe.shellRadius, 10);
         final actualHost = tester.widget<Container>(
@@ -161,7 +162,11 @@ void main() {
                     )
                     .decoration!
                 as BoxDecoration;
-        expect(decoration.border, null);
+        expect(decoration.border!.top.width, 1);
+        expect(
+          decoration.border!.top.color,
+          dark ? const Color(0xffe5e5e2) : const Color(0xff141111),
+        );
         expect(tester.takeException(), isNull);
         await tester.pumpWidget(const SizedBox());
         await tester.pump();
@@ -460,7 +465,7 @@ void main() {
       final editor = tester.widget<ConstrainedBox>(
         find.byKey(const ValueKey('composer-editor-slot')),
       );
-      expect(editor.constraints.minHeight, 40);
+      expect(editor.constraints.minHeight, 24);
       expect(
         tester.widget<TextField>(find.byType(TextField)).style!.fontSize,
         16,
