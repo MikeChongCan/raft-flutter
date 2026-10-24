@@ -205,10 +205,11 @@ void main() {
         final gesture = await tester.startGesture(tester.getCenter(target));
         await tester.pump();
         // Press feedback is the overlay only: no scale, no translation.
-        expect(
+        for (final transform in tester.widgetList<Transform>(
           find.descendant(of: target, matching: find.byType(Transform)),
-          findsNothing,
-        );
+        )) {
+          expect(transform.transform.isIdentity(), isTrue);
+        }
         await gesture.moveBy(const Offset(300, 0));
         await gesture.up();
         await tester.pump();

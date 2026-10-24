@@ -221,35 +221,36 @@ class RaftPanelAction extends StatelessWidget {
   final String tooltip;
   final VoidCallback? onPressed;
 
-  /// Minimum touch target below the md breakpoint. Web's boxed action is
+  /// Minimum touch target for touch input. Web's boxed action is
   /// 24x28 (Brutal) / 32x32 (Elegant); the visual and layout stay as Web
   /// draws them and the hit area is extended around it.
   final double minHitExtent;
   @override
   Widget build(BuildContext context) {
-    if (RaftTokens.of(context).option('panelAction.surface', or: 'outline') ==
-        'ghost') {
-      return RaftButton(
-        label: '',
-        glyph: glyph,
-        tooltip: tooltip,
-        semanticLabel: tooltip,
-        uiVariant: RaftButtonVariant.ghost,
-        uiSize:
-            MediaQuery.sizeOf(context).width <
-                RaftLayoutMetrics.desktopBreakpoint
-            ? RaftButtonSize.iconLg
-            : RaftButtonSize.iconMd,
-        onPressed: onPressed,
-      );
-    }
+    final ghost =
+        RaftTokens.of(context).option('panelAction.surface', or: 'outline') ==
+        'ghost';
     return RaftTouchTargetExpander(
       minSize: Size.square(
         minHitExtent > 0 && RaftInteraction.of(context).touch
             ? minHitExtent
             : 0,
       ),
-      child: _interactive(context),
+      child: ghost
+          ? RaftButton(
+              label: '',
+              glyph: glyph,
+              tooltip: tooltip,
+              semanticLabel: tooltip,
+              uiVariant: RaftButtonVariant.ghost,
+              uiSize:
+                  MediaQuery.sizeOf(context).width <
+                      RaftLayoutMetrics.desktopBreakpoint
+                  ? RaftButtonSize.iconLg
+                  : RaftButtonSize.iconMd,
+              onPressed: onPressed,
+            )
+          : _interactive(context),
     );
   }
 

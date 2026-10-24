@@ -217,6 +217,8 @@ class RaftMessageRowRecipe {
           ? mobile
                 ? number('space.messageRowFollowedCompactBottomCompact', 8)
                 : number('space.messageRowFollowedCompactBottom', 8)
+          : followedBy == RaftMessageFollowedBy.group
+          ? number('space.messageRowFollowedGroupBottom', 8)
           : mobile
           ? number('space.messageRowBottomCompact', 8)
           : number('space.messageRowBottom', 8),

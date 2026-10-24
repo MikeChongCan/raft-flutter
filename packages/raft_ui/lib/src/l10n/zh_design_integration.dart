@@ -11,4 +11,10 @@ const Map<String, String> zhCatalogDesignIntegration = {
   "Server mode": "服务器模式",
   "Most Connected Members": "连接最多的成员",
   "Largest Channels": "最大的频道",
+  // Pinned Web zh-cn: message.messageItem.downloadToView,
+  // message.composer.cancelRecoveredUpload and agent.detail.stopAgentConfirmMessage.
+  'Download to view': '下载后查看',
+  'Cancel upload': '取消上传',
+  'Are you sure you want to stop "{name}"? The agent will stop processing messages.':
+      '确定要停止“{name}”吗？该 Agent 将停止处理消息。',
 };

@@ -35,7 +35,8 @@ void main() {
     (raftThemePackId, true, 'SpaceGrotesk', 'SpaceGrotesk', 'SpaceMono'),
     (elegantThemePackId, false, 'Inter', 'Geist', 'GeistMono'),
     (elegantThemePackId, true, 'Inter', 'Geist', 'GeistMono'),
-    (brutalThemePackId, false, 'HankenGrotesk', 'HankenGrotesk', 'SpaceMono'),
+    (brutalThemePackId, false, 'HankenGrotesk', 'HankenGrotesk', 'GeistMono'),
+    (brutalThemePackId, true, 'Inter', 'Geist', 'GeistMono'),
   ]) {
     for (final role in ['heading', 'sans', 'mono']) {
       testWidgets('$id dark=$dark $role draws the bundled glyphs', (t) async {

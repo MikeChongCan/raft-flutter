@@ -6,12 +6,15 @@ import 'package:raft_ui/test_themes.dart';
 void main() {
   for (final dark in raftThemeMatrix([false, true])) {
     testWidgets(
-      '${dark ? 'dark' : 'light'} mounted touch message controls preserve source flow and disjoint hits',
+      '${dark ? 'dark' : 'light'} legacy Elegant mounted touch message controls preserve source flow and disjoint hits',
       (t) async {
         var first = 0, second = 0, toggles = 0;
         await t.pumpWidget(
           MaterialApp(
-            theme: raftTheme(dark: dark),
+            theme: raftTheme(
+              pack: packForThemeId(elegantThemePackId),
+              dark: dark,
+            ),
             home: Scaffold(
               body: RaftDensityScope(
                 density: RaftDensity.touch,

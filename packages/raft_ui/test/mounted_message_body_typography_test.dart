@@ -12,7 +12,7 @@ const prose =
 void main() {
   for (final dark in raftThemeMatrix([false, true])) {
     testWidgets(
-      'mounted prose uses source face/colour/tracking ${dark ? 'dark' : 'light'}',
+      'legacy Elegant mounted prose uses source face/colour/tracking ${dark ? 'dark' : 'light'}',
       (t) async {
         await t.runAsync(() async {
           final asset = 'Geist.ttf';
@@ -24,12 +24,18 @@ void main() {
           } on FlutterError {
             data = await rootBundle.load('assets/fonts/$asset');
           }
-          final tokens = raftTheme(dark: dark).extension<RaftTokens>()!;
+          final tokens = raftTheme(
+            pack: packForThemeId(elegantThemePackId),
+            dark: dark,
+          ).extension<RaftTokens>()!;
           await (FontLoader(
             tokens.bodyFont,
           )..addFont(Future.value(data))).load();
         });
-        final theme = raftTheme(dark: dark);
+        final theme = raftTheme(
+          pack: packForThemeId(elegantThemePackId),
+          dark: dark,
+        );
         final tokens = theme.extension<RaftTokens>()!;
         Future<RenderParagraph> mount(bool mounted, double width) async {
           await t.pumpWidget(
@@ -115,7 +121,10 @@ void main() {
         );
         await t.pumpWidget(
           MaterialApp(
-            theme: raftTheme(dark: dark),
+            theme: raftTheme(
+              pack: packForThemeId(elegantThemePackId),
+              dark: dark,
+            ),
             home: const Scaffold(
               body: RaftMessageBody(
                 content: 'prefix `a/<app>/latest` suffix',
@@ -143,7 +152,10 @@ void main() {
       test(
         'mounted preference $size keeps source line height ${dark ? 'dark' : 'light'}',
         () {
-          final tokens = raftTheme(dark: dark).extension<RaftTokens>()!;
+          final tokens = raftTheme(
+            pack: packForThemeId(elegantThemePackId),
+            dark: dark,
+          ).extension<RaftTokens>()!;
           final recipe = MessageContentRecipe(
             tokens,
             fontSize: size,

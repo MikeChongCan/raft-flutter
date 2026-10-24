@@ -186,7 +186,8 @@ void main() {
         expect(scroll.position.pixels, 0);
         expect(find.byType(RaftNewUpdatesButton), findsNothing);
         final list = listRect(tester);
-        expect(tester.getRect(card('Channel 20')).top, list.top + 16);
+        // Web v1.21.23 flat inbox list: pt-1, without the old card inset.
+        expect(tester.getRect(card('Channel 20')).top, list.top + 4);
         serverMoves(20, 2000, 't1');
         await tester.pump(const Duration(milliseconds: 150));
         await tester.pumpAndSettle();

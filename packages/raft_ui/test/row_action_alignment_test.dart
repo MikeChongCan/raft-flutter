@@ -14,25 +14,27 @@ const _action = ValueKey('trailing-action');
 bool _androidZh = false;
 double _scale = 1;
 
-Widget _host(bool dark, Widget child, {double width = 700}) => MaterialApp(
-  locale: _androidZh ? const Locale('zh') : null,
-  theme: raftTheme(
-    dark: dark,
-    locale: _androidZh ? const Locale('zh') : null,
-    platform: _androidZh ? TargetPlatform.android : null,
-  ),
-  builder: (context, child) => MediaQuery(
-    data: MediaQuery.of(context)
-        .copyWith(textScaler: TextScaler.linear(_scale)),
-    child: child!,
-  ),
-  home: Scaffold(
-    body: Align(
-      alignment: Alignment.topLeft,
-      child: SizedBox(width: width, child: child),
-    ),
-  ),
-);
+Widget _host(bool dark, Widget child, {double width = 700, String? themeId}) =>
+    MaterialApp(
+      locale: _androidZh ? const Locale('zh') : null,
+      theme: raftTheme(
+        pack: themeId == null ? null : packForThemeId(themeId),
+        dark: dark,
+        locale: _androidZh ? const Locale('zh') : null,
+        platform: _androidZh ? TargetPlatform.android : null,
+      ),
+      builder: (context, child) => MediaQuery(
+        data: MediaQuery.of(context)
+            .copyWith(textScaler: TextScaler.linear(_scale)),
+        child: child!,
+      ),
+      home: Scaffold(
+        body: Align(
+          alignment: Alignment.topLeft,
+          child: SizedBox(width: width, child: child),
+        ),
+      ),
+    );
 
 Widget _button([String label = 'Retry']) => RaftRecipeButton(
   key: _action,
@@ -58,22 +60,35 @@ void main() {
         testWidgets(
           'RaftErrorBanner message and retry: $theme zh=$zh x$scale small=$small',
           (tester) async {
-            await tester.pumpWidget(
-              _host(
-                dark,
-                RaftErrorBanner(
-                  'Could not load',
-                  small: small,
-                  onRetry: () {},
-                  retryLabel: 'Retry',
+            for (final id in [elegantThemePackId, raftThemePackId]) {
+              await tester.pumpWidget(
+                _host(
+                  dark,
+                  RaftErrorBanner(
+                    'Could not load',
+                    small: small,
+                    onRetry: () {},
+                    retryLabel: 'Retry',
+                  ),
+                  width: 600,
+                  themeId: id,
                 ),
-                width: 600,
-              ),
-            );
-            expectVerticallyCentered(tester, [
-              find.text('Could not load'),
-              find.byType(RaftRecipeButton),
-            ], reason: 'RaftErrorBanner small=$small');
+              );
+              await tester.pumpAndSettle();
+              await tester.pumpAndSettle();
+              if (id == elegantThemePackId) {
+                expectVerticallyCentered(tester, [
+                  find.text('Could not load'),
+                  find.byType(RaftRecipeButton),
+                ], reason: 'legacy Elegant RaftErrorBanner small=$small');
+              } else {
+                // Pinned raft-ui Banner root is items-start, including sm.
+                expect(
+                  tester.getTopLeft(find.text('Could not load')).dy,
+                  tester.getTopLeft(find.byType(RaftRecipeButton)).dy,
+                );
+              }
+            }
           },
         );
       }
@@ -81,21 +96,32 @@ void main() {
       testWidgets(
         'RaftComposerNotice message and dismiss: $theme zh=$zh x$scale',
         (tester) async {
-          await tester.pumpWidget(
-            _host(
-              dark,
-              RaftComposerNotice(
-                message: 'Attachment too large',
-                onDismiss: () {},
-                dismissLabel: 'Dismiss',
+          for (final id in [elegantThemePackId, raftThemePackId]) {
+            await tester.pumpWidget(
+              _host(
+                dark,
+                RaftComposerNotice(
+                  message: 'Attachment too large',
+                  onDismiss: () {},
+                  dismissLabel: 'Dismiss',
+                ),
+                width: 600,
+                themeId: id,
               ),
-              width: 600,
-            ),
-          );
-          expectVerticallyCentered(tester, [
-            find.text('Attachment too large'),
-            find.byType(RaftRecipeButton),
-          ], reason: 'RaftComposerNotice');
+            );
+            await tester.pumpAndSettle();
+            if (id == elegantThemePackId) {
+              expectVerticallyCentered(tester, [
+                find.text('Attachment too large'),
+                find.byType(RaftRecipeButton),
+              ], reason: 'legacy Elegant RaftComposerNotice');
+            } else {
+              expect(
+                tester.getTopLeft(find.text('Attachment too large')).dy,
+                tester.getTopLeft(find.byType(RaftButton)).dy,
+              );
+            }
+          }
         },
       );
 

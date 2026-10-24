@@ -650,6 +650,33 @@ class _RaftSettingsPrefixedInputState extends State<RaftSettingsPrefixedInput> {
   }
 }
 
+/// Inline identifier surface used by confirmation copy. The consumer owns the
+/// text span and baseline; this component owns the shared slug chip chrome.
+class RaftConfirmSlug extends StatelessWidget {
+  const RaftConfirmSlug({super.key, required this.text, required this.style});
+  final String text;
+  final TextStyle style;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = RaftTokens.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: t.colors['layer-confirm-slug'] ?? t.colors['fill-muted'],
+        borderRadius: BorderRadius.circular(
+          t.size('radius.sticker', fallback: 4),
+        ),
+      ),
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: t.size('space.confirmSlugInline', fallback: 4),
+        ),
+        child: RaftCssText(text, style: style),
+      ),
+    );
+  }
+}
+
 /// ConfirmDialog.tsx on raft-ui `Dialog` (`dialog` recipe, `max-w-sm`).
 class RaftConfirmDialog extends StatefulWidget {
   const RaftConfirmDialog({

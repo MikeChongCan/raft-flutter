@@ -7,80 +7,81 @@ import 'package:raft_ui/test_themes.dart';
 import 'control_transition_paint_test.dart' show pixel;
 
 void main() {
-  testWidgets('Source disabled Cindy recipe and Composer keep distinct bytes', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: raftTheme(),
-        home: RepaintBoundary(
-          key: const ValueKey('paint'),
-          child: ColoredBox(
-            color: Colors.white,
-            child: Align(
-              alignment: Alignment.topLeft,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(
-                    width: 330,
-                    child: RaftButton(
-                      label: 'Create Cindy',
-                      tone: RaftButtonRecipeVariant.accent,
-                      size: RaftButtonRecipeSize.lg,
-                      expand: true,
-                      opacityCompositing: RaftOpacityCompositing.alphaFilter,
+  testWidgets(
+    'Source 0.7.0 disabled buttons and Composer use opaque muted fill',
+    (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: raftTheme(),
+          home: RepaintBoundary(
+            key: const ValueKey('paint'),
+            child: ColoredBox(
+              color: Colors.white,
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(
+                      width: 330,
+                      child: RaftButton(
+                        label: 'Create Cindy',
+                        tone: RaftButtonRecipeVariant.accent,
+                        size: RaftButtonRecipeSize.lg,
+                        expand: true,
+                        opacityCompositing: RaftOpacityCompositing.alphaFilter,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  const SizedBox(
-                    width: 330,
-                    child: RaftButton(
-                      label: 'Create Agent',
-                      tone: RaftButtonRecipeVariant.accent,
-                      size: RaftButtonRecipeSize.lg,
-                      expand: true,
+                    const SizedBox(height: 20),
+                    const SizedBox(
+                      width: 330,
+                      child: RaftButton(
+                        label: 'Create Agent',
+                        tone: RaftButtonRecipeVariant.accent,
+                        size: RaftButtonRecipeSize.lg,
+                        expand: true,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  const RaftComposerAction(
-                    glyph: RaftGlyph.send,
-                    tooltip: 'Send',
-                    onPressed: null,
-                    submit: true,
-                  ),
-                ],
+                    const SizedBox(height: 20),
+                    const RaftComposerAction(
+                      glyph: RaftGlyph.send,
+                      tooltip: 'Send',
+                      onPressed: null,
+                      submit: true,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
         ),
-      ),
-    );
-    await tester.pump();
-    // Pinned Source original99 actual PNGs: CSS disabled Create Cindy and
-    // Composer Submit use different Chromium compositing paths.
-    final cindy = tester.getTopLeft(find.byType(RaftButton).first);
-    final dialog = tester.getTopLeft(find.byType(RaftButton).last);
-    final send = tester.getTopLeft(find.byType(RaftComposerAction));
-    expect(
-      await pixel(tester, dialog + const Offset(12, 12)),
-      // 0.7.1: a disabled button is fill-muted, not a translucent accent.
-      const Color(0xfff3f3f3),
-    );
-    expect(
-      await pixel(tester, cindy + const Offset(12, 12)),
-      const Color(0xfff3f3f3),
-    );
-    expect(
-      await pixel(tester, send + const Offset(5, 8)),
-      const Color(0xffffeef3),
-    );
-    expect(
-      tester.widget<RaftButton>(find.byType(RaftButton).first).onPressed,
-      isNull,
-    );
-    expect(tester.takeException(), isNull);
-  });
+      );
+      await tester.pump();
+      // Pinned raft-ui 0.7.0 Button: disabled:bg-fill-muted and opacity-100
+      // also apply to the native composer Submit. Keep exact sampled bytes.
+      final cindy = tester.getTopLeft(find.byType(RaftButton).first);
+      final dialog = tester.getTopLeft(find.byType(RaftButton).last);
+      final send = tester.getTopLeft(find.byType(RaftComposerAction));
+      expect(
+        await pixel(tester, dialog + const Offset(12, 12)),
+        // 0.7.0: a disabled button is fill-muted, not a translucent accent.
+        const Color(0xfff3f3f3),
+      );
+      expect(
+        await pixel(tester, cindy + const Offset(12, 12)),
+        const Color(0xfff3f3f3),
+      );
+      expect(
+        await pixel(tester, send + const Offset(5, 8)),
+        const Color(0xfff3f3f3),
+      );
+      expect(
+        tester.widget<RaftButton>(find.byType(RaftButton).first).onPressed,
+        isNull,
+      );
+      expect(tester.takeException(), isNull);
+    },
+  );
 
   for (final dark in raftThemeMatrix([false, true])) {
     testWidgets(

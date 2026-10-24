@@ -12,6 +12,18 @@ class RaftSearchRecipe {
   const RaftSearchRecipe(this.t, {required this.mobile});
   final RaftTokens t;
   final bool mobile;
+  // Current search results use flat groups (Web px-4 headings and summary),
+  // while the generated framed recipe remains available to the older packs.
+  EdgeInsets get flatSectionHeadingInset =>
+      const EdgeInsets.fromLTRB(16, 20, 16, 8);
+  EdgeInsets get flatResultsInset => const EdgeInsets.only(bottom: 16);
+  EdgeInsets get flatSummaryInset => const EdgeInsets.fromLTRB(16, 8, 16, 0);
+  BoxDecoration get flatEntityIconSurface => BoxDecoration(
+    color: t.colors['fill-muted'],
+    borderRadius: BorderRadius.circular(t.size('radius.sticker', fallback: 4)),
+  );
+  Widget resultSeparator({required bool flat, required double framedGap}) =>
+      SizedBox(height: flat ? 0 : framedGap);
   EdgeInsets get viewportInset => mobile
       ? const EdgeInsets.fromLTRB(20, 12, 14, 12)
       : const EdgeInsets.all(12);

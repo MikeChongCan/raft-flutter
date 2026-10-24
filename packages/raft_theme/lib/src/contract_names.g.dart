@@ -451,6 +451,7 @@ const Set<String> raftGeometryTokens = {
   'space.messageRowContinuationTop',
   'space.messageRowFollowedCompactBottom',
   'space.messageRowFollowedCompactBottomCompact',
+  'space.messageRowFollowedGroupBottom',
   'space.messageRowGapCompact',
   'space.messageRowInline',
   'space.messageRowInlineCompact',

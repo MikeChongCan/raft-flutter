@@ -35,10 +35,13 @@ Widget host(ThemeData theme, Widget child) => MaterialApp(
 void main() {
   for (final dark in raftThemeMatrix([false, true])) {
     testWidgets(
-      '${dark ? 'dark' : 'light'} Source portal font and label cascade',
+      '${dark ? 'dark' : 'light'} legacy Elegant portal font and label cascade',
       (tester) async {
         await loadFonts(tester);
-        final theme = raftTheme(dark: dark),
+        final theme = raftTheme(
+              pack: packForThemeId(elegantThemePackId),
+              dark: dark,
+            ),
             tokens = theme.extension<RaftTokens>()!,
             controller = TextEditingController(text: 'Product');
         await tester.pumpWidget(

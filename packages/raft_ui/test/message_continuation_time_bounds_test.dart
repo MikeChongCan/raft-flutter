@@ -60,6 +60,10 @@ void main() {
                 await mouse.moveTo(t.getCenter(body));
                 await t.pump();
                 expect(t.widget<Text>(clock).style!.color!.a, greaterThan(0));
+                final recipe = RaftMessageRowRecipe(
+                  RaftTokens.of(t.element(body)),
+                  viewportWidth: width,
+                );
                 final gutter = find.ancestor(
                   of: clock,
                   matching: find.byWidgetPredicate(
@@ -67,7 +71,7 @@ void main() {
                         w is SizedBox &&
                         w.height != null &&
                         w.height! >= 14 &&
-                        (w.width == 32 || w.width == 36),
+                        w.width == recipe.gutterWidth,
                   ),
                 );
                 final bounds = t.getRect(gutter);

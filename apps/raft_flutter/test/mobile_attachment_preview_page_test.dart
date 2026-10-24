@@ -256,11 +256,15 @@ void main() {
               expect(routes.latest, isA<MaterialPageRoute<void>>());
               expect(routes.latest?.settings.name, '/attachment-preview');
               expect(find.byType(Dialog), findsNothing);
-              // Native-only page: Web's phone PanelHeader (62 brutal / 56
-              // elegant, px-5, boxed 26x28 / 32x32 Back).
+              // Current Raft header: a 44px ghost action. Web pl-4
+              // minus its 13px leading overhang places the target at x=3.
               expect(find.byType(RaftMobilePageHeader), findsNothing);
               expect(t.getSize(find.byType(RaftPanelHeaderBar)).height, 56);
-              expect(t.getTopLeft(find.byType(RaftPanelAction)).dx, 20);
+              expect(
+                t.getSize(find.byType(RaftPanelAction)),
+                const Size(44, 44),
+              );
+              expect(t.getTopLeft(find.byType(RaftPanelAction)).dx, 3);
             } else {
               expect(routes.latest, isA<DialogRoute<void>>());
               expect(find.byType(RaftMobilePageHeader), findsNothing);

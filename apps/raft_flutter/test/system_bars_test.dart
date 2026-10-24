@@ -25,7 +25,11 @@ void main() {
       tester.view.reset();
       debugDefaultTargetPlatformOverride = null;
     });
-    for (final theme in [raftTheme(), raftTheme(), raftTheme(dark: true)]) {
+    for (final theme in [
+      for (final id in [raftThemePackId, elegantThemePackId, brutalThemePackId])
+        for (final dark in [false, true])
+          raftTheme(pack: packForThemeId(id), dark: dark),
+    ]) {
       await tester.pumpWidget(
         MaterialApp(
           theme: theme,
@@ -47,7 +51,7 @@ void main() {
       final stripColor = raftStatusBarResolvedColor(
         tester.renderObject(find.byType(RaftStatusBarStrip)),
       );
-      expect(stripColor, tokens.panel);
+      expect(stripColor, tokens.colors['layer-auth-header']);
       final boundary =
           boundaryKey.currentContext!.findRenderObject()!
               as RenderRepaintBoundary;
@@ -90,7 +94,15 @@ void main() {
   testWidgets(
     'theme changes update transparent system bars and icon contrast',
     (tester) async {
-      for (final theme in [raftTheme(), raftTheme(), raftTheme(dark: true)]) {
+      for (final theme in [
+        for (final id in [
+          raftThemePackId,
+          elegantThemePackId,
+          brutalThemePackId,
+        ])
+          for (final dark in [false, true])
+            raftTheme(pack: packForThemeId(id), dark: dark),
+      ]) {
         await tester.pumpWidget(
           MaterialApp(
             theme: theme,

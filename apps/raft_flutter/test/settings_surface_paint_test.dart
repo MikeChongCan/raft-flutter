@@ -15,9 +15,8 @@ import 'workspace_source_location_contract_test.dart'
     show pageFixture, frames, LocalNotifications;
 import 'support/app_services_fixture.dart';
 
-// Source SettingsPanel.tsx:7911–7940 keeps the transparent Elegant header on
-// the Panel's canvas-muted surface and the content on a separate panel surface.
-// Exact Chromium samples are retained in the desktop-region-audit receipt.
+// Current Raft uses its approved panel-header surface; content independently
+// owns layer-panel. Keep actual raster samples at both viewport widths.
 void main() {
   for (final dark in raftThemeMatrix([false, true])) {
     for (final (tab, width) in [
@@ -95,8 +94,10 @@ void main() {
               ];
               expect(
                 rgb(28),
-                bytes(colors.layerCanvasMuted),
-                reason: 'Source transparent header inherits canvas-muted',
+                bytes(
+                  RaftTokens.theme(dark: dark).colors['layer-panel-header']!,
+                ),
+                reason: 'Raft header owns layer-panel-header',
               );
               expect(
                 rgb(780),

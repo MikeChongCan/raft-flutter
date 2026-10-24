@@ -500,7 +500,7 @@ class ResourceSearchResults extends StatelessWidget {
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: plain
-                        ? const EdgeInsets.fromLTRB(16, 20, 16, 8)
+                        ? recipe.flatSectionHeadingInset
                         : slots.sectionHeading.padding,
                     child: slotText(
                       raftText(context, title),
@@ -511,10 +511,9 @@ class ResourceSearchResults extends StatelessWidget {
                 SliverList.separated(
                   itemCount: children.length,
                   itemBuilder: (context, index) => children[index](context),
-                  separatorBuilder: (_, _) => SizedBox(
-                    height: plain
-                        ? 0
-                        : slots.list.rowGap ?? RaftResourceMetrics.gap2,
+                  separatorBuilder: (_, _) => recipe.resultSeparator(
+                    flat: plain,
+                    framedGap: slots.list.rowGap ?? RaftResourceMetrics.gap2,
                   ),
                 ),
               ],
@@ -629,7 +628,7 @@ class ResourceSearchResults extends StatelessWidget {
           padding: raftScrollPadding(
             context,
             plain
-                ? const EdgeInsets.only(bottom: 16)
+                ? recipe.flatResultsInset
                 : slots.viewport.padding.add(
                     RaftResourceMetrics.searchResultsInset,
                   ),
@@ -645,7 +644,7 @@ class ResourceSearchResults extends StatelessWidget {
                       : RaftResourceMetrics.searchSummaryInset,
                   child: Padding(
                     padding: plain
-                        ? const EdgeInsets.fromLTRB(16, 8, 16, 0)
+                        ? recipe.flatSummaryInset
                         : slots.summary.padding.add(
                             EdgeInsets.only(
                               bottom: slots.summary.margin.bottom,
@@ -676,12 +675,7 @@ class ResourceSearchResults extends StatelessWidget {
                             alignment: Alignment.center,
                             // SearchEntityResultIcon (searchEntity entityIcon).
                             decoration: plain
-                                ? BoxDecoration(
-                                    color: t.colors['fill-muted'],
-                                    borderRadius: BorderRadius.circular(
-                                      t.size('radius.sticker', fallback: 4),
-                                    ),
-                                  )
+                                ? recipe.flatEntityIconSurface
                                 : rui.RaftSearchEntityRecipe.resolve(
                                     theme: rui.RaftRecipeTheme.elegant,
                                     tokens: rt,

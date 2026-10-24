@@ -15,7 +15,10 @@ void main() {
     }) async {
       await tester.pumpWidget(
         MaterialApp(
-          theme: raftTheme(dark: dark),
+          theme: raftTheme(
+            pack: packForThemeId(elegantThemePackId),
+            dark: dark,
+          ),
           home: Scaffold(
             body: RaftDensityScope(
               density: density,
@@ -46,8 +49,11 @@ void main() {
       onOpen: onOpen,
     );
 
-    test('$dark source status palette and mounted border', () {
-      final t = raftTheme(dark: dark).extension<RaftTokens>()!;
+    test('$dark legacy Elegant source status palette and mounted border', () {
+      final t = raftTheme(
+        pack: packForThemeId(elegantThemePackId),
+        dark: dark,
+      ).extension<RaftTokens>()!;
       for (final status in RaftMessageTaskStatus.values) {
         final r = RaftMessageTaskChipRecipe(t, status);
         expect(r.chipHeight, 19);

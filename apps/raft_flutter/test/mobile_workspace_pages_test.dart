@@ -339,10 +339,12 @@ void main() {
     );
     await tester.tap(find.text('Open detail'));
     await tester.pumpAndSettle();
-    // Web's elegant phone PanelHeader: 56px, `pl-5`, 32px boxed Back.
+    // Web v1.21.23 Raft: pl-4 minus the 13px leading overhang,
+    // then the 44px ghost action's center.
     expect(find.byType(RaftMobilePageHeader), findsNothing);
     expect(tester.getSize(find.byType(RaftPanelHeaderBar)).height, 56);
-    expect(tester.getCenter(find.byType(RaftPanelAction)).dx, 20 + 16);
+    expect(tester.getSize(find.byType(RaftPanelAction)), const Size(44, 44));
+    expect(tester.getCenter(find.byType(RaftPanelAction)).dx, 3 + 22);
     await tester.tap(find.byType(RaftPanelAction));
     await tester.pumpAndSettle();
     expect(find.text('Open detail'), findsOneWidget);

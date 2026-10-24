@@ -187,7 +187,7 @@ void main() {
       t,
     ) async {
       await mount(t, _free(), spend: _spend());
-      expect(find.text('CLOUD AGENT SPEND'), findsOneWidget);
+      expect(find.text('Cloud agent spend'), findsOneWidget);
       expect(find.text(r'$1.25 of the $5.00 daily limit'), findsOneWidget);
       expect(find.textContaining('Resets '), findsOneWidget);
       expect(find.text(r'$3.50'), findsOneWidget);
@@ -249,13 +249,13 @@ void main() {
 
     testWidgets('a 4xx hides the card', (t) async {
       await mount(t, _free(), spend: {'error': 'no'}, spendStatus: 403);
-      expect(find.text('CLOUD AGENT SPEND'), findsNothing);
+      expect(find.text('Cloud agent spend'), findsNothing);
     });
 
     for (final status in [502, 429, 400]) {
       testWidgets('a $status warns instead of hiding', (t) async {
         await mount(t, _free(), spend: {'error': 'down'}, spendStatus: status);
-        expect(find.text('CLOUD AGENT SPEND'), findsOneWidget);
+        expect(find.text('Cloud agent spend'), findsOneWidget);
         expect(find.text('Failed to load cloud agent spend'), findsOneWidget);
       });
     }
@@ -264,13 +264,13 @@ void main() {
       t,
     ) async {
       await mount(t, _free(read: false), spend: _spend());
-      expect(find.text('CLOUD AGENT SPEND'), findsNothing);
+      expect(find.text('Cloud agent spend'), findsNothing);
       expect(a.reads('/billing/hosted-runtime-usage'), isEmpty);
     });
 
     testWidgets('a server without the route (older) shows nothing', (t) async {
       await mount(t, _free());
-      expect(find.text('CLOUD AGENT SPEND'), findsNothing);
+      expect(find.text('Cloud agent spend'), findsNothing);
     });
 
     testWidgets('a re-render does not read again', (t) async {

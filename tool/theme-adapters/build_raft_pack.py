@@ -344,6 +344,7 @@ GEOMETRY_RAFT.update({'size.messageRowMin': 0,
  'space.messageRowTopCompact': 8,
  'space.messageRowContinuationTop': 0,
  'space.messageRowBottom': 8,
+ 'space.messageRowFollowedGroupBottom': 8,
  'space.messageRowBottomCompact': 8,
  'space.messageRowFollowedCompactBottom': 8,
  'space.messageRowFollowedCompactBottomCompact': 8,
@@ -457,6 +458,10 @@ def build() -> dict:
         out['layer-confirm-slug'] = out['fill-muted']
 
         # Component aliases: values are existing roles, never new palette colors.
+        # These component-only roles do not belong to the legacy semantic
+        # getter map. Keep their pack data and public contract independently.
+        out['layer-panel-header'] = out['layer-canvas']
+        out['layer-section-header-mobile'] = out['layer-frame']
         for target, source in {
             'foreground-field-label': 'foreground-muted',
             'foreground-field-required': 'foreground-muted',

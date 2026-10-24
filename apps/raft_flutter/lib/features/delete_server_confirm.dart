@@ -117,20 +117,7 @@ class _DeleteServerConfirmState extends State<_DeleteServerConfirm> {
         ? WidgetSpan(
             alignment: PlaceholderAlignment.baseline,
             baseline: TextBaseline.alphabetic,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: t.colors['layer-confirm-slug'] ?? t.colors['fill-muted'],
-                borderRadius: BorderRadius.circular(
-                  t.size('radius.sticker', fallback: 4),
-                ),
-              ),
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: t.size('space.confirmSlugInline', fallback: 4),
-                ),
-                child: RaftCssText(widget.slug, style: mono),
-              ),
-            ),
+            child: RaftConfirmSlug(text: widget.slug, style: mono),
           )
         : TextSpan(text: widget.slug, style: mono);
     return Column(

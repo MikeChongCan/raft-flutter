@@ -161,7 +161,7 @@ void main() {
     final toggle = find.byKey(const ValueKey('attachment-preview-mode'));
     expect(toggle, findsOneWidget);
     // Not in comment mode: a tap on the text anchors nothing.
-    expect(find.byTooltip('Remove anchor'), findsNothing);
+    expect(find.byTooltip('Remove Anchor'), findsNothing);
     await t.tap(toggle);
     for (var i = 0; i < 10; i++) {
       await t.pump(const Duration(milliseconds: 100));
@@ -169,7 +169,7 @@ void main() {
     await t.tap(find.text('row 2 of the notes'));
     await t.pump();
     await t.pump();
-    expect(find.byTooltip('Remove anchor'), findsOneWidget);
+    expect(find.byTooltip('Remove Anchor'), findsOneWidget);
     // Post it: the anchor travels with the comment.
     final send = t.widget<RaftComposer>(find.byType(RaftComposer)).onSend;
     await send('good line');

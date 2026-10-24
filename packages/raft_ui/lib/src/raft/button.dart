@@ -326,12 +326,20 @@ class RaftButton extends StatelessWidget {
             square: baseMetrics.square,
           );
     final text = raftText(context, label);
+    final hint = tooltip;
+    final accessibleLabel =
+        semanticLabel ??
+        (text.isEmpty && hint != null
+            ? raftText(context, hint)
+            : busy
+            ? text
+            : null);
     return RaftInteractive(
       onPressed: onPressed,
       busy: busy,
       focusNode: focusNode,
       tooltip: tooltip,
-      semanticLabel: semanticLabel ?? (busy ? text : null),
+      semanticLabel: accessibleLabel,
       builder: (context, st) {
         final disabled = onPressed == null || busy;
         final colors = RaftButtonColors.themed(
@@ -429,7 +437,7 @@ class RaftButton extends StatelessWidget {
           );
         }
 
-        if (semanticLabel != null) content = ExcludeSemantics(child: content);
+        if (accessibleLabel != null) content = ExcludeSemantics(child: content);
 
         final start =
             iconWidget != null &&

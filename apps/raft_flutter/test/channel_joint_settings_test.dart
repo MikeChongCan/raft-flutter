@@ -194,7 +194,7 @@ void main() {
     await t.tap(action);
     await t.pumpAndSettle();
     expect(key('channel-settings-confirm-dialog'), findsOneWidget);
-    expect(find.text('DISCONNECT JOINT CHANNEL'), findsOneWidget);
+    expect(find.text('Disconnect Joint Channel'), findsOneWidget);
     expect(
       find.text(
         '"partners" will be removed from this server. Other connected servers keep their own projection and history.',
@@ -497,7 +497,7 @@ void main() {
       findsOneWidget,
     );
     expect(key('channel-overflow-unsaved-save'), findsNothing);
-    await t.tap(find.text('Keep editing'));
+    await t.tap(find.text('Keep Editing'));
     await t.pumpAndSettle();
     expect(find.byType(RaftOverflowSheet), findsOneWidget);
     expect(slugText(t), 'partner');

@@ -93,8 +93,8 @@ void main() {
     'sidebar uses the source body role across theme and responsive variants',
     () {
       for (final (dark, mobile, expected) in raftThemeMatrix([
-        (false, true, RaftTokenSet.light.colors.layerCanvasMuted),
-        (true, true, const Color(0xff0d0d0b)),
+        (false, true, const Color(0xffffffff)),
+        (true, true, const Color(0xff1b1b19)),
         (true, false, const Color(0xff0d0d0b)),
       ], full: true)) {
         final t = raftTheme(dark: dark).extension<RaftTokens>()!;

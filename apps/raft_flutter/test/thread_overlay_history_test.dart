@@ -466,6 +466,13 @@ void main() {
         final origin = w.location,
             originIndex = w.navigation.index,
             originEntries = w.navigation.entries.length;
+        // The phone route is still sliding at the initial 128ms receipt.
+        // Finish that transition before targeting the menu's visible center.
+        await t.pump(const Duration(milliseconds: 500));
+        final options = find.byKey(const Key('thread-options'));
+        if (mobile) expect(t.getRect(find.byType(RaftThreadHeader)).left, 0);
+        expect(t.getRect(options).right, lessThanOrEqualTo(width));
+        expect(options.hitTestable(), findsOneWidget);
         await t.tap(find.byKey(const Key('thread-options')).hitTestable());
         await frames(t);
         await t.tap(find.text('View in Channel').hitTestable());

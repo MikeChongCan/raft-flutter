@@ -35,8 +35,9 @@ void main() {
 
   Future<void> mountChat(
     WidgetTester t,
-    List<Map<String, dynamic>> rows,
-  ) async {
+    List<Map<String, dynamic>> rows, {
+    String? themeId,
+  }) async {
     final (w, transport) = (await t.runAsync(() => fixture('owner')))!;
     addTearDown(w.dispose);
     w.messageDomain.ledger.switchServer('s1');
@@ -54,7 +55,9 @@ void main() {
     ];
     await t.pumpWidget(
       MaterialApp(
-        theme: raftTheme(),
+        theme: raftTheme(
+          pack: themeId == null ? null : packForThemeId(themeId),
+        ),
         home: Scaffold(body: RaftChatView(controller: w)),
       ),
     );
@@ -91,7 +94,27 @@ void main() {
     expect(t.takeException(), isNull);
   });
 
-  testWidgets('the rhythm tightens a followed row and keeps the last row', (
+  testWidgets(
+    'legacy Elegant rhythm tightens a followed row and keeps the last row',
+    (t) async {
+      await mountChat(t, [
+        message('a1', 1, 'alice'),
+        message('a2', 2, 'alice'),
+        message('b1', 3, 'bob'),
+        message('c1', 4, 'carol'),
+      ], themeId: elegantThemePackId);
+      double height(String id) =>
+          t.getSize(find.byKey(ValueKey('message-$id'))).height;
+      // Elegant desktop rows. Padding below: 2 before a continuation (a1),
+      // 6 before a new group (b1), 12 at the list end (c1); the body margin
+      // below (6) is dropped whenever a row follows.
+      expect(height('b1') - height('a1'), 6 - 2);
+      expect(height('c1') - height('b1'), (12 + 6) - 6);
+      expect(t.takeException(), isNull);
+    },
+  );
+
+  testWidgets('current Raft keeps the same group row rhythm at the list end', (
     t,
   ) async {
     await mountChat(t, [
@@ -102,11 +125,10 @@ void main() {
     ]);
     double height(String id) =>
         t.getSize(find.byKey(ValueKey('message-$id'))).height;
-    // Elegant desktop rows. Padding below: 2 before a continuation (a1),
-    // 6 before a new group (b1), 12 at the list end (c1); the body margin
-    // below (6) is dropped whenever a row follows.
-    expect(height('b1') - height('a1'), 6 - 2);
-    expect(height('c1') - height('b1'), (12 + 6) - 6);
+    // Web v1.21.23 Raft: 8px bottom inset regardless of the following row,
+    // and no old Elegant 6px body-bottom margin on the final message.
+    expect(height('b1') - height('a1'), 0);
+    expect(height('c1') - height('b1'), 0);
     expect(t.takeException(), isNull);
   });
 

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_ui/src/message_row_recipe.dart';
+import 'package:raft_ui/raft_ui.dart' show packForThemeId, elegantThemePackId;
 import 'package:raft_ui/src/theme.dart';
 
 void main() {
   test('mounted footer overrides generic Elegant desktop ten-pixel margin', () {
-    final t = raftTheme().extension<RaftTokens>()!;
+    final t = raftTheme(pack: packForThemeId(elegantThemePackId))
+        .extension<RaftTokens>()!;
     expect(RaftMessageRowRecipe(t, viewportWidth: 1280).footerGap, 6);
     expect(RaftMessageRowRecipe(t, viewportWidth: 390).footerGap, 6);
   });
@@ -14,7 +16,7 @@ void main() {
   ) async {
     await tester.pumpWidget(
       MaterialApp(
-        theme: raftTheme(),
+        theme: raftTheme(pack: packForThemeId(elegantThemePackId)),
         home: const Scaffold(
           body: RaftMessageRow(
             author: 'Public',

@@ -150,14 +150,16 @@ void main() {
     ('narrow window, pointer', _phone, TargetPlatform.linux, 0.0),
   ]) {
     testWidgets('panel action target: $label', (t) async {
+      var presses = 0;
       await _mount(
         t,
         size: size,
         platform: platform,
-        child: const RaftPanelAction(
+        child: RaftPanelAction(
           glyph: RaftGlyph.arrowLeft,
           tooltip: 'Back',
           minHitExtent: RaftMetrics.touchTarget,
+          onPressed: () => presses++,
         ),
       );
       final expander = t.widget<RaftTouchTargetExpander>(
@@ -169,6 +171,13 @@ void main() {
             .first,
       );
       expect(expander.minSize, Size.square(expected));
+      final bounds = t.getRect(find.byType(RaftPanelAction));
+      await t.tapAt(Offset(bounds.left - 1, bounds.center.dy));
+      await t.pump();
+      expect(presses, expected > 0 ? 1 : 0);
+      await t.tapAt(bounds.center);
+      await t.pump();
+      expect(presses, expected > 0 ? 2 : 1);
     });
   }
 }

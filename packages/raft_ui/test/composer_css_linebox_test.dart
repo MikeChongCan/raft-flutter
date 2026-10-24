@@ -40,7 +40,8 @@ void main() {
           matching: find.byType(RaftCssLineBox),
         );
         expect(lineBox, findsOneWidget);
-        expect(tester.getSize(lineBox).height, 40);
+        // Current Raft uses two 24px lines; keep native input/IME checks below.
+        expect(tester.getSize(lineBox).height, 48);
         final textField = tester.widget<TextField>(field);
         final tokens = RaftTokens.of(tester.element(field));
         expect(textField.style!.color, tokens.strong);
@@ -90,7 +91,7 @@ void main() {
         await tester.sendKeyUpEvent(LogicalKeyboardKey.controlLeft);
         await tester.pump();
         expect(sent, ['Alpha\n日本語']);
-        expect(tester.getSize(lineBox).height, 40);
+        expect(tester.getSize(lineBox).height, 48);
         expect(tester.takeException(), isNull);
         await tester.pumpWidget(const SizedBox());
         await tester.pump();
