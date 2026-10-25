@@ -56,12 +56,12 @@ class RaftAppearanceSectionRecipe {
   /// The "Preview" label above the message sample: v1.21.23 draws it
   /// `text-footnote font-bold` (13/18 700), a57b9dab with the annotation style.
   TextStyle get previewLabel => web
-      ? annotation.copyWith(
-          fontSize: t.typeSlot('footnote').fontSize,
-          height:
-              t.typeSlot('footnote').lineHeight /
-              t.typeSlot('footnote').fontSize,
-          fontWeight: FontWeight.w700,
+      ? RaftTypography.body(
+          t,
+          size: t.typeSlot('footnote').fontSize,
+          line: t.typeSlot('footnote').lineHeight,
+          weight: FontWeight.w700,
+          color: t.colors['foreground-hint'],
         )
       : annotation;
 }
