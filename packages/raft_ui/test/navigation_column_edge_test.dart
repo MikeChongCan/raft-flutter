@@ -44,7 +44,7 @@ List<_Rule> _rules() {
 void main() {
   const width = 900.0;
   const height = 900.0;
-  const navWidth = 56.0;
+  const navWidth = 57.0;
 
   for (final direction in [TextDirection.ltr, TextDirection.rtl]) {
     for (final side in [RaftRailSide.start, RaftRailSide.end]) {
@@ -79,35 +79,16 @@ void main() {
 
         final content = t.getRect(find.byKey(const Key('content-panel')));
         final rules = _rules().where((r) => r.height >= 200).toList();
-        final at = rules.where((r) => (r.x - content.left).abs() <= .6);
-        if (onRight) {
-          expect(
-            at,
-            isEmpty,
-            reason:
-                'A line sits on the window edge at '
-                'x=${content.left}. Rules: $rules',
-          );
-          final boundary = rules.where(
-            (r) => (r.x - content.right).abs() <= .6,
-          );
-          expect(
-            boundary,
-            isNotEmpty,
-            reason:
-                'No divider faces the content at x=${content.right}. '
-                'Rules: $rules',
-          );
-        } else {
-          expect(
-            at.where((r) => (r.width - 1).abs() <= .1),
-            isNotEmpty,
-            reason:
-                'The Activity line is missing beside the column at '
-                'x=${content.left}. Rules: $rules',
-          );
-          expect(content.left, navWidth);
-        }
+        // Raft's real rail owns the single seam. The Activity inset must
+        // not add a second stroke, regardless of reading direction/rail side.
+        expect(rules, hasLength(1), reason: 'Rules: $rules');
+        final rule = rules.single;
+        expect(rule.width, 1);
+        final seam = onRight ? content.right : content.left;
+        final paintedEdge = onRight ? rule.x : rule.x + rule.width;
+        expect(paintedEdge, closeTo(seam, .6));
+        expect(content.left, onRight ? 0 : navWidth);
+        expect(content.right, onRight ? width - navWidth : width);
       });
     }
   }
@@ -115,8 +96,8 @@ void main() {
   _otherSurfaces();
 }
 
-/// The navigation column's own facing divider, matching the desktop shell:
-/// only when the column is on the right.
+/// Isolates the unrelated settings/modal/drawer edge tests below. The
+/// Activity seam matrix above mounts the real RaftWorkspaceRail.
 class _Nav extends StatelessWidget {
   const _Nav(this.onRight);
   final bool onRight;
@@ -134,7 +115,19 @@ class _Nav extends StatelessWidget {
   }
 }
 
-Widget _nav(bool onRight) => _Nav(onRight);
+Widget _nav(bool onRight) => RaftRailEdgeScope(
+  onRight: onRight,
+  child: RaftWorkspaceRail(
+    destinations: const [],
+    selected: 'activity',
+    onSelected: (_) {},
+    workspaceName: 'Demo',
+    onWorkspace: () {},
+    workspaceHeader: const SizedBox(height: 56),
+    topBar: true,
+    thinDivider: true,
+  ),
+);
 
 class _ActivityEdge extends StatelessWidget {
   const _ActivityEdge();
