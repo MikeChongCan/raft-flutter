@@ -88,10 +88,12 @@ class RaftSettingsSidebarList extends StatelessWidget {
     // `mb-1 px-2 text-[10px] font-bold
     // text-foreground-muted theme-brutal:text-black/40`; line-height is the
     // inherited preflight 1.5 under Sidebar's `font-display`.
+    // Web SidebarGroupLabel is `text-footnote font-bold`; a pack that sets no
+    // `type.settingsGroupLabel.*` keeps the a57b9dab 10/15.
     final label = RaftTypography.heading(
       t,
-      size: 10,
-      line: 15,
+      size: t.size('type.settingsGroupLabel.size', fallback: 10),
+      line: t.size('type.settingsGroupLabel.line', fallback: 15),
       weight: FontWeight.w700,
     ).copyWith(color: t.muted);
     return Column(
@@ -158,12 +160,40 @@ class _RaftSettingsSidebarItemState extends State<RaftSettingsSidebarItem> {
     ).sidebarItem;
     // Elegant `text-[13px]` sets no line-height: the row inherits the
     // Sidebar's preflight 1.5 (13px -> 19.5px line, 35.5px row pitch).
-    final text = RaftTypography.heading(
-      t,
-      size: s.fontSize ?? 14,
-      line: (s.fontSize ?? 14) * (s.lineHeight ?? 1.5),
-      weight: s.fontWeight ?? FontWeight.w500,
-    ).merge(s.textStyle(tokens));
+    // Web SettingsSidebarList rows are raft-ui SidebarItem (`text-subhead
+    // font-medium`, `data-active:font-bold`): size and line from
+    // `type.settingsSidebarItem.*` and the weights from the existing
+    // `type.sidebarItem.weight` / `type.sidebarItemActive.weight`. A pack that
+    // sets none keeps the a57b9dab recipe values (Elegant 13 / 1.5, Brutal 14).
+    final itemSize = t.size(
+      'type.settingsSidebarItem.size',
+      fallback: s.fontSize ?? 14,
+    );
+    final itemLine = t.size(
+      'type.settingsSidebarItem.line',
+      fallback: (s.fontSize ?? 14) * (s.lineHeight ?? 1.5),
+    );
+    final recipeWeight = (s.fontWeight ?? FontWeight.w500).value.toDouble();
+    final text =
+        RaftTypography.heading(
+              t,
+              size: s.fontSize ?? 14,
+              line: (s.fontSize ?? 14) * (s.lineHeight ?? 1.5),
+              weight: s.fontWeight ?? FontWeight.w500,
+            )
+            .merge(s.textStyle(tokens))
+            .copyWith(
+              fontSize: itemSize,
+              height: itemLine / itemSize,
+              fontWeight: raftFontWeight(
+                t.size(
+                  widget.active
+                      ? 'type.sidebarItemActive.weight'
+                      : 'type.sidebarItem.weight',
+                  fallback: recipeWeight,
+                ),
+              ),
+            );
     return Padding(
       padding: s.margin.copyWith(left: 0, right: 0),
       child: Semantics(
