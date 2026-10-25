@@ -1,0 +1,192 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:raft_flutter/platform/desktop_title_bar.dart';
+import 'package:raft_ui/raft_ui.dart';
+
+import 'flutter_test_config.dart' show leakDebt;
+
+class _Runner {
+  _Runner(this.tester) {
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(channel, (
+      call,
+    ) async {
+      calls.add(call);
+      if (call.method == 'setIntegrated') {
+        integrated = (call.arguments as Map)['enabled'] == true;
+      }
+      return call.method == 'status' || call.method == 'setIntegrated'
+          ? state
+          : null;
+    });
+    addTearDown(
+      () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        channel,
+        null,
+      ),
+    );
+  }
+
+  final WidgetTester tester;
+  final channel = const MethodChannel(DesktopTitleBarController.channelName);
+  final calls = <MethodCall>[];
+  bool integrated = false;
+  Map<String, Object> get state => {
+    'height': integrated ? 40.0 : 28.0,
+    'fullscreen': false,
+    'leadingInset': integrated ? 88.0 : 0.0,
+  };
+
+  Future<void> fullscreen(bool value) async {
+    await tester.binding.defaultBinaryMessenger.handlePlatformMessage(
+      channel.name,
+      channel.codec.encodeMethodCall(
+        MethodCall('state', {...state, 'fullscreen': value}),
+      ),
+      (_) {},
+    );
+    await tester.pump();
+  }
+}
+
+Widget _app(
+  DesktopTitleBarController controller, {
+  bool integrated = true,
+  double height = 48,
+  VoidCallback? onPressed,
+}) => MaterialApp(
+  theme: raftTheme(),
+  home: DesktopTitleBar(
+    controller: controller,
+    integrated: integrated,
+    integratedHeight: height,
+    child: Builder(
+      builder: (context) {
+        final scope = DesktopTitleBarScope.maybeOf(context);
+        return Column(
+          key: const Key('content'),
+          children: [
+            SizedBox(
+              height: height,
+              child: Row(
+                children: [
+                  SizedBox(
+                    key: const Key('native-controls'),
+                    width: scope?.leadingInset ?? 0,
+                  ),
+                  Expanded(
+                    child: GestureDetector(
+                      key: const Key('blank'),
+                      behavior: HitTestBehavior.opaque,
+                      onPanStart: scope?.onDragStart == null
+                          ? null
+                          : (_) => scope!.onDragStart!(),
+                      onDoubleTap: scope?.onDoubleTap,
+                    ),
+                  ),
+                  TextButton(onPressed: onPressed, child: const Text('Search')),
+                ],
+              ),
+            ),
+            const Expanded(child: SizedBox()),
+          ],
+        );
+      },
+    ),
+  ),
+);
+
+void main() {
+  // Same process-wide notifier ownership as DesktopTitleBarController.platform.
+  leakDebt(const ['ValueNotifier<DesktopTitleBarState>']);
+
+  testWidgets('Mac global row replaces the empty strip and reserves controls', (
+    tester,
+  ) async {
+    final runner = _Runner(tester);
+    final controller = DesktopTitleBarController(
+      platform: TargetPlatform.macOS,
+      web: false,
+    );
+    await tester.pumpWidget(_app(controller));
+    await tester.pumpAndSettle();
+    expect(runner.integrated, isTrue);
+    expect(find.byType(RaftDesktopTitleStrip), findsNothing);
+    expect(tester.getTopLeft(find.byKey(const Key('content'))).dy, 0);
+    expect(tester.getSize(find.byKey(const Key('native-controls'))).width, 88);
+    final call = runner.calls.singleWhere((c) => c.method == 'setIntegrated');
+    expect(call.arguments, {'enabled': true, 'height': 48.0});
+  });
+
+  testWidgets('fullscreen releases native inset while keeping global actions', (
+    tester,
+  ) async {
+    final runner = _Runner(tester);
+    final controller = DesktopTitleBarController(
+      platform: TargetPlatform.macOS,
+      web: false,
+    );
+    await tester.pumpWidget(_app(controller));
+    await tester.pumpAndSettle();
+    await runner.fullscreen(true);
+    expect(find.text('Search'), findsOneWidget);
+    expect(tester.getSize(find.byKey(const Key('native-controls'))).width, 0);
+    expect(find.byType(RaftDesktopTitleStrip), findsNothing);
+    await runner.fullscreen(false);
+    expect(tester.getSize(find.byKey(const Key('native-controls'))).width, 88);
+  });
+
+  testWidgets('blank regions move and zoom, controls keep their own clicks', (
+    tester,
+  ) async {
+    final runner = _Runner(tester);
+    final controller = DesktopTitleBarController(
+      platform: TargetPlatform.macOS,
+      web: false,
+    );
+    var searches = 0;
+    await tester.pumpWidget(_app(controller, onPressed: () => searches++));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Search'));
+    expect(searches, 1);
+    expect(runner.calls.where((c) => c.method == 'startDragging'), isEmpty);
+    await tester.drag(find.byKey(const Key('blank')), const Offset(50, 0));
+    expect(
+      runner.calls.where((c) => c.method == 'startDragging'),
+      hasLength(1),
+    );
+    await tester.tap(find.byKey(const Key('blank')));
+    await tester.pump(const Duration(milliseconds: 50));
+    await tester.tap(find.byKey(const Key('blank')));
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(runner.calls.where((c) => c.method == 'doubleClick'), hasLength(1));
+  });
+
+  testWidgets('height changes once and leaving workspace restores the strip', (
+    tester,
+  ) async {
+    final runner = _Runner(tester);
+    final controller = DesktopTitleBarController(
+      platform: TargetPlatform.macOS,
+      web: false,
+    );
+    await tester.pumpWidget(_app(controller));
+    await tester.pumpAndSettle();
+    await tester.pumpWidget(_app(controller, height: 60));
+    await tester.pumpAndSettle();
+    expect(
+      runner.calls.where((c) => c.method == 'setIntegrated').last.arguments,
+      {'enabled': true, 'height': 60.0},
+    );
+    final count = runner.calls.length;
+    await tester.pumpWidget(_app(controller, height: 60));
+    await tester.pumpAndSettle();
+    expect(runner.calls.length, count);
+    await tester.pumpWidget(_app(controller, integrated: false));
+    await tester.pumpAndSettle();
+    expect(runner.integrated, isFalse);
+    expect(find.byType(RaftDesktopTitleStrip), findsOneWidget);
+    expect(tester.getTopLeft(find.byKey(const Key('content'))).dy, 28);
+    expect(tester.getSize(find.byKey(const Key('native-controls'))).width, 0);
+  });
+}

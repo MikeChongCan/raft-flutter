@@ -28,7 +28,11 @@ enum DesktopTitleBarMode {
 /// What the native window reports about its title bar.
 @immutable
 class DesktopTitleBarState {
-  const DesktopTitleBarState({this.height = 0, this.fullscreen = false});
+  const DesktopTitleBarState({
+    this.height = 0,
+    this.fullscreen = false,
+    this.leadingInset = 0,
+  });
 
   /// The title bar's height in logical pixels; zero when the window has none.
   final double height;
@@ -36,14 +40,18 @@ class DesktopTitleBarState {
   /// Whether the window is fullscreen. macOS hides its title bar then.
   final bool fullscreen;
 
+  /// Space reserved for the native traffic lights in an integrated row.
+  final double leadingInset;
+
   @override
   bool operator ==(Object other) =>
       other is DesktopTitleBarState &&
       other.height == height &&
-      other.fullscreen == fullscreen;
+      other.fullscreen == fullscreen &&
+      other.leadingInset == leadingInset;
 
   @override
-  int get hashCode => Object.hash(height, fullscreen);
+  int get hashCode => Object.hash(height, fullscreen, leadingInset);
 }
 
 /// The colours the title bar wears, from the rail recipe of the current theme.
@@ -128,16 +136,18 @@ class DesktopTitleBarController {
   late final ValueNotifier<DesktopTitleBarState> state = ValueNotifier(
     DesktopTitleBarState(
       height: mode == DesktopTitleBarMode.strip ? macosDefaultHeight : 0,
+      leadingInset: mode == DesktopTitleBarMode.strip ? 82 : 0,
     ),
   );
-  bool _started = false;
+  Future<void>? _starting;
   DesktopTitleBarStyle? _sent;
 
   /// Listen for the runner's reports and read the first one. Safe to call
   /// again; an older bundle without the channel keeps the defaults.
-  Future<void> start() async {
-    if (_started || mode == DesktopTitleBarMode.none) return;
-    _started = true;
+  Future<void> start() => _starting ??= _start();
+
+  Future<void> _start() async {
+    if (mode == DesktopTitleBarMode.none) return;
     _channel.setMethodCallHandler((call) async {
       if (call.method == 'state') _receive(call.arguments);
     });
@@ -154,12 +164,40 @@ class DesktopTitleBarController {
     if (value is! Map) return;
     final height = value['height'];
     final fullscreen = value['fullscreen'];
+    final inset = value['leadingInset'];
     state.value = DesktopTitleBarState(
       height: mode == DesktopTitleBarMode.strip && height is num
           ? height.toDouble()
           : 0,
       fullscreen: fullscreen == true,
+      leadingInset: inset is num && inset.isFinite && inset >= 0
+          ? inset.toDouble()
+          : 0,
     );
+  }
+
+  (bool, double)? _integrated;
+
+  /// Let the shared global row occupy the native titlebar's content area.
+  /// Window controls remain native; the row reserves [state]'s leading inset.
+  Future<void> setIntegrated(bool enabled, {double height = 48}) async {
+    await start();
+    if (mode == DesktopTitleBarMode.none ||
+        mode == DesktopTitleBarMode.nativeWithRule ||
+        _integrated == (enabled, height)) {
+      return;
+    }
+    _integrated = (enabled, height);
+    try {
+      _receive(
+        await _channel.invokeMethod<Object?>('setIntegrated', {
+          'enabled': enabled,
+          'height': height,
+        }),
+      );
+    } on MissingPluginException {
+      // Older runners keep their original native window controls.
+    }
   }
 
   /// Tell the runner the colours; repeated identical styles are dropped.
@@ -208,6 +246,8 @@ class DesktopTitleBar extends StatefulWidget {
     super.key,
     this.controller,
     this.workspace,
+    this.integrated = false,
+    this.integratedHeight = 48,
     required this.child,
   });
 
@@ -216,6 +256,11 @@ class DesktopTitleBar extends StatefulWidget {
   /// The open workspace: the window is titled after its conversation (Web
   /// `useBrowserDocumentTitle`), and plainly "Raft" without one.
   final WorkspaceController? workspace;
+
+  /// True while the shared global toolbar occupies the top of the window.
+  /// It replaces the macOS empty strip, including in fullscreen.
+  final bool integrated;
+  final double integratedHeight;
   final Widget child;
 
   @override
@@ -230,6 +275,7 @@ class _DesktopTitleBarState extends State<DesktopTitleBar> {
   void initState() {
     super.initState();
     unawaited(_controller.start());
+    _syncLayout();
     widget.workspace?.addListener(_syncTitle);
     _syncTitle();
   }
@@ -242,6 +288,7 @@ class _DesktopTitleBarState extends State<DesktopTitleBar> {
       widget.workspace?.addListener(_syncTitle);
     }
     _syncTitle();
+    _syncLayout();
   }
 
   @override
@@ -254,6 +301,13 @@ class _DesktopTitleBarState extends State<DesktopTitleBar> {
     if (_controller.mode == DesktopTitleBarMode.none) return;
     unawaited(_controller.setTitle(workspaceWindowTitle(widget.workspace)));
   }
+
+  void _syncLayout() => unawaited(
+    _controller.setIntegrated(
+      widget.integrated,
+      height: widget.integratedHeight,
+    ),
+  );
 
   @override
   void didChangeDependencies() {
@@ -268,26 +322,72 @@ class _DesktopTitleBarState extends State<DesktopTitleBar> {
   Widget build(BuildContext context) {
     final controller = _controller;
     if (controller.mode == DesktopTitleBarMode.none) return widget.child;
-    if (controller.mode == DesktopTitleBarMode.native) return widget.child;
     final nativeCaption = controller.mode == DesktopTitleBarMode.nativeWithRule;
     return ValueListenableBuilder<DesktopTitleBarState>(
       valueListenable: controller.state,
       child: widget.child,
-      builder: (context, state, child) => RaftDesktopTitleBar(
-        // A strip only as tall as its border paints just the rule. DWM keeps
-        // the actual caption height and all native window interactions.
-        height: nativeCaption
-            ? RaftTitleBarRecipe(RaftTokens.of(context)).ruleWidth
-            : state.height,
-        fullscreen: state.fullscreen,
-        onDragStart: nativeCaption
-            ? null
-            : () => unawaited(controller.startDragging()),
-        onDoubleTap: nativeCaption
-            ? null
-            : () => unawaited(controller.doubleClick()),
-        child: child!,
-      ),
+      builder: (context, state, child) {
+        final draggable =
+            widget.integrated &&
+            (controller.mode == DesktopTitleBarMode.strip ||
+                controller.mode == DesktopTitleBarMode.native);
+        final content = DesktopTitleBarScope(
+          leadingInset: widget.integrated && !state.fullscreen
+              ? state.leadingInset
+              : 0,
+          onDragStart: draggable
+              ? () => unawaited(controller.startDragging())
+              : null,
+          onDoubleTap: draggable
+              ? () => unawaited(controller.doubleClick())
+              : null,
+          child: child!,
+        );
+        if (controller.mode == DesktopTitleBarMode.native ||
+            (widget.integrated && !nativeCaption)) {
+          return content;
+        }
+        return RaftDesktopTitleBar(
+          // A strip only as tall as its border paints just the rule. DWM keeps
+          // the actual caption height and all native window interactions.
+          height: nativeCaption
+              ? RaftTitleBarRecipe(RaftTokens.of(context)).ruleWidth
+              : state.height,
+          fullscreen: state.fullscreen,
+          onDragStart: nativeCaption
+              ? null
+              : () => unawaited(controller.startDragging()),
+          onDoubleTap: nativeCaption
+              ? null
+              : () => unawaited(controller.doubleClick()),
+          child: content,
+        );
+      },
     );
   }
+}
+
+/// Native window geometry and actions for the shared global toolbar. Only its
+/// empty areas use these callbacks; buttons keep their own gesture handling.
+class DesktopTitleBarScope extends InheritedWidget {
+  const DesktopTitleBarScope({
+    super.key,
+    required this.leadingInset,
+    this.onDragStart,
+    this.onDoubleTap,
+    required super.child,
+  });
+
+  final double leadingInset;
+  final VoidCallback? onDragStart;
+  final VoidCallback? onDoubleTap;
+
+  static DesktopTitleBarScope? maybeOf(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<DesktopTitleBarScope>();
+
+  @override
+  bool updateShouldNotify(DesktopTitleBarScope oldWidget) =>
+      leadingInset != oldWidget.leadingInset ||
+      onDragStart != oldWidget.onDragStart ||
+      onDoubleTap != oldWidget.onDoubleTap;
 }

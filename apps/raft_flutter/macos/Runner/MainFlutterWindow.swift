@@ -200,6 +200,11 @@ final class RaftTitleBar: NSObject {
   private weak var window: NSWindow?
   private let channel: FlutterMethodChannel
   private var observers: [NSObjectProtocol] = []
+  private var integratedHeight: CGFloat?
+  private var previousToolbar: NSToolbar?
+  private var previousToolbarStyle: Int?
+  private var previousButtonFrames: [NSWindow.ButtonType: NSRect] = [:]
+  private static let buttons: [NSWindow.ButtonType] = [.closeButton, .miniaturizeButton, .zoomButton]
 
   init(window: NSWindow, messenger: FlutterBinaryMessenger) {
     self.window = window
@@ -240,14 +245,79 @@ final class RaftTitleBar: NSObject {
   /// layout rect. Zero in fullscreen, where the bar is not part of the window.
   private var state: [String: Any] {
     guard let window = window, let content = window.contentView else {
-      return ["height": 0, "fullscreen": false]
+      return ["height": 0, "fullscreen": false, "integrated": false, "leadingInset": 0]
     }
+    positionButtons()
     let fullscreen = window.styleMask.contains(.fullScreen)
     let height = content.frame.height - window.contentLayoutRect.height
+    let trailingEdge = Self.buttons.compactMap { type -> CGFloat? in
+      guard let button = window.standardWindowButton(type) else { return nil }
+      return button.convert(button.bounds, to: content).maxX
+    }.max() ?? 0
     return [
       "height": fullscreen || !height.isFinite || height < 0 ? 0 : Double(height),
       "fullscreen": fullscreen,
+      "integrated": integratedHeight != nil,
+      "leadingInset": integratedHeight != nil && !fullscreen ? Double(trailingEdge + 14) : 0,
     ]
+  }
+
+  /// Keep AppKit's real controls, targets and accessibility, while Flutter owns
+  /// the rest of the global row. The empty transparent toolbar gives the native
+  /// button view enough height; it does not consume Flutter pointer events.
+  private func setIntegrated(_ enabled: Bool, height: CGFloat) {
+    guard let window else { return }
+    if enabled {
+      if integratedHeight == nil {
+        previousToolbar = window.toolbar
+        for type in Self.buttons {
+          previousButtonFrames[type] = window.standardWindowButton(type)?.frame
+        }
+        if #available(macOS 11.0, *) {
+          previousToolbarStyle = window.toolbarStyle.rawValue
+          window.toolbarStyle = .unifiedCompact
+        }
+        let toolbar = NSToolbar(identifier: "app.raft.integrated-titlebar")
+        toolbar.allowsUserCustomization = false
+        window.toolbar = toolbar
+      }
+      integratedHeight = height
+      positionButtons()
+    } else if integratedHeight != nil {
+      integratedHeight = nil
+      window.toolbar = previousToolbar
+      previousToolbar = nil
+      if #available(macOS 11.0, *), let raw = previousToolbarStyle,
+        let style = NSWindow.ToolbarStyle(rawValue: raw) {
+        window.toolbarStyle = style
+      }
+      previousToolbarStyle = nil
+      window.contentView?.layoutSubtreeIfNeeded()
+      for (type, frame) in previousButtonFrames {
+        window.standardWindowButton(type)?.setFrameOrigin(frame.origin)
+      }
+      previousButtonFrames.removeAll()
+    }
+  }
+
+  private func positionButtons() {
+    guard let window, let height = integratedHeight,
+      !window.styleMask.contains(.fullScreen),
+      let close = window.standardWindowButton(.closeButton), let parent = close.superview
+    else { return }
+    parent.layoutSubtreeIfNeeded()
+    let start = close.frame.minX
+    let offsets = Self.buttons.compactMap { type -> (NSButton, CGFloat)? in
+      guard let button = window.standardWindowButton(type), button.superview === parent else { return nil }
+      return (button, button.frame.minX - start)
+    }
+    for (button, offset) in offsets {
+      // The native view remains the clipping boundary. A very tall custom row
+      // keeps the controls reachable instead of moving them outside that view.
+      let center = min(height / 2, parent.bounds.height - button.frame.height / 2)
+      button.setFrameOrigin(NSPoint(x: 14 + offset,
+        y: parent.bounds.height - center - button.frame.height / 2))
+    }
   }
 
   private func publish() {
@@ -257,6 +327,15 @@ final class RaftTitleBar: NSObject {
   private func handle(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
     switch call.method {
     case "status":
+      result(state)
+    case "setIntegrated":
+      guard let args = call.arguments as? [String: Any], let enabled = args["enabled"] as? Bool,
+        let number = args["height"] as? NSNumber, number.doubleValue.isFinite, number.doubleValue > 0
+      else {
+        result(FlutterError(code: "invalid", message: "A finite positive header height is required.", details: nil))
+        return
+      }
+      setIntegrated(enabled, height: CGFloat(number.doubleValue))
       result(state)
     case "setStyle":
       // Behind the transparent bar and under the Flutter view: what shows
@@ -269,6 +348,7 @@ final class RaftTitleBar: NSObject {
           green: CGFloat((argb >> 8) & 0xFF) / 255,
           blue: CGFloat(argb & 0xFF) / 255,
           alpha: 1)
+        window?.appearance = NSAppearance(named: args["dark"] as? Bool == true ? .darkAqua : .aqua)
       }
       result(nil)
     case "setTitle":
