@@ -189,14 +189,35 @@ class RaftSettingsField extends StatelessWidget {
       states: t.recipeStates(),
       tokens: RaftRecipeTokens(t),
     );
-    // tailwind-merge: the callsite `text-xs` replaces the recipe `text-sm`
-    // and drops `leading-none`, so the label is 12px / 16px.
-    final style = _slotText(t, f.label).copyWith(fontSize: 12, height: 16 / 12);
+    // v1.21.23 Field: the label is `type.fieldLabel` (13/18 600,
+    // `foreground-field-label`) with the field's own gap; the pre-theme looks
+    // keep the callsite `text-xs` (formField.label): it replaces the recipe
+    // `text-sm` and drops `leading-none`, so the label is 12px / 16px.
+    final web = t.option('formField.label', or: 'tokens') == 'tokens';
+    final legacy = _slotText(
+      t,
+      f.label,
+    ).copyWith(fontSize: 12, height: 16 / 12);
+    final labelSize = t.size('type.fieldLabel.size', fallback: 13);
+    final style = web
+        ? legacy.copyWith(
+            fontSize: labelSize,
+            height: t.size('type.fieldLabel.line', fallback: 18) / labelSize,
+            fontWeight: raftFontWeight(
+              t.size('type.fieldLabel.weight', fallback: 600),
+            ),
+            color: t.colors['foreground-field-label'],
+          )
+        : legacy;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(raftText(context, label), style: style),
-        SizedBox(height: (f.root.rowGap ?? 4) + 4),
+        SizedBox(
+          height: web
+              ? t.size('space.fieldGap', fallback: 6)
+              : (f.root.rowGap ?? 4) + 4,
+        ),
         child,
       ],
     );

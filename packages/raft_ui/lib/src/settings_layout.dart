@@ -485,10 +485,12 @@ class RaftSettingsSectionHeader extends StatelessWidget {
   /// laid out as a Blink line box ([RaftCssText]).
   final bool display;
   static TextStyle eyebrow(RaftTokens t, {bool display = false}) =>
+      // Web SectionEyebrow (`text-footnote font-bold`): 13/18 in the Raft pack,
+      // 12/16 in the a57b9dab packs (type.sectionEyebrow.*).
       (display ? raftSettingsBody : RaftTypography.body)(
         t,
-        size: 12,
-        line: 16,
+        size: t.size('type.sectionEyebrow.size', fallback: 13),
+        line: t.size('type.sectionEyebrow.line', fallback: 18),
         weight: FontWeight.w700,
         color: t.muted,
       );
