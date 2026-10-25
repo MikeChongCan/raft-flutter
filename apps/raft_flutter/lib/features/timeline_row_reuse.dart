@@ -132,7 +132,13 @@ class _TimelineReusableRowState extends State<TimelineReusableRow>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return _child ??= widget.builder(context);
+    // A kept-alive sliver child can rebuild without being laid out. Updating
+    // its rich text then lets selection registrars sort unlaid-out fragments
+    // and lose existing entries. Reconcile the cached row during real layout.
+    if (widget.retention == null) return _child ??= widget.builder(context);
+    return LayoutBuilder(
+      builder: (context, constraints) => _child ??= widget.builder(context),
+    );
   }
 
   @override
