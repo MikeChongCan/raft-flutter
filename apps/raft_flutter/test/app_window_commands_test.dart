@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_flutter/data/raft_location.dart';
+import 'package:raft_flutter/features/workspace_view.dart';
 import 'package:raft_flutter/platform/app_window.dart';
 import 'package:raft_flutter/platform/desktop_title_bar.dart';
 import 'package:raft_ui/raft_ui.dart';
@@ -16,6 +17,17 @@ Future<void> _mount(WidgetTester t, RootFixture f) async {
   await t.tap(find.byKey(const ValueKey('global-server-a')));
   await f.flush(t);
   expect(find.byType(TextField), findsWidgets);
+  expect(find.byType(WorkspaceView), findsOneWidget);
+  expect(f.workspace(t).server?.id, 'a');
+  expect(f.workspace(t).channel?.id, 'ca');
+  expect(find.text('Accepted a', findRichText: true), findsWidgets);
+  expect(
+    find.descendant(
+      of: find.byType(RaftComposer),
+      matching: find.byType(TextField),
+    ),
+    findsOneWidget,
+  );
 }
 
 Future<void> _key(WidgetTester t, LogicalKeyboardKey modifier) async {
@@ -53,6 +65,35 @@ Future<void> _preview(WidgetTester t, RootFixture f) async {
 
 void main() {
   tearDownAll(() => DesktopTitleBarController.platform.state.dispose());
+  testWidgets(
+    'choosing a native workspace retains the Router and channel editor',
+    (t) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
+      final f = RootFixture();
+      try {
+        await f.mount(t, 'light', 1200);
+        final router = find.byWidgetPredicate((widget) => widget is Router);
+        final original = t.state(router);
+        await t.tap(find.byKey(const ValueKey('global-server-a')));
+        await f.flush(t);
+        expect(t.state(router), same(original));
+        expect(find.byType(WorkspaceView), findsOneWidget);
+        expect(f.workspace(t).channel?.id, 'ca');
+        expect(find.text('Accepted a', findRichText: true), findsWidgets);
+        expect(
+          find.descendant(
+            of: find.byType(RaftComposer),
+            matching: find.byType(TextField),
+          ),
+          findsOneWidget,
+        );
+      } finally {
+        await f.close(t);
+        debugDefaultTargetPlatformOverride = null;
+      }
+    },
+  );
+
   testWidgets('replacing a command owner preserves the new native handler', (
     t,
   ) async {

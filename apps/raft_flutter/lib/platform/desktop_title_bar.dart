@@ -268,6 +268,10 @@ class DesktopTitleBar extends StatefulWidget {
 }
 
 class _DesktopTitleBarState extends State<DesktopTitleBar> {
+  // Native chrome changes the wrappers above the router. Keep its state and
+  // accepted workspace page when entering integrated mode or fullscreen.
+  final _contentKey = GlobalKey();
+
   DesktopTitleBarController get _controller =>
       widget.controller ?? DesktopTitleBarController.platform;
 
@@ -325,7 +329,7 @@ class _DesktopTitleBarState extends State<DesktopTitleBar> {
     final nativeCaption = controller.mode == DesktopTitleBarMode.nativeWithRule;
     return ValueListenableBuilder<DesktopTitleBarState>(
       valueListenable: controller.state,
-      child: widget.child,
+      child: KeyedSubtree(key: _contentKey, child: widget.child),
       builder: (context, state, child) {
         final draggable =
             widget.integrated &&
