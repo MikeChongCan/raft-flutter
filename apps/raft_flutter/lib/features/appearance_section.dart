@@ -52,6 +52,18 @@ class RaftAppearanceSectionRecipe {
           color: t.muted,
           weight: FontWeight.w700,
         );
+
+  /// The "Preview" label above the message sample: v1.21.23 draws it
+  /// `text-footnote font-bold` (13/18 700), a57b9dab with the annotation style.
+  TextStyle get previewLabel => web
+      ? annotation.copyWith(
+          fontSize: t.typeSlot('footnote').fontSize,
+          height:
+              t.typeSlot('footnote').lineHeight /
+              t.typeSlot('footnote').fontSize,
+          fontWeight: FontWeight.w700,
+        )
+      : annotation;
 }
 
 class RaftAppearanceSection extends StatelessWidget {
@@ -210,7 +222,7 @@ class RaftAppearanceSection extends StatelessWidget {
               style: r.annotation,
             ),
             const SizedBox(height: 16),
-            Text(raftText(context, 'Preview'), style: r.annotation),
+            Text(raftText(context, 'Preview'), style: r.previewLabel),
             const SizedBox(height: 8),
             IgnorePointer(
               child: Semantics(

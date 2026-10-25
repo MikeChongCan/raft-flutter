@@ -65,6 +65,11 @@ void main() {
       [21, 19, 17],
     );
     expect(r.heading.height! * r.heading.fontSize!, closeTo(27, .001));
+    // Web `Preview`: text-footnote font-bold, from the footnote slot.
+    expect(
+      [r.previewLabel.fontSize, r.previewLabel.fontWeight],
+      [19, FontWeight.w700],
+    );
   });
 
   for (final id in [elegantThemePackId, brutalThemePackId]) {
