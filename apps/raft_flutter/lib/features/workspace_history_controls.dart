@@ -34,7 +34,13 @@ Future<void> visitWorkspaceHistory(
   if ({RaftRoute.channel, RaftRoute.dm}.contains(next.route)) {
     if (w.channel?.id != next.entityId ||
         next.messageId != previous.messageId) {
-      await w.jumpToMessage(next.entityId!, next.messageId, navigate: false);
+      // A thread permalink's msg belongs to the reply window. Restore the
+      // channel's accepted window, then hydrate the independent thread below.
+      await w.jumpToMessage(
+        next.entityId!,
+        next.thread == null ? next.messageId : null,
+        navigate: false,
+      );
     }
     if (w.navigationAuthority != authority || w.location.uri != next.uri) {
       return;
@@ -44,7 +50,7 @@ Future<void> visitWorkspaceHistory(
       await w.openThreadIdentity(
         parentChannelId: thread.channelId,
         parentMessageId: thread.itemId,
-        focusedMessageId: next.messageId,
+        focusedMessageId: next.threadFocusedMessageId,
         navigate: false,
       );
     }

@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_client/raft_client.dart';
 import 'package:raft_flutter/data/raft_location.dart';
 import 'package:raft_flutter/data/raft_navigation_history.dart';
+import 'package:raft_ui/raft_ui.dart';
 import 'package:raft_flutter/features/workspace_history_controls.dart';
 
 import 'mounted_message_navigation_test.dart' show pageFixture, mountPage;
@@ -70,6 +71,114 @@ void main() {
       expect(w.channel?.id, 'c1');
       expect(w.navigation.entries, hasLength(depth));
       expect(w.navigation.entries.last.entityId, 'c2');
+      expect(t.takeException(), isNull);
+      await t.pumpWidget(const SizedBox.shrink());
+    }, variant: TargetPlatformVariant.only(TargetPlatform.linux));
+  }
+  for (final focusReply in [false, true]) {
+    testWidgets('history restores a side thread and its focus/$focusReply', (
+      t,
+    ) async {
+      final (w, api) = await pageFixture(t);
+      final parent = {
+        'id': 'parent',
+        'channelId': 'c1',
+        'seq': '1',
+        'senderId': 'alice',
+        'senderName': 'Alice',
+        'content': 'Parent message',
+        'createdAt': '2026-10-25T00:00:00Z',
+      };
+      final reply = {
+        ...parent,
+        'id': 'reply',
+        'channelId': 't1',
+        'content': 'Thread reply',
+      };
+      w.channels = [
+        w.channel!,
+        RaftChannel({'id': 'c2', 'name': 'second', 'joined': true}),
+      ];
+      api.routes['GET /messages/channel/c1'] = (_) => {
+        'messages': [parent],
+      };
+      api.routes['GET /messages/channel/c2'] = (_) => {
+        'messages': [
+          {
+            ...parent,
+            'id': 'second',
+            'channelId': 'c2',
+            'content': 'Second channel message',
+          },
+        ],
+      };
+      api.routes['GET /channels/c1/threads/parent'] = (_) => {
+        'threadChannelId': 't1',
+      };
+      api.routes['GET /messages/channel/t1'] = (_) => {
+        'messages': [reply],
+      };
+      api.routes['GET /messages/context/parent'] = (_) => {
+        'channelId': 'c1',
+        'messages': [parent],
+      };
+      api.routes['GET /messages/context/reply'] = (_) => {
+        'channelId': 't1',
+        'messages': [reply],
+      };
+      await t.runAsync(() => w.selectChannel(w.channels.first));
+      // A parent permalink's msg is not a focused reply. A reply permalink
+      // uses msg for the thread and must not load it into the main channel.
+      await t.runAsync(() => w.jumpToMessage('c1', 'parent'));
+      await t.runAsync(
+        () => w.openThreadIdentity(
+          parentChannelId: 'c1',
+          parentMessageId: 'parent',
+          focusedMessageId: focusReply ? 'reply' : null,
+        ),
+      );
+      await mountPage(t, w, false, width: 1280);
+      expect(find.byType(RaftThreadHeader), findsOneWidget);
+      expect(find.text('Thread reply', findRichText: true), findsWidgets);
+      await t.runAsync(() => w.selectChannel(w.channels.last));
+      await t.pumpAndSettle();
+      final depth = w.navigation.entries.length;
+      final returned = w.navigation.entries[w.navigation.index - 1];
+      api.calls.clear();
+      expect(returned.thread?.itemId, 'parent');
+      await t.tap(find.byKey(const Key('topbar-back')));
+      await t.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 40)),
+      );
+      await t.pumpAndSettle();
+      expect(w.location.uri, returned.uri);
+      expect(w.channel?.id, 'c1');
+      expect(w.threadIdentity?.parentMessageId, 'parent');
+      expect(w.messageDomain.contextLoadError, isNull);
+      expect(
+        api.calls.where(
+          (c) =>
+              c.path == '/messages/context/reply' &&
+              c.queryParameters['channelId'] == 'c1',
+        ),
+        isEmpty,
+      );
+      expect(w.threadIdentity?.focusedMessageId, focusReply ? 'reply' : null);
+      expect(find.byType(RaftThreadHeader), findsOneWidget);
+      expect(find.text('Thread reply', findRichText: true), findsWidgets);
+      expect(w.navigation.entries, hasLength(depth));
+      await t.tap(find.byKey(const Key('topbar-forward')));
+      await t.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 30)),
+      );
+      await t.pumpAndSettle();
+      expect(w.channel?.id, 'c2');
+      expect(find.byType(RaftThreadHeader), findsNothing);
+      expect(
+        find.text('Second channel message', findRichText: true),
+        findsWidgets,
+      );
+      expect(w.navigation.entries, hasLength(depth));
       expect(t.takeException(), isNull);
       await t.pumpWidget(const SizedBox.shrink());
     }, variant: TargetPlatformVariant.only(TargetPlatform.linux));
