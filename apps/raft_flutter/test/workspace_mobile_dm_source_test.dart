@@ -38,21 +38,21 @@ void main() {
           t.widget<RaftAvatar>(avatar).mountedContext,
           RaftMountedAvatarContext.sidebarList,
         );
-        // The person placeholder is the sticker `xs` fallback icon (12px; was the 10px User glyph).
-        final placeholder = t.widget<RaftAvatarPlaceholder>(
+        // Source sidebar fallback is the 10px User glyph inside the 19px frame.
+        final placeholder = t.widget<RaftIcon>(
           find.descendant(
             of: avatar,
-            matching: find.byType(RaftAvatarPlaceholder),
+            matching: find.byType(RaftIcon),
           ),
         );
-        expect(placeholder.size, RaftAvatarSize.xs);
-        expect(placeholder.size.icon, 12);
+        expect(placeholder.glyph, RaftGlyph.user);
+        expect(placeholder.size, 10);
         final label = t.widget<Text>(
           find.descendant(of: row, matching: find.text('Taylor')),
         );
-        expect(label.style!.fontSize, 14);
-        expect(label.style!.height, 20 / 14);
-        expect(label.style!.fontWeight, FontWeight.w500);
+        expect(label.style!.fontSize, 16);
+        expect(label.style!.height, 24 / 16);
+        expect(label.style!.fontWeight, FontWeight.w600);
         expect(find.byKey(const Key('workspace-mobile-home')), findsOneWidget);
         expect(find.byKey(const Key('mobile-tab-members')), findsOneWidget);
         await retire(t);

@@ -736,8 +736,7 @@ void main() {
         tester.widget<RaftNavItem>(dmRow).conversationKind,
         RaftConversationNavKind.directMessage,
       );
-      // raft-ui 0.7.1 sticker avatar: the sidebar-list avatar occupies 19px and its person placeholder is the
-      // sticker `xs` fallback icon (12px; the old 10px User glyph).
+      // Source sidebar-list sticker avatar occupies a 19px frame.
       final dmAvatar = find.descendant(
         of: dmRow,
         matching: find.byType(RaftAvatar),
