@@ -36,7 +36,7 @@ so the strip can never drift from the rail and follows live theme changes.
   `nativeWithRule`, others none.
 - Channel `app.raft/titlebar`. Dart to native: `status` (`{height, fullscreen}`),
   `setStyle` (`background`, `foreground`, `rule` as 0xAARRGGBB ints, `ruleWidth`,
-  `dark`), macOS `startDragging`, `doubleClick`. Native to Dart (macOS): `state`.
+  `dark`), macOS/Linux `startDragging`, `doubleClick`. Native to Dart (macOS): `state`.
   A bundle without the channel answers "not implemented": the app keeps the
   system title bar and draws no strip.
 
@@ -72,6 +72,30 @@ the screen's usable area and restores on a second double-click; before macOS
 `window.backgroundColor` so a resize shows the strip colour. No new file in the
 Xcode project and no toolbar (RemoteSurface adds an NSToolbar for a 52 pt row;
 the approved design keeps the standard bar height).
+
+### Shared global actions
+
+Wide native desktop workspaces mount the 48 px shared toolbar for every theme.
+The host enables integrated mode only while that row is visible, so resizing to
+phone width or leaving the workspace restores standalone window chrome. Browser
+visibility still follows `shell.browserTopBar`; the native navigation entry
+points are a host feature rather than a theme choice.
+
+The row reuses the workspace menu, search anchor, working-agent summary and
+notification centre. Native Back, Forward and History use the workspace's
+existing observed history, without appending entries. History actions validate
+the original account/server authority and destination before dispatch; channel
+and thread destinations restore their existing message projections. At widths
+below 1000 px, Back and Forward move into the History menu to leave room for
+native window controls. The search remains centred on the full window.
+
+On Linux the native GTK/window-manager caption and its close/minimise/maximise
+controls remain. Shared-row empty space additionally supports native moving and
+the configured `gtk-titlebar-double-click` action. `DesktopWindowActions` captures
+the initiating button, root coordinates and timestamp before Flutter dispatch,
+then calls `gtk_window_begin_move_drag`. Controls handle their own pointer events;
+only the background forwards drag/double-click. No global desktop settings are
+changed. Fullscreen suppresses maximise/minimise double-click actions.
 
 ### Linux (done, verified under Xvfb)
 Screenshots of the three themes switching live: `.local/desktop-title-bar/linux-*.png`

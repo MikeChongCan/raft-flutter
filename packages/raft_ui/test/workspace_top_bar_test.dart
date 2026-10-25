@@ -464,7 +464,7 @@ void main() {
                   width: 1280,
                   nativeWindowChrome: true,
                 ),
-                false,
+                true,
               );
               return const SizedBox();
             },

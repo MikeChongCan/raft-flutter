@@ -31,6 +31,7 @@ import 'features/invite_accept_view.dart';
 import 'features/global_server_selector.dart';
 import 'features/public_server_view.dart';
 import 'features/workspace_view.dart';
+import 'features/workspace_host_scope.dart';
 import 'features/auth_view.dart';
 import 'features/session_recovery_view.dart';
 import 'features/account_onboarding.dart';
@@ -625,15 +626,13 @@ class _RaftAppState extends State<RaftApp> with WidgetsBindingObserver {
       final membership = c.servers();
       unawaited(membership.then<void>((_) {}, onError: (Object _) {}));
       if (pending) {
-        final created =
-            await c.post(
-                  '/channels/dm',
-                  data: {
-                    if (target.agentId != null) 'agentId': target.agentId,
-                    if (target.userId != null) 'userId': target.userId,
-                  },
-                )
-                as Map;
+        final created = await c.post(
+          '/channels/dm',
+          data: {
+            if (target.agentId != null) 'agentId': target.agentId,
+            if (target.userId != null) 'userId': target.userId,
+          },
+        ) as Map;
         if (!stillHere()) return;
         final row = await c.get('/channels/${created['id']}');
         if (!stillHere()) return;
@@ -2177,6 +2176,10 @@ class _RaftAppState extends State<RaftApp> with WidgetsBindingObserver {
               child: RepaintBoundary(
                 key: raftScreenshotKey,
                 child: DesktopTitleBar(
+                  integrated:
+                      workspace?.server != null &&
+                      !showServerSelector &&
+                      WorkspaceHostScope.showsTopBar(context),
                   workspace: workspace,
                   child: RaftTooltipProvider(
                     delay: const Duration(milliseconds: 600),

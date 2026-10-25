@@ -2,9 +2,12 @@ import 'package:flutter/widgets.dart';
 import 'package:raft_ui/raft_ui.dart';
 
 import '../data/workspace_controller.dart';
+import '../platform/desktop_title_bar.dart';
+import 'workspace_host_scope.dart';
+import 'workspace_history_controls.dart';
 import 'system_notification_center.dart';
 
-/// Browser header composition; the workspace supplies navigation actions and
+/// Shared browser/native workspace header composition; the workspace supplies navigation actions and
 /// the quick switcher owns the search anchor across openings.
 class WorkspaceBrowserHeader extends StatelessWidget {
   const WorkspaceBrowserHeader({
@@ -23,21 +26,31 @@ class WorkspaceBrowserHeader extends StatelessWidget {
   final VoidCallback onSearch, onBilling, onFeedback;
 
   @override
-  Widget build(BuildContext context) => RaftWorkspaceTopBar(
-    key: const ValueKey('workspace-top-bar'),
-    searchKey: searchKey,
-    workspace: workspace,
-    onSearch: onSearch,
-    trailing: [
-      working,
-      SystemNotificationBell(
-        key: const Key('topbar-notifications'),
-        controller: controller,
-        mobile: false,
-        topBar: true,
-        onBilling: onBilling,
-        onFeedback: onFeedback,
-      ),
-    ],
-  );
+  Widget build(BuildContext context) {
+    final native = DesktopTitleBarScope.maybeOf(context);
+    final desktop = WorkspaceHostScope.nativeDesktopOf(context);
+    return RaftWorkspaceTopBar(
+      key: const ValueKey('workspace-top-bar'),
+      searchKey: searchKey,
+      leadingInset: native?.leadingInset ?? 0,
+      onDragStart: native?.onDragStart,
+      onDoubleTap: native?.onDoubleTap,
+      navigation: desktop
+          ? WorkspaceHistoryControls(controller: controller)
+          : null,
+      workspace: workspace,
+      onSearch: onSearch,
+      trailing: [
+        working,
+        SystemNotificationBell(
+          key: const Key('topbar-notifications'),
+          controller: controller,
+          mobile: false,
+          topBar: true,
+          onBilling: onBilling,
+          onFeedback: onFeedback,
+        ),
+      ],
+    );
+  }
 }

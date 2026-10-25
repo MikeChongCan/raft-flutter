@@ -13,18 +13,18 @@ import 'tap_slop.dart';
 import 'text_scaling.dart';
 import 'theme.dart';
 
-/// MainLayout's browser chrome policy. Native desktop windows own their title
-/// bar; a browser or a tablet without that chrome uses the workspace bar.
+/// Global workspace actions occupy wide native desktop windows as well as
+/// browser/tablet layouts whose theme includes the workspace bar.
 bool raftShowsWorkspaceTopBar({
   required RaftTokens tokens,
   required double width,
   required bool nativeWindowChrome,
 }) =>
-    tokens.option('shell.browserTopBar', or: 'hidden') == 'shown' &&
     width >= RaftLayoutMetrics.desktopBreakpoint &&
-    !nativeWindowChrome;
+    (nativeWindowChrome ||
+        tokens.option('shell.browserTopBar', or: 'hidden') == 'shown');
 
-/// The browser's 48px frame row. The two side regions have equal widths, so
+/// The workspace's 48px frame row. The two side regions have equal widths, so
 /// the search trigger remains centred on the window while workspace names vary.
 class RaftWorkspaceTopBar extends StatelessWidget {
   const RaftWorkspaceTopBar({
@@ -33,10 +33,17 @@ class RaftWorkspaceTopBar extends StatelessWidget {
     required this.onSearch,
     this.trailing = const [],
     this.searchKey,
+    this.leadingInset = 0,
+    this.navigation,
+    this.onDragStart,
+    this.onDoubleTap,
   });
   final Widget workspace;
   final VoidCallback onSearch;
   final List<Widget> trailing;
+  final double leadingInset;
+  final Widget? navigation;
+  final VoidCallback? onDragStart, onDoubleTap;
 
   /// Lets the host publish the real search field bounds to its overlay.
   final Key? searchKey;
@@ -57,30 +64,57 @@ class RaftWorkspaceTopBar extends StatelessWidget {
                 bottom: BorderSide(color: t.colors['line-workspace-rail']!),
               ),
             ),
-            child: Row(
+            child: Stack(
+              fit: StackFit.expand,
               children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: workspace,
+                Positioned.fill(
+                  child: GestureDetector(
+                    key: const Key('workspace-topbar-drag'),
+                    behavior: HitTestBehavior.opaque,
+                    onPanStart: onDragStart == null
+                        ? null
+                        : (_) => onDragStart!(),
+                    onDoubleTap: onDoubleTap,
+                    child: const SizedBox.expand(),
                   ),
                 ),
-                SizedBox(
-                  width: (width * .32).clamp(360.0, math.min(520.0, width)),
-                  child: RaftWorkspaceSearchTrigger(
-                    key: searchKey,
-                    onPressed: onSearch,
-                  ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      spacing: 4,
-                      children: trailing,
+                Row(
+                  textDirection: TextDirection.ltr,
+                  children: [
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                          left: 8 + leadingInset,
+                          right: 8,
+                        ),
+                        child: navigation == null
+                            ? workspace
+                            : Row(
+                                children: [
+                                  Expanded(child: workspace),
+                                  navigation!,
+                                ],
+                              ),
+                      ),
                     ),
-                  ),
+                    SizedBox(
+                      width: (width * .32).clamp(360.0, math.min(520.0, width)),
+                      child: RaftWorkspaceSearchTrigger(
+                        key: searchKey,
+                        onPressed: onSearch,
+                      ),
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          spacing: 4,
+                          children: trailing,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

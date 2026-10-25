@@ -10,6 +10,7 @@
 
 #include "flutter/generated_plugin_registrant.h"
 #include "vsync_driver.h"
+#include "desktop_window_actions.h"
 
 struct _MyApplication {
   GtkApplication parent_instance;
@@ -23,10 +24,12 @@ struct TitleBar {
   GtkWindow* window;
   GtkWidget* header_bar;
   GtkCssProvider* css;
+  DesktopWindowActions* actions;
 };
 
 static void title_bar_free(gpointer data) {
   TitleBar* bar = static_cast<TitleBar*>(data);
+  delete bar->actions;
   g_clear_object(&bar->css);
   g_free(bar);
 }
@@ -100,6 +103,7 @@ static void my_application_activate(GApplication* application) {
   if (g_strcmp0(forced_header_bar, "0") == 0) use_header_bar = FALSE;
   TitleBar* title_bar = g_new0(TitleBar, 1);
   title_bar->window = window;
+  title_bar->actions = new DesktopWindowActions(window);
   // The window's name stays for the task switcher; the bar shows no title.
   gtk_window_set_title(window, "Raft");
   if (use_header_bar) {
@@ -216,11 +220,21 @@ static void my_application_activate(GApplication* application) {
       [](FlMethodChannel*, FlMethodCall* call, gpointer data) {
         TitleBar* bar = static_cast<TitleBar*>(data);
         const gchar* method = fl_method_call_get_name(call);
-        if (g_strcmp0(method, "status") == 0) {
+        if (g_strcmp0(method, "status") == 0 ||
+            g_strcmp0(method, "setIntegrated") == 0) {
           g_autoptr(FlValue) state = fl_value_new_map();
           fl_value_set_string_take(state, "height", fl_value_new_float(0));
-          fl_value_set_string_take(state, "fullscreen", fl_value_new_bool(FALSE));
+          GdkWindow* native = gtk_widget_get_window(GTK_WIDGET(bar->window));
+          fl_value_set_string_take(state, "fullscreen", fl_value_new_bool(
+              native != nullptr &&
+              (gdk_window_get_state(native) & GDK_WINDOW_STATE_FULLSCREEN)));
           fl_method_call_respond_success(call, state, nullptr);
+        } else if (g_strcmp0(method, "startDragging") == 0) {
+          bar->actions->StartDragging();
+          fl_method_call_respond_success(call, nullptr, nullptr);
+        } else if (g_strcmp0(method, "doubleClick") == 0) {
+          bar->actions->DoubleClick();
+          fl_method_call_respond_success(call, nullptr, nullptr);
         } else if (g_strcmp0(method, "setStyle") == 0) {
           FlValue* args = fl_method_call_get_args(call);
           auto integer = [args](const char* key) -> int64_t {

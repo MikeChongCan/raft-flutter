@@ -8,7 +8,7 @@ import 'package:raft_ui/raft_ui.dart';
 import 'mounted_message_navigation_test.dart' show pageFixture, mountPage;
 
 // MainLayout shouldShowTopBar: a wide browser/tablet shell owns the bar; a
-// native desktop window owns its own chrome, and a narrow phone has no bar.
+// native desktop joins global actions to its window chrome; narrow layouts have no global row.
 void main() {
   for (final dark in [false, true]) {
     testWidgets('top bar pointer reorder saves Source order/$dark', (t) async {
@@ -107,7 +107,11 @@ void main() {
       await t.pumpWidget(const SizedBox.shrink());
     }, variant: TargetPlatformVariant.only(TargetPlatform.linux));
   }
-  for (final platform in [TargetPlatform.android, TargetPlatform.linux]) {
+  for (final platform in [
+    TargetPlatform.android,
+    TargetPlatform.linux,
+    TargetPlatform.macOS,
+  ]) {
     for (final width in [390.0, 856.0]) {
       testWidgets('$platform/$width mounted frame places global actions once', (
         t,
@@ -115,7 +119,7 @@ void main() {
         final (w, _) = await pageFixture(t);
         await mountPage(t, w, false, width: width);
         final bar = find.byKey(const ValueKey('workspace-top-bar'));
-        final shows = platform == TargetPlatform.android && width >= 768;
+        final shows = width >= 768;
         expect(bar, shows ? findsOneWidget : findsNothing);
         if (shows) {
           expect(t.getRect(bar), Rect.fromLTWH(0, 0, width, 48));

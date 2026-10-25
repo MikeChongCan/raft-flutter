@@ -29,15 +29,17 @@ class WorkspaceHostScope extends InheritedWidget {
   static bool showsTopBar(BuildContext context) => raftShowsWorkspaceTopBar(
     tokens: RaftTokens.of(context),
     width: MediaQuery.sizeOf(context).width,
-    nativeWindowChrome:
-        !browserOf(context) &&
-        switch (defaultTargetPlatform) {
-          TargetPlatform.linux ||
-          TargetPlatform.macOS ||
-          TargetPlatform.windows => true,
-          _ => false,
-        },
+    nativeWindowChrome: nativeDesktopOf(context),
   );
+
+  static bool nativeDesktopOf(BuildContext context) =>
+      !browserOf(context) &&
+      switch (defaultTargetPlatform) {
+        TargetPlatform.linux ||
+        TargetPlatform.macOS ||
+        TargetPlatform.windows => true,
+        _ => false,
+      };
 
   /// Native phone Home uses edge-to-edge chrome even on a wide foldable.
   static bool nativePhoneOf(BuildContext context) =>

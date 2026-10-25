@@ -1126,9 +1126,10 @@ separately from the pure-black outer borders.
 `sticker-ink`，旧两套保留 `foreground-icon`；普通、未选中行保留原颜色。
 
 浏览器框架的顶部栏由 `shell.browserTopBar = shown | hidden` 选择：Raft shown，
-旧两套 hidden。仅在宽布局且宿主没有原生桌面标题栏时挂载；手机不挂载。
+旧两套 hidden。浏览器仅在宽布局按此选项挂载；原生桌面按宿主能力在宽布局挂载全局操作栏，
+不以主题决定导航入口。macOS 与交通灯共用一行，Linux 保留原生窗口控制；窄窗口和手机不挂载。
 MainLayout/AppTopBar 的新栏固定 48px，控件 36px；搜索框 clamp(360px,32vw,520px)
-并居中于窗口。新组件只在 Raft 挂载，尺寸来自锁定 Web；旧外观没有相应组件。
+并居中于窗口。浏览器新组件只在 Raft 挂载，尺寸来自锁定 Web；原生桌面复用同一组件并读取当前主题。
 它复用当前工作区切换菜单、全局搜索、通知及 Working now 的状态与动作。
 顶部栏接管工作区、搜索、通知后，rail 和侧栏省去这些重复入口和 Chat 标题；
 rail 在栏下的导航顶部留 8px（矮屏 4px），没有栏时保留原间距。
