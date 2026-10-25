@@ -65,13 +65,13 @@ Future<void> mountSettingsWorkspace(
   );
   await frames(t, () {});
   await t.pumpAndSettle();
-  await t.tap(
-    find.byWidgetPredicate(
-      (widget) =>
-          widget is RaftPanelIconButton &&
-          widget.tooltip == 'Channel Details and Settings',
-    ),
-  );
+  // The real header action: raftConversationHeaderActions keys the Settings
+  // trigger `channel-overflow-trigger` (channel_header.dart:315); the tooltip
+  // is no longer on a RaftPanelIconButton.
+  final trigger = find.byKey(const ValueKey('channel-overflow-trigger'));
+  expect(trigger, findsOneWidget);
+  expect(trigger.hitTestable(), findsOneWidget);
+  await t.tap(trigger);
   await frames(t, () {});
   await t.pumpAndSettle();
   expect(find.byType(ChannelSettings), findsOneWidget);

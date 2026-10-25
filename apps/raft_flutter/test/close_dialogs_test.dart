@@ -623,7 +623,14 @@ void registerCloseDialogTests(TestPart part) {
         await t.tap(overflow);
         await frames(t, 20);
       }
-      await t.tap(find.text('Restart / Reset').first);
+      // On the profile tab the button sits at the end of the body ListView
+      // (agent_detail_view.dart:1012,1057), below the 900px viewport at the
+      // foldable size: scroll it in, prove it is hittable, then tap.
+      final reset = find.text('Restart / Reset').first;
+      await t.ensureVisible(reset);
+      await frames(t, 5);
+      expect(reset.hitTestable(), findsOneWidget);
+      await t.tap(reset);
       await frames(t, 25);
       final dialog = find.byType(RaftResetAgentDialog);
       return SurfaceProbe(

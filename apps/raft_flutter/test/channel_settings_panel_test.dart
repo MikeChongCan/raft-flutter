@@ -654,8 +654,11 @@ void main() {
     expect(find.byType(RaftOverflowSheet), findsNothing);
   });
 
-  testWidgets('drawer is 448 wide on desktop', (t) async {
+  testWidgets('drawer is 420 wide on desktop', (t) async {
     await _open(t);
-    expect(t.getSize(_id('channel-overflow-sheet')).width, 448.0);
+    // The default Raft pack sets size.channelOverflowDrawer to 420 (Web
+    // OverflowSheet: "420 wide, the whole width on a phone"); the 448 width
+    // belongs to the Elegant pack.
+    expect(t.getSize(_id('channel-overflow-sheet')).width, 420.0);
   });
 }

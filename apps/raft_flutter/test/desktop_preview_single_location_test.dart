@@ -13,6 +13,7 @@ import 'package:raft_flutter/features/workspace_view.dart';
 import 'package:raft_ui/raft_ui.dart';
 import 'package:raft_ui/test_themes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import 'support/app_services_fixture.dart';
 
 // Activity/Search channel preview contract: one location owns the detail
@@ -195,7 +196,12 @@ String _selectedRail(WidgetTester t) =>
     t.widget<RaftWorkspaceRail>(find.byType(RaftWorkspaceRail)).selected;
 
 Future<void> _rail(WidgetTester t, String id) async {
-  await t.tap(find.byKey(Key('rail-$id')));
+  // Search left the rail: the top bar's `topbar-search` trigger
+  // (workspace_top_bar.dart:104) calls the same openSearchFromRail
+  // (workspace_view.dart:654-659) the old rail item did.
+  final target = find.byKey(Key(id == 'search' ? 'topbar-search' : 'rail-$id'));
+  expect(target.hitTestable(), findsOneWidget);
+  await t.tap(target);
   await t.pumpAndSettle();
 }
 
@@ -253,10 +259,28 @@ void main() {
           expect(w.section, surface);
           // Rail highlight and sidebar follow the location's surface.
           expect(_selectedRail(t), surface);
-          expect(
-            t.getSemantics(find.byKey(Key('rail-$surface'))),
-            isSemantics(isSelected: true),
-          );
+          if (surface == 'search') {
+            // The top bar owns Search: the rail drops the item while the bar
+            // shows (workspace_view.dart:2794) and the trigger has no selected
+            // state, so the rail's own selected mode (above) is the highlight.
+            expect(find.byKey(const Key('rail-search')), findsNothing);
+            expect(find.byKey(const Key('topbar-search')), findsOneWidget);
+          } else {
+            expect(
+              // RaftInteractive owns the selected semantics node, a
+              // descendant of the keyed rail action; the keyed element has no
+              // node of its own (getSemantics would return an ancestor).
+              t.getSemantics(
+                find.descendant(
+                  of: find.byKey(Key('rail-$surface')),
+                  matching: find.byWidgetPredicate(
+                    (w) => w is Semantics && w.properties.selected != null,
+                  ),
+                ),
+              ),
+              isSemantics(isSelected: true),
+            );
+          }
           expect(
             find.byKey(const Key('workspace-sidebar-panel')),
             findsNothing,

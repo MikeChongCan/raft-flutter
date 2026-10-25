@@ -14,6 +14,12 @@ import 'package:raft_ui/test_themes.dart';
 import 'app_global_server_selector_test.dart' show RootFixture;
 import 'fallback_text_style.dart';
 
+/// The `layer-standalone` role `RaftServerResolutionBody` reads through
+/// `RaftTokens.standaloneSurface` (page_tokens.dart:13, which is not exported
+/// from raft_ui.dart): the pack colour, else the canvas.
+Color _standaloneSurface(RaftTokens tokens) =>
+    tokens.colors['layer-standalone'] ?? tokens.canvas;
+
 typedef _Prepare = void Function(RootFixture f);
 typedef _Act = Future<void> Function(WidgetTester t, RootFixture f);
 
@@ -280,8 +286,9 @@ void main() {
         await pump(t, RaftServerResolutionBody(label: label));
         expect(find.text(label), findsOneWidget);
         expectNoFallbackTextStyle(label);
-        // The splash paints the theme's canvas (brutal: its cream), never a
-        // hard-coded cream over elegant dark.
+        // The splash paints the pack's standalone-page surface (Web
+        // `bg-layer-sidebar`; the pre-theme packs map it to their canvas),
+        // never a hard-coded cream over a dark theme.
         final context = t.element(find.text(label));
         final tokens = RaftTokens.of(context);
         final material = t.widget<Material>(
@@ -292,7 +299,7 @@ void main() {
               )
               .first,
         );
-        expect(material.color, tokens.canvas);
+        expect(material.color, _standaloneSurface(tokens));
       });
     }
 
@@ -333,7 +340,7 @@ void main() {
           )
           .first,
     );
-    expect(material.color, tokens.canvas);
+    expect(material.color, _standaloneSurface(tokens));
     for (final h in _held.values) {
       if (!h.isCompleted) h.complete(null);
     }
