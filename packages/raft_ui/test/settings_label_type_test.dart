@@ -5,8 +5,9 @@ import 'package:raft_ui/raft_ui.dart';
 /// Settings section eyebrow and field label.
 ///
 /// Web v1.21.23: SectionHeader composes SectionEyebrow (`text-footnote
-/// font-bold`, 13/18); the Field label is `type.fieldLabel` (13/18, 600). The
-/// a57b9dab looks keep the callsite 12/16 for both.
+/// font-bold`, 13/18); the settings FormField is `size="compact"`: raft-ui label
+/// step `sm`, 12/16 600 (`foreground-field-label`). The a57b9dab looks keep the
+/// callsite 12/16 for both, with the recipe's weight and colour on the label.
 Widget _host(RaftThemePack pack) => MaterialApp(
   theme: raftTheme(pack: pack),
   home: const Scaffold(
@@ -36,7 +37,8 @@ void main() {
       expect(eyebrow.fontSize, size);
       expect(eyebrow.height! * eyebrow.fontSize!, closeTo(line, .001));
       final label = _style(t, 'Display Name');
-      expect(label.fontSize, size);
+      expect(label.fontSize, 12);
+      expect(label.height! * label.fontSize!, closeTo(16, .001));
       if (weight != null) expect(label.fontWeight, weight);
     });
   }

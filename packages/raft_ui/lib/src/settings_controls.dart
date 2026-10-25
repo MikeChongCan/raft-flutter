@@ -189,35 +189,27 @@ class RaftSettingsField extends StatelessWidget {
       states: t.recipeStates(),
       tokens: RaftRecipeTokens(t),
     );
-    // v1.21.23 Field: the label is `type.fieldLabel` (13/18 600,
-    // `foreground-field-label`) with the field's own gap; the pre-theme looks
-    // keep the callsite `text-xs` (formField.label): it replaces the recipe
-    // `text-sm` and drops `leading-none`, so the label is 12px / 16px.
+    // v1.21.23 FormField size="compact" (the settings form treatment): the
+    // raft-ui label step `sm`, 12/16 600, in `foreground-field-label`. Size and
+    // line are the callsite `text-xs` of a57b9dab too (it replaces the recipe
+    // `text-sm` and drops `leading-none`); the weight is `type.fieldLabel.weight`
+    // and the colour the role in the Raft look (formField.label), the recipe's
+    // in the pre-theme looks.
     final web = t.option('formField.label', or: 'tokens') == 'tokens';
-    final legacy = _slotText(
-      t,
-      f.label,
-    ).copyWith(fontSize: 12, height: 16 / 12);
-    final labelSize = t.size('type.fieldLabel.size', fallback: 13);
-    final style = web
-        ? legacy.copyWith(
-            fontSize: labelSize,
-            height: t.size('type.fieldLabel.line', fallback: 18) / labelSize,
-            fontWeight: raftFontWeight(
-              t.size('type.fieldLabel.weight', fallback: 600),
-            ),
-            color: t.colors['foreground-field-label'],
-          )
-        : legacy;
+    var style = _slotText(t, f.label).copyWith(fontSize: 12, height: 16 / 12);
+    if (web) {
+      style = style.copyWith(
+        fontWeight: raftFontWeight(
+          t.size('type.fieldLabel.weight', fallback: 600),
+        ),
+        color: t.colors['foreground-field-label'],
+      );
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(raftText(context, label), style: style),
-        SizedBox(
-          height: web
-              ? t.size('space.fieldGap', fallback: 6)
-              : (f.root.rowGap ?? 4) + 4,
-        ),
+        SizedBox(height: (f.root.rowGap ?? 4) + 4),
         child,
       ],
     );
