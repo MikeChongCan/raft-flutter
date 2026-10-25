@@ -16,8 +16,8 @@ box, the capture selector / androidKey is `states-crop`). The states a control c
   disabled  composer submit with an empty draft;  checked  the As Task toggle after a tap.
 
 The coverage map (tool/parity-ext/coverage_map.py) reads CONTROLS below for its "states" column: which states the Web has per
-control and which are captured. Web-only controls (the top bar search / bell: Flutter has no top bar yet) carry flutter=None and
-are listed as not capturable.
+control and which are captured. Controls without a Flutter mapping carry flutter=None and remain listed as not capturable.
+The shared workspace top bar is mounted by the real WorkspaceView; use its actual control keys.
 """
 ORDER = 2000  # after every builder that creates the base cases the settings states clone
 
@@ -61,9 +61,9 @@ CONTROLS = [
     ('header-overflow', 'channel', 'frame', '[data-testid="channel-overflow-trigger"]', 'channel-overflow-trigger', DESKTOP_STATES, {}, 'message/ChatPanel.tsx'),
     ('conversation-tab', 'channel', 'frame', '[data-testid="panel-tab-tasks"]', 'panel-tab-tasks', DESKTOP_STATES, {}, 'message/ChatPanel.tsx'),
     ('conversation-tab-selected', 'channel', 'frame', '[data-testid="panel-tab-chat"]', 'panel-tab-chat', ('selected', 'hover', 'focus'), {}, 'message/ChatPanel.tsx'),
-    ('topbar-search', 'channel', 'frame', '[data-testid="app-top-bar-search"]', None, DESKTOP_STATES, {}, 'topbar/AppTopBar.tsx'),
-    ('topbar-bell', 'channel', 'frame', '[data-testid="notification-trigger-top-bar"]', None, DESKTOP_STATES, {}, 'topbar/TopBarGlobalActions.tsx'),
-    ('topbar-workspace', 'channel', 'frame', '[data-testid="desktop-workspace-trigger"]', None, ('default', 'hover', 'focus'), {}, 'topbar/AppTopBar.tsx'),
+    ('topbar-search', 'channel', 'frame', '[data-testid="app-top-bar-search"]', 'topbar-search', DESKTOP_STATES, {}, 'topbar/AppTopBar.tsx'),
+    ('topbar-bell', 'channel', 'frame', '[data-testid="notification-trigger-top-bar"]', 'topbar-notifications', DESKTOP_STATES, {}, 'topbar/TopBarGlobalActions.tsx'),
+    ('topbar-workspace', 'channel', 'frame', '[data-testid="desktop-workspace-trigger"]', 'topbar-workspace', ('default', 'hover', 'focus'), {}, 'topbar/AppTopBar.tsx'),
     ('composer-submit', 'channel', 'page', '[data-testid="composer-as-task-toggle"] ~ button', 'composer-submit',
      ('disabled', 'enabled', 'hover', 'pressed', 'focus'), {'prefill': 'Looks good to me'}, 'message/MessageInput.tsx'),
     ('composer-as-task', 'channel', 'page', '[data-testid="composer-as-task-toggle"]', 'composer-as-task-toggle', ('default', 'hover', 'focus', 'checked'), {}, 'message/MessageInput.tsx'),

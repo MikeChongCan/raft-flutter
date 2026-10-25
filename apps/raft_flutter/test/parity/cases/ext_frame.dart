@@ -9,6 +9,8 @@
 // capture the viewport; part cases (top bar, rail, sidebar, tab bar) capture a
 // keyed rectangle (`frame-crop`, props cx / cy / cw / ch) over the same pixels
 // as the React marker.
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart' show addTearDown;
 import 'package:raft_flutter/data/personal_presentation.dart';
@@ -22,6 +24,7 @@ import 'ext_frame_keys.g.dart';
 import 'ext_settings.dart' show extSettingsCases;
 import 'ext_shell.dart' show shellWorkspace;
 import 'thread_messages/chat_stage.dart' show ParityIdentities;
+import 'thread_composer/fake_workspace.dart' show ParityFakeClient;
 import '../../support/app_services_fixture.dart';
 
 Map<String, dynamic> _screenScene(ParityContext ctx, String name) =>
@@ -77,6 +80,14 @@ class _HostState extends State<_Host> {
   late final WorkspaceController w = _workspace(widget.ctx);
   // The Web browser default (hide-empty off), like the shell cases.
   final presentation = PersonalPresentationStore();
+
+  @override
+  void dispose() {
+    w.dispose();
+    presentation.dispose();
+    unawaited((w.client as ParityFakeClient).stream.close());
+    super.dispose();
+  }
 
   @override
   void initState() {
