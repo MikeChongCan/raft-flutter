@@ -1,8 +1,17 @@
 # Desktop title bar
 
-Approved design (Kevin, "D simplified"): the native title bar strip keeps its
-height but is painted in the nav rail's colours of the current theme, with a
-bottom rule. No title text, no search, no buttons of ours.
+The desktop workspace uses the shared global toolbar in the native titlebar
+area (Kevin, #raft-flutter:7050ed6f). The macOS host keeps the real traffic
+lights and exposes their measured leading inset and native drag/double-click
+actions through `DesktopTitleBarScope`. The shared toolbar owns its controls,
+theme and empty drag regions. `DesktopTitleBar(integrated: true,
+integratedHeight: 48)` removes the former empty strip; fullscreen releases the
+traffic-light inset while retaining the shared toolbar. The shared composition
+must explicitly enable this mode while its toolbar is present.
+
+Outside the workspace, the earlier "D simplified" strip remains: the native
+title bar keeps its height and is painted in the nav rail's colours with a
+bottom rule and no app controls.
 
 | Theme | Strip | Rule |
 |---|---|---|
@@ -31,6 +40,15 @@ so the strip can never drift from the rail and follows live theme changes.
   A bundle without the channel answers "not implemented": the app keeps the
   system title bar and draws no strip.
 
+The macOS runner also accepts `setIntegrated` with `{enabled, height}` and
+returns its current state. State adds `integrated` and `leadingInset`; the
+latter is the native buttons' actual trailing edge plus their gutter, not a
+fixed width. The host temporarily installs a transparent compact toolbar so
+the original AppKit buttons fit in the shared row, retaining their native
+targets and accessibility. Disabling integration restores the previous
+toolbar and button placement. Only empty regions forward drag or double-click;
+the shared row's buttons must handle their own pointer events.
+
 Phones and foldables are untouched: the status-bar mechanism
 (`RaftStatusBarHost`) stays as is and the title bar is only active on
 macOS, Linux and Windows. It does not reuse `RaftStatusBarSource`, because the
@@ -38,11 +56,12 @@ strip colour is the rail's constant, not the header currently under it.
 
 ## Per OS
 
-### macOS (done, not run here)
+### macOS
 `macos/Runner/MainFlutterWindow.swift`: `RaftTitleBar` sets
 `titlebarAppearsTransparent`, `titleVisibility = .hidden` and
 `.fullSizeContentView`, so Flutter fills the window and the traffic lights stay
-where the system puts them (vertically centred in the 28 pt bar). It reports
+where the system puts them in standalone mode. Integrated mode centres them
+on the shared row instead. It reports
 `height = contentView.height - contentLayoutRect.height` (zero in fullscreen)
 and `fullscreen`, pushed on resize and on will/did enter/exit fullscreen. The
 Dart strip is the drag area: pan start calls `performDrag(with:)` with the
