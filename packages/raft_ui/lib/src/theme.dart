@@ -178,6 +178,9 @@ class RaftTokens extends ThemeExtension<RaftTokens> {
   /// the old way (tests that construct a bare [RaftTokenSet]).
   final RaftModeValues? _mode;
 
+  /// Resolved pack data supplied to the independent recipe engine.
+  RaftModeValues? get themeValues => _mode;
+
   /// Every generated tier for this theme.
   RaftTokenSet get tokenSet =>
       _tokens ?? RaftTokenSet.of(raftThemeId(dark: dark));

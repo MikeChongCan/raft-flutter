@@ -1,7 +1,8 @@
 import 'package:flutter/painting.dart';
+import 'package:raft_theme/raft_theme.dart' show RaftModeValues;
+import 'package:raft_theme/recipes.dart' show RaftThemeRecipeTokens;
 
 import '../theme.dart';
-import 'recipe_runtime.dart';
 
 /// Binds generated recipes to the generated foundation tokens of one theme.
 ///
@@ -9,8 +10,16 @@ import 'recipe_runtime.dart';
 /// (`--layer-panel` → `layerPanel`, `--theme-shadow-sm` → `themeShadowSm`);
 /// lookups go through the CSS-keyed maps so both generators stay the single
 /// source of their names.
-class RaftRecipeTokens extends RaftTokenResolver {
-  RaftRecipeTokens(this.tokens);
+class RaftRecipeTokens extends RaftThemeRecipeTokens {
+  RaftRecipeTokens(this.tokens)
+    : super(tokens.themeValues ?? const RaftModeValues());
+
+  /// Frozen source component values with the current foundation lookups.
+  RaftRecipeTokens.source(this.tokens)
+    : super(
+        tokens.themeValues ?? const RaftModeValues(),
+        bindComponents: false,
+      );
 
   final RaftTokens tokens;
 
