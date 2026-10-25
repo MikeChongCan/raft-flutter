@@ -223,7 +223,10 @@ void main() {
     test('the server parameter names the server, by id or by slug', () async {
       for (final hint in ['srv-2', 'beta']) {
         final api = FakeHumanLoginApi(servers: const [acme, beta]);
-        final found = await lookupHumanLoginClient(api, request(server: hint));
+        final found = (await lookupHumanLoginClient(
+          api,
+          request(server: hint),
+        )).choices;
         expect(api.lookups.map((l) => l.serverId), ['srv-2']);
         expect(found.single.server.slug, 'beta');
       }
@@ -269,7 +272,7 @@ void main() {
     });
 
     test(
-      'ready servers come first, then by name; a failure is skipped',
+      'ready servers come first, then by name; a failure is kept, last',
       () async {
         const gamma = HumanLoginServer(
           id: 'srv-3',
@@ -287,10 +290,18 @@ void main() {
             // srv-3 answers 404.
           },
         );
-        final found = await lookupHumanLoginClient(api, request());
+        final lookup = await lookupHumanLoginClient(api, request());
+        final found = lookup.choices;
         expect(found.map((c) => c.server.slug), ['beta', 'acme']);
         expect(found.last.client.installRequired, isTrue);
         expect(found.last.client.canInstall, isTrue);
+        // The server that did not answer stays in the picker, last.
+        expect(lookup.rows.map((r) => r.server.slug), [
+          'beta',
+          'acme',
+          'gamma',
+        ]);
+        expect(lookup.rows.last.client, isNull);
       },
     );
 
@@ -454,5 +465,164 @@ void main() {
         }
       },
     );
+  });
+
+  group('install', () {
+    final request = HumanLoginRequest(
+      clientId: 'artifact-share',
+      returnUrl: 'https://artifacts.example.com/auth/callback',
+      state: 'st-1',
+      scopes: const ['openid', 'profile'],
+      serverHint: '',
+    );
+    const acme = HumanLoginServer(id: 'srv-1', slug: 'acme', name: 'Acme');
+    HumanLoginChoice waiting({bool canInstall = true, String? id}) {
+      final json = FakeHumanLoginApi.app(
+        installRequired: true,
+        canInstall: canInstall,
+      );
+      if (id == '') json.remove('id');
+      return HumanLoginChoice(acme, HumanLoginClient.fromJson(json));
+    }
+
+    test('canInstall comes only from an app that waits for an install', () {
+      // A ready app is never installed again, whatever `installation` says.
+      final ready = FakeHumanLoginApi.app()
+        ..['installation'] = {'serverId': 'srv-1', 'canInstall': true};
+      expect(HumanLoginClient.fromJson(ready).canInstall, isFalse);
+      expect(waiting().client.canInstall, isTrue);
+      expect(waiting(canInstall: false).client.canInstall, isFalse);
+    });
+
+    test('Web canInstallAndContinue: permission, id, scopes, return URL', () {
+      expect(humanLoginCanInstall(request, waiting()), isTrue);
+      expect(
+        humanLoginCanInstall(request, waiting(canInstall: false)),
+        isFalse,
+      );
+      expect(humanLoginCanInstall(request, waiting(id: '')), isFalse);
+      final ready = HumanLoginChoice(
+        acme,
+        HumanLoginClient.fromJson(FakeHumanLoginApi.app()),
+      );
+      expect(humanLoginCanInstall(request, ready), isFalse);
+      expect(
+        humanLoginCanInstall(
+          HumanLoginRequest(
+            clientId: 'c',
+            returnUrl: 'https://a.example.com/cb',
+            state: '',
+            scopes: const ['openid', 'agent:notification:write'],
+            serverHint: '',
+          ),
+          waiting(),
+        ),
+        isFalse,
+      );
+      expect(
+        humanLoginCanInstall(
+          request,
+          HumanLoginChoice(
+            acme,
+            HumanLoginClient.fromJson(
+              FakeHumanLoginApi.app(
+                installRequired: true,
+                canInstall: true,
+                disallowed: ['agent:read'],
+                reason: 'not_allowed',
+              ),
+            ),
+          ),
+        ),
+        isFalse,
+      );
+    });
+
+    test(
+      'installs the record id on the chosen server, then it is ready',
+      () async {
+        final api = FakeHumanLoginApi();
+        final installed = await installHumanLoginApp(api, waiting());
+        expect(api.installs, [(serverId: 'srv-1', appId: 'app-record-1')]);
+        expect(installed.client.installRequired, isFalse);
+        expect(installed.client.canInstall, isFalse);
+        expect(installed.client.clientId, 'artifact-share');
+        expect(humanLoginCanContinue(request, installed), isTrue);
+        // It authorizes nothing.
+        expect(api.authorizations, isEmpty);
+      },
+    );
+
+    test('a person who cannot install sends nothing', () async {
+      final api = FakeHumanLoginApi();
+      await expectLater(
+        installHumanLoginApp(api, waiting(canInstall: false)),
+        throwsA(isA<HumanLoginException>()),
+      );
+      expect(api.installs, isEmpty);
+    });
+
+    test('shows the server\'s words, else Web\'s install text', () async {
+      for (final (error, text) in [
+        (
+          RaftApiException.response(
+            'Only server owners and admins can install marketplace apps',
+            status: 403,
+            body: {
+              'error':
+                  'Only server owners and admins can install marketplace apps',
+            },
+          ),
+          'Only server owners and admins can install marketplace apps',
+        ),
+        (
+          RaftApiException.response(
+            'invalid_request',
+            status: 400,
+            body: {
+              'error': 'invalid_request',
+              'error_description': 'The app was withdrawn.',
+            },
+          ),
+          'The app was withdrawn.',
+        ),
+        (
+          StateError('boom token=secret-1'),
+          'Failed to install this Marketplace app.',
+        ),
+      ]) {
+        final api = FakeHumanLoginApi(installError: error);
+        await expectLater(
+          installHumanLoginApp(api, waiting()),
+          throwsA(
+            isA<HumanLoginException>().having((e) => e.text, 'text', text),
+          ),
+        );
+      }
+    });
+
+    test('details card: the Marketplace app, else the selected server\'s', () {
+      final lookup = HumanLoginLookup([
+        HumanLoginRow(
+          acme,
+          HumanLoginClient.fromJson(FakeHumanLoginApi.app(name: 'Plain')),
+        ),
+        HumanLoginRow(
+          const HumanLoginServer(id: 'srv-2', slug: 'beta', name: 'Beta'),
+          HumanLoginClient.fromJson(
+            FakeHumanLoginApi.app(
+              name: 'Market',
+              installRequired: true,
+              canInstall: true,
+            ),
+          ),
+        ),
+      ]);
+      expect(lookup.isMarketplace, isTrue);
+      expect(lookup.detailsClient('srv-1')!.name, 'Market');
+      final plain = HumanLoginLookup([lookup.rows.first]);
+      expect(plain.isMarketplace, isFalse);
+      expect(plain.detailsClient('srv-1')!.name, 'Plain');
+    });
   });
 }

@@ -3299,7 +3299,7 @@
      "flutter": "yes",
      "parityCase": [],
      "status": "intentional",
-     "justification": "App registered on no server the account can use: Web's 'not registered' / 'no access' text with only Back. Widget tests cover both texts."
+     "justification": "App registered on no server the account can use: Web's 'This App is not accessible yet' explanation; a server the link names that the account is not in: Web's 'no access' text; only Back. Widget tests cover both."
     },
     {
      "state": "error",
@@ -3312,10 +3312,10 @@
     {
      "state": "partial",
      "web": "yes",
-     "flutter": "partial",
+     "flutter": "yes",
      "parityCase": [],
      "status": "intentional",
-     "justification": "install_required shows Web's 'Not installed on this Server' message with Login with Raft disabled; 'Install and continue' is phase 2 (docs/capability-parity.json ui:integrations.login-with-raft-consent-page)."
+     "justification": "A Marketplace app waiting for an install: the commit zone says who may install; a person with installation.canInstall gets 'Install and continue' (install, then authorize, as separate steps of one explicit press), anyone else Web's explanation and no button. Widget tests (human_login_install_test.dart) cover both, a failed install and a refused login after the install."
     }
    ]
   }

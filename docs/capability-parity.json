@@ -8593,12 +8593,17 @@
    "area": "integrations-apps-mcp",
    "capability": "Look up a third-party app by client id on the 'Login with Raft' setup page",
    "background": false,
-   "status": "na",
+   "status": "covered",
    "webEntry": "pages/HumanLoginSetupPage (/login-with-raft/setup, legacy /login-with-slock/setup, /login-with-slock-human/setup)",
    "gate": "Signed-in user; server must have the app registered/installed",
-   "flutterEntry": "",
-   "flutterRefs": [],
-   "justification": "Intentional difference (owner decision Kevin, 2026-10-21): the native app signs in through its own native login flows (auth_view.dart / oauth_broker.dart), so it does not host this browser-hosted 'Login with Raft' setup / consent page.",
+   "flutterEntry": "human_login.dart lookupHumanLoginClient (ClientHumanLoginApi.lookup), shown by human_login_sheet.dart",
+   "flutterRefs": [
+    {
+     "file": "apps/raft_flutter/lib/features/human_login.dart",
+     "needle": "'/oauth/clients/lookup'"
+    }
+   ],
+   "justification": "The in-app artifact browser answers /login-with-raft/setup natively (owner decision Kevin, 2026-10-25, #raft-flutter thread b673ca98, msg 0229eee3, which supersedes the 2026-10-21 'na' decision); see ui:integrations.login-with-raft-consent-page.",
    "impact": "",
    "size": ""
   },
@@ -8962,7 +8967,7 @@
    "status": "covered",
    "webEntry": "Settings > Applications > Marketplace > app detail > 'Install to this server'; pages/HumanLoginSetupPage 'Install and continue'",
    "gate": "manageIntegrations",
-   "flutterEntry": "integrations_views.dart openListing() 'Install to this server'. The HumanLoginSetupPage 'Install and continue' entry is not built yet (phase 2, see ui:integrations.login-with-raft-consent-page)",
+   "flutterEntry": "integrations_views.dart openListing() 'Install to this server'; human_login_sheet.dart 'Install and continue' (installHumanLoginApp in human_login.dart, ui:integrations.login-with-raft-consent-page)",
    "flutterRefs": [
     {
      "file": "apps/raft_flutter/lib/features/integrations_views.dart",
@@ -8971,9 +8976,13 @@
     {
      "file": "apps/raft_flutter/lib/features/integrations_views.dart",
      "needle": "Install to This Server"
+    },
+    {
+     "file": "apps/raft_flutter/lib/features/human_login.dart",
+     "needle": "/integrations/marketplace/"
     }
    ],
-   "justification": "Settings entry fully covered; the second Web entry (install while authorizing a third-party login) is not available in the app.",
+   "justification": "Both Web entries are covered: Settings > Applications, and 'Install and continue' on the Login with Raft sheet (own explicit button, Web's wording, X-Server-Id of the picked server, then the authorization).",
    "impact": "",
    "size": ""
   },
@@ -9127,15 +9136,19 @@
    "area": "integrations-apps-mcp",
    "capability": "Approve a third-party app login (scope consent, pick Raft server, 'Login with Raft' / 'Install and continue')",
    "background": false,
-   "status": "na",
+   "status": "covered",
    "webEntry": "pages/HumanLoginSetupPage > server picker + RequestedScopeConsent + 'Login with Raft' / 'Install and continue'",
    "gate": "Signed-in user with access to a server where the app is installed; install needs manageIntegrations",
-   "flutterEntry": "",
-   "flutterRefs": [],
-   "justification": "Intentional difference (owner decision Kevin, 2026-10-21): the native app signs in through its own native login flows (auth_view.dart / oauth_broker.dart), so it does not host this browser-hosted 'Login with Raft' consent page.",
+   "flutterEntry": "human_login.dart authorizeHumanLogin (ClientHumanLoginApi.authorize), after 'Login with Raft' / 'Continue login' / 'Install and continue' on human_login_sheet.dart",
+   "flutterRefs": [
+    {
+     "file": "apps/raft_flutter/lib/features/human_login.dart",
+     "needle": "'/oauth/authorize/human'"
+    }
+   ],
+   "justification": "Sent only after the person presses a button on the sheet (owner decision Kevin, 2026-10-25, #raft-flutter thread b673ca98, msg 0229eee3, which supersedes the 2026-10-21 'na' decision); 'Install and continue' installs first, then authorizes. See ui:integrations.login-with-raft-consent-page.",
    "impact": "",
-   "size": "",
-   "topGap": 9
+   "size": ""
   },
   {
    "kind": "endpoint",
@@ -9474,9 +9487,9 @@
    "webEntry": "App.tsx routes /login-with-raft/setup, /login-with-slock/setup, /login-with-slock-human/setup -> pages/HumanLoginSetupPage.tsx (GET /oauth/clients/lookup, POST /oauth/authorize/human, marketplace install)",
    "gate": "Signed in; a link to an artifact that asks for Login with Raft",
    "flutterEntry": "artifact_viewer.dart ArtifactViewer.onNavigationRequest -> human_login_sheet.dart showHumanLoginSheet (the three setup paths on the app's Raft Web origin)",
-   "justification": "In-app WebView takeover done (owner decision Kevin, 2026-10-25, #raft-flutter thread b673ca98, msg 0229eee3, which supersedes the 2026-10-21 'na' decision): an artifact link (raft-artifacts.com) opens in the app, and when its 'Login with Raft' reaches <Raft web>/login-with-raft/setup (or the legacy login-with-slock aliases) the app cancels that navigation, runs GET /oauth/clients/lookup, shows a native confirmation (app, server, requested scopes) and, only after the person confirms, POST /oauth/authorize/human with its own session, then loads the callback with code and state in the WebView. Not done (phase 2): 'Install and continue' for an app the server has not installed (the page shows Web's 'Not installed' message), and the Web page's FAQ and Log out header. A setup URL opened outside the in-app browser (system browser, another app) is still Web's.",
-   "impact": "A marketplace app that is not yet installed on the server cannot be installed from the confirmation; the person installs it from Settings > Applications first.",
-   "size": "M",
+   "justification": "In-app WebView takeover and install-and-continue done (owner decision Kevin, 2026-10-25, #raft-flutter thread b673ca98, msgs 0229eee3 (in-app Login with Raft) and the later 'Web 应用市场的安装并继续也做' (install and continue), which supersede the 2026-10-21 'na' decision): an artifact link (raft-artifacts.com) opens in the app, and when its 'Login with Raft' reaches <Raft web>/login-with-raft/setup (or the legacy login-with-slock aliases) the app cancels that navigation and answers natively with the app's own session: GET /oauth/clients/lookup for every candidate server, a sheet with the app, the server picker (for a Marketplace app: every server with its state, search over more than five, Installed / Not installed / Admin needed / Unavailable), the requested scopes, and a commit zone in Web's words. Only after the person presses a button does anything happen: 'Login with Raft' / 'Continue login' sends POST /oauth/authorize/human; 'Install and continue' (offered only when the lookup says installation.canInstall) first sends POST /integrations/marketplace/<id>/install with X-Server-Id of the picked server, then the same authorization; the callback with code and state then loads in the WebView. A person who cannot install gets Web's explanation and no button. Errors show the server's error_description (error for the install), else Web's text. Web's FAQ is a row at the bottom of the sheet and the 'not accessible' page replaces the form when no server has the app. Not done: Web's Log out button (the sheet's Cancel/Back is Web's Back; signing out from inside an artifact login is left to Account), the 'Find a Server admin' link for a person who cannot install (Kevin: explanation only, no button), the app-details card as a link to the app's homepage and its 'The app you are continuing to with Login with Raft.' help line, and the per-row tooltips (the state is the row's badge). A setup URL opened outside the in-app browser (system browser, another app) is still Web's.",
+   "impact": "A person on the sheet cannot log out of Raft from it or jump to the Server's member list to find an admin; both are one step away in the app (Account, Members).",
+   "size": "S",
    "flutterRefs": [
     {
      "file": "apps/raft_flutter/lib/features/artifact_viewer.dart",
@@ -9493,6 +9506,18 @@
     {
      "file": "apps/raft_flutter/lib/features/human_login_sheet.dart",
      "needle": "class HumanLoginSheet"
+    },
+    {
+     "file": "apps/raft_flutter/lib/features/human_login.dart",
+     "needle": "/integrations/marketplace/"
+    },
+    {
+     "file": "apps/raft_flutter/lib/features/human_login_servers.dart",
+     "needle": "class HumanLoginCommitZone"
+    },
+    {
+     "file": "apps/raft_flutter/lib/features/human_login_servers.dart",
+     "needle": "class HumanLoginFaq"
     }
    ]
   },
@@ -9742,7 +9767,7 @@
    "status": "partial",
    "webEntry": "pages/HumanLoginSetupPage (+ RequestedScopeConsent)",
    "gate": "Signed-in user",
-   "flutterEntry": "human_login_sheet.dart HumanLoginSheet: app card, Raft Server, RequestedScopeConsent wording, Cancel / Login with Raft; install_required shows Web's message only",
+   "flutterEntry": "human_login_sheet.dart HumanLoginSheet + human_login_servers.dart: app card, Raft Server (marketplace rows with search and state, or choice cards), RequestedScopeConsent wording, commit zone (Selected / Install and continue / admin needed / unavailable), setup requirement, FAQ row, Cancel / Login with Raft / Continue login / Install and continue",
    "flutterRefs": [
     {
      "file": "apps/raft_flutter/lib/features/artifact_viewer.dart",
@@ -9759,11 +9784,23 @@
     {
      "file": "apps/raft_flutter/lib/features/human_login_sheet.dart",
      "needle": "class HumanLoginSheet"
+    },
+    {
+     "file": "apps/raft_flutter/lib/features/human_login.dart",
+     "needle": "/integrations/marketplace/"
+    },
+    {
+     "file": "apps/raft_flutter/lib/features/human_login_servers.dart",
+     "needle": "class HumanLoginCommitZone"
+    },
+    {
+     "file": "apps/raft_flutter/lib/features/human_login_servers.dart",
+     "needle": "class HumanLoginFaq"
     }
    ],
-   "justification": "In-app WebView takeover done (owner decision Kevin, 2026-10-25, #raft-flutter thread b673ca98, msg 0229eee3, which supersedes the 2026-10-21 'na' decision): an artifact link (raft-artifacts.com) opens in the app, and when its 'Login with Raft' reaches <Raft web>/login-with-raft/setup (or the legacy login-with-slock aliases) the app cancels that navigation, runs GET /oauth/clients/lookup, shows a native confirmation (app, server, requested scopes) and, only after the person confirms, POST /oauth/authorize/human with its own session, then loads the callback with code and state in the WebView. Not done (phase 2): 'Install and continue' for an app the server has not installed (the page shows Web's 'Not installed' message), and the Web page's FAQ and Log out header. A setup URL opened outside the in-app browser (system browser, another app) is still Web's.",
-   "impact": "A marketplace app that is not yet installed on the server cannot be installed from the confirmation; the person installs it from Settings > Applications first.",
-   "size": "M"
+   "justification": "In-app WebView takeover and install-and-continue done (owner decision Kevin, 2026-10-25, #raft-flutter thread b673ca98, msgs 0229eee3 (in-app Login with Raft) and the later 'Web 应用市场的安装并继续也做' (install and continue), which supersede the 2026-10-21 'na' decision): an artifact link (raft-artifacts.com) opens in the app, and when its 'Login with Raft' reaches <Raft web>/login-with-raft/setup (or the legacy login-with-slock aliases) the app cancels that navigation and answers natively with the app's own session: GET /oauth/clients/lookup for every candidate server, a sheet with the app, the server picker (for a Marketplace app: every server with its state, search over more than five, Installed / Not installed / Admin needed / Unavailable), the requested scopes, and a commit zone in Web's words. Only after the person presses a button does anything happen: 'Login with Raft' / 'Continue login' sends POST /oauth/authorize/human; 'Install and continue' (offered only when the lookup says installation.canInstall) first sends POST /integrations/marketplace/<id>/install with X-Server-Id of the picked server, then the same authorization; the callback with code and state then loads in the WebView. A person who cannot install gets Web's explanation and no button. Errors show the server's error_description (error for the install), else Web's text. Web's FAQ is a row at the bottom of the sheet and the 'not accessible' page replaces the form when no server has the app. Not done: Web's Log out button (the sheet's Cancel/Back is Web's Back; signing out from inside an artifact login is left to Account), the 'Find a Server admin' link for a person who cannot install (Kevin: explanation only, no button), the app-details card as a link to the app's homepage and its 'The app you are continuing to with Login with Raft.' help line, and the per-row tooltips (the state is the row's badge). A setup URL opened outside the in-app browser (system browser, another app) is still Web's.",
+   "impact": "A person on the sheet cannot log out of Raft from it or jump to the Server's member list to find an admin; both are one step away in the app (Account, Members).",
+   "size": "S"
   },
   {
    "kind": "ui",
@@ -14902,11 +14939,23 @@
     {
      "file": "apps/raft_flutter/lib/features/human_login_sheet.dart",
      "needle": "class HumanLoginSheet"
+    },
+    {
+     "file": "apps/raft_flutter/lib/features/human_login.dart",
+     "needle": "/integrations/marketplace/"
+    },
+    {
+     "file": "apps/raft_flutter/lib/features/human_login_servers.dart",
+     "needle": "class HumanLoginCommitZone"
+    },
+    {
+     "file": "apps/raft_flutter/lib/features/human_login_servers.dart",
+     "needle": "class HumanLoginFaq"
     }
    ],
-   "justification": "In-app WebView takeover done (owner decision Kevin, 2026-10-25, #raft-flutter thread b673ca98, msg 0229eee3, which supersedes the 2026-10-21 'na' decision): an artifact link (raft-artifacts.com) opens in the app, and when its 'Login with Raft' reaches <Raft web>/login-with-raft/setup (or the legacy login-with-slock aliases) the app cancels that navigation, runs GET /oauth/clients/lookup, shows a native confirmation (app, server, requested scopes) and, only after the person confirms, POST /oauth/authorize/human with its own session, then loads the callback with code and state in the WebView. Not done (phase 2): 'Install and continue' for an app the server has not installed (the page shows Web's 'Not installed' message), and the Web page's FAQ and Log out header. A setup URL opened outside the in-app browser (system browser, another app) is still Web's.",
-   "impact": "A marketplace app that is not yet installed on the server cannot be installed from the confirmation; the person installs it from Settings > Applications first.",
-   "size": "M"
+   "justification": "In-app WebView takeover and install-and-continue done (owner decision Kevin, 2026-10-25, #raft-flutter thread b673ca98, msgs 0229eee3 (in-app Login with Raft) and the later 'Web 应用市场的安装并继续也做' (install and continue), which supersede the 2026-10-21 'na' decision): an artifact link (raft-artifacts.com) opens in the app, and when its 'Login with Raft' reaches <Raft web>/login-with-raft/setup (or the legacy login-with-slock aliases) the app cancels that navigation and answers natively with the app's own session: GET /oauth/clients/lookup for every candidate server, a sheet with the app, the server picker (for a Marketplace app: every server with its state, search over more than five, Installed / Not installed / Admin needed / Unavailable), the requested scopes, and a commit zone in Web's words. Only after the person presses a button does anything happen: 'Login with Raft' / 'Continue login' sends POST /oauth/authorize/human; 'Install and continue' (offered only when the lookup says installation.canInstall) first sends POST /integrations/marketplace/<id>/install with X-Server-Id of the picked server, then the same authorization; the callback with code and state then loads in the WebView. A person who cannot install gets Web's explanation and no button. Errors show the server's error_description (error for the install), else Web's text. Web's FAQ is a row at the bottom of the sheet and the 'not accessible' page replaces the form when no server has the app. Not done: Web's Log out button (the sheet's Cancel/Back is Web's Back; signing out from inside an artifact login is left to Account), the 'Find a Server admin' link for a person who cannot install (Kevin: explanation only, no button), the app-details card as a link to the app's homepage and its 'The app you are continuing to with Login with Raft.' help line, and the per-row tooltips (the state is the row's badge). A setup URL opened outside the in-app browser (system browser, another app) is still Web's.",
+   "impact": "A person on the sheet cannot log out of Raft from it or jump to the Server's member list to find an admin; both are one step away in the app (Account, Members).",
+   "size": "S"
   },
   {
    "kind": "ui",

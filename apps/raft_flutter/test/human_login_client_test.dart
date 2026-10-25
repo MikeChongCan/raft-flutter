@@ -47,6 +47,8 @@ class _Adapter implements HttpClientAdapter {
                     'This OAuth client is not allowed to request: agent:read.',
                 'disallowedScopes': ['agent:read'],
               };
+      case 'POST /integrations/marketplace/app-record-1/install':
+        data = {'id': 'install-1'};
       default:
         status = 404;
         data = {'error': 'Unexpected endpoint'};
@@ -102,7 +104,7 @@ void main() {
   test('the session\'s client sends the lookup for the named server', () async {
     expect(api.servers.map((s) => s.slug), ['acme', 'beta']);
     expect(api.signedInAs, 'alice@example.com');
-    final found = await lookupHumanLoginClient(api, request);
+    final found = (await lookupHumanLoginClient(api, request)).choices;
     expect(found.single.server.id, 'srv-2');
     final call = adapter.calls.singleWhere(
       (c) => c.path == '/oauth/clients/lookup',
@@ -119,7 +121,7 @@ void main() {
   });
 
   test('the authorization is the app\'s authenticated POST', () async {
-    final found = await lookupHumanLoginClient(api, request);
+    final found = (await lookupHumanLoginClient(api, request)).choices;
     final location = await authorizeHumanLogin(api, request, found.single);
     final call = adapter.calls.singleWhere(
       (c) => c.path == '/oauth/authorize/human',
@@ -141,7 +143,7 @@ void main() {
   test(
     'a refusal reaches the person as the server\'s error_description',
     () async {
-      final found = await lookupHumanLoginClient(api, request);
+      final found = (await lookupHumanLoginClient(api, request)).choices;
       adapter.authorizeStatus = 400;
       await expectLater(
         authorizeHumanLogin(api, request, found.single),
@@ -153,6 +155,21 @@ void main() {
           ),
         ),
       );
+    },
+  );
+
+  test(
+    'the install is the authenticated POST, addressed to that server',
+    () async {
+      // The app is on srv-1; the person installs on srv-2.
+      await api.installMarketplaceApp('srv-2', 'app-record-1');
+      final call = adapter.calls.singleWhere(
+        (c) => c.path == '/integrations/marketplace/app-record-1/install',
+      );
+      expect(call.method, 'POST');
+      expect(call.headers['X-Server-Id'], 'srv-2');
+      expect(call.headers['Authorization'], isNotNull);
+      expect(call.data, isNull);
     },
   );
 }

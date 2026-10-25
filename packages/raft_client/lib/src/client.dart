@@ -1051,6 +1051,17 @@ class RaftClient {
     workspaceScoped: false,
     headers: {'X-Server-Id': server},
   );
+
+  /// A write addressed to [server] while the active workspace stays as it is
+  /// (an install on a server the person picked, not the one they are in).
+  Future<dynamic> postForServer(String server, String path, {dynamic data}) =>
+      _request(
+        'POST',
+        path,
+        data: data,
+        workspaceScoped: false,
+        headers: {'X-Server-Id': server},
+      );
   Future<dynamic> post(String path, {dynamic data}) =>
       request('POST', path, data: data);
   Future<dynamic> patch(String path, {dynamic data}) =>

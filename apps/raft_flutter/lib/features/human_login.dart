@@ -5,6 +5,7 @@ import 'package:raft_client/raft_client.dart';
 import '../data/user_error.dart';
 import '../data/workspace_controller.dart' show WorkspaceController;
 import '../platform/content_links.dart';
+import 'public_avatar_url.dart';
 
 /// "Login with Raft" for third-party apps, the logic of Web
 /// `HumanLoginSetupPage.tsx` (`/login-with-raft/setup`, pinned v1.21.23):
@@ -242,8 +243,10 @@ class HumanLoginServer {
     required this.id,
     required this.slug,
     required this.name,
+    this.avatarUrl,
   });
   final String id, slug, name;
+  final String? avatarUrl;
 
   String get label => '$name ($slug)';
 }
@@ -257,6 +260,8 @@ class HumanLoginClient {
     this.description,
     this.homepageUrl,
     this.logoUrl,
+    this.setupUrl,
+    this.setupDescription,
     this.marketplace = false,
     this.installRequired = false,
     this.canInstall = false,
@@ -279,9 +284,16 @@ class HumanLoginClient {
       description: text('description'),
       homepageUrl: text('homepageUrl'),
       logoUrl: text('logoUrl'),
+      setupUrl: text('setupUrl'),
+      setupDescription: text('setupDescription'),
       marketplace: json['marketplace'] == true,
       installRequired: json['availability'] == 'install_required',
-      canInstall: installation is Map && installation['canInstall'] == true,
+      // Only an app waiting for an install carries `installation`; a ready
+      // one is never installed twice.
+      canInstall:
+          json['availability'] == 'install_required' &&
+          installation is Map &&
+          installation['canInstall'] == true,
       disallowedScopes:
           validation is Map && validation['disallowedScopes'] is List
           ? [
@@ -296,9 +308,32 @@ class HumanLoginClient {
   }
 
   final String clientId, name;
-  final String? id, description, homepageUrl, logoUrl, scopeReason;
+  final String? id,
+      description,
+      homepageUrl,
+      logoUrl,
+      setupUrl,
+      setupDescription,
+      scopeReason;
   final bool marketplace, installRequired, canInstall;
   final List<String> disallowedScopes;
+
+  /// The same app once it is installed on the server: Web sets
+  /// `availability: "ready"` and drops `installation`.
+  HumanLoginClient get installed => HumanLoginClient(
+    id: id,
+    clientId: clientId,
+    name: name,
+    description: description,
+    homepageUrl: homepageUrl,
+    logoUrl: logoUrl,
+    setupUrl: setupUrl,
+    setupDescription: setupDescription,
+    // It was a Marketplace app; installing it does not change that.
+    marketplace: true,
+    disallowedScopes: disallowedScopes,
+    scopeReason: scopeReason,
+  );
 
   /// Web `initialsForApp`.
   String get initials {
@@ -327,6 +362,57 @@ class HumanLoginChoice {
       : 2;
 }
 
+/// One server the person can pick: the lookup's answer for it, or none when
+/// the lookup failed for that server (Web lists it as "Unavailable").
+class HumanLoginRow {
+  const HumanLoginRow(this.server, [this.client]);
+  final HumanLoginServer server;
+  final HumanLoginClient? client;
+
+  HumanLoginChoice? get choice =>
+      client == null ? null : HumanLoginChoice(server, client!);
+
+  /// Web `marketplaceServerRank`; a server without an answer is last.
+  int get rank => choice?.rank ?? 3;
+}
+
+/// What Web's lookup effect leaves: every candidate server in picker order,
+/// and the ones that answered.
+class HumanLoginLookup {
+  const HumanLoginLookup(this.rows);
+
+  /// Every candidate server: ready first, then installable, then admin
+  /// needed, then those that did not answer; by name within a group.
+  final List<HumanLoginRow> rows;
+
+  List<HumanLoginChoice> get choices => [for (final row in rows) ?row.choice];
+
+  /// Web `isMarketplaceApp`: some server lists it as a Marketplace app or
+  /// waiting for an install.
+  bool get isMarketplace =>
+      choices.any((c) => c.client.marketplace || c.client.installRequired);
+
+  /// Web `marketplaceClient ?? client`: the app shown in the details card.
+  HumanLoginClient? detailsClient(String selectedServerId) {
+    final all = choices;
+    final market = all
+        .where((c) => c.client.marketplace || c.client.installRequired)
+        .firstOrNull;
+    if (market != null) return market.client;
+    return all
+        .where((c) => c.server.id == selectedServerId)
+        .firstOrNull
+        ?.client;
+  }
+
+  HumanLoginLookup replaced(HumanLoginChoice choice) => HumanLoginLookup([
+    for (final row in rows)
+      row.server.id == choice.server.id
+          ? HumanLoginRow(choice.server, choice.client)
+          : row,
+  ]);
+}
+
 /// A failure the sheet shows as text.
 class HumanLoginException implements Exception {
   const HumanLoginException(this.text);
@@ -353,6 +439,11 @@ abstract interface class HumanLoginApi {
 
   /// `POST /oauth/authorize/human`.
   Future<dynamic> authorize(Map<String, Object?> body);
+
+  /// `POST /integrations/marketplace/<id>/install` on [serverId] (Web sends
+  /// `X-Server-Id`): installs the Marketplace app there as the signed-in
+  /// person, who must own or administer that server.
+  Future<dynamic> installMarketplaceApp(String serverId, String appId);
 }
 
 /// The production [HumanLoginApi] over the app's session client. The server
@@ -377,6 +468,7 @@ class ClientHumanLoginApi implements HumanLoginApi {
           id: s.id,
           slug: s.string('slug'),
           name: s.firstNonEmpty(const ['name', 'slug'], s.id),
+          avatarUrl: raftPublicAvatarUrl(client.origin, s.string('avatarUrl')),
         ),
   ];
 
@@ -391,6 +483,13 @@ class ClientHumanLoginApi implements HumanLoginApi {
   @override
   Future<dynamic> authorize(Map<String, Object?> body) =>
       client.post('/oauth/authorize/human', data: body);
+
+  @override
+  Future<dynamic> installMarketplaceApp(String serverId, String appId) =>
+      client.postForServer(
+        serverId,
+        '/integrations/marketplace/${Uri.encodeComponent(appId)}/install',
+      );
 }
 
 /// The signed-in session's side of Login with Raft; null while signed out.
@@ -417,6 +516,7 @@ class HumanLoginMessages {
   static const missingReturnUrl =
       'This service is missing a configured return URL.';
   static const continueFailed = 'Failed to continue with Raft.';
+  static const installFailed = 'Failed to install this Marketplace app.';
 }
 
 /// The servers [request] may use: the one its `server` parameter names (id or
@@ -432,9 +532,10 @@ List<HumanLoginServer> humanLoginCandidates(
       ];
 
 /// Web's lookup effect: every candidate server is asked for the client; a
-/// server that answers an error is not listed. Throws [HumanLoginException]
-/// with Web's text when nothing is available.
-Future<List<HumanLoginChoice>> lookupHumanLoginClient(
+/// server that answers an error is kept as "unavailable" (Web lists it in the
+/// Marketplace picker). Throws [HumanLoginException] with Web's text when no
+/// server has the app.
+Future<HumanLoginLookup> lookupHumanLoginClient(
   HumanLoginApi api,
   HumanLoginRequest request,
 ) async {
@@ -445,7 +546,7 @@ Future<List<HumanLoginChoice>> lookupHumanLoginClient(
   if (candidates.isEmpty) {
     throw const HumanLoginException(HumanLoginMessages.noServerAccess);
   }
-  final results = await Future.wait([
+  final rows = await Future.wait([
     for (final server in candidates)
       api
           .lookup(server.id, {
@@ -453,23 +554,22 @@ Future<List<HumanLoginChoice>> lookupHumanLoginClient(
             'server_id': server.id,
             'scope': request.scopes.join(' '),
           })
-          .then<HumanLoginChoice?>(
+          .then<HumanLoginRow>(
             (data) => data is Map
-                ? HumanLoginChoice(server, HumanLoginClient.fromJson(data))
-                : null,
+                ? HumanLoginRow(server, HumanLoginClient.fromJson(data))
+                : HumanLoginRow(server),
           )
-          .catchError((Object _) => null),
+          .catchError((Object _) => HumanLoginRow(server)),
   ]);
-  final found = [for (final r in results) ?r]
-    ..sort(
-      (a, b) => a.rank != b.rank
-          ? a.rank.compareTo(b.rank)
-          : a.server.name.toLowerCase().compareTo(b.server.name.toLowerCase()),
-    );
-  if (found.isEmpty) {
+  rows.sort(
+    (a, b) => a.rank != b.rank
+        ? a.rank.compareTo(b.rank)
+        : a.server.name.toLowerCase().compareTo(b.server.name.toLowerCase()),
+  );
+  if (rows.every((r) => r.client == null)) {
     throw const HumanLoginException(HumanLoginMessages.notRegisteredForAny);
   }
-  return found;
+  return HumanLoginLookup(rows);
 }
 
 /// Web `OAuthScopeTier` (`lib/oauthScopePresentation.ts`).
@@ -544,6 +644,57 @@ bool humanLoginCanContinue(
     !hasAgentInboundScope(request.scopes) &&
     choice.client.disallowedScopes.isEmpty;
 
+/// Web `canInstallAndContinue` for the chosen server: the app waits for an
+/// install the person may do, and the request itself could be authorized once
+/// it is installed.
+bool humanLoginCanInstall(HumanLoginRequest request, HumanLoginChoice choice) =>
+    choice.client.installRequired &&
+    choice.client.canInstall &&
+    (choice.client.id ?? '').isNotEmpty &&
+    request.returnUrl.trim().isNotEmpty &&
+    !hasAgentInboundScope(request.scopes) &&
+    choice.client.disallowedScopes.isEmpty;
+
+/// A server's refusal as text: its `error_description`, else its `error`
+/// (Web: `error_description || error || fallback`), else [fallback].
+HumanLoginException _refused(
+  RaftApiException error,
+  String fallback,
+  String where,
+) {
+  final description = error.details['error_description'];
+  return HumanLoginException(
+    description is String && isDisplayableServerMessage(description)
+        ? description.trim()
+        : userErrorText(error, fallback: fallback, where: where),
+  );
+}
+
+/// Web `installMarketplaceApp`: installs the app on the chosen server and
+/// returns the choice as Web leaves it, ready. Authorizes nothing. Throws
+/// [HumanLoginException] with the server's own words, else Web's text.
+Future<HumanLoginChoice> installHumanLoginApp(
+  HumanLoginApi api,
+  HumanLoginChoice choice,
+) async {
+  final id = choice.client.id;
+  if (!choice.client.canInstall || id == null || id.isEmpty) {
+    throw const HumanLoginException(HumanLoginMessages.installFailed);
+  }
+  try {
+    await api.installMarketplaceApp(choice.server.id, id);
+  } on RaftApiException catch (error) {
+    throw _refused(
+      error,
+      HumanLoginMessages.installFailed,
+      'login-with-raft install',
+    );
+  } on Object {
+    throw const HumanLoginException(HumanLoginMessages.installFailed);
+  }
+  return HumanLoginChoice(choice.server, choice.client.installed);
+}
+
 /// Web `authorizeWithClient`: asks for the code and builds the URL the
 /// browser goes to. Throws [HumanLoginException] with the server's own
 /// `error_description` or `error` when it refuses, else Web's generic text.
@@ -563,15 +714,10 @@ Future<Uri> authorizeHumanLogin(
     );
   } on RaftApiException catch (error) {
     // Web: `error_description || error || continueFailed`.
-    final description = error.details['error_description'];
-    throw HumanLoginException(
-      description is String && isDisplayableServerMessage(description)
-          ? description.trim()
-          : userErrorText(
-              error,
-              fallback: HumanLoginMessages.continueFailed,
-              where: 'login-with-raft authorize',
-            ),
+    throw _refused(
+      error,
+      HumanLoginMessages.continueFailed,
+      'login-with-raft authorize',
     );
   } on Object {
     throw const HumanLoginException(HumanLoginMessages.continueFailed);

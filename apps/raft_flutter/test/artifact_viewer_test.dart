@@ -588,15 +588,17 @@ void main() {
       expect(FakeWebView.shown, artifact);
     });
 
-    testWidgets('an app not registered on the server: Web\'s message', (
+    testWidgets('an app not registered on the server: Web\'s explanation', (
       t,
     ) async {
       final api = FakeHumanLoginApi(clients: {});
       await mount(t, api: api);
       await openSetup(t, setupUrl());
+      // Web shows its "not accessible" page, not the form.
+      expect(find.text('This App is not accessible yet'), findsOneWidget);
       expect(
         find.text(
-          'This app is not registered for any Raft Server you can access.',
+          'This private third-party App is not available on any Raft Server you can access.',
         ),
         findsOneWidget,
       );
@@ -659,7 +661,7 @@ void main() {
 
     for (final canInstall in [true, false]) {
       testWidgets(
-        'install_required (canInstall: $canInstall) shows Web\'s message',
+        'install_required (canInstall: $canInstall) asks before installing',
         (t) async {
           final api = FakeHumanLoginApi(
             client: FakeHumanLoginApi.app(
@@ -669,26 +671,26 @@ void main() {
           );
           await mount(t, api: api);
           await openSetup(t, setupUrl());
-          final banner = find.byKey(
-            const ValueKey('human-login-install-required'),
-          );
-          expect(banner, findsOneWidget);
+          final zone = find.byKey(const ValueKey('human-login-commit-zone'));
+          expect(zone, findsOneWidget);
           expect(
             find.descendant(
-              of: banner,
-              matching: find.text(
+              of: zone,
+              matching: find.textContaining(
                 canInstall
-                    ? 'Not installed on this Server. You can install it here.'
-                    : 'Not installed on this Server. Ask a Server owner or admin to install it.',
+                    ? 'Continuing will install the App as you.'
+                    : 'Only an owner or admin of this Server can install it.',
               ),
             ),
             findsOneWidget,
           );
-          // Install and continue is not built: Login with Raft cannot be pressed.
-          final button = t.widget<RaftButton>(loginButton);
-          expect(button.onPressed, isNull);
-          await t.tap(loginButton, warnIfMissed: false);
-          await frames(t);
+          // Only a person who may install is offered it; looking at the
+          // sheet installs and authorizes nothing.
+          expect(loginButton.evaluate().isNotEmpty, canInstall);
+          if (canInstall) {
+            expect(find.text('Install and continue'), findsOneWidget);
+          }
+          expect(api.installs, isEmpty);
           expect(api.authorizations, isEmpty);
         },
       );
