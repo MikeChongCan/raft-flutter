@@ -28,6 +28,7 @@ class _Client extends RaftClient {
   final calls = <String>[];
   final searchQueries = <Map<String, dynamic>>[];
   bool failSearch = false;
+  List<Map<String, dynamic>>? results;
   final channelRows = [
     RaftChannel({
       'id': 'c-general',
@@ -109,6 +110,7 @@ class _Client extends RaftClient {
       if (failSearch) {
         throw const RaftApiException('Search failed', status: 500);
       }
+      if (results != null) return {'results': results};
       return {
         'results': [
           {
@@ -390,6 +392,40 @@ void main() {
     await t.pumpAndSettle();
     expect(w.channel!.id, 'c-ops');
     expect(find.byType(QuickSwitcher), findsNothing);
+
+    // Web openResultInChat: a thread hit opens in its parent conversation,
+    // not over the one that is showing.
+    client.results = [
+      {
+        'id': 'reply',
+        'channelId': 'th-design',
+        'channelName': 'design',
+        'channelType': 'thread',
+        'threadId': 'th-design',
+        'parentMessageId': 'parent',
+        'parentChannelId': 'c-design',
+        'parentChannelName': 'design',
+        'parentMessageContent': 'parent text',
+        'senderId': 'bob',
+        'senderName': 'Bob',
+        'senderType': 'user',
+        'snippet': 'quarterly review',
+        'createdAt': '2026-10-08T00:00:00Z',
+      },
+    ];
+    await chord(t, LogicalKeyboardKey.controlLeft, LogicalKeyboardKey.keyK);
+    await t.pump();
+    await t.enterText(find.byType(TextField).last, 'quarterly review');
+    await t.pump(const Duration(milliseconds: 300));
+    await t.pump();
+    await t.tap(find.byKey(const ValueKey('quick-switcher-message:reply')));
+    await t.pumpAndSettle();
+    expect(find.byType(QuickSwitcher), findsNothing);
+    expect(w.channel!.id, 'c-design');
+    final thread = w.messageDomain.state.threadIdentity;
+    expect(thread?.parentChannelId, 'c-design');
+    expect(thread?.parentMessageId, 'parent');
+    expect(thread?.focusedMessageId, 'reply');
   }, variant: TargetPlatformVariant.only(TargetPlatform.linux));
 
   testWidgets('[N26] clicking outside the card closes the switcher', (t) async {

@@ -453,6 +453,15 @@ class QuickSwitcherHost {
       final parentMessage = row['parentMessageId'];
       if (parentChannel is! String || parentMessage is! String) return;
       unawaited(remember(channelId: parentChannel, query: query));
+      // Web openResultInChat (nav.toThreadMessage): the thread opens in its
+      // parent conversation, not over the one that was showing.
+      final parent = [
+        ...w.channels,
+        ...w.dms,
+      ].where((c) => c.id == parentChannel).firstOrNull;
+      if (parent != null && w.channel?.id != parent.id) {
+        await actions.openConversation(parent);
+      }
       await actions.openThread(
         parentChannelId: parentChannel,
         parentMessageId: parentMessage,
