@@ -31,7 +31,6 @@ import 'features/invite_accept_view.dart';
 import 'features/global_server_selector.dart';
 import 'features/public_server_view.dart';
 import 'features/workspace_view.dart';
-import 'features/workspace_host_scope.dart';
 import 'features/auth_view.dart';
 import 'features/session_recovery_view.dart';
 import 'features/account_onboarding.dart';

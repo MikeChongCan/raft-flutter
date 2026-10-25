@@ -93,7 +93,11 @@ On Linux the native GTK/window-manager caption and its close/minimise/maximise
 controls remain. Shared-row empty space additionally supports native moving and
 the configured `gtk-titlebar-double-click` action. `DesktopWindowActions` captures
 the initiating button, root coordinates and timestamp before Flutter dispatch,
-then calls `gtk_window_begin_move_drag`. Controls handle their own pointer events;
+then calls `gtk_window_begin_move_drag`. Before that handoff it delivers the
+matching release to the app view: Flutter 3.47 otherwise retains a pressed mouse
+button when the window manager consumes the real release, dropping the next
+click. This completes the Flutter gesture without releasing the physical mouse
+button used by the window manager. Controls handle their own pointer events;
 only the background forwards drag/double-click. No global desktop settings are
 changed. Fullscreen suppresses maximise/minimise double-click actions.
 

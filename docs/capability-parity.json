@@ -16104,14 +16104,23 @@
    "area": "global-ui",
    "capability": "Desktop app Back / Forward / History menu ('Go back', 'Go forward', 'History', 'No recent conversations yet')",
    "background": false,
-   "status": "na",
+   "status": "covered",
    "webEntry": "i18n/messages/en.ts desktop.history.back|forward|menu|empty exist, but no component in packages/web/src consumes them (strings for the native Electron/Tauri app menu outside this package)",
    "gate": "",
-   "flutterEntry": "",
-   "justification": "Native-shell menu owned by the desktop app, not by the web client. Flutter desktop has in-app back (Escape/PopScope) and the Recent conversations list in the quick switcher.",
+   "flutterEntry": "features/workspace_history_controls.dart: shared desktop toolbar Back / Forward / History reuses WorkspaceNavigation, restores accepted channel/thread locations, and rejects stale account/server actions",
+   "justification": "The native desktop toolbar has explicit Back/Forward controls and an observed-history menu. Narrow desktop rows fold the arrows into the menu; the current workspace always contributes its initial entry, so a separate empty-history placeholder is unnecessary.",
    "impact": "",
    "size": "",
-   "flutterRefs": []
+   "flutterRefs": [
+    {
+     "file": "apps/raft_flutter/lib/features/workspace_history_controls.dart",
+     "needle": "class WorkspaceHistoryControls"
+    },
+    {
+     "file": "apps/raft_flutter/lib/features/workspace_history_controls.dart",
+     "needle": "Future<void> visitWorkspaceHistory("
+    }
+   ]
   },
   {
    "kind": "ui",
