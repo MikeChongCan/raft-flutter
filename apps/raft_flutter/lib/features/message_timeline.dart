@@ -41,6 +41,7 @@ class RaftMessageTimeline extends StatefulWidget {
     this.cacheExtent,
     this.canPrepareNearbyRows,
     this.rowRevision,
+    this.retainRow,
     this.extentRevision,
   });
 
@@ -56,6 +57,7 @@ class RaftMessageTimeline extends StatefulWidget {
   /// Opt-in reuse: include non-message inputs such as selection, metadata and
   /// theme here. Message and neighbour versions are checked separately.
   final Object? Function(int index)? rowRevision;
+  final bool Function(int index)? retainRow;
 
   /// Layout inputs for reusing measured extents across window updates.
   /// Null keeps the per-presentation estimate behavior.
@@ -98,6 +100,7 @@ class RaftMessageTimeline extends StatefulWidget {
 class _RaftMessageTimelineState extends State<RaftMessageTimeline>
     implements RaftTimelineThumbDriver {
   double nearbyCache = 250;
+  final recentRows = TimelineRowRetention();
   final _keyboardOlderScroll = _KeyboardOlderScrollAction();
 
   /// Inside the timeline scrollable, so a key here resolves to this list.
@@ -155,6 +158,7 @@ class _RaftMessageTimelineState extends State<RaftMessageTimeline>
   void dispose() {
     _timelineFocus.dispose();
     nearbyPreparation.dispose();
+    recentRows.dispose();
     super.dispose();
   }
 
@@ -463,6 +467,9 @@ class _RaftMessageTimelineState extends State<RaftMessageTimeline>
                     : messages[index + 1],
                 revision: revision(index),
                 builder: buildRow,
+                retention: owner.retainRow?.call(index) == true
+                    ? recentRows
+                    : null,
               );
         final body = extents == null
             ? child

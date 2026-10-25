@@ -878,7 +878,7 @@ class _RaftChatViewState extends PhonePageState<RaftChatView> {
     if (next != atBottom || (next && newMessageCount != 0)) {
       final arrived = next && !atBottom;
       if (next != atBottom) reportBottom(next);
-      setState(() {
+      super.setState(() {
         atBottom = next;
         if (next) newMessageCount = 0;
       });
@@ -2995,8 +2995,7 @@ class _RaftChatViewState extends PhonePageState<RaftChatView> {
         }),
       );
 
-  // id -> index over the displayed window, rebuilt when the window changes;
-  // rows used to project and scan the whole channel on every build.
+  // Index the displayed window once, avoiding whole-channel scans per row.
   List<chat.Message>? indexedWindow;
   int indexedRevision = -1;
   final windowIndex = <String, int>{};
@@ -3351,6 +3350,7 @@ class _RaftChatViewState extends PhonePageState<RaftChatView> {
                 'chat-list-${widget.thread ? 'thread' : 'channel'}',
               ),
               controller: viewport,
+              retainRow: timelineKeys.retainRows(messages, source),
               rowRevision: (i) => timelineKeys.rowState(
                 w,
                 messages,

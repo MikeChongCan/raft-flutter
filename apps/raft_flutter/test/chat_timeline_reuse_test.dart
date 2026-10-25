@@ -48,6 +48,46 @@ Future<WorkspaceController> open(WidgetTester tester) async {
 }
 
 void main() {
+  testWidgets('bottom controls do not invalidate displayed message rows', (
+    tester,
+  ) async {
+    await open(tester);
+    expect(find.text('Back to Bottom'), findsNothing);
+    final rows = find.byType(RaftMessageTile);
+    Map<Key?, RaftMessageTile> snapshot() => {
+      for (final row in tester.widgetList<RaftMessageTile>(rows)) row.key: row,
+    };
+    final before = snapshot();
+    expect(before, isNotEmpty);
+    final scroll = tester
+        .state<ScrollableState>(
+          find
+              .descendant(
+                of: find.byType(RaftMessageTimeline),
+                matching: find.byType(Scrollable),
+              )
+              .first,
+        )
+        .position;
+    final latest = scroll.pixels;
+    scroll.jumpTo(latest - 120);
+    await tester.pumpAndSettle();
+    expect(find.text('Back to Bottom'), findsOneWidget);
+    final after = snapshot();
+    final common = before.keys.toSet().intersection(after.keys.toSet());
+    expect(common, isNotEmpty);
+    for (final key in common) {
+      expect(
+        after[key],
+        same(before[key]),
+        reason: 'Crossing the bottom threshold must preserve row $key.',
+      );
+    }
+    await tester.tap(find.text('Back to Bottom'));
+    await tester.pumpAndSettle();
+    expect(scroll.pixels, closeTo(latest, 1));
+    expect(find.text('Back to Bottom'), findsNothing);
+  });
   testWidgets(
     'unrelated workspace changes preserve message row builds and paint',
     (tester) async {

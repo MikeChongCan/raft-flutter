@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:raft_ui/raft_ui.dart';
 import 'package:flutter_chat_core/flutter_chat_core.dart' as chat;
@@ -8,6 +9,7 @@ import 'package:raft_client/raft_client.dart';
 import '../data/personal_presentation.dart';
 import '../data/workspace_controller.dart';
 import 'saved_sidebar_entry.dart';
+import 'timeline_row_reuse.dart';
 
 /// Mounted timeline keys and the revision of local row-affecting UI state.
 /// Workspace notifications can repaint chrome without invalidating message
@@ -18,6 +20,13 @@ class ChatTimelinePresentation {
 
   GlobalKey keyFor(int window) => _keys.putIfAbsent(window, GlobalKey.new);
   void invalidateRows() => _rows = Object();
+
+  bool Function(int)? retainRows(
+    List<chat.Message> messages,
+    RaftMessage Function(chat.Message) source,
+  ) => defaultTargetPlatform == TargetPlatform.macOS
+      ? (i) => retainTimelineProse(source(messages[i]))
+      : null;
 
   Object rowState(
     WorkspaceController w,

@@ -727,6 +727,20 @@ void main() {
         return {...moved(p, from), 'pxPerSecond': 1200};
       });
 
+      // Fixed nearby reversals, to measure row mount churn on return.
+      await run('scroll-reversal', prepare: () => show(mix, latest: true), () async {
+        final p = position(), from = p.pixels;
+        final older = (from + olderSign(p) * 3000).clamp(p.minScrollExtent, p.maxScrollExtent);
+        final clock = Stopwatch()..start();
+        var turns = 0;
+        while (clock.elapsed < Duration(seconds: seconds)) {
+          await p.animateTo(turns.isEven ? older : from,
+              duration: const Duration(seconds: 3), curve: Curves.linear);
+          turns++;
+        }
+        return {...moved(p, from), 'turns': turns, 'rangePx': (older-from).abs()};
+      });
+
       // Six ballistic flings at 6000 px/s through the list's own physics.
       await run('fling', prepare: () => show(mix, latest: true), () async {
         final p = position(), from = p.pixels;
