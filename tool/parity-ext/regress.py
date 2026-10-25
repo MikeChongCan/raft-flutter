@@ -48,13 +48,6 @@ EXT_THEME = {
 }
 OFFICIAL_THEME = {'elegant': {'light': 'elegant-light', 'dark': 'elegant-dark'}, 'brutal': {'light': 'brutal-light'}}
 FAST_WIDTHS = (390, 1280)
-# Official ids whose Web capture fails deterministically at v1.21.23 (the official wrapper aborts the whole run on one): they are
-# left out of the Raft official job and listed with this reason in the summary.
-WEB_CAPTURE_BROKEN = {
-    'components.thread.header.states': 'Web capture fails: the owner-authorized header repair asserts the Brutal 62/30 or Elegant 56/41 geometry '
-                                      '(tool/reference-patches/thread-header-frame.json, locked by tool/parity_baseline_repairs.py); v1.21.23 renders 56/49',
-    'components.thread.message-row.md-wrap-slice1': 'Web capture fails: the official spec assertion expect(received).toBeGreaterThan(expected) does not hold at v1.21.23',
-}
 
 
 def add_arguments(p):
@@ -139,8 +132,6 @@ def plan(a):
                 off_ids = []  # no official case declares a dark variant
             if look != 'raft' and mode not in OFFICIAL_THEME[look]:
                 off_ids = []
-            if look == 'raft':
-                off_ids = [i for i in off_ids if i not in WEB_CAPTURE_BROKEN]
             jobs.append({'look': look, 'mode': mode, 'ext': [] if a.no_ext else ext_ids,
                          'official': [] if a.no_official else off_ids, 'dir': f'{look}-{mode}'})
     return jobs
@@ -188,6 +179,7 @@ def run_job(job, a):
 # ------------------------------------------------------------------------------------------------ summary
 def load_rows(a, ext_cases):
     width = {c['id']: (c.get('viewport') or {}).get('width') for c in ext_cases}
+    selection = getattr(a, 'cases', None)
     rows = []
     roots = [pathlib.Path(a.out), *map(pathlib.Path, a.also)]
     jobdirs = [p for root in roots for p in sorted(root.iterdir()) if p.is_dir() and not p.name.startswith('_')]
@@ -207,6 +199,8 @@ def load_rows(a, ext_cases):
             wanted_suffix = {'brutal-light': '.brutal', 'elegant-light': '.elegant', 'elegant-dark': '.elegant-dark'}[EXT_THEME[look][mode]]
             for r in json.loads(f.read_text())['cases']:
                 cid = r['id']
+                if selection and not any(fnmatch.fnmatchcase(cid, pattern) for pattern in selection.split(',')):
+                    continue
                 # an extension summary lists every manifest case; keep the ones this look / mode runs
                 if engine == 'ext' and not cid.endswith(wanted_suffix):
                     continue

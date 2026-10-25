@@ -103,6 +103,10 @@ void main() {
   fixtures['markdownTasksFixture'] = json.decode(
     File('../../tool/reference-patches/markdown-tasks.json').readAsStringSync(),
   );
+  fixtures['markdownSyntheticSlice1Fixture'] = json.decode(
+    File('../../tool/reference-patches/markdown-synthetic-slice1.json')
+        .readAsStringSync(),
+  );
   fixtures['notificationCenterFixture'] = json.decode(
     File('../../tool/reference-patches/notification-center.json')
         .readAsStringSync(),

@@ -17,13 +17,13 @@ loader.exec_module(adapter)
 
 
 class CaptureExitTests(unittest.TestCase):
-    def run_capture(self, totals, *, allow_gaps=False, environment_failed=False, previous_reference=False):
+    def run_capture(self, totals, *, allow_gaps=False, environment_failed=False, previous_reference=False, failed_shards=0):
         with tempfile.TemporaryDirectory() as tmp:
             out = Path(tmp)
             previous = {'cases': [{'id': 'sample', 'react': True}]} if previous_reference else {}
             (out / 'summary.json').write_text(json.dumps(previous))
             (out / 'summary.md').write_text('report')
-            args = argparse.Namespace(cases='sample', frozen=False, refresh_react=False, skip_flutter=True,
+            args = argparse.Namespace(cases='sample', frozen=False, refresh_react=False, skip_flutter=not failed_shards, shards=1,
                                       allow_structural_gaps=allow_gaps)
             with patch.object(adapter, 'OUT', out), \
                  patch.object(adapter, 'ext_cases', return_value=[{'id': 'sample'}]), \
@@ -32,6 +32,8 @@ class CaptureExitTests(unittest.TestCase):
                  patch.object(adapter, 'cli', side_effect=lambda *a, **k: (out / 'site').mkdir(exist_ok=True)), \
                  patch.object(adapter.parity, 'SITE', out / 'site'), \
                  patch.object(adapter.parity, 'git', return_value='source'), \
+                 patch.dict(adapter.os.environ, {}), \
+                 patch.object(adapter.parity, 'flutter_capture', return_value=failed_shards), \
                  patch.object(adapter, 'summarize', return_value={
                      'totals': totals, 'cases': [{'id': 'sample', 'react': not totals['reactMissing']}]}):
                 adapter.cmd_run(args)
@@ -40,6 +42,11 @@ class CaptureExitTests(unittest.TestCase):
     def totals(self, **missing):
         return dict(total=1, passing=0, percentage=0, geometryPass=0, geometryPercentage=0,
                     reactCaptured=1, reactMissing=0, flutterCaptureFailed=0, notCovered=0, **missing)
+
+    def test_failing_flutter_shard_is_not_hidden_by_complete_images(self):
+        with self.assertRaises(SystemExit) as error:
+            self.run_capture(self.totals(), failed_shards=1)
+        self.assertEqual(error.exception.code, 1)
 
     def test_missing_web_reference_exits_nonzero(self):
         totals = self.totals()

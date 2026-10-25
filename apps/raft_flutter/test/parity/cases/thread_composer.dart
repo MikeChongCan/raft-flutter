@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 // Official cases owned by this group (default selection):
@@ -443,6 +444,13 @@ class _HeaderHostState extends State<_HeaderHost> {
   void initState() {
     super.initState();
     w.messageDomain.ledger.switchServer('visual-server');
+  }
+
+  @override
+  void dispose() {
+    w.dispose();
+    unawaited((w.client as ParityFakeClient).stream.close());
+    super.dispose();
   }
 
   @override

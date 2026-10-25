@@ -277,9 +277,11 @@ async function parityVerifyRepairedMarkdown(page: Page, caseId: string, selector
     });
     expect(rendered.frame).toEqual(headerRepair.frame);
     expect(rendered.panelViewport).toEqual(headerRepair.panelViewport);
-    // The original fixture is Brutal. Supplemental Elegant mounts the same
-    // product with its real 56px shell header and 40px tabs + 1px border.
-    const geometry = headerRepair.themeGeometry[process.env.PARITY_THEME_OVERRIDE ?? "brutal-light"];
+    // The normal reference is the current Web; legacy frozen runs retain
+    // their separately declared geometry and do not render the current Web.
+    const legacyTheme = process.env.PARITY_THEME_OVERRIDE;
+    const geometry = legacyTheme && headerRepair.themeGeometry[legacyTheme]
+      ? headerRepair.themeGeometry[legacyTheme] : headerRepair.webGeometry;
     expect(rendered.header.y).toBe(0);
     expect(rendered.header.height).toBe(geometry.headerHeight);
     expect(rendered.tabs.y).toBe(geometry.headerHeight);
@@ -318,6 +320,9 @@ async function parityVerifyRepairedMarkdown(page: Page, caseId: string, selector
       sourceCommit: notificationRepair.sourceCommit,
       renderVerified: true, captureVerified: true, triggerClickedBeforeCapture: true, ...rendered };
   }
+  const syntheticRepair = (PARITY_BASELINE_REPAIR.additionalRepairs ?? [])
+    .find((repair: { repairId: string; cases: string[] }) => repair.repairId === "markdown-synthetic-slice1-v1" && repair.cases.includes(caseId));
+  const markdownRepair = syntheticRepair ?? PARITY_BASELINE_REPAIR;
   expect(parityRenderErrors.get(page) ?? [], "Repaired baseline must render without fallback/errors").toEqual([]);
   const rendered = await page.locator(selector).evaluate(root => ({
     rawTaskMarkup: (root.textContent ?? "").includes("<a data-task-ref="),
@@ -329,9 +334,17 @@ async function parityVerifyRepairedMarkdown(page: Page, caseId: string, selector
   expect(rendered.rawTaskMarkup).toBe(false);
   expect(rendered.taskRefs.length).toBeGreaterThan(0);
   for (const ref of rendered.taskRefs) expect(ref.status).toBe("in_progress");
-  return { repairId: PARITY_BASELINE_REPAIR.repairId,
-    fixtureSha256: PARITY_BASELINE_REPAIR.fixtureSha256,
-    sourceCommit: PARITY_BASELINE_REPAIR.sourceCommit,
+  if (syntheticRepair) {
+    expect(rendered.taskRefs).toEqual([{ text: `#${syntheticRepair.task.taskNumber}`, status: syntheticRepair.task.status }]);
+    const text = await page.locator(selector).innerText();
+    expect(text).toContain(syntheticRepair.message.content.split("\n")[0].replaceAll("**", ""));
+    expect(text).toContain("@DemoUser");
+    expect(text).toContain("#demo-visual-testing");
+  }
+  return { repairId: markdownRepair.repairId,
+    fixtureSha256: markdownRepair.fixtureSha256,
+    sourceCommit: markdownRepair.sourceCommit,
+    ...(syntheticRepair ? { captureVerified: true, contentSHA256: syntheticRepair.contentSHA256 } : {}),
     renderVerified: true, ...rendered };
 }
 '''
@@ -490,6 +503,7 @@ def flutter_capture(cases, patterns, shards):
         failed += proc.wait() != 0
         log.close()
     print(f'flutter: {shards} shard(s), {failed} with failing cases; logs {log_dir}')
+    return failed
 
 
 def summarize():
@@ -615,8 +629,9 @@ def cmd_run(a):
         (OUT / 'frozen-missing.json').write_text(json.dumps(missing, indent=1))
     else:
         react_capture(chosen, a.refresh_react, a.react_fonts, a.react_text_render)
+    flutter_failed = 0
     if not a.skip_flutter:
-        flutter_capture(chosen, a.cases, a.shards)
+        flutter_failed = flutter_capture(chosen, a.cases, a.shards) or 0
     log = OUT / 'cli.log'
     log.write_text('')
     # diff/site always cover the full default selection so totals stay honest.
@@ -634,6 +649,18 @@ def cmd_run(a):
     annotate_site(SITE, {**defects, **repairs})
     shutil.copy(OUT / 'summary.json', SITE / 'flutter-parity-summary.json')
     shutil.copy(OUT / 'summary.md', SITE / 'flutter-parity-summary.md')
+    reported = {row['id']: row for row in summary.get('cases', [])}
+    missing = set()
+    for case in chosen:
+        row = reported.get(case['id'])
+        if (row is None or row.get('verdict') == 'flutter-capture-failed'
+                or (a.cases and (not row.get('react') or not row.get('flutter')
+                                 or row.get('verdict') == 'not-covered'))):
+            missing.add(case['id'])
+    if flutter_failed or missing:
+        print(f'official capture failed: {flutter_failed} failing Flutter shard(s), '
+              f'{len(missing)} required capture(s) missing; report retained', file=sys.stderr)
+        raise SystemExit(1)
     return summary
 
 

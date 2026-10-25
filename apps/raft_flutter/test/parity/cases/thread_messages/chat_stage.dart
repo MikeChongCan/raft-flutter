@@ -223,6 +223,8 @@ class ChatStage {
     this.footer,
     this.targetRow = true,
     this.backgroundColor,
+    bool? collapseLongMessages,
+    Map<String, dynamic>? initialReadState,
   }) : ids = ParityIdentities(ctx) {
     var seq = 0;
     final rows = [
@@ -241,7 +243,22 @@ class ChatStage {
       ids.channel('androidArtifacts'),
       ...extraChannels,
     ];
+    if (collapseLongMessages != null) {
+      for (var i = 0; i < channels.length; i++) {
+        if (channels[i]['id'] == channelId) {
+          channels[i] = {
+            ...channels[i],
+            'collapseLongMessages': collapseLongMessages,
+          };
+        }
+      }
+    }
     client = ParityRaftClient({
+      if (collapseLongMessages != null)
+        'GET /channels/$channelId/message-display-settings': (_) => {
+          'collapseLongMessages': collapseLongMessages,
+          'prefsVersion': 0,
+        },
       'GET /messages/channel/$channelId': (_) => {
         'messages': rows,
         'historyLimited': false,
@@ -258,6 +275,14 @@ class ChatStage {
       ..dms = dms.map(RaftChannel.new).toList();
     ctx.onDispose(w.dispose);
     ctx.onDispose(geometry.dispose);
+    if (initialReadState != null) {
+      final outcome = w.readState.consumeUpdate(
+        {...initialReadState, 'serverId': ids.serverId, 'scopeId': channelId},
+        serverId: ids.serverId,
+        principalId: ids.user['id'] as String,
+      );
+      expect(outcome, 'accepted', reason: 'The declared read fact must apply.');
+    }
     w.messageDomain.ledger.switchServer(ids.serverId);
     unawaited(
       w.selectChannel(

@@ -55,6 +55,17 @@ class LevelTests(unittest.TestCase):
             jobs = regress.plan(args)
         self.assertEqual(jobs[0]['ext'], [])
 
+    def test_raft_plan_keeps_the_repaired_official_references(self):
+        from argparse import Namespace
+        from unittest.mock import patch
+        ids = ['components.thread.header.states', 'components.thread.message-row.md-wrap-slice1']
+        args = Namespace(level='all', theme='raft', mode='light', fast=False,
+                         out='unused', cases=','.join(ids), no_ext=True, no_official=False)
+        with patch.object(regress, 'manifests', return_value=([], [])), \
+             patch.object(regress, 'official_cases', return_value=[{'id': cid} for cid in ids]):
+            jobs = regress.plan(args)
+        self.assertEqual(jobs[0]['official'], ids)
+
     def test_fast_pages_are_page_level_and_named(self):
         self.assertTrue(levels.is_fast_page('screens.auth.login'))
         self.assertFalse(levels.is_fast_page('components.ext-settings.billing.page.brutal'))
@@ -119,6 +130,19 @@ class RegressTests(unittest.TestCase):
             with self.assertRaises(SystemExit) as error:
                 regress.command(args)
         self.assertEqual(error.exception.code, 1)
+
+    def test_explicit_selection_does_not_count_unselected_official_rows(self):
+        from argparse import Namespace
+        with tempfile.TemporaryDirectory() as temp:
+            directory = Path(temp) / 'raft-light/official'
+            directory.mkdir(parents=True)
+            directory.joinpath('summary.json').write_text(json.dumps({'cases': [
+                {'id': 'components.thread.header.states', 'pixelPerfectSimilarity': 0.97, 'verdict': 'passing'},
+                {'id': 'components.thread.message-row.md-wrap-slice1', 'pixelPerfectSimilarity': 0.8, 'verdict': 'failing'},
+                {'id': 'components.ui.button.states', 'pixelPerfectSimilarity': None, 'verdict': 'flutter-capture-failed'},
+            ]}))
+            rows = regress.load_rows(Namespace(out=temp, also=[], cases='components.thread.header.states'), [])
+            self.assertEqual([row['id'] for row in rows], ['components.thread.header.states'])
 
     def test_cell_counts_pass_line_and_unscored(self):
         rows = [{'score': 0.99}, {'score': 0.5}, {'score': None}]

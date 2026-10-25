@@ -578,6 +578,7 @@ def cmd_run(a):
     expected = {row['id'] for row in json.loads(previous.read_text()).get('cases', [])
                 if row.get('react') and row['id'] in chosen_ids} if previous.is_file() else set()
     environment_failed = False
+    flutter_failed = 0
     if a.frozen:
         # Elegant / Brutal: the reference is the frozen a57b9dab render, not the Web (frozen_ref.py).
         found, missing = frozen_ref.install(parity.RESULTS, [c['id'] for c in chosen], frozen_ref.search_dirs('ext'))
@@ -588,7 +589,7 @@ def cmd_run(a):
     if not a.skip_flutter:
         os.environ['PARITY_MANIFEST'] = str(MANIFEST)
         os.environ['PARITY_EXT_FIXTURES'] = str(FIXTURES)
-        parity.flutter_capture(chosen, a.cases, a.shards)
+        flutter_failed = parity.flutter_capture(chosen, a.cases, a.shards) or 0
     log = OUT / 'cli.log'
     log.write_text('')
     cli('diff', '--pairs', parity.PAIR, log=log)
@@ -611,9 +612,10 @@ def cmd_run(a):
         missing += t.get('reactMissing', 0) + t.get('notCovered', 0)
     lost = {row['id'] for row in summary.get('cases', []) if row['id'] in expected and not row.get('react')}
     no_references = t['total'] > 0 and t.get('reactCaptured', 0) == 0
-    if environment_failed or missing or lost or no_references:
+    if environment_failed or flutter_failed or missing or lost or no_references:
         print(f'extension capture failed: {missing} required capture(s) missing, {len(lost)} previous reference(s) lost; '
-              f'browser failure={environment_failed}, no references={no_references}', file=sys.stderr)
+              f'browser failure={environment_failed}, failing Flutter shards={flutter_failed}, '
+              f'no references={no_references}', file=sys.stderr)
         sys.exit(1)
 
 
