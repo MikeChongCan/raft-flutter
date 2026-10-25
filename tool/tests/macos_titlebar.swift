@@ -122,6 +122,18 @@ _ = messenger.invoke("startDragging")
 check(window.frame == systemFrame,
   "a late drag must not overwrite a frame already changed by native window handling")
 
+// The otherwise empty toolbar gives windowed traffic lights their height, but
+// in fullscreen AppKit floats it over the Flutter-owned global row.
+NotificationCenter.default.post(name: NSWindow.willEnterFullScreenNotification, object: window)
+check(window.toolbar?.isVisible == false,
+  "fullscreen must hide the empty native toolbar before it covers the shared row")
+NotificationCenter.default.post(name: NSWindow.didEnterFullScreenNotification, object: window)
+check(window.toolbar?.isVisible == false,
+  "the empty native toolbar must remain hidden in fullscreen")
+NotificationCenter.default.post(name: NSWindow.didExitFullScreenNotification, object: window)
+check(window.toolbar?.isVisible == true,
+  "exiting fullscreen must restore the windowed toolbar for native controls")
+
 let restored = messenger.invoke("setIntegrated", ["enabled": false, "height": 48]) as? [String: Any]
 check(restored?["integrated"] as? Bool == false, "leaving the workspace must restore the original titlebar")
 check(restored?["leadingInset"] as? Double == 0, "the standalone strip must not reserve a second gutter")
@@ -129,6 +141,6 @@ check(window.toolbar == nil, "leaving the workspace must remove the integration 
 check(abs(window.contentView!.bounds.height - closeRect(window).midY - standardCenter) < 0.01, "the original native button position must be restored")
 
 for failure in failures { print("FAIL: \(failure)") }
-print("Native integrated titlebar: 6 cases, \(failures.count) failed assertions")
+print("Native integrated titlebar: 7 cases, \(failures.count) failed assertions")
 withExtendedLifetime(titlebar) {}
 exit(failures.isEmpty ? 0 : 1)

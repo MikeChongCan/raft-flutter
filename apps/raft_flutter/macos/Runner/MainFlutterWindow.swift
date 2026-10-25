@@ -247,6 +247,12 @@ final class RaftTitleBar: NSObject {
         NotificationCenter.default.addObserver(
           forName: name, object: window, queue: .main
         ) { [weak self] _ in
+          if name == NSWindow.willEnterFullScreenNotification
+            || name == NSWindow.didEnterFullScreenNotification {
+            self?.setIntegratedToolbarVisible(false)
+          } else if name == NSWindow.didExitFullScreenNotification {
+            self?.setIntegratedToolbarVisible(true)
+          }
           if name == NSWindow.didUpdateNotification {
             self?.positionButtons()
           } else {
@@ -302,6 +308,7 @@ final class RaftTitleBar: NSObject {
         window.toolbar = toolbar
       }
       integratedHeight = height
+      setIntegratedToolbarVisible(!window.styleMask.contains(.fullScreen))
       positionButtons()
     } else if integratedHeight != nil {
       integratedHeight = nil
@@ -318,6 +325,14 @@ final class RaftTitleBar: NSObject {
       }
       previousButtonFrames.removeAll()
     }
+  }
+
+  private func setIntegratedToolbarVisible(_ visible: Bool) {
+    guard integratedHeight != nil, let toolbar = window?.toolbar,
+      toolbar.isVisible != visible else { return }
+    // This empty toolbar only sizes windowed controls. AppKit otherwise floats
+    // it over the Flutter-owned row in fullscreen, even with a transparent bar.
+    toolbar.isVisible = visible
   }
 
   private func positionButtons() {
