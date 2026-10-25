@@ -880,7 +880,10 @@ class ReuseTests(unittest.TestCase):
                    unittest.mock.patch.object(check, 'run_gate', gate), unittest.mock.patch.object(check.gate_events, 'Events', Silent),
                    unittest.mock.patch.object(check.gate_events, 'raise_on_signals', lambda: None),
                    unittest.mock.patch.object(check, 'run_tmp_root', lambda: Path(self.tmp.name) / 'tmp'),
-                   unittest.mock.patch.object(sys, 'argv', ['check-project', *argv]), unittest.mock.patch.dict(os.environ, self.env)]
+                   unittest.mock.patch.object(sys, 'argv', ['check-project', *argv]),
+                   # This fake CLI invocation tests the default gate. A caller's
+                   # nightly tier or all-look flags must not change its cache key.
+                   unittest.mock.patch.dict(os.environ, self.env, clear=True)]
         for patcher in patches:
             patcher.start()
         self.addCleanup(check.STOP.clear)  # main() stops its children on the way out
