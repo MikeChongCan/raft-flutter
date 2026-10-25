@@ -4,6 +4,8 @@
 // tool/parity-ext/host/Wp6Cases.tsx.
 //
 // Data: tool/parity-ext/fixtures/wp6.json (fixtures['ext:wp6']).
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:raft_flutter/features/create_task_dialog.dart';
 import 'package:raft_ui/raft_ui.dart';
@@ -11,6 +13,7 @@ import 'package:raft_ui/raft_ui.dart';
 import '../parity_harness.dart';
 import 'ext_settings.dart';
 import 'ext_task_detail.dart';
+import 'thread_composer/fake_workspace.dart' show ParityFakeClient;
 
 Map<String, dynamic> _fx(ParityContext ctx) =>
     ctx.fixtures['ext:wp6'] as Map<String, dynamic>;
@@ -19,6 +22,10 @@ Map<String, dynamic> _fx(ParityContext ctx) =>
 
 Widget _tasksCreate(ParityContext ctx) {
   final w = extTaskWorkspace(ctx);
+  ctx.onDispose(() {
+    w.dispose();
+    unawaited((w.client as ParityFakeClient).stream.close());
+  });
   return Align(
     alignment: Alignment.topLeft,
     child: ctx.target(
