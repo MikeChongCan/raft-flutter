@@ -1,3 +1,6 @@
+@Tags(['look-elegant'])
+library;
+
 import 'package:raft_ui/raft_ui.dart' show packForThemeId, elegantThemePackId;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';

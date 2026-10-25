@@ -1,3 +1,6 @@
+@Tags(['look-brutal', 'look-elegant'])
+library;
+
 import 'dart:convert';
 import 'dart:io';
 

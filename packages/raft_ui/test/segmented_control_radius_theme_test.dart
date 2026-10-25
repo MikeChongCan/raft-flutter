@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_ui/raft_ui.dart';
+import 'package:raft_ui/test_themes.dart';
 
 /// The segmented control's two structures, chosen by the theme.
 ///
@@ -73,7 +74,7 @@ void main() {
       expect(_segmentRadius(tester), 4);
       // `gap-1.5` at --spacing 0.25rem.
       expect(_gap(tester), 6);
-    });
+    }, skip: raftLookSkip(raftLookElegant));
 
     testWidgets('Brutal draws square separate segments with no track', (
       tester,
@@ -83,7 +84,7 @@ void main() {
       expect(_segmentRadius(tester), 0);
       // `gap-1`.
       expect(_gap(tester), 4);
-    });
+    }, skip: raftLookSkip(raftLookBrutal));
 
     test('the frame is a structural option, not a radius coincidence', () {
       // A theme that kept the track would give Elegant three rounded boxes; the
@@ -99,6 +100,6 @@ void main() {
           reason: id,
         );
       }
-    });
+    }, skip: raftLookSkip(raftLookElegant, raftLookBrutal));
   });
 }

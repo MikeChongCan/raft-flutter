@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_ui/raft_ui.dart';
+import 'package:raft_ui/test_themes.dart';
 
 void main() {
-  for (final (pack, lightWidth) in [
+  for (final (pack, lightWidth) in raftThemeMatrix([
     (raftThemePackId, 420.0),
     (elegantThemePackId, 448.0),
     (brutalThemePackId, 544.0),
-  ]) {
+  ], look: (v) => raftLookOf(v.$1))) {
     for (final dark in [false, true]) {
       testWidgets(
         '$pack/$dark drawer uses source width and keeps phone/page bounds',

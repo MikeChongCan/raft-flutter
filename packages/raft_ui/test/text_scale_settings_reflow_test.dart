@@ -1,6 +1,9 @@
 // Settings, administration and channel-management controls above the default
 // text size: fixed heights become minimums, labels wrap, side-by-side rows
 // stack, inputs grow with their text. At 1.0x nothing changes.
+@Tags(['look-elegant'])
+library;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';

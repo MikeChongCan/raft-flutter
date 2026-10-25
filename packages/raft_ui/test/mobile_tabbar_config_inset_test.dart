@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_ui/mobile_tabbar_config_previews.dart';
 import 'package:raft_ui/raft_ui.dart';
+import 'package:raft_ui/test_themes.dart';
 
 const preview = Key('mobile-tabbar-preview');
 const screen = Size(390, 844);
@@ -21,14 +22,14 @@ Finder previewNav() => find.descendant(
 );
 
 void main() {
-  for (final (pack, dark, floating) in [
+  for (final (pack, dark, floating) in raftThemeMatrix([
     (raftThemePackId, false, false),
     (raftThemePackId, true, false),
     (elegantThemePackId, false, true),
     (elegantThemePackId, true, true),
     (brutalThemePackId, false, false),
     (brutalThemePackId, true, true),
-  ]) {
+  ], look: (v) => raftLookOf(v.$1))) {
     for (final inset in [0.0, 24.0, 48.0]) {
       testWidgets(
         '$pack ${dark ? 'dark' : 'light'} preview clears $inset system inset and IME',

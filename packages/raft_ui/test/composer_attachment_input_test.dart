@@ -1,3 +1,6 @@
+@Tags(['look-elegant'])
+library;
+
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';

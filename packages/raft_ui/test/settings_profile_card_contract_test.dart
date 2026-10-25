@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_ui/raft_ui.dart';
+import 'package:raft_ui/test_themes.dart';
 
 void main() {
-  for (final (id, extent, radius, titleSize, titleLine, metaSize, metaLine) in [
-    (raftThemePackId, 51.0, 10.0, 17.0, 22.0, 13.0, 18.0),
-    (elegantThemePackId, 64.0, 0.0, 18.0, 22.5, 14.0, 20.0),
-    (brutalThemePackId, 64.0, 0.0, 18.0, 22.5, 14.0, 20.0),
-  ]) {
+  for (final (id, extent, radius, titleSize, titleLine, metaSize, metaLine)
+      in raftThemeMatrix([
+        (raftThemePackId, 51.0, 10.0, 17.0, 22.0, 13.0, 18.0),
+        (elegantThemePackId, 64.0, 0.0, 18.0, 22.5, 14.0, 20.0),
+        (brutalThemePackId, 64.0, 0.0, 18.0, 22.5, 14.0, 20.0),
+      ], look: (v) => raftLookOf(v.$1))) {
     testWidgets(
       '$id settings identity keeps the tile centered and source typography',
       (t) async {

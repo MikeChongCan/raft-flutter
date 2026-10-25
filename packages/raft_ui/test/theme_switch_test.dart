@@ -8,11 +8,16 @@ import 'dart:ui' show Tristate;
 import 'dart:ui' as ui;
 
 import 'package:raft_ui/raft_ui.dart';
+import 'package:raft_ui/test_themes.dart';
 
 // Independent source expectations: raft-ui 0.7.1 switchRecipe, and
 // a57b9dab lib/src/switch.dart:65-81. Brutal dark uses all Elegant values.
 void main() {
-  for (final id in [raftThemePackId, elegantThemePackId, brutalThemePackId]) {
+  for (final id in raftThemeMatrix([
+    raftThemePackId,
+    elegantThemePackId,
+    brutalThemePackId,
+  ], look: raftLookOf)) {
     for (final dark in [false, true]) {
       testWidgets('$id dark=$dark preserves both source switch sizes', (
         t,
@@ -237,7 +242,7 @@ void main() {
       expect(actual.g, closeTo(source.g, 1e-12));
       expect(actual.b, closeTo(source.b, 1e-12));
     }
-  });
+  }, skip: raftLookSkip(raftLookElegant, raftLookBrutal));
   testWidgets(
     'touch highlight mode suppresses source hover until mouse highlights resume',
     (t) async {
@@ -300,6 +305,7 @@ void main() {
       }
     },
     variant: TargetPlatformVariant.only(TargetPlatform.linux),
+    skip: raftLookSkip(raftLookBrutal),
   );
   testWidgets(
     'Raft keeps the source thumb origin after device border quantization',
@@ -349,11 +355,11 @@ void main() {
     t,
   ) async {
     try {
-      for (final id in [
+      for (final id in raftThemeMatrix([
         raftThemePackId,
         elegantThemePackId,
         brutalThemePackId,
-      ]) {
+      ], look: raftLookOf)) {
         for (final dark in [false, true]) {
           for (final size in RaftSwitchSize.values) {
             await t.pumpWidget(
@@ -395,11 +401,11 @@ void main() {
     'explicit minimum target overrides the theme touch layout minimum',
     (t) async {
       try {
-        for (final id in [
+        for (final id in raftThemeMatrix([
           raftThemePackId,
           elegantThemePackId,
           brutalThemePackId,
-        ]) {
+        ], look: raftLookOf)) {
           for (final minimum in [0.0, 60.0]) {
             await t.pumpWidget(
               MaterialApp(

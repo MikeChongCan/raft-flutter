@@ -4,12 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_ui/raft_ui.dart';
+import 'package:raft_ui/test_themes.dart';
 
 import 'flutter_test_config.dart';
 
 void main() {
   RaftTestBinding.showShadows();
-  for (final pack in [raftThemePackId, elegantThemePackId, brutalThemePackId]) {
+  for (final pack in raftThemeMatrix([
+    raftThemePackId,
+    elegantThemePackId,
+    brutalThemePackId,
+  ], look: raftLookOf)) {
     for (final dark in [false, true]) {
       testWidgets('$pack/$dark sidebar rings paint beyond layout', (t) async {
         t.view.physicalSize = const Size(1280, 800);

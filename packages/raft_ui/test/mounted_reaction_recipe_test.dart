@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_ui/src/design_primitives.dart';
 import 'package:raft_ui/src/mounted_reaction_recipe.dart';
 import 'package:raft_ui/src/theme.dart';
+import 'package:raft_ui/test_themes.dart';
 
 void main() {
   testWidgets(
@@ -30,6 +31,7 @@ void main() {
       expect(find.text('2'), findsOneWidget);
       expect(tester.takeException(), isNull);
     },
+    skip: raftLookSkip(raftLookElegant),
   );
 
   testWidgets('count animates only on changed values and finishes in180ms', (
@@ -92,5 +94,5 @@ void main() {
       RaftMountedReactionRecipe(t, reacted: true).background,
       t.accentSoft,
     );
-  });
+  }, skip: raftLookSkip(raftLookElegant));
 }

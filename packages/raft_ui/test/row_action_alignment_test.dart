@@ -60,7 +60,10 @@ void main() {
         testWidgets(
           'RaftErrorBanner message and retry: $theme zh=$zh x$scale small=$small',
           (tester) async {
-            for (final id in [elegantThemePackId, raftThemePackId]) {
+            for (final id in raftThemeMatrix([
+              elegantThemePackId,
+              raftThemePackId,
+            ], look: raftLookOf)) {
               await tester.pumpWidget(
                 _host(
                   dark,
@@ -103,7 +106,10 @@ void main() {
       testWidgets(
         'RaftComposerNotice message and dismiss: $theme zh=$zh x$scale',
         (tester) async {
-          for (final id in [elegantThemePackId, raftThemePackId]) {
+          for (final id in raftThemeMatrix([
+            elegantThemePackId,
+            raftThemePackId,
+          ], look: raftLookOf)) {
             await tester.pumpWidget(
               _host(
                 dark,
@@ -154,6 +160,7 @@ void main() {
             find.byKey(_action),
           ], reason: 'RaftAvatarListRow');
         },
+        skip: raftLookSkip(raftLookElegant),
       );
 
       testWidgets(

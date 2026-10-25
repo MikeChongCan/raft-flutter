@@ -1,3 +1,6 @@
+@Tags(['look-brutal', 'look-elegant'])
+library;
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_ui/raft_ui.dart';
 import 'package:raft_ui/src/recipes/recipe_runtime.dart' show RaftRecipeTheme;

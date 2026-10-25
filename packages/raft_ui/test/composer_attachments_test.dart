@@ -1,3 +1,6 @@
+@Tags(['look-elegant'])
+library;
+
 import 'dart:convert';
 
 import 'package:flutter/gestures.dart';

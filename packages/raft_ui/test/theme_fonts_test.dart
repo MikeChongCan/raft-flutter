@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_ui/raft_ui.dart';
 import 'package:raft_theme/raft_theme.dart' show RaftFontSpec, builtInRaftTheme;
+import 'package:raft_ui/test_themes.dart';
 
 /// Each theme paints its own typeface.
 ///
@@ -30,7 +31,7 @@ void main() {
       expect(t.headingFont, 'packages/raft_ui/Inter');
       expect(t.bodyFont, 'packages/raft_ui/Geist');
       expect(t.monoFont, 'packages/raft_ui/GeistMono');
-    });
+    }, skip: raftLookSkip(raftLookElegant));
 
     test('Brutal uses HankenGrotesk, as a57b9dab did', () {
       // Corrected: the pack first claimed Space Grotesk, but a57b9dab's generated
@@ -41,7 +42,7 @@ void main() {
       expect(t.headingFont, 'packages/raft_ui/HankenGrotesk');
       expect(t.bodyFont, 'packages/raft_ui/HankenGrotesk');
       expect(t.monoFont, 'packages/raft_ui/GeistMono');
-    });
+    }, skip: raftLookSkip(raftLookBrutal));
 
     test('unknown user font families are not rewritten', () {
       final set = RaftTokenSet.fromPack(
@@ -66,7 +67,7 @@ void main() {
           _tokens(id).headingFont,
       };
       expect(families, isNot(hasLength(1)), reason: 'families: $families');
-    });
+    }, skip: raftLookSkip(raftLookElegant, raftLookBrutal));
 
     test('the stacks carry the declared family first', () {
       // A family name without its stack would fall back to the platform default
@@ -75,7 +76,7 @@ void main() {
       expect(t.metrics.headingFontStack.first, 'Inter');
       expect(t.metrics.sansFontStack.first, 'Geist');
       expect(t.metrics.monoFontStack.first, 'Geist Mono');
-    });
+    }, skip: raftLookSkip(raftLookElegant));
 
     testWidgets('the first painted frame already uses the theme font', (
       tester,
@@ -103,6 +104,6 @@ void main() {
             .fontFamily,
         'packages/raft_ui/Inter',
       );
-    });
+    }, skip: raftLookSkip(raftLookElegant));
   });
 }

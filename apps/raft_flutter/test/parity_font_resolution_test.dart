@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_ui/raft_ui.dart';
+import 'package:raft_ui/test_themes.dart';
 
 import 'parity/parity_harness.dart';
 
@@ -30,14 +31,14 @@ Future<Uint8List> _raster(String family) async {
 }
 
 void main() {
-  for (final (id, dark, heading, sans, mono) in [
+  for (final (id, dark, heading, sans, mono) in raftThemeMatrix([
     (raftThemePackId, false, 'SpaceGrotesk', 'SpaceGrotesk', 'SpaceMono'),
     (raftThemePackId, true, 'SpaceGrotesk', 'SpaceGrotesk', 'SpaceMono'),
     (elegantThemePackId, false, 'Inter', 'Geist', 'GeistMono'),
     (elegantThemePackId, true, 'Inter', 'Geist', 'GeistMono'),
     (brutalThemePackId, false, 'HankenGrotesk', 'HankenGrotesk', 'GeistMono'),
     (brutalThemePackId, true, 'Inter', 'Geist', 'GeistMono'),
-  ]) {
+  ], look: (v) => raftLookOf(v.$1))) {
     for (final role in ['heading', 'sans', 'mono']) {
       testWidgets('$id dark=$dark $role draws the bundled glyphs', (t) async {
         await t.runAsync(loadParityFonts);

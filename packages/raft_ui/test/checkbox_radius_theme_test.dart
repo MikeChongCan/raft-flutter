@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_ui/raft_ui.dart';
+import 'package:raft_ui/test_themes.dart';
 
 /// Checkbox corners come from the theme.
 ///
@@ -43,11 +44,11 @@ void main() {
 
     testWidgets('Elegant uses its sticker corner', (tester) async {
       expect(await _painted(tester, elegantThemePackId), (3.0, 3.0));
-    });
+    }, skip: raftLookSkip(raftLookElegant));
 
     testWidgets('Brutal squares it', (tester) async {
       expect(await _painted(tester, brutalThemePackId), (0.0, 0.0));
-    });
+    }, skip: raftLookSkip(raftLookBrutal));
 
     testWidgets('the circle form stays a true circle in every theme', (
       tester,
@@ -55,11 +56,11 @@ void main() {
       // `rounded-full` is size/2 regardless of theme, so the three looks agree
       // here. If this started varying by theme it would mean the circle had been
       // wrongly routed through the sticker token.
-      for (final id in [
+      for (final id in raftThemeMatrix([
         raftThemePackId,
         elegantThemePackId,
         brutalThemePackId,
-      ]) {
+      ], look: raftLookOf)) {
         final (root, indicator) = await _painted(
           tester,
           id,

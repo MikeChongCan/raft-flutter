@@ -7,10 +7,12 @@ import 'package:raft_ui/test_themes.dart';
 /// as quiet text; only the thread segment when the channel itself is read.
 void main() {
   for (final (family, dark) in raftThemeMatrix([
+    (raftThemePackId, false),
+    (raftThemePackId, true),
     (brutalThemePackId, false),
     (elegantThemePackId, false),
     (elegantThemePackId, true),
-  ])) {
+  ], look: (v) => raftLookOf(v.$1))) {
     testWidgets('$family/$dark thread unread joins the badge', (t) async {
       await t.pumpWidget(
         MaterialApp(

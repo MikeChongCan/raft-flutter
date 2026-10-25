@@ -81,10 +81,12 @@ class _Client extends RaftClient {
 /// may control.
 void main() {
   for (final (family, dark) in raftThemeMatrix([
+    (raftThemePackId, false),
+    (raftThemePackId, true),
     (brutalThemePackId, false),
     (elegantThemePackId, false),
     (elegantThemePackId, true),
-  ])) {
+  ], look: (v) => raftLookOf(v.$1))) {
     Future<(WorkspaceController, _Client, List<DesktopContentTarget>)> mount(
       WidgetTester t, {
       String role = 'owner',

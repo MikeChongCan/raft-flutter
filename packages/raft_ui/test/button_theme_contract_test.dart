@@ -2,9 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_theme/raft_theme.dart';
 import 'package:raft_ui/raft_ui.dart';
+import 'package:raft_ui/test_themes.dart';
 
 void main() {
-  for (final id in [raftThemePackId, elegantThemePackId, brutalThemePackId]) {
+  for (final id in raftThemeMatrix([
+    raftThemePackId,
+    elegantThemePackId,
+    brutalThemePackId,
+  ], look: raftLookOf)) {
     for (final dark in [false, true]) {
       testWidgets('actual button size and label from source $id/$dark', (
         t,
@@ -111,7 +116,10 @@ void main() {
       expect((decoration.border! as Border).top.width, 2);
     },
   );
-  for (final id in [elegantThemePackId, brutalThemePackId]) {
+  for (final id in raftThemeMatrix([
+    elegantThemePackId,
+    brutalThemePackId,
+  ], look: raftLookOf)) {
     for (final dark in [false, true]) {
       testWidgets('button disabled fades but busy stays opaque $id/$dark', (
         t,
@@ -167,5 +175,5 @@ void main() {
     );
     expect(opacity, findsOneWidget);
     expect(t.widget<RaftCssOpacity>(opacity).opacity, .4);
-  });
+  }, skip: raftLookSkip(raftLookElegant));
 }

@@ -2,9 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_ui/raft_ui.dart';
 import 'package:raft_ui/src/message_content_tokens.dart';
+import 'package:raft_ui/test_themes.dart';
 
 void main() {
-  for (final id in [raftThemePackId, elegantThemePackId, brutalThemePackId]) {
+  for (final id in raftThemeMatrix([
+    raftThemePackId,
+    elegantThemePackId,
+    brutalThemePackId,
+  ], look: raftLookOf)) {
     for (final dark in [false, true]) {
       test('$id/$dark message typography follows its source tiers', () {
         final tokens = raftTheme(

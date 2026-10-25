@@ -5,6 +5,7 @@ import 'package:raft_ui/raft_ui.dart';
 import 'package:raft_ui/src/recipes/button_variants.g.dart';
 import 'package:raft_ui/src/recipes/recipe_runtime.dart';
 import 'package:raft_ui/src/recipes/token_binding.dart';
+import 'package:raft_ui/test_themes.dart';
 
 void main() {
   for (final (dark) in [(false), (true)]) {
@@ -67,6 +68,7 @@ void main() {
         );
         expect(tokens.copyWith(dark: !dark).textLocale, device);
       },
+      skip: raftLookSkip(raftLookElegant),
     );
   }
 

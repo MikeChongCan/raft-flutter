@@ -1,3 +1,6 @@
+@Tags(['look-elegant'])
+library;
+
 import 'dart:ui' show Tristate;
 
 import 'package:flutter/material.dart';

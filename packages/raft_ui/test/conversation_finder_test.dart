@@ -6,10 +6,12 @@ import 'package:raft_ui/test_themes.dart';
 
 void main() {
   for (final (family, dark) in raftThemeMatrix([
+    (raftThemePackId, false),
+    (raftThemePackId, true),
     (brutalThemePackId, false),
     (elegantThemePackId, false),
     (elegantThemePackId, true),
-  ])) {
+  ], look: (v) => raftLookOf(v.$1))) {
     testWidgets('finder field, list and rows render in $family/$dark', (
       t,
     ) async {

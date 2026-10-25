@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_theme/raft_theme.dart';
 import 'package:raft_ui/raft_ui.dart';
+import 'package:raft_ui/test_themes.dart';
 
 void main() {
   testWidgets('custom default extent yields to recipe and physical sizes', (
@@ -97,7 +98,11 @@ void main() {
       expect(stillPainter.phase, isNull);
     },
   );
-  for (final id in [raftThemePackId, elegantThemePackId, brutalThemePackId]) {
+  for (final id in raftThemeMatrix([
+    raftThemePackId,
+    elegantThemePackId,
+    brutalThemePackId,
+  ], look: raftLookOf)) {
     for (final dark in [false, true]) {
       testWidgets('source spinner appearance and default extent $id/$dark', (
         t,

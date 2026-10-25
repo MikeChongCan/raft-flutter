@@ -174,6 +174,7 @@ void main() {
         expect(tester.takeException(), isNull);
         await tester.pumpWidget(const SizedBox.shrink());
       },
+      skip: raftLookSkip(raftLookElegant),
     );
   }
   testWidgets('compact nav never becomes a blank capsule', (tester) async {
@@ -199,7 +200,7 @@ void main() {
     expect(find.byType(RaftIcon), findsNWidgets(4));
     expect(tester.getSize(find.byType(RaftMobileNav)).height, 68);
     await tester.pumpWidget(const SizedBox.shrink());
-  });
+  }, skip: raftLookSkip(raftLookElegant));
   testWidgets('guest composition, disabled item and one safe inset', (
     tester,
   ) async {
@@ -241,7 +242,7 @@ void main() {
     );
     expect(selected, 0);
     await tester.pumpWidget(const SizedBox.shrink());
-  });
+  }, skip: raftLookSkip(raftLookElegant));
   testWidgets('Home header Bell keeps source glyph and real callback', (
     tester,
   ) async {
@@ -318,7 +319,7 @@ void main() {
     expect(compact.contentAngle, 0);
     expect(compact.contentInset, EdgeInsets.zero);
     expect(compact.polygon(const Size(168, 24)).first, Offset.zero);
-  });
+  }, skip: raftLookSkip(raftLookElegant));
   testWidgets(
     'a57 Elegant selector keyboard callback is real and only chevron counterrotates',
     (tester) async {
@@ -360,5 +361,6 @@ void main() {
       expect(opened, 1);
       await tester.pumpWidget(const SizedBox.shrink());
     },
+    skip: raftLookSkip(raftLookElegant),
   );
 }

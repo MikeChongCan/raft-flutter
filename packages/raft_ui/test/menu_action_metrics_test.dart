@@ -2,9 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_ui/raft_ui.dart';
+import 'package:raft_ui/test_themes.dart';
 
 void main() {
-  for (final id in [raftThemePackId, elegantThemePackId, brutalThemePackId]) {
+  for (final id in raftThemeMatrix([
+    raftThemePackId,
+    elegantThemePackId,
+    brutalThemePackId,
+  ], look: raftLookOf)) {
     testWidgets('$id quick reactions have the source section separation', (
       t,
     ) async {
@@ -38,11 +43,11 @@ void main() {
       await t.pumpWidget(const SizedBox());
     });
   }
-  for (final (id, regular, compact, popup) in [
+  for (final (id, regular, compact, popup) in raftThemeMatrix([
     (raftThemePackId, 36.0, 32.0, 240.0),
     (elegantThemePackId, 28.0, 28.0, 192.0),
     (brutalThemePackId, 28.0, 28.0, 192.0),
-  ]) {
+  ], look: (v) => raftLookOf(v.$1))) {
     testWidgets('$id action menu uses source sizes and remains operable', (
       t,
     ) async {

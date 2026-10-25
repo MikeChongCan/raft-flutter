@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_ui/raft_ui.dart';
 import 'package:raft_ui/src/tap_slop.dart';
+import 'package:raft_ui/test_themes.dart';
 
 const _button = Key('small-icon');
 
@@ -56,7 +57,11 @@ Widget _host({
 );
 
 void main() {
-  for (final id in [raftThemePackId, elegantThemePackId, brutalThemePackId]) {
+  for (final id in raftThemeMatrix([
+    raftThemePackId,
+    elegantThemePackId,
+    brutalThemePackId,
+  ], look: raftLookOf)) {
     for (final dark in [false, true]) {
       testWidgets(
         '$id dark=$dark small icon layout follows source touch policy',
@@ -137,11 +142,11 @@ void main() {
   testWidgets(
     'explicit minimum wins; larger icons retain their existing layout',
     (t) async {
-      for (final id in [
+      for (final id in raftThemeMatrix([
         raftThemePackId,
         elegantThemePackId,
         brutalThemePackId,
-      ]) {
+      ], look: raftLookOf)) {
         for (final minimum in [0.0, 36.0, 60.0]) {
           await t.pumpWidget(_host(id: id, minimum: minimum, onPressed: () {}));
           expect(
@@ -163,11 +168,11 @@ void main() {
   testWidgets(
     'touch outside the visual row activates once; keyboard and inert states',
     (t) async {
-      for (final id in [
+      for (final id in raftThemeMatrix([
         raftThemePackId,
         elegantThemePackId,
         brutalThemePackId,
-      ]) {
+      ], look: raftLookOf)) {
         var calls = 0;
         await t.pumpWidget(_host(id: id, onPressed: () => calls++));
         await t.pumpAndSettle();

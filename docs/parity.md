@@ -372,6 +372,21 @@ the Node 24 / pnpm 10 binaries), `PARITY_REPORTS_ROOT`, `PARITY_BASE_URL`,
 Published report: <http://100.109.192.23:18931/raft_flutter_parity/latest/>
 (each run is kept under `raft_flutter_parity/<UTC timestamp>/`).
 
+## Legacy looks: on demand (`tool/theme-suite`)
+
+Owner decision 2026-10-25: the regular checks test the Raft look only. The frozen-baseline regression of the legacy looks (Elegant and Brutal against their a57b9dab originals, `regress --theme elegant|brutal`) runs on demand through the legacy suite, together with the Dart tests of those looks:
+
+```bash
+tool/theme-suite --look elegant --mode light     # one look, one mode
+tool/theme-suite --look all                      # Elegant + Brutal, both modes, plus the packages/raft_theme tests
+tool/theme-suite --look brutal --visual-only --cases 'components.ui.button.*'
+tool/theme-suite --look all --plan               # what would run, nothing run
+```
+
+The visual half needs the pinned Web source (`PARITY_RAFT_SOURCE`, `RAFT_PARITY_SOURCE`, or `~/.cache/raft-flutter/raft-source-23`) and the Node toolchain the other parity tools use; without the source the step fails and says so (`--tests-only` skips it). Scores are reported, not judged, unless `--baseline <earlier regress-summary.json>` is given, in which case a case that lost one point fails the step. Results: `.local/theme-suite/visual-<look>/regress-summary.{md,json}`.
+
+**Run it when** a change touches the theme engine, `packages/raft_theme`, the theme adapters or packs, recipes or recipe binding, or a legacy-look file (`THEME_ENGINE_PATHS` in `tool/theme_looks.py`); `check-project`, `preflight` and the pre-gate script print a notice when a diff does. The nightly runs its Dart half every night and keeps its own fast visual job (`tool/nightly_visual.py`). The details are in [Development](development.md#looks-the-checks-test-the-raft-look-only).
+
 ## How it is wired
 
 | Step | What runs | Output (`build/parity/`, gitignored) |

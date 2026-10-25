@@ -6,6 +6,7 @@ import 'package:raft_client/raft_client.dart';
 import 'package:raft_ui/raft_ui.dart';
 import 'package:raft_flutter/features/auth_view.dart';
 import 'package:raft_flutter/features/account_onboarding.dart';
+import 'package:raft_ui/test_themes.dart';
 
 import 'parity/cases/screens/screen_fixture.dart';
 
@@ -226,7 +227,7 @@ void main() {
     await tester.pump();
     expect(underlined('Forgot password?'), isTrue);
     expect(underlined('Create one'), isFalse);
-  });
+  }, skip: raftLookSkip(raftLookElegant));
 
   testWidgets('current Raft auth links stay underlined at rest and on hover', (
     tester,
@@ -293,7 +294,7 @@ void main() {
     final (lightColor, lightWeight, lightTokens) = await labelOf(false);
     expect(lightColor, lightTokens.strong);
     expect(lightWeight, FontWeight.w500);
-  });
+  }, skip: raftLookSkip(raftLookElegant));
 
   for (final dark in [false, true]) {
     testWidgets('current Raft auth field uses source field typography/$dark', (

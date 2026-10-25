@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_ui/raft_ui.dart';
+import 'package:raft_ui/test_themes.dart';
 
 // Web v1.21.12 public server page: the channel column is the signed-in
 // Sidebar's parts (PublicServerSidebarFrame + accent rows), the channel header
@@ -15,7 +16,7 @@ void main() {
     Widget child, {
     bool dark = false,
     Size size = const Size(1280, 800),
-    String pack = elegantThemePackId,
+    String pack = raftThemePackId,
   }) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = size;
@@ -46,7 +47,7 @@ void main() {
 
   for (final (dark, header) in [(false, 56.0), (true, 56.0)]) {
     testWidgets('[$dark] channel column frame', (tester) async {
-      await mount(tester, sidebar(), dark: dark);
+      await mount(tester, sidebar(), dark: dark, pack: elegantThemePackId);
       final t = RaftTokens.of(
         tester.element(find.byType(RaftPublicChannelSidebar)),
       );
@@ -76,13 +77,18 @@ void main() {
             .selected,
         isFalse,
       );
-    });
+    }, skip: raftLookSkip(raftLookElegant));
   }
 
   testWidgets('below sm the column is 144 wide and the label wraps', (
     tester,
   ) async {
-    await mount(tester, sidebar(), size: const Size(500, 800));
+    await mount(
+      tester,
+      sidebar(),
+      size: const Size(500, 800),
+      pack: elegantThemePackId,
+    );
     expect(
       tester
           .getSize(find.byKey(const ValueKey('public-server-channel-sidebar')))
@@ -91,7 +97,7 @@ void main() {
     );
     expect(find.text('PUBLIC CHANNELS'), findsOneWidget);
     expect(tester.takeException(), isNull);
-  });
+  }, skip: raftLookSkip(raftLookElegant));
 
   testWidgets('selecting a row reports its id', (tester) async {
     String? picked;
@@ -120,6 +126,7 @@ void main() {
     await mount(
       tester,
       const RaftPublicChannelHeader(name: 'general', description: 'News'),
+      pack: elegantThemePackId,
     );
     final t = RaftTokens.of(
       tester.element(find.byType(RaftPublicChannelHeader)),
@@ -142,7 +149,7 @@ void main() {
       ),
       isTrue,
     );
-  });
+  }, skip: raftLookSkip(raftLookElegant));
 
   testWidgets('the loading page is a centred spinner, not a word', (
     tester,

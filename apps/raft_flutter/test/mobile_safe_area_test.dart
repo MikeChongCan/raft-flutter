@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_flutter/data/raft_location.dart';
 import 'package:raft_flutter/data/device_preferences.dart';
 import 'package:raft_ui/raft_ui.dart';
+import 'package:raft_ui/test_themes.dart';
 
 import 'app_global_server_selector_test.dart' show RootFixture;
 
@@ -15,14 +16,14 @@ void windowMetrics(WidgetTester t, double bottom, {double keyboard = 0}) {
 void main() {
   for (final platform in [TargetPlatform.iOS, TargetPlatform.android]) {
     final inset = platform == TargetPlatform.iOS ? 34.0 : 48.0;
-    for (final (pack, theme) in [
+    for (final (pack, theme) in raftThemeMatrix([
       (raftThemePackId, 'light'),
       (raftThemePackId, 'dark'),
       (elegantThemePackId, 'light'),
       (elegantThemePackId, 'dark'),
       (brutalThemePackId, 'light'),
       (brutalThemePackId, 'dark'),
-    ]) {
+    ], look: (v) => raftLookOf(v.$1))) {
       testWidgets(
         '$platform $pack $theme root controls clear the system gesture area',
         (t) async {

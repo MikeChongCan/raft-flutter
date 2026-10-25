@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_ui/raft_ui.dart';
+import 'package:raft_ui/test_themes.dart';
 
 void main() {
   setUpAll(() async {
@@ -101,7 +102,10 @@ void main() {
       }
     }
   }
-  for (final pack in [elegantThemePackId, brutalThemePackId]) {
+  for (final pack in raftThemeMatrix([
+    elegantThemePackId,
+    brutalThemePackId,
+  ], look: raftLookOf)) {
     for (final dark in [false, true]) {
       for (final height in [480.0, 844.0]) {
         testWidgets(

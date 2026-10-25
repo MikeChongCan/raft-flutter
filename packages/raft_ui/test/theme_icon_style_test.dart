@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_theme/raft_theme.dart';
 import 'package:raft_ui/raft_ui.dart';
+import 'package:raft_ui/test_themes.dart';
 
 Widget _host({
   RaftThemePack? pack,
@@ -74,6 +75,7 @@ void main() {
       await mouse.removePointer();
       await t.pumpWidget(const SizedBox.shrink());
     },
+    skip: raftLookSkip(raftLookBrutal),
   );
 
   testWidgets(
@@ -95,6 +97,7 @@ void main() {
       await mouse.removePointer();
       await t.pumpWidget(const SizedBox.shrink());
     },
+    skip: raftLookSkip(raftLookBrutal),
   );
 
   testWidgets('reduced motion keeps the offset-shadow surface stationary', (
@@ -119,7 +122,7 @@ void main() {
     await down.cancel();
     await mouse.removePointer();
     await t.pumpWidget(const SizedBox.shrink());
-  });
+  }, skip: raftLookSkip(raftLookBrutal));
 
   test('dark hover ink preserves the original calibrated float components', () {
     // a57b9dab semantic_colors.g.dart:1111; not values.json's display rounding.
@@ -130,7 +133,7 @@ void main() {
       expect(ink.g, closeTo(.954685, 1e-12));
       expect(ink.b, closeTo(.969524, 1e-12));
     }
-  });
+  }, skip: raftLookSkip(raftLookElegant, raftLookBrutal));
 
   testWidgets(
     'custom small icon structure reads authored border radius and shadow',

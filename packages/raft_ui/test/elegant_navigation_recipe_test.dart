@@ -238,6 +238,7 @@ void main() {
           await tester.pumpWidget(const SizedBox());
         }
       },
+      skip: raftLookSkip(raftLookElegant),
     );
   }
 }

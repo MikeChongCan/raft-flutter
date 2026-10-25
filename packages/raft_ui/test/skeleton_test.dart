@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_ui/raft_ui.dart';
+import 'package:raft_ui/test_themes.dart';
 
 import 'flutter_test_config.dart' show RaftTestBinding;
 
@@ -73,7 +74,7 @@ void main() {
       );
       image.dispose();
     });
-  });
+  }, skip: raftLookSkip(raftLookElegant));
 
   testWidgets(
     'skeleton avatar remains painted in a bounded scrolling row frame',
@@ -153,6 +154,7 @@ void main() {
         image.dispose();
       });
     },
+    skip: raftLookSkip(raftLookElegant),
   );
 
   testWidgets('black/10 skeleton uses the source 8-bit alpha on white', (
@@ -188,7 +190,7 @@ void main() {
       expect(bytes.getUint8((10 * image.width + 50) * 4), 229);
       image.dispose();
     });
-  });
+  }, skip: raftLookSkip(raftLookElegant));
 
   testWidgets('Raft skeleton is a flat fill-muted sticker block', (
     tester,

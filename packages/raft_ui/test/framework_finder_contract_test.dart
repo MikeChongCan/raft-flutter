@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_ui/raft_ui.dart';
+import 'package:raft_ui/test_themes.dart';
 
 // db5e399f SidebarConversationFinder: text-subhead=15/20; the 1.5px CSS
 // border resolves to 1px at DPR1. Frozen packs retain 14/20 and 1.5px.
 void main() {
-  for (final pack in [raftThemePackId, elegantThemePackId, brutalThemePackId]) {
+  for (final pack in raftThemeMatrix([
+    raftThemePackId,
+    elegantThemePackId,
+    brutalThemePackId,
+  ], look: raftLookOf)) {
     for (final dark in [false, true]) {
       testWidgets('$pack/$dark finder follows its mounted contract', (t) async {
         final controller = TextEditingController(text: 'design');

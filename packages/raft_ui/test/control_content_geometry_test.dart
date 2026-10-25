@@ -83,6 +83,7 @@ void main() {
         expect(tester.takeException(), isNull);
         await tester.pumpWidget(const SizedBox.shrink());
       },
+      skip: raftLookSkip(raftLookElegant),
     );
     testWidgets(
       'dark=$dark control centers intrinsic text row without changing padding',

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_ui/raft_ui.dart';
+import 'package:raft_ui/test_themes.dart';
 
 /// The appearance setting's theme choice, end to end.
 ///
@@ -54,7 +55,7 @@ void main() {
       final brutalDarkInk = ink(brutalThemePackId, dark: true);
       expect(raftDark, isNot(elegantDarkInk));
       expect(brutalDarkInk, elegantDarkInk);
-    });
+    }, skip: raftLookSkip(raftLookElegant, raftLookBrutal));
 
     test('the chosen pack supplies the values, not the default pack', () {
       final raft = RaftTokens.theme(pack: packForThemeId(raftThemePackId));
@@ -74,7 +75,7 @@ void main() {
       // Stroke widths come from the same pack: Raft 1, Brutal 2.
       expect(raft.border, 1);
       expect(brutal.border, 2);
-    });
+    }, skip: raftLookSkip(raftLookElegant, raftLookBrutal));
 
     testWidgets('Brutal dark renders identically to Elegant dark', (
       tester,
@@ -120,7 +121,7 @@ void main() {
       );
       await tester.pumpAndSettle();
       expect(await _capture(tester), isNot(brutalShot));
-    });
+    }, skip: raftLookSkip(raftLookElegant, raftLookBrutal));
 
     test('an unknown theme id falls back to Raft instead of failing', () {
       // A stored id can outlive the theme it names; painting the default look
@@ -148,7 +149,7 @@ void main() {
       const defaults = RaftAppearance();
       expect(defaults.themeId, raftThemePackId);
       expect(defaults.mode, ThemeMode.system);
-    });
+    }, skip: raftLookSkip(raftLookElegant, raftLookBrutal));
   });
 
   group('switching themes keeps the session intact', () {
@@ -208,6 +209,6 @@ void main() {
       // And the draft is still there.
       expect(text.text, 'half a message');
       expect(find.text('half a message'), findsOneWidget);
-    });
+    }, skip: raftLookSkip(raftLookElegant));
   });
 }

@@ -8,6 +8,7 @@ import 'package:raft_flutter/features/page_alignment_fixtures.dart';
 import 'package:raft_flutter/features/resource_cards.dart';
 import 'package:raft_flutter/features/resource_view.dart';
 import 'package:raft_flutter/features/page_layout.dart';
+import 'package:raft_ui/test_themes.dart';
 
 class _Client extends RaftClient {
   _Client()
@@ -116,14 +117,14 @@ void main() {
 
   // The page frame, header and populated list must share the measured surface.
   // Checking only the outer decoration missed the list's own Material fill.
-  for (final (pack, dark, color) in [
+  for (final (pack, dark, color) in raftThemeMatrix([
     (raftThemePackId, false, 0xffffffff),
     (raftThemePackId, true, 0xff1b1b19),
     (elegantThemePackId, false, 0xfff8f8f7),
     (elegantThemePackId, true, 0xff0d0d0b),
     (brutalThemePackId, false, 0xffffffff),
     (brutalThemePackId, true, 0xff0d0d0b),
-  ]) {
+  ], look: (v) => raftLookOf(v.$1))) {
     for (final section in ['activity', 'saved']) {
       for (final width in [390.0, 1280.0]) {
         testWidgets('$section surface $pack dark=$dark width=$width', (

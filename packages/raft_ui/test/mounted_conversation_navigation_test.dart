@@ -191,6 +191,7 @@ void main() {
           expect(tester.takeException(), isNull);
           await tester.pumpWidget(const SizedBox());
         },
+        skip: raftLookSkip(raftLookElegant),
       );
     }
     testWidgets(
@@ -233,6 +234,7 @@ void main() {
         );
         await tester.pumpWidget(const SizedBox());
       },
+      skip: raftLookSkip(raftLookElegant),
     );
   }
 
@@ -295,6 +297,7 @@ void main() {
         expect(tester.takeException(), isNull);
         await tester.pumpWidget(const SizedBox());
       },
+      skip: raftLookSkip(raftLookElegant),
     );
   }
 
@@ -387,6 +390,7 @@ void main() {
           expect(tester.takeException(), isNull);
           await tester.pumpWidget(const SizedBox());
         },
+        skip: raftLookSkip(raftLookElegant),
       );
     }
   }

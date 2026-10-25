@@ -39,6 +39,7 @@ void main() {
         const EdgeInsetsDirectional.fromSTEB(28, 48, 28, 12),
       );
     },
+    skip: raftLookSkip(raftLookElegant),
   );
   test(
     'rail keeps source theme glyph and compact face dimensions separate',
@@ -52,6 +53,7 @@ void main() {
       expect(elegant.itemSize, 40);
       expect(elegant.width, 56);
     },
+    skip: raftLookSkip(raftLookElegant),
   );
   test('mounted product sidebar overrides library geometry and reserves actual mobile overlay', () {
     final t = raftTheme().extension<RaftTokens>()!;

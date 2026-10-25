@@ -12,6 +12,8 @@ Four jobs on a fresh worktree of origin/cindy/integration, one Chinese summary:
   3. random     the app suite runs in a random order (--test-randomize-ordering-seed); the seed is recorded
                 so a failure reproduces. Job 1 and job 3 are the same app run: coverage does not depend on
                 order, and a second 25 minute run would only repeat it.
+  3b. legacy-looks  the Dart tests of the legacy looks (Elegant, Brutal) and the theme engine package, through
+                `tool/theme-suite --look all --tests-only`: the Raft run above tests the Raft look only. Its coverage joins job 1.
   4. visual     the fast subset of the three-level visual suite (tool/nightly_visual.py): L1 frame cases and
                 the key L2 pages at phone and desktop widths, light mode, for the Raft look (against the Web
                 v1.21.23 render) and the Elegant / Brutal looks (against their frozen a57b9dab originals); the
@@ -45,6 +47,7 @@ sys.path.insert(0, str(TOOL))
 import affected_tests  # noqa: E402
 import diff_coverage  # noqa: E402
 import nightly_visual  # noqa: E402
+import theme_looks  # noqa: E402
 
 REPO = TOOL.parent
 HOME = pathlib.Path.home()
@@ -56,6 +59,8 @@ DEFAULT_OUT = HOME / '.local/share/raft-nightly'
 # --coverage-package replaces the default (the current package), so the app itself must be in the pattern.
 COVERAGE_PACKAGES = r'^(raft_flutter|raft_ui|raft_client|raft_sync|raft_updater|flutter_dynamic_icon_plus)$'
 JOBS = 4  # gates run in parallel on this machine
+# Test files tagged for a legacy look (tool/theme_looks.py) belong to the legacy-looks suite, not to the Raft run.
+LEGACY_TAG_EXCLUDES = [arg for look in theme_looks.LEGACY_LOOKS for arg in ('-x', theme_looks.tag_look(look))]
 APP = 'apps/raft_flutter'
 
 
@@ -502,6 +507,10 @@ class Run:
         env = dict(os.environ)
         env['TMPDIR'] = str(self.tmp)
         env.pop('RAFT_TEST_ALL_THEMES', None)
+        # The suites below test the Raft look; the legacy looks (Elegant, Brutal) run in the legacy-looks suite
+        # (tool/theme-suite), so nothing loses coverage overnight.
+        env.pop('RAFT_TEST_MODES', None)
+        env['RAFT_TEST_LOOKS'] = 'raft'
         # The nightly runs what the gate samples: every slow file (it passes test/ whole) and the
         # whole size x theme matrix of the tests that cut it on the gate (raftFullMatrix).
         env['RAFT_TEST_TIER'] = 'full'
@@ -529,6 +538,8 @@ class Run:
             stale.unlink(missing_ok=True)
         cmd = self.flutter('test', '--no-pub', '-j', str(JOBS), '--coverage', '--coverage-path', str(lcov),
                            '--reporter', 'failures-only', '--file-reporter', f'json:{events}')
+        if cwd.name != 'raft_theme':  # the engine package runs whole: its look-tagged files are engine tests
+            cmd += LEGACY_TAG_EXCLUDES
         if coverage_package:
             cmd += ['--coverage-package', COVERAGE_PACKAGES]
         if seed is not None:
@@ -540,6 +551,23 @@ class Run:
         passed_marker = done['code'] == 0 and not parsed['failed'] and not done['timed_out']
         return {'name': name, 'code': done['code'], 'timed_out': done['timed_out'], 'seconds': done['seconds'], 'limit': timeout,
                 'ok': passed_marker, 'log': log_path.name, **parsed, 'lcov': lcov, 'cwd': str(cwd.relative_to(self.worktree)) or '.'}
+
+    def legacy_suite(self):
+        """The legacy looks' Dart tests through `tool/theme-suite` (the visual part is job 4); same shape as `run_suite`."""
+        out = self.out / 'theme-suite'
+        lcov = self.out / 'legacy-looks.lcov'
+        log_path = self.out / 'legacy-looks.log'
+        lcov.unlink(missing_ok=True)
+        limit = self.args.legacy_timeout_minutes * 60
+        command = [sys.executable, str(self.worktree / 'tool/theme-suite'), '--look', 'all', '--tests-only', '--out', str(out),
+                   '--coverage-path', str(lcov), '--jobs', str(JOBS)]
+        done = run(command, self.worktree, log_path, min(limit, self.remaining()), self.env)
+        events = out / 'dart-tests.events.json'
+        lines = events.read_text(errors='replace').splitlines() if events.is_file() else []
+        parsed = parse_test_events(lines, self.worktree)
+        ok = done['code'] == 0 and not parsed['failed'] and not done['timed_out']
+        return {'name': 'legacy-looks', 'code': done['code'], 'timed_out': done['timed_out'], 'seconds': done['seconds'], 'limit': limit,
+                'ok': ok, 'log': log_path.name, **parsed, 'lcov': lcov, 'cwd': APP}
 
     def package_dirs(self):
         return [p for p in sorted((self.worktree / 'packages').glob('*')) if (p / 'test').is_dir() and (p / 'lib').is_dir()]
@@ -556,6 +584,10 @@ class Run:
                     break
                 suites.append(self.run_suite(package.name, package, ['test/'], self.args.package_timeout_minutes * 60,
                                              self.out / f'{package.name}.lcov', False, self.args.seed))
+        if self.remaining() < 300:
+            self.note('总时限将到，跳过 legacy-looks（tool/theme-suite）')
+        else:
+            suites.append(self.legacy_suite())
         coverage = diff_coverage.load_coverage([f"{s['lcov']}:{s['cwd']}" for s in suites if pathlib.Path(s['lcov']).is_file()], self.worktree)
         areas, total = area_summary(coverage)
         previous, delta, previous_date = pick_previous(self.args.out_dir, self.date), None, None
@@ -753,6 +785,7 @@ def main(argv=None):
     parser.add_argument('--skip-osv', action='store_true')
     parser.add_argument('--skip-visual', action='store_true', help='skip the visual regression job (tool/nightly_visual.py)')
     parser.add_argument('--visual-timeout-minutes', type=float, default=75)
+    parser.add_argument('--legacy-timeout-minutes', type=float, default=60, help='the legacy looks Dart tests (tool/theme-suite --look all --tests-only)')
     args = parser.parse_args(argv)
     if args.seed is None:
         args.seed = random.SystemRandom().randrange(1, 2**31)

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_ui/raft_ui.dart';
+import 'package:raft_ui/test_themes.dart';
 
 /// Badge corners come from the theme.
 ///
@@ -31,11 +32,11 @@ void main() {
 
     testWidgets('Elegant softens to its own sticker corner', (tester) async {
       expect(await _paintedRadius(tester, elegantThemePackId), 3);
-    });
+    }, skip: raftLookSkip(raftLookElegant));
 
     testWidgets('Brutal squares it', (tester) async {
       expect(await _paintedRadius(tester, brutalThemePackId), 0);
-    });
+    }, skip: raftLookSkip(raftLookBrutal));
 
     test('the mapping is sticker for solid and chip for outline', () {
       // The tokens differ per theme, so a mix-up between the two would still be

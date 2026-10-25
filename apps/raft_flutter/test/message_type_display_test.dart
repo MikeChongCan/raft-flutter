@@ -6,6 +6,7 @@ import 'package:raft_flutter/data/personal_presentation.dart';
 import 'package:raft_flutter/data/search_memory.dart';
 import 'package:raft_flutter/features/message_type_scale.dart';
 import 'package:raft_ui/raft_ui.dart';
+import 'package:raft_ui/test_themes.dart';
 
 class _Storage implements SearchMemoryStorage {
   final values = <String, String>{};
@@ -16,7 +17,11 @@ class _Storage implements SearchMemoryStorage {
 }
 
 void main() {
-  for (final id in [raftThemePackId, elegantThemePackId, brutalThemePackId]) {
+  for (final id in raftThemeMatrix([
+    raftThemePackId,
+    elegantThemePackId,
+    brutalThemePackId,
+  ], look: raftLookOf)) {
     testWidgets(
       '$id maps displayed tiers without rewriting stored preferences',
       (t) async {

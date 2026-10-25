@@ -1,36 +1,121 @@
-/// Theme-matrix sampling for the Dart test suites (owner decision 2026-10-12).
+/// Which looks the Dart tests exercise, and how a theme matrix is cut.
 ///
-/// Many tests run once per theme variant (brutal-light, elegant-light,
-/// elegant-dark; a few also brutal-dark). The variants only re-skin the same
-/// behaviour, so by default a test file keeps its FIRST variant (the default,
-/// brutal-light, which every list in the suite puts first) and ONE other
-/// variant picked by a stable hash of the file's package-relative path. The
-/// pick spreads the suite across the variants: roughly half of the files
-/// sample elegant-light, the other half elegant-dark.
+/// Owner decision 2026-10-25: the regular checks test the Raft look only, in light and
+/// dark. The legacy looks (Elegant, Brutal; frozen at a57b9dab) have their own on-demand
+/// suite, `tool/theme-suite`. The selection lives here and nowhere else:
 ///
-/// Matrices that cross themes with sizes are further cut to an L on the gate,
-/// see [raftMatrixCell]; `RAFT_TEST_TIER=full` (the nightly) runs the product.
+/// * `RAFT_TEST_LOOKS` is a comma list of `raft`, `elegant`, `brutal`, or `all`.
+///   Unset means [raftDefaultLooks], the Raft look. `RAFT_TEST_ALL_THEMES=1`
+///   (`tool/check-project --all-themes`) means all looks.
+/// * `RAFT_TEST_MODES` is `light`, `dark` or `all` (default). Only `tool/theme-suite`
+///   sets it; a matrix whose variants name their mode honours it.
 ///
-/// Set `RAFT_TEST_ALL_THEMES=1` to run every variant of every test. Use it
-/// before merging to main, and whenever theme, token or recipe code changes
-/// (`python3 tool/check-project --all-themes` passes it on).
+/// A test file is tied to a look in one of three ways, all of which `tool/theme_looks.py`
+/// recognises, so the runners know which files carry legacy cases:
 ///
-/// A test that is ABOUT theme differences (asserts per-family colours, token
-/// values, contrast audits, recipe comparisons) passes `full: true` and always
-/// runs the whole matrix.
+/// * `@Tags(['look-elegant'])` / `@Tags(['look-brutal'])` before `library;`: the whole
+///   file is about that look. The default run skips it (the runner never loads it).
+/// * `raftThemeMatrix(variants, look: ...)`: a loop over looks. Variants of a look that is
+///   not selected are not declared, so the default run keeps the Raft variants only.
+/// * `skip: raftLookSkip(raftLookElegant)` on one test: that case needs a legacy look.
 ///
-/// This library is for test code only (it uses `dart:io`); do not import it
-/// from app code.
+/// A test that names no look runs under the Raft look (the default theme) and is not
+/// touched by any of this. Matrices that cross themes with sizes are cut to an L on the
+/// gate, see [raftMatrixCell]; `RAFT_TEST_TIER=full` (the nightly) runs the product.
+///
+/// This library is for test code only (it uses `dart:io`); do not import it from app code.
 library;
 
-import 'dart:convert';
 import 'dart:io';
 
-/// The environment variable that turns sampling off.
+import 'package:flutter/material.dart' show ThemeMode;
+
+/// The Raft look: the base pack, the only look the regular checks test.
+const raftLookRaft = 'raft';
+
+/// A legacy look (frozen at a57b9dab).
+const raftLookElegant = 'elegant';
+
+/// A legacy look (frozen at a57b9dab).
+const raftLookBrutal = 'brutal';
+
+/// Every look, Raft first.
+const raftAllLooks = [raftLookRaft, raftLookElegant, raftLookBrutal];
+
+/// The looks a run without `RAFT_TEST_LOOKS` exercises. `tool/theme_looks.py` carries the
+/// same default (a host test compares the two).
+const raftDefaultLooks = [raftLookRaft];
+
+/// The environment variable that picks the looks.
+const raftLooksVariable = 'RAFT_TEST_LOOKS';
+
+/// The environment variable that picks the modes (`light`, `dark`, `all`).
+const raftModesVariable = 'RAFT_TEST_MODES';
+
+/// The environment variable that turns every look and variant on (`check-project --all-themes`).
 const raftAllThemesVariable = 'RAFT_TEST_ALL_THEMES';
 
-/// True when every test must run its whole theme matrix.
+/// True when every look must run.
 bool get raftAllThemes => Platform.environment[raftAllThemesVariable] == '1';
+
+/// The looks selected by [env] (pure; [raftSelectedLooks] reads the process environment).
+///
+/// An unknown look name is an error: a typo must not silently run nothing.
+Set<String> selectLooks(Map<String, String> env) {
+  if (env[raftAllThemesVariable] == '1') return {...raftAllLooks};
+  final raw = (env[raftLooksVariable] ?? '').trim().toLowerCase();
+  if (raw.isEmpty) return {...raftDefaultLooks};
+  if (raw == 'all') return {...raftAllLooks};
+  final looks = {for (final part in raw.split(',')) part.trim()}..remove('');
+  final unknown = looks.where((look) => !raftAllLooks.contains(look));
+  if (unknown.isNotEmpty) {
+    throw StateError(
+      '$raftLooksVariable names unknown look(s) ${unknown.join(', ')}; '
+      'use ${raftAllLooks.join(', ')} or all.',
+    );
+  }
+  return looks;
+}
+
+/// The modes selected by [env]: `{false}` is light only, `{true}` dark only (pure).
+Set<bool> selectModes(Map<String, String> env) {
+  switch ((env[raftModesVariable] ?? '').trim().toLowerCase()) {
+    case '' || 'all':
+      return {false, true};
+    case 'light':
+      return {false};
+    case 'dark':
+      return {true};
+    case final other:
+      throw StateError(
+        '$raftModesVariable must be light, dark or all, got $other.',
+      );
+  }
+}
+
+/// The looks this run exercises.
+Set<String> get raftSelectedLooks => selectLooks(Platform.environment);
+
+/// Whether [look] is exercised by this run.
+bool raftLookSelected(String look) => raftSelectedLooks.contains(look);
+
+/// The `skip:` value of a test that needs [look] (or [other]): true when none of them is
+/// selected. A test about two looks (a comparison) runs when either is selected. It is a
+/// `bool` because `testWidgets` takes no reason string.
+///
+/// `testWidgets('...', body, skip: raftLookSkip(raftLookElegant))`.
+bool raftLookSkip(String look, [String? other]) =>
+    !raftLookSelected(look) && !(other != null && raftLookSelected(other));
+
+/// The look a pack id or case name belongs to: `elegant-dark` and `elegant` are Elegant.
+/// Anything that is neither Elegant nor Brutal is the Raft look.
+String raftLookOf(String name) {
+  final lower = name.toLowerCase();
+  for (final look in [raftLookElegant, raftLookBrutal]) {
+    if (lower.startsWith(look)) return look;
+  }
+  return raftLookRaft;
+}
 
 /// The environment variable that picks the test tier: `gate` (the default) or
 /// `full`. `tool/check-project` sets it; the nightly runs `full`.
@@ -57,98 +142,55 @@ bool matrixCellRuns({
   required int size,
 }) => full || theme == 0 || size == 0;
 
-/// The variants of [variants] the calling test file should run.
+/// The variants of [variants] this run declares tests for.
 ///
-/// The variant of the FIRST element is the default (brutal-light). With
-/// `full: true`, or `RAFT_TEST_ALL_THEMES=1`, all elements are returned. The
-/// calling test file is found from the stack, so call this while the file's
-/// `main` runs, usually as the iterable of the `for` loop that declares the
-/// tests: `for (final (family, dark) in raftThemeMatrix([...])) { ... }`.
+/// A variant is dropped when its look is not selected ([raftSelectedLooks]) or its mode is
+/// not ([raftModesVariable]). [look] names a variant's look (`look: raftLookOf` for pack
+/// ids, `look: (v) => raftLookOf(v.$1)` for records); without it every variant is the Raft
+/// look. A variant's mode comes from [dark], or is read from a `bool`, a [ThemeMode], or a
+/// name that contains `dark`; a variant whose mode cannot be read is never dropped for it.
+/// With the default environment this is the whole Raft list, light and dark.
 ///
-/// When an element carries more than the theme (a width, a platform), pass
-/// [theme] to extract the part that identifies the theme variant; elements
-/// that share a variant are kept or dropped together.
+/// `full: true` marks a test that is ABOUT the mode difference (asserts per-mode colours,
+/// contrast): it ignores [raftModesVariable] and keeps both modes. It never brings back a
+/// look that is not selected.
 List<T> raftThemeMatrix<T>(
   List<T> variants, {
   bool full = false,
-  Object? Function(T variant)? theme,
-}) {
-  if (full || raftAllThemes) return variants;
-  return sampleThemeVariants(
-    variants,
-    () => packageRelativePath(callingTestFile()),
-    theme: theme,
-  );
-}
+  String Function(T variant)? look,
+  bool Function(T variant)? dark,
+}) => filterThemeVariants(
+  variants,
+  looks: raftSelectedLooks,
+  modes: full ? {false, true} : selectModes(Platform.environment),
+  look: look,
+  dark: dark,
+);
 
-/// Pure sampling rule: the default variant plus one other chosen by the path.
-///
-/// [path] is only evaluated when there are at least three variants to choose
-/// from, so a two-variant list needs no stack lookup.
-List<T> sampleThemeVariants<T>(
-  List<T> variants,
-  String Function() path, {
-  Object? Function(T variant)? theme,
+/// Pure rule behind [raftThemeMatrix].
+List<T> filterThemeVariants<T>(
+  List<T> variants, {
+  required Set<String> looks,
+  required Set<bool> modes,
+  String Function(T variant)? look,
+  bool Function(T variant)? dark,
 }) {
-  final keyOf = theme ?? (T variant) => variant;
-  final keys = <Object?>[];
-  for (final variant in variants) {
-    final key = keyOf(variant);
-    if (!keys.contains(key)) keys.add(key);
-  }
-  if (keys.length < 3) return variants;
-  final others = keys.sublist(1);
-  final kept = {keys.first, others[stableHash(path()) % others.length]};
   return [
     for (final variant in variants)
-      if (kept.contains(keyOf(variant))) variant,
+      if (looks.contains(look == null ? raftLookRaft : look(variant)) &&
+          _modeRuns(modes, dark == null ? _modeOf(variant) : dark(variant)))
+        variant,
   ];
 }
 
-/// FNV-1a over the UTF-8 bytes of [text]: the same in every run and Dart version.
-int stableHash(String text) {
-  var hash = 0x811c9dc5;
-  for (final byte in utf8.encode(text)) {
-    hash = ((hash ^ byte) * 0x01000193) & 0xffffffff;
-  }
-  return hash;
-}
+bool _modeRuns(Set<bool> modes, bool? dark) =>
+    dark == null || modes.contains(dark);
 
-// A drive colon or a parenthesis can belong to the URI. End at the VM frame's
-// location suffix instead of treating those valid path characters as separators.
-final _testFrame = RegExp(r'(file:///.*_test\.dart)(?::\d+(?::\d+)?)?\)\s*$');
-
-/// The `*_test.dart` file nearest to the top of the current stack.
-/// An explicit [stack] lets regression tests exercise other platforms' frames.
-String callingTestFile([StackTrace? stack]) {
-  for (final line in (stack ?? StackTrace.current).toString().split('\n')) {
-    final match = _testFrame.firstMatch(line);
-    if (match != null) return Uri.parse(match.group(1)!).toFilePath();
-  }
-  throw StateError(
-    'raftThemeMatrix could not find the calling *_test.dart in the stack; '
-    'call it while the test file is being declared, or pass full: true.',
-  );
-}
-
-final _packageRelative = <String, String>{};
-
-/// [file] relative to its package root (the nearest pubspec.yaml), with `/`.
-String packageRelativePath(String file) {
-  return _packageRelative.putIfAbsent(file, () {
-    var dir = File(file).parent;
-    while (!File('${dir.path}${Platform.pathSeparator}pubspec.yaml')
-        .existsSync()) {
-      final parent = dir.parent;
-      if (parent.path == dir.path) {
-        throw StateError('No pubspec.yaml above $file');
-      }
-      dir = parent;
-    }
-    var relative = file.substring(dir.path.length + 1);
-    if (Platform.pathSeparator != '/') {
-      relative = relative.replaceAll(Platform.pathSeparator, '/');
-    }
-    return relative;
-  });
-}
+bool? _modeOf(Object? variant) => switch (variant) {
+  final bool dark => dark,
+  ThemeMode.dark => true,
+  ThemeMode.light => false,
+  final String name when name.toLowerCase().contains('dark') => true,
+  final String name when name.toLowerCase().contains('light') => false,
+  _ => null,
+};

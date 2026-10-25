@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_ui/raft_ui.dart';
+import 'package:raft_ui/test_themes.dart';
 
 Widget _host(Size size, {Widget? preview}) => MediaQuery(
   data: MediaQueryData(size: size),
@@ -18,11 +19,11 @@ Widget _host(Size size, {Widget? preview}) => MediaQuery(
 );
 
 void main() {
-  for (final (id, light) in [
+  for (final (id, light) in raftThemeMatrix([
     (raftThemePackId, const Color(0xffffd440)),
     (elegantThemePackId, const Color(0xffffffff)),
     (brutalThemePackId, const Color(0xffffd440)),
-  ]) {
+  ], look: (v) => raftLookOf(v.$1))) {
     testWidgets(
       '$id auth header keeps its source fill at phone and desktop widths',
       (t) async {

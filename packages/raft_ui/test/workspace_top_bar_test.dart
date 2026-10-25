@@ -3,6 +3,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_ui/raft_ui.dart';
+import 'package:raft_ui/test_themes.dart';
 
 void main() {
   setUpAll(() async {
@@ -391,7 +392,11 @@ void main() {
     },
     variant: TargetPlatformVariant.only(TargetPlatform.linux),
   );
-  for (final pack in [raftThemePackId, elegantThemePackId, brutalThemePackId]) {
+  for (final pack in raftThemeMatrix([
+    raftThemePackId,
+    elegantThemePackId,
+    brutalThemePackId,
+  ], look: raftLookOf)) {
     testWidgets(
       '$pack sidebar without title preserves the source content inset',
       (t) async {
@@ -423,7 +428,11 @@ void main() {
       },
     );
   }
-  for (final pack in [raftThemePackId, elegantThemePackId, brutalThemePackId]) {
+  for (final pack in raftThemeMatrix([
+    raftThemePackId,
+    elegantThemePackId,
+    brutalThemePackId,
+  ], look: raftLookOf)) {
     testWidgets('$pack chrome policy preserves legacy and native ownership', (
       t,
     ) async {

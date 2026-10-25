@@ -6,6 +6,7 @@ import 'package:raft_client/raft_client.dart';
 import 'package:raft_flutter/features/public_server_view.dart';
 import 'package:raft_flutter/data/source_time_formatter.dart';
 import 'package:raft_ui/raft_ui.dart';
+import 'package:raft_ui/test_themes.dart';
 
 typedef _Route = FutureOr<Object?> Function(
   Map<String, dynamic>? query,
@@ -147,11 +148,11 @@ Future<void> _mount(
 void main() {
   setUpAll(initializeSourceTimeFormatting);
   _loadOlderTests();
-  for (final themeId in [
+  for (final themeId in raftThemeMatrix([
     raftThemePackId,
     elegantThemePackId,
     brutalThemePackId,
-  ]) {
+  ], look: raftLookOf)) {
     testWidgets(
       '$themeId preserves account time and join confirmation behavior',
       (t) async {

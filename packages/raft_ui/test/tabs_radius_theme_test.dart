@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_ui/raft_ui.dart';
+import 'package:raft_ui/test_themes.dart';
 
 /// Tab corners come from the theme.
 ///
@@ -41,22 +42,22 @@ void main() {
 
     testWidgets('Elegant uses the measured 6px tab corner', (tester) async {
       expect(await _painted(tester, elegantThemePackId), 6);
-    });
+    }, skip: raftLookSkip(raftLookElegant));
 
     testWidgets('Brutal squares it', (tester) async {
       expect(await _painted(tester, brutalThemePackId), 0);
-    });
+    }, skip: raftLookSkip(raftLookBrutal));
 
     test(
       'radius.control carries the measured triple, radius.chip does not',
       () {
         // Guards the token choice: if a future edit switches to radius.chip,
         // Elegant silently becomes 4 and this fails.
-        for (final (id, expected) in [
+        for (final (id, expected) in raftThemeMatrix([
           (raftThemePackId, 8.0),
           (elegantThemePackId, 6.0),
           (brutalThemePackId, 0.0),
-        ]) {
+        ], look: (v) => raftLookOf(v.$1))) {
           final tokens = RaftTokens.theme(pack: packForThemeId(id));
           expect(
             tokens.size('radius.control', fallback: 8),

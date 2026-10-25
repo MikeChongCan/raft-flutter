@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_ui/raft_ui.dart';
+import 'package:raft_ui/test_themes.dart';
 
 void main() {
   testWidgets('wide shell: comments toggle opens the 320px aside', (
@@ -42,7 +43,7 @@ void main() {
           .width,
       raftLightboxAsideWidth,
     );
-  });
+  }, skip: raftLookSkip(raftLookElegant));
 
   testWidgets('narrow shell: the sheet starts collapsed', (tester) async {
     tester.view.physicalSize = const Size(390, 844);
@@ -66,7 +67,7 @@ void main() {
     );
     expect(seen, isNotNull);
     expect(seen!.expanded, isFalse);
-  });
+  }, skip: raftLookSkip(raftLookElegant));
 
   for (final dark in [false, true]) {
     for (final scale in [1.0, 3.1]) {
@@ -174,7 +175,7 @@ void main() {
         expect(toggle.bottom + 8, lessThanOrEqualTo(limit));
         expect(title.bottom + 8, lessThanOrEqualTo(limit));
         expect(toggle.top, greaterThan(0));
-      });
+      }, skip: raftLookSkip(raftLookElegant));
     }
   }
 }

@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_ui/raft_ui.dart';
+import 'package:raft_ui/test_themes.dart';
 
 // db5e399f AvatarSlot sidebarList / GravatarAvatar: the fallback is User,
 // with the 2xs leaf's 10px glyph. The frozen packs keep their identity fallback.
 void main() {
-  for (final pack in [raftThemePackId, elegantThemePackId, brutalThemePackId]) {
+  for (final pack in raftThemeMatrix([
+    raftThemePackId,
+    elegantThemePackId,
+    brutalThemePackId,
+  ], look: raftLookOf)) {
     for (final dark in [false, true]) {
       testWidgets('$pack/$dark sidebar fallback and other contexts', (t) async {
         for (final gravatar in [false, true]) {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_ui/raft_ui.dart';
+import 'package:raft_ui/test_themes.dart';
 
 /// Avatar shape comes from the theme.
 ///
@@ -48,13 +49,13 @@ void main() {
       final t = _tokens(elegantThemePackId);
       expect(t.size('radius.avatar', fallback: 4), 999);
       expect(t.size('radius.avatarInner', fallback: 2), 999);
-    });
+    }, skip: raftLookSkip(raftLookElegant));
 
     test('Brutal is square, inside and out', () {
       final t = _tokens(brutalThemePackId);
       expect(t.size('radius.avatar', fallback: 4), 0);
       expect(t.size('radius.avatarInner', fallback: 2), 0);
-    });
+    }, skip: raftLookSkip(raftLookBrutal));
 
     test('the inner radius is its own token, not outer minus inset', () {
       // The official specimen insets the image by 1px per side and still rounds
@@ -76,10 +77,10 @@ void main() {
       tester,
     ) async {
       expect(await _paintedRadii(tester, elegantThemePackId), (999.0, 999.0));
-    });
+    }, skip: raftLookSkip(raftLookElegant));
 
     testWidgets('Brutal paints square outside and inside', (tester) async {
       expect(await _paintedRadii(tester, brutalThemePackId), (0.0, 0.0));
-    });
+    }, skip: raftLookSkip(raftLookBrutal));
   });
 }

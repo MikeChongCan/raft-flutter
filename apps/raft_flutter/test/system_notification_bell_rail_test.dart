@@ -7,6 +7,7 @@ import 'package:raft_client/raft_client.dart';
 import 'package:raft_flutter/data/workspace_controller.dart';
 import 'package:raft_flutter/features/system_notification_center.dart';
 import 'package:raft_ui/raft_ui.dart';
+import 'package:raft_ui/test_themes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // Web v1.21.12 NotificationTrigger: the rail bell is a rail icon (16px
@@ -169,6 +170,7 @@ void main() {
       );
       expect(renderedBellColor(t), tokens.colors['foreground-icon']);
     },
+    skip: raftLookSkip(raftLookElegant),
   );
 
   testWidgets('mobile bell keeps its 22px navbar glyph', (t) async {

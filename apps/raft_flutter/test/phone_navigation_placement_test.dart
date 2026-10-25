@@ -15,6 +15,7 @@ import 'package:raft_flutter/platform/system_gesture_exclusion.dart';
 import 'package:raft_flutter/features/mobile_workspace_pages.dart';
 import 'package:raft_flutter/features/workspace_view.dart';
 import 'package:raft_ui/raft_ui.dart';
+import 'package:raft_ui/test_themes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'support/app_services_fixture.dart';
@@ -1052,7 +1053,10 @@ void main() {
             '${end ? 'end' : 'start'}: the column sits on its side', (
           tester,
         ) async {
-          for (final pack in [raftThemePackId, elegantThemePackId]) {
+          for (final pack in raftThemeMatrix([
+            raftThemePackId,
+            elegantThemePackId,
+          ], look: raftLookOf)) {
             final store = RailSideStore();
             if (end) store.update(RaftRailSide.end);
             final r = _Rig(

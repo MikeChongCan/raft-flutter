@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_theme/raft_theme.dart';
 import 'package:raft_ui/raft_ui.dart';
+import 'package:raft_ui/test_themes.dart';
 
 void main() {
   for (final dark in [false, true]) {
@@ -96,7 +97,7 @@ void main() {
         }
       }
     }
-  });
+  }, skip: raftLookSkip(raftLookElegant, raftLookBrutal));
   testWidgets('user pack independently controls composer surface and shadows', (
     tester,
   ) async {

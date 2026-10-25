@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_theme/raft_theme.dart';
 import 'package:raft_ui/raft_ui.dart';
+import 'package:raft_ui/test_themes.dart';
 
 void main() {
   testWidgets('tooltip elevation can be changed by a user pack', (
@@ -104,7 +105,7 @@ void main() {
         expect(recipe.shadows, expected, reason: '$id / dark=$dark');
       }
     }
-  });
+  }, skip: raftLookSkip(raftLookElegant, raftLookBrutal));
   testWidgets(
     'a user pack controls message toolbar padding without a style branch',
     (tester) async {

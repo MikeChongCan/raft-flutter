@@ -74,6 +74,7 @@ void main() {
         await tester.pumpWidget(const SizedBox());
         controller.dispose();
       },
+      skip: raftLookSkip(raftLookElegant),
     );
     testWidgets(
       '${dark ? 'dark' : 'light'} form repaint keeps real IME, selection and input hit',

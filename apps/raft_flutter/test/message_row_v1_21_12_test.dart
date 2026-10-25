@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_flutter/features/chat_view.dart';
 import 'package:raft_flutter/features/custom_protocol_link.dart';
 import 'package:raft_ui/raft_ui.dart';
+import 'package:raft_ui/test_themes.dart';
 
 import 'message_presentation_test.dart' show fixture;
 
@@ -112,6 +113,7 @@ void main() {
       expect(height('c1') - height('b1'), (12 + 6) - 6);
       expect(t.takeException(), isNull);
     },
+    skip: raftLookSkip(raftLookElegant),
   );
 
   testWidgets('current Raft keeps the same group row rhythm at the list end', (

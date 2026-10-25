@@ -3,8 +3,12 @@
 
 Independent checks (host tests, analysis, sharded Dart tests) run concurrently.
 Dart test files are split into balanced shards, one `flutter test` process each.
-Theme-parametrized Dart tests run the default theme plus one sampled variant per
-file; `--all-themes` (or RAFT_TEST_ALL_THEMES=1) runs the full theme matrix.
+The checks test the Raft look only (light and dark; owner decision 2026-10-25). Theme-parametrized Dart tests
+run their Raft variants, and a test file tagged for a legacy look (`@Tags(['look-elegant'])`,
+`@Tags(['look-brutal'])`) is not run. The legacy looks (Elegant, Brutal) have their own on-demand suite,
+`tool/theme-suite`; this run prints a notice when the diff touches the theme engine (tool/theme_looks.py
+THEME_ENGINE_PATHS) and does not run the suite. `--all-themes` (or RAFT_TEST_ALL_THEMES=1) runs everything:
+every look, every variant. `--plan` prints what would run and exits.
 
 Test tiers (RAFT_TEST_TIER, `gate` by default, `full` for the nightly and for `--all-themes`):
 a file that starts with `@Tags(['slow'])` is a long scenario. The gate runs it only when the diff
@@ -46,7 +50,7 @@ anything for RAFT_CHECK_STALL_MINUTES (default 10, 0 = off). Each step is append
 to /tmp/raft-flutter-gate-events.log (tool/gate_events.py), with a terminal
 PASS/FAIL/ERROR line on every path; RAFT_GATE_NOTIFY_TARGET also sends failures.
 
-Usage: tool/check-project [--all-themes] [--reuse]
+Usage: tool/check-project [--all-themes] [--reuse] [--plan]
 """
 import codecs
 import concurrent.futures
@@ -68,6 +72,7 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))  # also when lo
 import affected_tests  # noqa: E402
 import gate_events  # noqa: E402
 import test_budget  # noqa: E402
+import theme_looks  # noqa: E402
 from test_events import file_durations, parse_test_events  # noqa: E402,F401  (also used through this module by the host tests)
 
 root = pathlib.Path(__file__).resolve().parent.parent
@@ -138,6 +143,27 @@ def tier_mode(env):
     if raw not in ('', 'gate', 'full'):
         raise SystemExit(f'{TIER_VARIABLE} must be gate or full, got {raw!r}.')
     return 'full' if raw == 'full' or env.get('RAFT_TEST_ALL_THEMES') == '1' else 'gate'
+
+
+def apply_look_filter(files, base, env):
+    """(files to run, plan): drop the test files tied to a look the run does not select (tool/theme_looks.py).
+
+    The gate selects the Raft look; `--all-themes` selects every look. `files` are relative to `base`.
+    """
+    looks = theme_looks.selected_looks(env)
+    kept, skipped = theme_looks.split_by_looks(files, looks, base)
+    by_look = {look: [f for f in skipped if look in theme_looks.file_looks(base / f)] for look in theme_looks.LEGACY_LOOKS}
+    aware = [f for f in kept if theme_looks.declares_looks(base / f)]
+    return kept, {'looks': list(looks), 'skipped': skipped, 'byLook': {k: v for k, v in by_look.items() if v}, 'lookAware': aware}
+
+
+def look_summary(plan):
+    """Lines that say which looks ran and which legacy-look files were left to tool/theme-suite."""
+    shown = ', '.join(plan['looks'])
+    lines = [f"Looks: {shown}" + (' (light and dark)' if plan['looks'] == list(theme_looks.DEFAULT_LOOKS) else '') + f". Look-aware test files: {len(plan['lookAware'])}; legacy-look files skipped: {len(plan['skipped'])}"
+             + (f" ({theme_looks.SUITE_COMMAND} runs them)." if plan['skipped'] else '.')]
+    lines.extend(f'  legacy look, skipped: {name}' for name in plan['skipped'])
+    return lines
 
 
 def is_slow_test(path):
@@ -332,11 +358,14 @@ def slow_summary(plan):
     return lines
 
 
-def format_summary(shards, failures, totals, slowest, limit=None, themes=None, stop=None, flaky=(), retry_failed=(), slow=None, budget=None):
+def format_summary(shards, failures, totals, slowest, limit=None, themes=None, stop=None, flaky=(), retry_failed=(), slow=None, budget=None, looks=None, guard=()):
     """Human-readable gate summary; failures are listed by test name (first `limit` if given)."""
     lines = [f"Dart tests: {totals['passed']} passed, {totals['skipped']} skipped, {len(failures)} failed across {len(shards)} shard(s)" + (f' (themes: {themes}).' if themes else '.')]
     if totals.get('hidden'):
         lines.append(f"  ({totals['hidden']} hidden setUpAll/tearDownAll entries are not counted as tests.)")
+    lines.extend(guard)
+    if looks:
+        lines.extend(look_summary(looks))
     if slow:
         lines.extend(slow_summary(slow))
     if budget and (budget['violations'] or budget.get('warnings') or budget['notes']):
@@ -846,16 +875,17 @@ def read_pass_record(tree, env=None):
 
 
 def pass_covers(record, themes, tier='gate'):
-    """A recorded all-themes pass covers a sampled request; a sampled pass does not cover all themes.
+    """A recorded all-themes pass covers a Raft-only request; a Raft-only pass does not cover all themes
+    (records from before the Raft-only rule say `sampled`; they count as Raft-only).
     Likewise a full-tier pass covers a gate-tier request (a record without a tier ran every file)."""
-    return (record.get('themes', 'sampled') == 'all' or themes == 'sampled') and (record.get('tier', 'full') == 'full' or tier == 'gate')
+    return (record.get('themes', 'raft') == 'all' or themes != 'all') and (record.get('tier', 'full') == 'full' or tier == 'gate')
 
 
 def record_pass(tree, commit, result, themes, engineering_run=None, env=None, now=None, tier='gate'):
     """Remember a full pass of `tree`; never raises (a cache that cannot be written only costs a re-run)."""
     try:
         existing = read_pass_record(tree, env)
-        if existing and not pass_covers({'themes': themes, 'tier': tier}, existing.get('themes', 'sampled'), existing.get('tier', 'full')):
+        if existing and not pass_covers({'themes': themes, 'tier': tier}, existing.get('themes', 'raft'), existing.get('tier', 'full')):
             return None  # keep the stronger all-themes record
         path = passed_record_path(tree, env)
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -883,14 +913,14 @@ def reuse_message(record):
 
 
 def parse_args(argv):
-    """(all_themes, reuse); --help prints the docstring."""
-    known = {'--all-themes', '--reuse'}
+    """(all_themes, reuse, plan); --help prints the docstring."""
+    known = {'--all-themes', '--reuse', '--plan'}
     if '--help' in argv or '-h' in argv:
         print(__doc__)
         raise SystemExit(0)
     if any(arg not in known for arg in argv):
-        raise SystemExit(f'check-project: unknown arguments {argv}; the options are --all-themes and --reuse.')
-    return '--all-themes' in argv, '--reuse' in argv
+        raise SystemExit(f'check-project: unknown arguments {argv}; the options are --all-themes, --reuse and --plan.')
+    return '--all-themes' in argv, '--reuse' in argv, '--plan' in argv
 
 
 def write_aggregate_log(shards, summary_text, passed):
@@ -904,7 +934,8 @@ def write_aggregate_log(shards, summary_text, passed):
 
 
 def themes_mode(env):
-    return 'all' if env.get('RAFT_TEST_ALL_THEMES') == '1' else 'sampled'
+    """`all` for --all-themes (every look, every variant), else `raft` (the Raft look only)."""
+    return 'all' if env.get('RAFT_TEST_ALL_THEMES') == '1' else 'raft'
 
 
 def abort_message(emit, verdict, failures):
@@ -968,7 +999,9 @@ def run_gate(check_env, emit, started):
     results = {}
     cpu = os.cpu_count() or 2
     load = os.getloadavg()[0] if hasattr(os, 'getloadavg') else 0.0
-    files, slow = apply_slow_tier(discover_tests(root), tier_mode(check_env), app_dir)
+    files, looks = apply_look_filter(discover_tests(root), app_dir, check_env)
+    files, slow = apply_slow_tier(files, tier_mode(check_env), app_dir)
+    guard = theme_looks.guard()  # a notice only: the legacy looks are not part of this run
     sizes = {f: (app_dir / f).stat().st_size for f in files if (app_dir / f).is_file()}
     shard_count, jobs = plan_parallelism(cpu, load)
     plan = partition(files, app_relative_weights(history_weights(root)), shard_count, sizes)
@@ -976,9 +1009,12 @@ def run_gate(check_env, emit, started):
     max_failures = int(env_number('RAFT_CHECK_MAX_FAILURES', DEFAULT_MAX_FAILURES))
     stall_minutes = env_number('RAFT_CHECK_STALL_MINUTES', DEFAULT_STALL_MINUTES)
     print(f'check-project: {len(files)} test files in {len(plan)} shard(s) x -j{jobs} on {cpu} CPUs (load {load:.1f}); themes: {themes_mode(check_env)}; tier: {slow["tier"]}.', file=sys.stderr)
+    for line in guard:
+        print(f'check-project: {line}', file=sys.stderr)
+    print(f"check-project: {look_summary(looks)[0]}", file=sys.stderr)
     for line in slow_summary(slow):
         print(f'check-project: {line}', file=sys.stderr)
-    emit('START', shards=len(plan), jobs=jobs, files=len(files), cpus=cpu, load=f'{load:.1f}', themes=themes_mode(check_env), tier=slow['tier'], slow_skipped=len(slow['skipped']))
+    emit('START', shards=len(plan), jobs=jobs, files=len(files), cpus=cpu, load=f'{load:.1f}', themes=themes_mode(check_env), tier=slow['tier'], slow_skipped=len(slow['skipped']), looks=','.join(looks['looks']), look_skipped=len(looks['skipped']), engine_touched=bool(guard))
 
     # A branch that merged new dependencies without `pub get` would fail every
     # test file at compile time, slowly; resolve the workspace first and stop.
@@ -1117,7 +1153,7 @@ def run_gate(check_env, emit, started):
     results = ordered
 
     slowest = slowest_tests(all_results)
-    summary_text = format_summary(shards, failures, totals, slowest, themes=themes_mode(check_env), stop=stop, flaky=flaky, retry_failed=retry_failed, slow=slow, budget=budget)
+    summary_text = format_summary(shards, failures, totals, slowest, themes=themes_mode(check_env), stop=stop, flaky=flaky, retry_failed=retry_failed, slow=slow, budget=budget, looks=looks, guard=guard)
     (local / 'check-summary.txt').write_text(summary_text, encoding='utf-8')
     write_aggregate_log(shards, summary_text, tests_passed)
     previous = read_json(local / 'check-durations.json').get('files', {})
@@ -1126,13 +1162,14 @@ def run_gate(check_env, emit, started):
     (local / 'check-durations.json').write_text(json.dumps({
         'sourceHash': source_hash, 'wallSeconds': round(time.monotonic() - started, 1), 'shards': len(shards), 'jobsPerShard': jobs,
         'slowestTests': slowest, 'files': dict(sorted(merged.items()))}, indent=2), encoding='utf-8')
-    sys.stderr.write(format_summary(shards, failures, totals, slowest, limit=40, themes=themes_mode(check_env), stop=stop, flaky=flaky, retry_failed=retry_failed, slow=slow, budget=budget))
+    sys.stderr.write(format_summary(shards, failures, totals, slowest, limit=40, themes=themes_mode(check_env), stop=stop, flaky=flaky, retry_failed=retry_failed, slow=slow, budget=budget, looks=looks, guard=guard))
 
     changed = stamp() != source_hash
     ok = all(results.values()) and not changed and not stop
     run_record = {
         'sourceHash': source_hash, 'completed': ok, 'themes': themes_mode(check_env), 'tier': slow['tier'],
-        'slowSkipped': slow['skipped'], 'slowRan': slow['run'], 'checks': results,
+        'slowSkipped': slow['skipped'], 'slowRan': slow['run'], 'looks': looks['looks'], 'lookSkipped': looks['skipped'],
+        'themeEngineTouched': bool(guard), 'checks': results,
         'shards': [{'index': s['index'], 'passed': s['passed'], 'exitCode': s['code'], 'seconds': round(s['seconds'], 1), 'files': len(s['files']), 'log': s['log'],
                     'startup': {'result': s['startup'][0], 'seconds': round(s['startup'][1], 1)} if s.get('startup') else None} for s in shards],
         'stoppedEarly': {'reason': stop['reason'], 'message': stop['message'], 'lines': stop['lines']} if stop else None,
@@ -1203,11 +1240,37 @@ def with_run_tmp(env, path):
     return dict(env, TMPDIR=str(path), TEMP=str(path), TMP=str(path))
 
 
+def plan_report(env, changed=None, reach=reach_by_imports):
+    """What this run would test, without running anything: (lines, numbers)."""
+    tier = tier_mode(env)
+    discovered = discover_tests(root)
+    files, looks = apply_look_filter(discovered, app_dir, env)
+    files, slow = apply_slow_tier(files, tier, app_dir, changed, reach)
+    numbers = {'discovered': len(discovered), 'legacyLookSkipped': len(looks['skipped']), 'slowSkipped': len(slow['skipped']), 'toRun': len(files),
+               'lookAware': len(looks['lookAware']), 'looks': looks['looks'], 'tier': tier, 'themes': themes_mode(env)}
+    lines = [f"check-project plan: themes {numbers['themes']}, looks {','.join(looks['looks'])}, tier {tier}.",
+             f"  test files discovered:             {numbers['discovered']}",
+             f"  skipped, legacy look (theme-suite): {numbers['legacyLookSkipped']}",
+             f"  skipped, slow tier:                 {numbers['slowSkipped']}",
+             f"  test files to run:                  {numbers['toRun']}",
+             f"  look-aware files among them:        {numbers['lookAware']} (Raft variants only unless the looks say otherwise)"]
+    lines.extend(f'    legacy look, skipped: {name}' for name in looks['skipped'])
+    lines.extend(theme_looks.guard())
+    return lines, numbers
+
+
 def main():
     check_env = dict(os.environ, PYTHONUTF8='1', RAFT_PROJECT_GATE='1')
-    all_themes, reuse = parse_args(sys.argv[1:])
+    all_themes, reuse, plan = parse_args(sys.argv[1:])
     if all_themes:
         check_env['RAFT_TEST_ALL_THEMES'] = '1'
+    # The gate tests the Raft look; the legacy looks are tool/theme-suite's. Only --all-themes widens it.
+    check_env.pop(theme_looks.MODES_VARIABLE, None)
+    check_env[theme_looks.LOOKS_VARIABLE] = 'all' if themes_mode(check_env) == 'all' else 'raft'
+    if plan:
+        lines, _ = plan_report(check_env)
+        print('\n'.join(lines))
+        sys.exit(0)
     themes = themes_mode(check_env)
     tier = tier_mode(check_env)
     check_env[TIER_VARIABLE] = tier  # the Dart tests read it (raftFullMatrix)

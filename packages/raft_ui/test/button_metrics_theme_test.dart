@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_ui/raft_ui.dart';
+import 'package:raft_ui/test_themes.dart';
 
 /// Button heights come from the theme, not from the Raft constants.
 ///
@@ -28,13 +29,13 @@ void main() {
       expect(_height(elegantThemePackId, RaftButtonSize.sm), 28);
       expect(_height(elegantThemePackId, RaftButtonSize.md), 32);
       expect(_height(elegantThemePackId, RaftButtonSize.lg), 36);
-    });
+    }, skip: raftLookSkip(raftLookElegant));
 
     test('Brutal uses its measured heights', () {
       expect(_height(brutalThemePackId, RaftButtonSize.sm), 28);
       expect(_height(brutalThemePackId, RaftButtonSize.md), 32);
       expect(_height(brutalThemePackId, RaftButtonSize.lg), 40);
-    });
+    }, skip: raftLookSkip(raftLookBrutal));
 
     test('the families differ from Raft where the data says they differ', () {
       // lg differs in all three looks, so it is the clearest signal that the
@@ -48,28 +49,28 @@ void main() {
           id: _height(id, RaftButtonSize.lg),
       };
       expect(lg.values.toSet(), hasLength(3), reason: 'lg heights: $lg');
-    });
+    }, skip: raftLookSkip(raftLookElegant, raftLookBrutal));
 
     test('xl has no data and no call site, so every theme uses Raft\'s box', () {
       // raft-ui 0.7.1 added xl; the pre-theme looks never had it and nothing
       // calls it, so there is neither a measured family value nor a usage site
       // to read one from. Deriving it from lg would invent a number, so it
       // stays at Raft's 52 for every theme until a call site exists.
-      for (final id in [
+      for (final id in raftThemeMatrix([
         raftThemePackId,
         elegantThemePackId,
         brutalThemePackId,
-      ]) {
+      ], look: raftLookOf)) {
         expect(_height(id, RaftButtonSize.xl), 52, reason: id);
       }
     });
 
     test('md is the same in every look, which is why it earns no token', () {
-      for (final id in [
+      for (final id in raftThemeMatrix([
         raftThemePackId,
         elegantThemePackId,
         brutalThemePackId,
-      ]) {
+      ], look: raftLookOf)) {
         expect(_height(id, RaftButtonSize.md), 32, reason: id);
       }
     });
