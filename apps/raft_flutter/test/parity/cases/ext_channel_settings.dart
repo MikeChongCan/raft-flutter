@@ -138,6 +138,13 @@ class _HostState extends State<_Host> {
   }
 
   @override
+  void dispose() {
+    w.dispose();
+    unawaited((w.client as ParityFakeClient).stream.close());
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) => withAppServices(
     WorkspaceView(
       controller: w,

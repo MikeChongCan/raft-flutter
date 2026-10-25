@@ -568,11 +568,20 @@ Future<void> _androidInteractions(
     // `finder`: a control that carries no ValueKey (control-state cases,
     // tool/parity-ext/build-states-cases.py): {text|tooltip|label|key, nth?, in?}.
     final finderSpec = raw['finder'] as Map?;
-    final target = finderSpec != null
-        ? parityFinder(finderSpec)
+    Finder? locate({bool skipOffstage = true}) => finderSpec != null
+        ? parityFinder(finderSpec, skipOffstage: skipOffstage)
         : key == null
         ? null
-        : find.byKey(ValueKey(key));
+        : find.byKey(ValueKey<String>(key), skipOffstage: skipOffstage);
+    final visibleTarget = locate();
+    // A built sliver child outside the viewport is omitted by the default
+    // finder. Playwright scrolls that action into view before clicking it.
+    final offscreenTap =
+        raw['type'] == 'tap' &&
+        raw['scroll'] != false &&
+        visibleTarget != null &&
+        visibleTarget.evaluate().isEmpty;
+    final target = offscreenTap ? locate(skipOffstage: false) : visibleTarget;
     // Like Playwright's actionability wait: the target may appear after the
     // fixture reads settle (up to 2s of fake time).
     for (
@@ -594,6 +603,13 @@ Future<void> _androidInteractions(
         // does not scroll either (ensureVisible would align it to the top).
         if (raw['scroll'] != false) await t.ensureVisible(target!.first);
         await t.pump();
+        // Finding an offstage widget does not authorize a capture of it: the
+        // scroll must make this real action reachable by pointer input.
+        if (offscreenTap && target!.hitTestable().evaluate().isEmpty) {
+          throw StateError(
+            'androidInteractions target $key is not hittable after scrolling',
+          );
+        }
         if (raw['mouse'] == true) {
           // Playwright clicks with a mouse: a touch tap would also raise the
           // text-selection handles of a field the dialog focuses.
@@ -793,17 +809,24 @@ Future<void> _androidInteractions(
 /// The widget a control-state interaction names without a ValueKey:
 /// `{text}`, `{tooltip}`, `{label}` (semantics label), `{key}`; `in` scopes it under a keyed
 /// ancestor, `nth` picks one of several matches.
-Finder parityFinder(Map spec) {
+Finder parityFinder(Map spec, {bool skipOffstage = true}) {
   Finder base = spec['text'] != null
-      ? find.text(spec['text'] as String)
+      ? find.text(spec['text'] as String, skipOffstage: skipOffstage)
       : spec['tooltip'] != null
-      ? find.byTooltip(spec['tooltip'] as String)
+      ? find.byTooltip(spec['tooltip'] as String, skipOffstage: skipOffstage)
       : spec['label'] != null
-      ? find.bySemanticsLabel(spec['label'] as String)
-      : find.byKey(ValueKey(spec['key'] as String));
+      ? find.bySemanticsLabel(
+          spec['label'] as String,
+          skipOffstage: skipOffstage,
+        )
+      : find.byKey(ValueKey(spec['key'] as String), skipOffstage: skipOffstage);
   final scope = spec['in'] as String?;
   if (scope != null) {
-    base = find.descendant(of: find.byKey(ValueKey(scope)), matching: base);
+    base = find.descendant(
+      of: find.byKey(ValueKey(scope), skipOffstage: skipOffstage),
+      matching: base,
+      skipOffstage: skipOffstage,
+    );
   }
   final nth = (spec['nth'] as num?)?.toInt();
   return nth == null ? base : base.at(nth);
