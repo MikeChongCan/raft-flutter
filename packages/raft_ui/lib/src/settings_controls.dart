@@ -140,7 +140,7 @@ class _RaftSettingsRecipeButtonState extends State<RaftSettingsRecipeButton> {
     final rest = widget.restColor != null && !_hovered
         ? widget.restColor
         : null;
-    final button = RaftButton(
+    Widget draw(bool expand) => RaftButton(
       label: widget.label,
       onPressed: widget.onPressed,
       uiVariant: RaftButtonVariant.fromRecipe(widget.variant),
@@ -151,11 +151,16 @@ class _RaftSettingsRecipeButtonState extends State<RaftSettingsRecipeButton> {
           ? RaftIcon(widget.glyph!, size: widget.glyphSize ?? 16)
           : null,
       glyphSize: widget.glyphSize,
-      expand: widget.expand,
+      expand: expand,
       disabledOpacity: widget.disabledOpacity,
       semanticLabel: widget.semanticLabel,
       foreground: rest,
     );
+    // `w-full` stretches only inside a bounded parent; in a Row it was the
+    // button's natural width.
+    final button = widget.expand
+        ? LayoutBuilder(builder: (context, box) => draw(box.hasBoundedWidth))
+        : draw(false);
     if (widget.restColor == null) return button;
     return RaftHoverRegion(
       onEnter: (_) => setState(() => _hovered = true),
