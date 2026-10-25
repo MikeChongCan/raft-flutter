@@ -269,7 +269,12 @@ ParityCase _forwardCase() => ParityCase(
   interact: (t, ctx) async {
     await _pumpFrames(t, 10);
     if (ctx.id.contains('.forward-expanded.')) {
-      await t.tap(find.textContaining('View all'));
+      await t.tap(
+        find.descendant(
+          of: find.byType(RaftForwardedBundle),
+          matching: find.byType(RaftShowMoreToggle),
+        ),
+      );
       await _pumpFrames(t, 6);
     }
   },
@@ -418,7 +423,7 @@ ParityCase _sosCase() => ParityCase(
   interact: (t, ctx) async {
     await _pumpFrames(t, 4);
     if (ctx.id.contains('.sos-stopped.') || ctx.id.contains('.sos-guidance.')) {
-      await t.tap(find.text('Stop').last);
+      await t.tap(find.byKey(const ValueKey('sos-stop')));
       await _pumpFrames(t, 8);
     }
     if (ctx.id.contains('.sos-guidance.')) {

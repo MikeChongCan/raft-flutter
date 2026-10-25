@@ -19,6 +19,7 @@ function parityExtPsProps() {
     raw,
     authenticated: params.get("authenticated") === "true",
     routeSet: params.get("routeSet") ?? "",
+    initialChannelId: params.get("initialChannelId"),
     mobile: params.get("platform") === "mobile",
   };
 }
@@ -40,6 +41,7 @@ function ParityExtPsView({ p }: { p: NonNullable<ReturnType<typeof parityExtPsPr
       <div data-visual-case={p.raw} style={{ width: "100vw", height: "100vh", overflow: "hidden" }}>
         <ParityExtPsPage
           slug={fx.slug}
+          initialChannelId={p.initialChannelId}
           authenticated={p.authenticated}
           onSignIn={() => undefined}
           onRegister={() => undefined}

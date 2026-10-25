@@ -112,6 +112,13 @@ def git(cwd, *args):
 REACT_GEN = OUT / 'react-provider'
 
 SPEC_PATCHES = [
+    ('async function assertVisualFontsReady(page: Page, visualFonts: VisualFontRouteState) {',
+     'async function assertVisualFontsReady(page: Page, visualFonts: VisualFontRouteState) {\n'
+     '  // Vite may mount the first case after load. Wait for the actual CSS\n'
+     '  // font definitions before probing; document.fonts.load resolves with\n'
+     '  // an empty list when a family has not been registered yet.\n'
+     '  await page.waitForFunction(() => ["Space Grotesk", "Space Mono", "Raft Quote Glyphs"]\n'
+     '    .every(family => [...document.fonts].some(face => face.family === family)));'),
     ('const require = createRequire(import.meta.url);',
      'const require = createRequire(resolve(process.env.SLOCK_REACT_REPO_DIR!, "packages/web/package.json"));'),
     ('const packageRoot = resolve(testDir, "..");',

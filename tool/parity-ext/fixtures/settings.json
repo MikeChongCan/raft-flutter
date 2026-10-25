@@ -353,6 +353,13 @@
     "canManageBilling": true
    }
   },
+  "GET /billing/hosted-runtime-usage": {
+   "$status": 404,
+   "$body": {
+    "error": "This server has no cloud agents",
+    "code": "hosted_runtime_spend_not_enabled"
+   }
+  },
   "GET /servers/visual-server/members": [
    {
     "userId": "visual-human-1",

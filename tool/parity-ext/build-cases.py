@@ -534,6 +534,11 @@ settings_fixture = {
         # providers render the same data.
         f'GET /servers/{SID}/usage': {'agents': 2, 'machines': 1, 'channels': 4},
         'GET /billing/subscription': billing_free,
+        # This fixture has local agents and no hosted runtime. The mounted
+        # billing route returns 404 in that state (billing.ts at v1.21.23),
+        # rather than a 200 empty object that crashes HostedRuntimeSpendCard.
+        'GET /billing/hosted-runtime-usage': {'$status': 404, '$body': {
+            'error': 'This server has no cloud agents', 'code': 'hosted_runtime_spend_not_enabled'}},
         f'GET /servers/{SID}/members': members,
         f'GET /servers/{SID}/invites': invites,
         f'GET /servers/{SID}/join-links': join_links,
@@ -801,7 +806,9 @@ settings_case('billing.pro', 'Plan & Billing: Pro subscription (seat usage, mana
 settings_case('billing.pro-plan', 'Plan & Billing: Pro current plan card (seat bar, portal)', tab='billing',
               selector=CURRENT_PLAN, android_key='billing-current-plan-card', route_set='billing-pro', hint=PLAN_HINT)
 settings_case('billing.pro-summary', 'Plan & Billing: manage seats summary card', tab='billing',
-              selector=SUMMARY, android_key='billing-summary-card', route_set='billing-pro', hint=PLAN_HINT)
+              selector=SUMMARY, android_key='billing-summary-card', route_set='billing-pro', hint=PLAN_HINT,
+              interactions=[{'type': 'reveal', 'target': SUMMARY}],
+              android=[{'type': 'reveal', 'key': 'billing-summary-card'}])
 settings_case('billing.admin', 'Plan & Billing: admin (cannot change billing)', tab='billing', role='admin',
               region='panel', viewport=FRAME_TALL, route_set='billing-admin', hint=PLAN_HINT)
 settings_case('billing.loading', 'Plan & Billing: loading skeleton', tab='billing', region='panel',

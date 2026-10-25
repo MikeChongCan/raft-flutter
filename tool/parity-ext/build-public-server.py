@@ -181,6 +181,15 @@ def make_cases():
                          'w': viewport['width'], 'h': viewport['height']}
                 if s.get('authenticated'):
                     props['authenticated'] = 'true'
+                web = list(s.get('web', []))
+                android = list(s.get('android', []))
+                if platform == 'mobile' and s['name'] == 'page.thread':
+                    # Start at the supported /s/:slug/channel/:id route.
+                    # The case still opens the thread by clicking its badge.
+                    # v1.21.23 clears messages when reselecting the already
+                    # selected first channel; preserve that separate entry bug.
+                    props['initialChannelId'] = 'pub-general'
+                    props['entryRoute'] = f'/s/{SLUG}/channel/pub-general'
                 cases.append({
                     'id': cid,
                     'title': f'{s["title"]} {platform} ({theme})',
@@ -196,8 +205,8 @@ def make_cases():
                         'selector': f"[data-visual-case='{cid}']",
                         'crop': 'element',
                         'contract': 'screen-route',
-                        'interactions': s.get('web', []),
-                        'androidInteractions': s.get('android', []),
+                        'interactions': web,
+                        'androidInteractions': android,
                     },
                     'reactPathHint': 'packages/web/src/pages/PublicServerPage.tsx, components/layout/LeftRail.tsx',
                     'androidCaseHint': f"apps/raft_flutter/test/parity/cases/ext_public_server.dart '{platform}.{s['name']}'",

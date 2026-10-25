@@ -133,6 +133,8 @@ SPEC_EXT_PATCHES = [
      '    }\n'
      '    await parityExtRoutes(page, visualCase);\n    await page.goto(caseUrl(visualCase));'),
     ('    } else if (interaction.type === "fill" && interaction.target) {',
+     '    } else if ((interaction.type as string) === "reveal" && interaction.target) {\n'
+     '      await page.locator(interaction.target).first().scrollIntoViewIfNeeded();\n'
      '    } else if ((interaction.type as string) === "hover" && interaction.target) {\n'
      '      await page.locator(interaction.target).first().hover();\n'
      '    } else if ((interaction.type as string) === "press" && interaction.target) {\n'

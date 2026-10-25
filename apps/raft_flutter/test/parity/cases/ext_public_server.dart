@@ -73,6 +73,7 @@ Widget _page(ParityContext ctx) {
   final page = PublicServerView(
     client: client,
     slug: fx['slug'] as String,
+    initialChannelId: ctx.props['initialChannelId'] as String?,
     account: authenticated
         ? PublicServerAccount(
             servers: servers,
