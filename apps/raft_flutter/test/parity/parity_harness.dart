@@ -746,6 +746,10 @@ Future<void> _androidInteractions(
         });
       case 'focus':
         // Keyboard focus ring on the control (the Web case calls locator.focus() after no pointer use).
+        final previousHighlight = FocusManager.instance.highlightStrategy;
+        addTearDown(
+          () => FocusManager.instance.highlightStrategy = previousHighlight,
+        );
         FocusManager.instance.highlightStrategy =
             FocusHighlightStrategy.alwaysTraditional;
         FocusNode? node;
@@ -775,16 +779,19 @@ Future<void> _androidInteractions(
         final markPad = ((raw['pad'] as num?) ?? 6).toDouble();
         final markRect = t.getRect(target!.first).inflate(markPad);
         final overlay = t.state<OverlayState>(find.byType(Overlay).first);
-        overlay.insert(
-          OverlayEntry(
-            builder: (_) => Positioned.fromRect(
-              rect: markRect,
-              child: const IgnorePointer(
-                child: SizedBox.expand(key: ValueKey('states-crop')),
-              ),
+        final marker = OverlayEntry(
+          builder: (_) => Positioned.fromRect(
+            rect: markRect,
+            child: const IgnorePointer(
+              child: SizedBox.expand(key: ValueKey('states-crop')),
             ),
           ),
         );
+        overlay.insert(marker);
+        addTearDown(() {
+          if (marker.mounted) marker.remove();
+          marker.dispose();
+        });
       case 'key':
         final name = raw['key'] as String;
         final logical = switch (name) {

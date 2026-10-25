@@ -12,7 +12,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart' show addTearDown;
+import 'package:flutter_test/flutter_test.dart'
+    show addTearDown, expect, find, isTrue;
 import 'package:raft_flutter/data/personal_presentation.dart';
 import 'package:raft_flutter/data/source_time_formatter.dart';
 import 'package:raft_flutter/data/workspace_controller.dart';
@@ -154,6 +155,26 @@ final ParityCase _case = ParityCase(
   notes: 'Extension suite (not official). Real WorkspaceView, app frame.',
   settle: const Duration(milliseconds: 1200),
   build: _build,
+  interact: (t, ctx) async {
+    if (ctx.props['state'] != 'focus') return;
+    final key = const {
+      'topbar-search': 'topbar-search',
+      'topbar-bell': 'topbar-notifications',
+      'topbar-workspace': 'topbar-workspace',
+    }[ctx.props['control']];
+    if (key == null) return;
+    final target = t.element(find.byKey(ValueKey<String>(key)));
+    final focused = FocusManager.instance.primaryFocus?.context;
+    var owned = identical(focused, target);
+    focused?.visitAncestorElements((element) {
+      if (identical(element, target)) {
+        owned = true;
+        return false;
+      }
+      return true;
+    });
+    expect(owned, isTrue, reason: 'Keyboard focus must belong to $key');
+  },
 );
 
 const _keys = [

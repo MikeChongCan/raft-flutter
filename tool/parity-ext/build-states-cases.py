@@ -132,6 +132,11 @@ def build_cases():
         platform, viewport, frame_props = SCENES[scene]
         for state in states:
             web_steps, flutter_steps = steps(state, web, flutter, extra)
+            if control.startswith('topbar-'):
+                # The fixture has three workspaces. Wait for the real strip's
+                # measured layout before marking a button; its initial shape
+                # can still carry the current workspace avatar.
+                web_steps = [{'type': 'reveal', 'target': '[data-testid="desktop-workspace-strip"]'}, *web_steps]
             for suffix, theme in THEMES.items():
                 props = {'extCase': f'{platform}.{control}.{state}', 'extKind': 'states', 'parityTheme': theme,
                          'platform': 'mobile' if platform == 'phone' else 'desktop', 'frameWidth': platform,
