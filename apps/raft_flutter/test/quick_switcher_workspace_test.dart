@@ -239,8 +239,8 @@ Future<void> chord(
 }
 
 void main() {
-  // Unqualified cases in this suite exercise the native desktop rail. Set an
-  // explicit platform: Flutter's default Android layout has a top bar when wide.
+  // Unqualified cases exercise the native desktop workspace and its global
+  // search button. Set the platform explicitly for desktop keyboard behavior.
   for (final modifier in [
     ('Ctrl', LogicalKeyboardKey.controlLeft, TargetPlatform.linux),
     ('Cmd', LogicalKeyboardKey.metaLeft, TargetPlatform.macOS),
@@ -300,12 +300,12 @@ void main() {
         'c-ops',
         'c-general',
       ]);
-      // Cmd/Ctrl+K restores the saved query; the rail starts fresh.
+      // Cmd/Ctrl+K restores the saved query; the global button starts fresh.
       await chord(t, LogicalKeyboardKey.controlLeft, LogicalKeyboardKey.keyK);
       await t.pump();
       expect(find.byKey(const Key('quick-switcher-recent')), findsNothing);
       await key(t, LogicalKeyboardKey.escape);
-      await t.tap(find.byKey(const ValueKey('rail-search')));
+      await t.tap(find.byKey(const ValueKey('topbar-search')));
       await t.pump();
       // The conversation behind the overlay is never listed.
       expect(
@@ -528,15 +528,15 @@ void main() {
     variant: TargetPlatformVariant.only(TargetPlatform.linux),
   );
 
-  group('rail Search opens the desktop overlay', () {
+  group('global Search opens the desktop overlay', () {
     final scope = SearchMemoryScope(
       'https://public-fixture.invalid',
       's',
       'alice',
     );
     SearchStateSnapshot saved() => SearchMemoryStore().loadSync(scope).state;
-    Future<void> railSearch(WidgetTester t) async {
-      await t.tap(find.byKey(const ValueKey('rail-search')));
+    Future<void> globalSearch(WidgetTester t) async {
+      await t.tap(find.byKey(const ValueKey('topbar-search')));
       await t.pump();
     }
 
@@ -546,11 +546,11 @@ void main() {
     }
 
     testWidgets(
-      '[N27] the rail Search button floats the switcher with a focused field, not the Search page',
+      '[N27] the global Search button floats the switcher with a focused field, not the Search page',
       (t) async {
         final (client, w) = await mount(t);
         final calls = client.calls.length;
-        await railSearch(t);
+        await globalSearch(t);
         expect(find.byType(QuickSwitcher), findsOneWidget);
         expect(find.byType(ResourceView), findsNothing);
         expect(find.byKey(const Key('quick-switcher-recent')), findsOneWidget);
@@ -565,29 +565,38 @@ void main() {
           ),
         );
         expect(editable.widget.focusNode.hasPrimaryFocus, isTrue);
-        // Escape dismisses; the page and its rail are untouched.
+        // Escape dismisses; the page and its global button are untouched.
         await key(t, LogicalKeyboardKey.escape);
         expect(find.byType(QuickSwitcher), findsNothing);
         expect(w.channel!.id, 'c-general');
-        expect(find.byKey(const ValueKey('rail-search')), findsOneWidget);
+        expect(find.byKey(const ValueKey('topbar-search')), findsOneWidget);
       },
       variant: TargetPlatformVariant.only(TargetPlatform.linux),
     );
 
     testWidgets(
-      '[N27] a second click on the rail while open does not stack another switcher; the backdrop click closes it',
+      '[N27] a second click on the global search button while open does not stack another switcher; the backdrop click closes it',
       (t) async {
         await mount(t);
-        await railSearch(t);
+        await globalSearch(t);
         await chord(t, LogicalKeyboardKey.controlLeft, LogicalKeyboardKey.keyK);
         await t.pump();
         expect(find.byType(QuickSwitcher), findsOneWidget);
-        // The rail sits under the transparent backdrop: a click there is a
-        // click outside the card.
+        // The anchored card covers the global trigger. A second click there
+        // stays inside the existing search rather than creating another one.
         await t.tap(
-          find.byKey(const ValueKey('rail-search')),
+          find.byKey(const ValueKey('topbar-search')),
           warnIfMissed: false,
         );
+        await t.pumpAndSettle();
+        expect(find.byType(QuickSwitcher), findsOneWidget);
+        // Dismiss using a point on the actual backdrop, outside the card.
+        final card = t.getRect(
+          find.byKey(const ValueKey('search-overlay-card')),
+        );
+        const outside = Offset(8, 800);
+        expect(card.contains(outside), isFalse);
+        await t.tapAt(outside);
         await t.pumpAndSettle();
         expect(find.byType(QuickSwitcher), findsNothing);
       },
@@ -595,7 +604,7 @@ void main() {
     );
 
     testWidgets(
-      '[N27] Cmd/Ctrl+K restores the last query selected; the rail always starts empty and resets the saved state',
+      '[N27] Cmd/Ctrl+K restores the last query selected; the global button always starts empty and resets the saved state',
       (t) async {
         await mount(t);
         await chord(t, LogicalKeyboardKey.controlLeft, LogicalKeyboardKey.keyK);
@@ -613,8 +622,8 @@ void main() {
           const TextSelection(baseOffset: 0, extentOffset: 3),
         );
         await key(t, LogicalKeyboardKey.escape);
-        // The rail entry does not restore, and replaces the saved state.
-        await railSearch(t);
+        // The global entry does not restore, and replaces the saved state.
+        await globalSearch(t);
         expect(
           t.widget<TextField>(find.byType(TextField).last).controller!.text,
           isEmpty,
@@ -636,7 +645,7 @@ void main() {
       '[N27] filters appear with a query, narrow the preview request, persist, and travel to the full page',
       (t) async {
         final (client, w) = await mount(t);
-        await railSearch(t);
+        await globalSearch(t);
         expect(find.byKey(const Key('quick-switcher-filters')), findsNothing);
         await type(t, 'quarterly');
         expect(find.byKey(const Key('quick-switcher-filters')), findsOneWidget);
@@ -668,7 +677,7 @@ void main() {
       '[N27] Escape closes the open filter menu first, then the switcher',
       (t) async {
         await mount(t);
-        await railSearch(t);
+        await globalSearch(t);
         await type(t, 'quarterly');
         await t.tap(find.text('Any Time'));
         await t.pumpAndSettle();
@@ -687,7 +696,7 @@ void main() {
       '[N27] the cursor starts on the first row, follows the arrows, and Return opens that row',
       (t) async {
         final (_, w) = await mount(t);
-        await railSearch(t);
+        await globalSearch(t);
         await key(t, LogicalKeyboardKey.arrowDown);
         await key(t, LogicalKeyboardKey.arrowDown); // stops at the last row
         await key(t, LogicalKeyboardKey.arrowUp);
@@ -706,7 +715,7 @@ void main() {
       (t) async {
         final (client, _) = await mount(t);
         client.failSearch = true;
-        await railSearch(t);
+        await globalSearch(t);
         await type(t, 'zq roadmap');
         await t.pump(const Duration(milliseconds: 300));
         await t.pump();
@@ -767,15 +776,14 @@ void main() {
       variant: TargetPlatformVariant.only(TargetPlatform.linux),
     );
 
-    testWidgets(
-      '[N27] a narrow window keeps the rail Search on the full page',
-      (t) async {
-        final (_, w) = await mount(t, size: const Size(390, 844));
-        expect(find.byKey(const ValueKey('rail-search')), findsNothing);
-        expect(w.section, 'chat');
-      },
-      variant: TargetPlatformVariant.only(TargetPlatform.linux),
-    );
+    testWidgets('[N27] a narrow window keeps Search on the full page', (
+      t,
+    ) async {
+      final (_, w) = await mount(t, size: const Size(390, 844));
+      expect(find.byKey(const ValueKey('topbar-search')), findsNothing);
+      expect(find.byKey(const ValueKey('rail-search')), findsNothing);
+      expect(w.section, 'chat');
+    }, variant: TargetPlatformVariant.only(TargetPlatform.linux));
   });
 }
 

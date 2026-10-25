@@ -59,7 +59,7 @@ void main() {
         );
         await frames(t, () {});
         await t.pumpAndSettle();
-        await t.tap(find.byKey(const Key('rail-workspace')));
+        await t.tap(find.byKey(const Key('topbar-workspace')));
         await t.pumpAndSettle();
         final stale = t
             .widget<RaftServerSwitcher>(find.byType(RaftServerSwitcher))
@@ -137,7 +137,7 @@ void main() {
         await frames(t, () {});
         await t.pumpAndSettle();
         final uri = w.location.toString(), history = w.navigation.index;
-        await t.tap(find.byKey(const Key('rail-workspace')));
+        await t.tap(find.byKey(const Key('topbar-workspace')));
         await frames(t, () {});
         await t.pumpAndSettle();
         expect(find.byKey(const Key('server-switcher-menu')), findsOneWidget);
@@ -150,12 +150,12 @@ void main() {
         expect(w.location.toString(), uri);
         expect(w.navigation.index, history);
         expect(find.byKey(const Key('server-switcher-menu')), findsNothing);
-        await t.tap(find.byKey(const Key('rail-workspace')));
+        await t.tap(find.byKey(const Key('topbar-workspace')));
         await t.pumpAndSettle();
         await t.sendKeyEvent(LogicalKeyboardKey.escape);
         await t.pumpAndSettle();
         expect(w.location.toString(), uri);
-        await t.tap(find.byKey(const Key('rail-workspace')));
+        await t.tap(find.byKey(const Key('topbar-workspace')));
         await t.pumpAndSettle();
         await t.tap(find.text('Switch or Create Server'));
         await t.pumpAndSettle();
@@ -197,7 +197,7 @@ void main() {
         );
         await frames(t, () {});
         await t.pumpAndSettle();
-        await t.tap(find.byKey(const Key('rail-workspace')));
+        await t.tap(find.byKey(const Key('topbar-workspace')));
         await t.pumpAndSettle();
         await t.tap(find.text('Invite Human'));
         await t.pumpAndSettle();
@@ -225,7 +225,7 @@ void main() {
         w.server = RaftRecord({...w.server!.json, 'role': 'member'});
         w.notifyListeners();
         await frames(t, () {});
-        await t.tap(find.byKey(const Key('rail-workspace')));
+        await t.tap(find.byKey(const Key('topbar-workspace')));
         await t.pumpAndSettle();
         expect(find.text('Invite Human'), findsNothing);
         await retire(t);

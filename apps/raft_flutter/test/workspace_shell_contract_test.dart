@@ -62,14 +62,13 @@ void main() {
   leakDebt(const ['ValueNotifier<bool>']);
   for (final dark in raftThemeMatrix([false, true])) {
     testWidgets(
-      '[K08a] ${dark ? 'dark' : 'light'} classic owner keeps six entries, guest hides directory, and one sidebar heading',
+      '[K08a] ${dark ? 'dark' : 'light'} native owner keeps global actions and five rail entries; guest hides directory',
       (t) async {
         final (w, api) = await pageFixture(t, section: 'chat');
         api.routes['GET /agents'] = (_) => [];
         api.routes['GET /servers/s1/members'] = (_) => [];
         await mountShell(t, w, dark);
         for (final id in [
-          'search',
           'chat',
           'activity',
           'tasks',
@@ -78,24 +77,33 @@ void main() {
         ]) {
           expect(find.byKey(ValueKey('rail-$id')), findsOneWidget);
         }
-        expect(find.byType(RaftChatSidebarHeading), findsOneWidget);
-        expect(t.getSize(find.byType(RaftChatSidebarHeading)).height, 56);
-        expect(find.byKey(const Key('rail-workspace')), findsOneWidget);
+        final topBar = find.byType(RaftWorkspaceTopBar);
+        expect(topBar, findsOneWidget);
+        expect(t.getRect(topBar), const Rect.fromLTWH(0, 0, 1280, 48));
+        expect(find.byType(RaftChatSidebarHeading), findsNothing);
+        expect(find.byKey(const Key('topbar-workspace')), findsOneWidget);
+        expect(find.byKey(const Key('rail-workspace')), findsNothing);
+        expect(find.byKey(const Key('rail-search')), findsNothing);
         expect(find.byKey(const Key('account-navigation')), findsNothing);
         expect(find.byType(PopupMenuButton<String>), findsNothing);
-        final search = t.getRect(find.byKey(const ValueKey('rail-search'))),
-            chat = t.getRect(find.byKey(const ValueKey('rail-chat')));
-        expect(chat.top - search.top, 46);
-        // AppRailHeader 56px plus the nav's pt-2.5 (10px).
-        expect(search.top, 66);
+        final search = t.getRect(find.byKey(const ValueKey('topbar-search'))),
+            chat = t.getRect(find.byKey(const ValueKey('rail-chat'))),
+            activity = t.getRect(find.byKey(const ValueKey('rail-activity')));
+        expect(search.top, 5.5);
+        expect(search.height, 36);
+        expect(activity.top - chat.top, 46);
+        // The shared row is 48px, followed by the rail's 8px top inset.
+        expect(chat.top, 56);
         w.server = RaftRecord({...w.server!.json, 'role': 'guest'});
         w.notifyListeners();
         await frames(t, () {});
         expect(find.byKey(const ValueKey('rail-members')), findsNothing);
         expect(find.byKey(const ValueKey('rail-computers')), findsNothing);
-        for (final id in ['search', 'chat', 'activity', 'tasks']) {
+        for (final id in ['chat', 'activity', 'tasks']) {
           expect(find.byKey(ValueKey('rail-$id')), findsOneWidget);
         }
+        expect(find.byKey(const Key('topbar-search')), findsOneWidget);
+        expect(find.byKey(const Key('topbar-workspace')), findsOneWidget);
         await retire(t);
       },
       variant: TargetPlatformVariant({TargetPlatform.linux}),

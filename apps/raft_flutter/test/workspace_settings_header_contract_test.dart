@@ -15,7 +15,7 @@ import 'workspace_source_location_contract_test.dart' show pageFixture, frames;
 import 'support/app_services_fixture.dart';
 
 // Actual Source MainLayout SettingsRoute -> SettingsPanel + Sidebar Settings
-// composition. Its content header begins in the top row of the desktop pane;
+// composition. Native desktop content begins below the shared global row;
 // WorkspaceView must not prepend another full-width Settings page header.
 void main() {
   for (final dark in raftThemeMatrix([false, true])) {
@@ -34,7 +34,7 @@ void main() {
           await mountShell(t, w, dark, width: width);
           final header = find.byType(RaftSettingsPanelHeader);
           expect(header, findsOneWidget);
-          expect(t.getRect(header).top, 0);
+          expect(t.getRect(header).top, width >= 768 ? 48 : 0);
           expect(find.byType(RaftPageHeader), findsNothing);
           expect(find.byType(AccountSettings), findsOneWidget);
           expect(w.location.toString(), '/s/demo/settings/account');
@@ -55,7 +55,7 @@ void main() {
             await frames(t, () {});
             await t.pumpAndSettle();
             expect(w.location.toString(), '/s/demo/settings/language-region');
-            expect(t.getRect(find.byType(RaftSettingsPanelHeader)).top, 0);
+            expect(t.getRect(find.byType(RaftSettingsPanelHeader)).top, 48);
             expect(find.byType(RaftPageHeader), findsNothing);
           }
           await retire(t);
@@ -117,7 +117,7 @@ void main() {
           );
           expect(
             t.getRect(find.byType(RaftSettingsPanelHeader)).top,
-            0,
+            48,
             reason: 'frame $frame',
           );
           expect(

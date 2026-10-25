@@ -36,7 +36,7 @@ void main() {
   leakDebt(const ['ValueNotifier<bool>']);
   for (final dark in raftThemeMatrix([false, true])) {
     testWidgets(
-      '[K08b] ${dark ? 'dark' : 'light'} actual three footer entries retain Source slot geometry and unseen Help lifecycle',
+      '[K08b] ${dark ? 'dark' : 'light'} native bell moves to global row; footer Help/Settings retain geometry and unseen lifecycle',
       (t) async {
         final (w, api) = await pageFixture(t, section: 'chat');
         api.routes['GET /agents'] = (_) => [];
@@ -46,12 +46,16 @@ void main() {
         final help = find.byKey(const Key('rail-help'));
         final settings = find.byKey(const Key('rail-settings'));
         final bell = find.byType(RaftMobileNotificationButton);
-        // raft-ui 0.7.0 appRail.footer: three 40px items, gap-1.5 (6px),
-        // pb-2 (8px), inside this 800px-high window.
-        expect(t.getRect(bell).top, 660);
+        // Notifications move into the 48px global row. Help and Settings keep
+        // their 40px footer slots, 6px gap and 8px bottom inset.
+        expect(
+          find.ancestor(of: bell, matching: find.byType(RaftWorkspaceTopBar)),
+          findsOneWidget,
+        );
+        expect(t.getRect(bell).top, 5.5);
         expect(t.getRect(help).top, 706);
         expect(t.getRect(settings).top, 752);
-        expect(t.getSize(bell), const Size(40, 40));
+        expect(t.getSize(bell), const Size(36, 36));
         expect(t.widget<RaftWorkspaceHelpMenu>(help).attention, true);
         final attention = find.descendant(
           of: help,

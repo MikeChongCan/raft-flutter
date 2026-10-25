@@ -15,7 +15,7 @@ import 'workspace_source_location_contract_test.dart' show LocalClient, frames;
 
 // Working agents are shown where they appear (Raft Design System decision
 // 0006), in the real WorkspaceView: the summary on phone Home and the desktop
-// Chat heading, Working now, the agent's row, the channel header's subtitle,
+// global row, Working now, the agent's row, the channel header's subtitle,
 // and no live bar.
 class _EventClient extends LocalClient {
   _EventClient(super.adapter);
@@ -303,10 +303,10 @@ void main() {
         findsOneWidget,
       );
 
-      // On desktop the summary counts everyone, in the Chat sidebar heading.
+      // On desktop the summary counts everyone, in the global workspace row.
       expect(
         find.descendant(
-          of: find.byType(RaftChatSidebarHeading),
+          of: find.byType(RaftWorkspaceTopBar),
           matching: find.byKey(const Key('working-agents-summary')),
         ),
         findsOneWidget,

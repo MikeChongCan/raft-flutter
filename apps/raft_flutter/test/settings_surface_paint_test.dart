@@ -71,7 +71,12 @@ void main() {
             'administration' => 'Administration',
             _ => 'Applications',
           });
-          expect(t.getRect(header).top, 0);
+          final headerTop = width >= 768 ? 48.0 : 0.0;
+          expect(t.getRect(header).top, headerTop);
+          expect(
+            find.byType(RaftWorkspaceTopBar),
+            width >= 768 ? findsOneWidget : findsNothing,
+          );
           expect(find.byType(RaftPageHeader), findsNothing);
           final boundary =
               key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
@@ -93,7 +98,7 @@ void main() {
                 (c.b * 255).round(),
               ];
               expect(
-                rgb(28),
+                rgb(headerTop.toInt() + 28),
                 bytes(
                   RaftTokens.theme(dark: dark).colors['layer-panel-header']!,
                 ),
