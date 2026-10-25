@@ -394,6 +394,12 @@ class RaftSettingsPanelFrame extends StatelessWidget {
     this.contentColor,
   });
 
+  /// Web SettingsPanel's content div is `bg-layer-canvas` (v1.21.23
+  /// SettingsPanel.tsx); a pack without `layer-settings-content` keeps the
+  /// a57b9dab `bg-layer-panel`.
+  Color contentSurfaceOf(RaftTokens t) =>
+      t.colors['layer-settings-content'] ?? t.panel;
+
   /// The content surface; defaults to `bg-layer-panel
   /// theme-brutal:bg-white` (see [feedbackSurface]).
   final Color? contentColor;
@@ -401,7 +407,8 @@ class RaftSettingsPanelFrame extends StatelessWidget {
   /// SettingsPanel's content div for the Feedback tab: `bg-layer-panel
   /// dark:bg-layer-card theme-brutal:bg-white`.
   static Color feedbackSurface(RaftTokens t) =>
-      t.dark ? t.colors['layer-card']! : t.panel;
+      t.colors['layer-settings-content'] ??
+      (t.dark ? t.colors['layer-card']! : t.panel);
 
   /// Null when the page brings its own header inside the content
   /// (AboutFeedbackPanel's PanelHeader sits in SettingsPanel's content div).
@@ -456,8 +463,11 @@ class RaftSettingsPanelFrame extends StatelessWidget {
               Expanded(
                 // Without a frame header the content surface is the top one.
                 child: RaftStatusBarSource(
-                  color: contentColor ?? t.panel,
-                  child: Material(color: contentColor ?? t.panel, child: child),
+                  color: contentColor ?? contentSurfaceOf(t),
+                  child: Material(
+                    color: contentColor ?? contentSurfaceOf(t),
+                    child: child,
+                  ),
                 ),
               ),
             ],
@@ -590,7 +600,9 @@ class RaftSettingsCard extends StatelessWidget {
     vertical: 12,
   );
   static BoxDecoration decoration(RaftTokens t) => BoxDecoration(
-    color: t.panel,
+    // Web's settings Card is `bg-layer-card`; a pack without
+    // `layer-settings-card` keeps the a57b9dab `bg-layer-panel`.
+    color: t.colors['layer-settings-card'] ?? t.panel,
     borderRadius: BorderRadius.circular(
       t.size('radius.settingsCard', fallback: 0),
     ),
