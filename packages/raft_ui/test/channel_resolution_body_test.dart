@@ -33,7 +33,10 @@ void main() {
           if (narrow) {
             final button = tester.getRect(find.byType(RaftPanelIconButton));
             final line = tester.getRect(find.byType(RaftCssLineBox));
-            expect(button.size, const Size(28, 28));
+            // raft-ui 0.7.0 PanelAction `md:h-8 md:min-w-8` (the test view is
+            // 800 wide; below md it is `h-11 min-w-11`, see
+            // panel_icon_button_theme_test.dart).
+            expect(button.size, const Size(32, 32));
             expect(line.top - button.bottom, 16);
             await tester.tap(find.byType(RaftPanelIconButton));
             expect(backs, 1);

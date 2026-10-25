@@ -40,27 +40,38 @@ class RaftProductEmptyState extends StatelessWidget {
     // keep the recipe of a57b9dab (emptyState.look).
     if (t.option('emptyState.look', or: 'plain') == 'plain') {
       final base = DefaultTextStyle.of(context).style;
+      final contentMax = t.size('size.emptyContentMax', fallback: 384);
+      final descriptionMax = t.size('size.emptyDescriptionMax', fallback: 300);
       return Center(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 48),
+          padding: EdgeInsets.symmetric(
+            horizontal: t.size('space.emptyInline', fallback: 24),
+            vertical: t.size('space.emptyBlock', fallback: 48),
+          ),
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 384),
+            constraints: BoxConstraints(
+              maxWidth: contentMax > 0 ? contentMax : double.infinity,
+            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 SizedBox(
                   key: const ValueKey('empty-state-icon'),
-                  child: icon(context, 36, t.colors['foreground-hint']!),
+                  child: icon(
+                    context,
+                    t.size('size.emptyGlyph', fallback: 36),
+                    t.colors['foreground-hint']!,
+                  ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: t.size('space.emptyIconAfter', fallback: 16)),
                 RaftCssText(
                   title,
                   key: const ValueKey('empty-state-title'),
                   textAlign: TextAlign.center,
                   style: RaftTypography.body(
                     t,
-                    size: 17,
-                    line: 22,
+                    size: t.size('type.emptyTitle.size', fallback: 17),
+                    line: t.size('type.emptyTitle.line', fallback: 22),
                     weight: FontWeight.w700,
                     color: t.colors['foreground-muted'],
                   ).copyWith(fontFamily: base.fontFamily),
@@ -68,14 +79,18 @@ class RaftProductEmptyState extends StatelessWidget {
                 if (description != null) ...[
                   const SizedBox(height: 8),
                   ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 300),
+                    constraints: BoxConstraints(
+                      maxWidth: descriptionMax > 0
+                          ? descriptionMax
+                          : double.infinity,
+                    ),
                     child: RaftCssText(
                       description!,
                       textAlign: TextAlign.center,
                       style: RaftTypography.body(
                         t,
-                        size: 14,
-                        line: 20,
+                        size: t.size('type.emptyBody.size', fallback: 14),
+                        line: t.size('type.emptyBody.line', fallback: 20),
                         color: t.colors['foreground-hint'],
                       ).copyWith(fontFamily: base.fontFamily),
                     ),
@@ -83,7 +98,9 @@ class RaftProductEmptyState extends StatelessWidget {
                 ],
                 if (action != null)
                   Padding(
-                    padding: const EdgeInsets.only(top: 20),
+                    padding: EdgeInsets.only(
+                      top: t.size('space.emptyActionBefore', fallback: 20),
+                    ),
                     child: action,
                   ),
               ],

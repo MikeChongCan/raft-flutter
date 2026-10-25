@@ -304,8 +304,9 @@ class RaftThreadOverflowAction extends StatelessWidget {
   final String label;
   final VoidCallback? onPressed;
 
-  // ThreadOverflowMenu trigger: Button size="icon-sm" variant="outline" with
-  // EllipsisVertical (14px), the same control as the channel topbar actions.
+  // ThreadOverflowMenu trigger: raft-ui PanelAction with EllipsisVertical
+  // (Web ThreadOverflowMenu.tsx); the pack's `panelAction.surface` picks the
+  // drawing (RaftPanelIconButton).
   @override
   Widget build(BuildContext context) => RaftPanelIconButton(
     glyph: RaftGlyph.ellipsisVertical,

@@ -39,8 +39,8 @@ extension RaftPageTokens on RaftTokens {
       option('formSection.look', or: 'web23') == 'web23'
       ? RaftTypography.body(
           this,
-          size: 13,
-          line: 18,
+          size: typeSlot('footnote').fontSize,
+          line: typeSlot('footnote').lineHeight,
           weight: FontWeight.w700,
           color: colors['foreground-muted'],
         )
@@ -50,8 +50,8 @@ extension RaftPageTokens on RaftTokens {
       option('formSection.look', or: 'web23') == 'web23'
       ? RaftTypography.body(
           this,
-          size: 13,
-          line: 18,
+          size: typeSlot('footnote').fontSize,
+          line: typeSlot('footnote').lineHeight,
           color: colors['foreground-hint'],
         )
       : legacy;

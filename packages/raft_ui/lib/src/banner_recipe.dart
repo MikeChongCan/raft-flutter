@@ -34,8 +34,13 @@ RaftBannerRecipeStyle raftBannerSlots(
   // raft-ui `banner` sizes: `sm` px-3 py-2 gap-x-2 text-footnote (13/18),
   // `md` px-3.5 py-3, `lg` px-4 py-3.5; only `sm` changes the text.
   final small = size == RaftBannerRecipeSize.sm;
-  final bodySize = small ? 13.0 : t.size('type.bannerBody.size', fallback: 13);
-  final bodyLine = small ? 18.0 : t.size('type.bannerBody.line', fallback: 16);
+  final footnote = t.typeSlot('footnote');
+  final bodySize = small
+      ? footnote.fontSize
+      : t.size('type.bannerBody.size', fallback: 13);
+  final bodyLine = small
+      ? footnote.lineHeight
+      : t.size('type.bannerBody.line', fallback: 16);
   desc['font-size'] = CssNum(bodySize, 'px');
   desc['line-height'] = CssNum(bodyLine, 'px');
   final root = {...source.root.properties};
@@ -86,7 +91,7 @@ RaftBannerRecipeStyle raftBannerSlots(
     'px',
   );
   root['font-size'] = CssNum(bodySize, 'px');
-  root['line-height'] = CssNum(small ? 18 : 20, 'px');
+  root['line-height'] = CssNum(small ? footnote.lineHeight : 20, 'px');
   root['letter-spacing'] = CssNum(
     t.size('type.bannerBody.tracking', fallback: 0),
     'px',

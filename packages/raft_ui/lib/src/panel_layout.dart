@@ -26,7 +26,7 @@ import 'recipes/panel_action.g.dart';
 import 'recipes/panel_header.g.dart';
 import 'raft/tabs.dart';
 import 'raft/button.dart';
-import 'tokens/tokens.dart';
+import 'raft/button_surface.dart';
 import 'raft/ui_tokens.dart';
 import 'recipes/token_binding.dart';
 import 'recipe_surface.dart' show raftCssText;
@@ -497,15 +497,15 @@ class RaftPanelHeaderBar extends StatelessWidget {
       MediaQuery.sizeOf(context).height,
     );
     final gap = narrow ? 8.0 : 12.0;
-    final titleStyle = t.scale(RaftTypeScale.headline);
+    final titleStyle = t.scale(t.typeSlot('headline'));
     final metaStyle = profileHandle
         ? t.scale(
-            RaftTypeScale.monoMeta,
+            t.typeSlot('mono-meta'),
             mono: true,
             color: t.ui.foregroundHint,
           )
         : t.scale(
-            RaftTypeScale.caption,
+            t.typeSlot('caption'),
             weight: FontWeight.w500,
             color: t.ui.foregroundHint,
           );
@@ -1061,10 +1061,19 @@ class _RaftPanelTabBarState<T> extends State<RaftPanelTabBar<T>> {
       );
 }
 
-/// `<Button size="icon-sm" variant="outline">` as the detail panels use it
-/// for header/section icon actions (AgentProfileOverflowMenu trigger,
-/// CopyableCodeAction, HumanDetailPanel message action). Resolved from the
-/// generated `buttonVariants` recipe.
+/// The header/section icon actions of the detail panels (AgentProfileOverflowMenu
+/// trigger, ThreadOverflowMenu trigger, CopyableCodeAction, HumanDetailPanel
+/// message action, panel close).
+///
+/// `panelAction.surface` picks the drawing. `ghost` is raft-ui 0.7.0
+/// `PanelAction` (`panelActionBase`: `h-11 min-w-11 rounded-control
+/// border-[1.5px] border-transparent bg-transparent text-foreground
+/// hover:bg-fill-pressed active:bg-fill-pressed focus-visible:shadow-focus`,
+/// svg 22px, and `md:h-8 md:min-w-8` with an 18px svg): the shared ghost
+/// Button at `icon-lg` below `md` and `icon-md` from it, so size, glyph,
+/// radius, colours and focus ring all come from the pack. `outline` is the
+/// pre-theme look, `<Button size="icon-sm" variant="outline">` resolved from
+/// the generated `buttonVariants` recipe (a57b9dab).
 class RaftPanelIconButton extends StatelessWidget {
   const RaftPanelIconButton({
     super.key,
@@ -1110,8 +1119,57 @@ class RaftPanelIconButton extends StatelessWidget {
     );
   }
 
+  Widget _ghost(BuildContext context, RaftTokens t) {
+    final size =
+        MediaQuery.sizeOf(context).width < RaftLayoutMetrics.desktopBreakpoint
+        ? RaftButtonSize.iconLg
+        : RaftButtonSize.iconMd;
+    final metrics = RaftButtonMetrics.of(size, RaftButtonVariant.ghost, t);
+    return RaftInteractive(
+      onPressed: onPressed,
+      focusNode: focusNode,
+      onKeyboardActivate: onKeyboardActivate,
+      semanticLabel: tooltip,
+      tooltip: tooltip,
+      builder: (context, state) {
+        final disabled = onPressed == null;
+        final colors = RaftButtonColors.themed(
+          t,
+          RaftButtonVariant.ghost,
+          iconSize: true,
+          disabled: disabled,
+          overlay: (state.hovered || state.pressed) && !disabled,
+        );
+        Widget button = RaftButtonSurface(
+          variant: RaftButtonVariant.ghost,
+          size: size,
+          metrics: metrics,
+          colors: colors,
+          state: state,
+          disabled: disabled,
+          padding: EdgeInsets.zero,
+          expand: false,
+          child: icon != null
+              ? icon!(metrics.icon, colors.foreground)
+              : RaftIcon(glyph, size: metrics.icon, color: colors.foreground),
+        );
+        if (anchorLink != null) {
+          button = CompositedTransformTarget(
+            key: anchorKey,
+            link: anchorLink!,
+            child: button,
+          );
+        }
+        return button;
+      },
+    );
+  }
+
   Widget _button(BuildContext context) {
     final t = RaftTokens.of(context);
+    if (t.option('panelAction.surface', or: 'outline') == 'ghost') {
+      return _ghost(context, t);
+    }
     final rt = RaftRecipeTokens(t);
     return RaftInteractive(
       onPressed: onPressed,

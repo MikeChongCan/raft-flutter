@@ -24,20 +24,25 @@ class RaftAppearanceSectionRecipe {
   TextStyle get heading => web
       ? RaftTypography.body(
           t,
-          size: 15,
-          line: 20,
+          size: t.typeSlot('subhead').fontSize,
+          line: t.typeSlot('subhead').lineHeight,
           weight: FontWeight.w600,
           color: t.colors['foreground'],
         )
       : RaftTypography.body(t, size: 14, line: 20, weight: FontWeight.w700);
   TextStyle get description => web
-      ? RaftTypography.body(t, size: 13, line: 18, color: t.muted)
+      ? RaftTypography.body(
+          t,
+          size: t.typeSlot('footnote').fontSize,
+          line: t.typeSlot('footnote').lineHeight,
+          color: t.muted,
+        )
       : RaftTypography.body(t, size: 12, line: 16, color: t.muted);
   TextStyle get annotation => web
       ? RaftTypography.body(
           t,
-          size: 12,
-          line: 16,
+          size: t.typeSlot('caption').fontSize,
+          line: t.typeSlot('caption').lineHeight,
           color: t.colors['foreground-hint'],
         )
       : RaftTypography.body(

@@ -284,6 +284,25 @@ class RaftTokens extends ThemeExtension<RaftTokens> {
   double size(String token, {required double fallback}) =>
       _mode?.geometry[token] ?? fallback;
 
+  /// A named slot of the type scale (`hero` ... `mono-code`, [RaftTypeScale]) as
+  /// the active pack sets it. A pack that does not set the slot keeps the Raft
+  /// value, so the built-in Elegant and Brutal packs (which carry no slots yet)
+  /// answer with the Raft scale. Only components that already paint the Raft
+  /// scale read this; the pre-theme looks keep their own literals behind their
+  /// own option until their packs carry slots.
+  RaftTypeStyle typeSlot(String slot) {
+    final base = RaftTypeScale.byName[slot]!;
+    final spec = _mode?.type[slot];
+    return spec == null
+        ? base
+        : RaftTypeStyle(
+            spec.size,
+            spec.line,
+            fontWeight: spec.weight.round(),
+            letterSpacingEm: spec.trackingEm,
+          );
+  }
+
   /// A structural option, by contract name. A component asks how to draw
   /// itself; it must never ask which theme is current.
   ///
