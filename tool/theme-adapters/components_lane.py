@@ -12,7 +12,7 @@ reads the token. Every entry says where the number comes from.
 from __future__ import annotations
 
 # ---------------------------------------------------------------- geometry
-# token: (Raft, Elegant and Brutal)
+# token: (Raft, Elegant and Brutal[, distinct Brutal light])
 _GEOMETRY = {
     # PopoverSurface (menus, hover cards, popups): raft-ui 0.7 popover
     # `rounded-container ring-1 ring-line-seam shadow-float`; a57b9dab drew a 6px
@@ -32,6 +32,11 @@ _GEOMETRY = {
     # messageItem toolbar p-[3px], frozen recipe 4px inline / 2px block.
     'space.messageToolbarInline': (3, 4),
     'space.messageToolbarBlock': (3, 2),
+    # FeedbackComposer uses raft-ui 0.7.0 ComposerMeta `gap-2`: computed DOM
+    # and both adjacent child gaps are 8px in the light/dark 390px form.
+    # a57b9dab feedback_workspace.dart used `t.brutal ? 12 : 16`; its dark
+    # token factory forced Elegant, so Brutal dark also keeps 16.
+    'space.feedbackComposerMetaGap': (8, 16, 12),
 }
 
 # ---------------------------------------------------------------- options
@@ -136,8 +141,8 @@ def geometry_raft() -> dict:
     return {k: v[0] for k, v in _GEOMETRY.items()}
 
 
-def geometry_family() -> dict:
-    return {k: v[1] for k, v in _GEOMETRY.items()}
+def geometry_family(*, brutal: bool = False) -> dict:
+    return {k: v[2] if brutal and len(v) > 2 else v[1] for k, v in _GEOMETRY.items()}
 
 
 def options_raft() -> dict:

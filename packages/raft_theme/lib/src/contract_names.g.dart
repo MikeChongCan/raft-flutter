@@ -640,6 +640,7 @@ const Set<String> raftGeometryTokens = {
   'space.emptyBlock',
   'space.emptyIconAfter',
   'space.emptyInline',
+  'space.feedbackComposerMetaGap',
   'space.fieldGap',
   'space.fieldLabelAccessoryOutset',
   'space.inset.panel',

@@ -424,7 +424,7 @@ class _RaftFeedbackComposerState extends State<RaftFeedbackComposer> {
           children: [
             Expanded(
               child: Row(
-                spacing: 16,
+                spacing: t.size('space.feedbackComposerMetaGap', fallback: 16),
                 children: [
                   RaftComposerAction(
                     key: const ValueKey('feedback-attach-image'),

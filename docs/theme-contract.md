@@ -686,6 +686,8 @@ Brutal 深色整套沿 Elegant。消息发送者控件的物理最小行高跟�
 
 ### 输入框外壳、操作行和通知条（Cindy 16e23df0）
 
+反馈编辑器的 `space.feedbackComposerMetaGap` 独立于聊天编辑器：Raft 来自 Web 0.7.0 `ComposerMeta` 的明暗 DOM 实测 8px；旧版 a57b9dab 为 Elegant 16px、Brutal 浅色 12px，Brutal 深色随 Elegant 为 16px。
+
 外壳复用 `control.edge`，不新增 composer.frame。数值来自当前 Web 0.7.0 的真实 DOM 与 a57 原版四组组件探测；通知条原内边距按左／上／右／下为 Elegant 10／10／8／10、Brutal 8／8／8／8。原版 recipe 的既有填充色和文字色通过角色引用保存；需要原样保留的数值仅进入已批准的专用调色板项。
 
 | 数值 | Raft | Elegant | Brutal 浅色 |
@@ -702,6 +704,7 @@ Brutal 深色整套沿 Elegant。消息发送者控件的物理最小行高跟�
 | `space.composerFirstActionOffset` | -5 | 0 | 0 |
 | `space.composerActionGap` | 8 | 6 | 8 |
 | `space.composerMetaGap` | 8 | 12 | 12 |
+| `space.feedbackComposerMetaGap` | 8 | 16 | 12 |
 | `size.composerEditorMinimumDesktop` | 24 | 40 | 40 |
 | `size.composerAction` | 32 | 28 | 26 |
 | `size.composerSubmit` | 32 | 28 | 28 |

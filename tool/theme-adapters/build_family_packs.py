@@ -589,7 +589,7 @@ GEOMETRY_BRUTAL.update({
 })
 
 GEOMETRY_ELEGANT.update(components_lane.geometry_family())
-GEOMETRY_BRUTAL.update(components_lane.geometry_family())
+GEOMETRY_BRUTAL.update(components_lane.geometry_family(brutal=True))
 OPTIONS_ELEGANT.update(components_lane.options_family())
 OPTIONS_BRUTAL.update(components_lane.options_family())
 GEOMETRY_ELEGANT.update(pages_lane.geometry_family())
