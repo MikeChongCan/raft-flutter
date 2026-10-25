@@ -329,7 +329,9 @@ void main() {
       await _mount(t, _Client(translation: false), size: const Size(620, 900));
       final banner = find.byKey(const ValueKey('public-server-bottom-action'));
       expect(t.getSize(banner).width, 620);
-      expect(t.getSize(banner).height, lessThan(80));
+      // One row: the 32px Button `sm` (raft-ui 0.7.0 `h-8`) plus the banner
+      // padding; stacked copy over actions is taller than 100.
+      expect(t.getSize(banner).height, lessThan(88));
     });
   });
 
