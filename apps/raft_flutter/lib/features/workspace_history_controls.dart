@@ -75,14 +75,14 @@ String _historyLabel(
     RaftRoute.human => 'Member',
     RaftRoute.computer => 'Computer',
     RaftRoute.members => 'Members',
-    RaftRoute.memberGraph => 'Member graph',
+    RaftRoute.memberGraph => 'Member Graph',
     RaftRoute.computers => 'Computers',
     RaftRoute.search => 'Search',
     RaftRoute.settings => 'Settings',
     RaftRoute.activity => 'Activity',
     RaftRoute.tasks => 'Tasks',
     RaftRoute.saved => 'Saved',
-    RaftRoute.releaseNotes => 'Release notes',
+    RaftRoute.releaseNotes => 'Release Notes',
     RaftRoute.unknown => 'Home',
   };
   return raftText(context, label);
