@@ -158,7 +158,7 @@ MDP = 'packages/web/src/components/machine/MachineDetailPanel.tsx'
 SIDEBAR = 'packages/web/src/components/layout/Sidebar.tsx (computers mode, ComputerRow)'
 ADD = 'packages/web/src/components/machine/AddMachineDialog.tsx'
 DIALOG = '[data-slot="dialog-content"]'
-CARD_DIALOG = '.fixed.inset-0 [data-slot="card"]'
+CARD_DIALOG = '.fixed.inset-0 [data-slot="dialog-card"]'
 cases = []
 
 

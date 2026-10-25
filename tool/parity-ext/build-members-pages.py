@@ -127,7 +127,7 @@ tap_text = lambda text, scroll_in=None: {'type': 'tapText', 'text': text, **({'i
 wait = lambda ms: {'type': 'wait', 'ms': ms}
 
 DLG = '[data-slot="dialog-content"]'
-CARD_DLG = '.fixed.inset-0 [data-slot="card"]'
+CARD_DLG = '.fixed.inset-0 [data-slot="dialog-card"]'
 VIEW = '[data-visual-case]'
 MAIN = '[data-testid="thread-main-column"]'
 ROLE_HELP_BTN = 'role=button[name="Role permissions"]'

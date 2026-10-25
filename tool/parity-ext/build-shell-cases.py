@@ -229,7 +229,7 @@ def hover_key(key):
 
 
 RAIL = 'shell-rail-sidebar'
-DIALOG_CARD = '[data-slot="modal-backdrop"] [data-slot="card"]'
+DIALOG_CARD = '[data-slot="modal-backdrop"] [data-slot="dialog-card"]'
 DIALOG_CONTENT = '[data-slot="dialog-content"]'
 EXTRA = {'extra': 280}
 SECTION_TOGGLE = 'sidebar-section-toggle-'

@@ -309,7 +309,7 @@ add('notification.desktop-center', 'Notification center popover from the rail be
 
 # --------------------------------------------------------------------------- Shell-derived dialogs (2.10 2.11 2.12)
 SH = SRC + 'layout/'
-CARD = '[data-slot="modal-backdrop"] [data-slot="card"]'
+CARD = '[data-slot="modal-backdrop"] [data-slot="dialog-card"]'
 CONTENT = '[data-slot="dialog-content"]'
 SEC = 'sidebar-section-toggle-channels'
 CUSTOM_SEC = '[data-testid="sidebar-custom-section-sec-launch"] button[aria-expanded]'

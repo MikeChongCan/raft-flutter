@@ -98,7 +98,7 @@ a_steps = [{'type': 'tap', 'key': 'create-task-submit'}]
 for variant, message, label in [('error', 'Failed to create task', 'server error'),
                                 ('error-long', LONG, 'wrapping server error')]:
     cases += case('dialog', variant, message, viewport=DIALOG_VP,
-                  selector='.fixed.inset-0 [data-slot="card"]', android_key='create-task-dialog',
+                  selector='.fixed.inset-0 [data-slot="dialog-card"]', android_key='create-task-dialog',
                   title=f'create task dialog, {label}', interactions=steps, android=a_steps)
 
 LOAD_VP = {'width': 480, 'height': 200, 'density': 1}

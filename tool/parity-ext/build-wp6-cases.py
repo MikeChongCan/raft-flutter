@@ -29,7 +29,7 @@ THEMES = {'brutal': 'brutal-light', 'elegant': 'elegant-light', 'elegant-dark': 
 DESKTOP = {'width': 1280, 'height': 800, 'density': 1}
 MOBILE = {'width': 390, 'height': 844, 'density': 3}
 PREFIX = 'components.wp6.'
-CARD_DIALOG = '.fixed.inset-0 [data-slot="card"]'
+CARD_DIALOG = '.fixed.inset-0 [data-slot="dialog-card"]'
 DART = 'ext_wp6.dart'
 
 taskdetail = json.loads((here / 'fixtures/taskdetail.json').read_text())
