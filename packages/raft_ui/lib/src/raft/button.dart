@@ -252,7 +252,17 @@ class RaftButton extends StatelessWidget {
     this.leading,
     this.gap,
     this.iconInlineEnd = false,
+    this.glyphSize,
+    this.disabledOpacity,
   });
+
+  /// Callsite icon size (`<Trash2 size={14} />`); null keeps the size axis's
+  /// glyph size from the pack.
+  final double? glyphSize;
+
+  /// Callsite `disabled:opacity-*`: the opacity of a disabled button, in place
+  /// of the pack's `opacity.buttonDisabled`.
+  final double? disabledOpacity;
 
   /// Visible text. Empty with an icon renders the icon square when [uiSize] is an icon size.
   final String label;
@@ -382,7 +392,7 @@ class RaftButton extends StatelessWidget {
         );
         final fg = foreground ?? colors.foreground;
         final inline = sizeValue == RaftButtonSize.inline;
-        final iconSize = metrics.icon;
+        final iconSize = glyphSize ?? metrics.icon;
         final gapValue = gap ?? (inline ? 4.0 : metrics.gap);
 
         Widget? iconWidget;
@@ -513,10 +523,12 @@ class RaftButton extends StatelessWidget {
           expand: expand,
           child: content,
         );
+        final overridden = disabled && !busy && disabledOpacity != null;
         if (t.option('button.disabledSurface', or: 'muted') == 'opacity') {
           final opacity = busy || !disabled
               ? 1.0
-              : t.size('opacity.buttonDisabled', fallback: 1);
+              : disabledOpacity ??
+                    t.size('opacity.buttonDisabled', fallback: 1);
           return switch (opacityCompositing) {
             RaftOpacityCompositing.layer => Opacity(
               opacity: opacity,
@@ -528,7 +540,18 @@ class RaftButton extends StatelessWidget {
             ),
           };
         }
-        return box;
+        return overridden
+            ? switch (opacityCompositing) {
+                RaftOpacityCompositing.layer => Opacity(
+                  opacity: disabledOpacity!,
+                  child: box,
+                ),
+                RaftOpacityCompositing.alphaFilter => RaftCssOpacity(
+                  opacity: disabledOpacity!,
+                  child: box,
+                ),
+              }
+            : box;
       },
     );
   }

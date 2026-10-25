@@ -147,7 +147,8 @@ class RaftOverflowSheet extends StatelessWidget {
         child: Row(
           children: [
             if (mobile) ...[
-              // Web's 28px drawer Back; touch area extended around it.
+              // Web's drawer Back (`icon-sm`: the pack's size.control.sm); touch area
+              // extended around it.
               RaftTouchTargetExpander(
                 minSize: const Size.square(RaftMetrics.touchTarget),
                 child: RaftSettingsRecipeButton(

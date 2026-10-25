@@ -77,12 +77,14 @@ void main() {
           expect(find.byType(RaftChannelSettingsSheet), findsNothing);
           expect(find.byType(RaftChannelInfoForm), findsOneWidget);
           expect(t.testTextInput.isVisible, isFalse);
-          // Web's Drawer header below md: 62px, px-4, 28px Back. Owner
-          // decision 2026-10-12: no left edge line on the phone.
+          // Web's Drawer header below md: px-4 and the shared Button
+          // `icon-sm` Back (raft-ui 0.7.0 `iconMd`: `size-8`, 32px in the Raft
+          // look; 28px in the a57b9dab looks). Owner decision 2026-10-12: no
+          // left edge line on the phone.
           expect(find.byType(RaftMobilePageHeader), findsNothing);
           expect(
             t.getCenter(find.byKey(const ValueKey('channel-overflow-back'))).dx,
-            16 + 14,
+            16 + 16,
           );
           expect(
             t.getSemantics(find.text('#test')).flagsCollection.isHeader,

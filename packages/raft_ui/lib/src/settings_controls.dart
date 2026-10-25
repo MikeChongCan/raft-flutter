@@ -12,11 +12,11 @@ import 'tap_slop.dart';
 import 'design_primitives.dart' hide RaftPanelHeaderRecipe;
 import 'error_presentation.dart';
 import 'form_presentation.dart';
+import 'hover_region.dart';
 import 'icons.dart';
 import 'localization.dart';
 import 'overlays/dialog.dart' show showRaftDialog;
 import 'panel_layout.dart' show RaftCssText;
-import 'recipe_min_height.dart';
 import 'recipe_surface.dart';
 import 'recipes/recipe_runtime.dart';
 import 'recipes/recipes.g.dart';
@@ -128,94 +128,41 @@ class RaftSettingsRecipeButton extends StatefulWidget {
 }
 
 class _RaftSettingsRecipeButtonState extends State<RaftSettingsRecipeButton> {
+  bool _hovered = false;
+
+  /// The shared raft-ui [RaftButton]: size, type, colour roles, edge, motion and
+  /// the disabled surface come from the pack, so this button agrees with every
+  /// other Button in all looks. Callsite overrides from the Web JSX stay
+  /// explicit: icon size, disabled opacity and the rest colour of a ghost close.
   @override
-  Widget build(BuildContext context) => RaftInteractive(
-    onPressed: widget.onPressed,
-    builder: (context, state) {
-      final t = RaftTokens.of(context), tokens = RaftRecipeTokens(t);
-      final s = RaftButtonRecipe.resolve(
-        theme: raftRecipeTheme(t),
-        variant: widget.variant,
-        size: widget.size,
-        states: t.recipeStates(
-          hovered: state.hovered,
-          pressed: state.pressed,
-          focusVisible: state.focusVisible,
-          disabled: !state.enabled,
-        ),
-        tokens: tokens,
-      ).root;
-      final base = _slotText(t, s);
-      final text = widget.restColor != null && !state.hovered
-          ? base.copyWith(color: widget.restColor)
-          : base;
-      final svg = s.target("& svg:not([class*='size-'])");
-      final opacity = !state.enabled
-          ? (widget.disabledOpacity ?? s.opacity ?? 1)
-          : (s.opacity ?? 1);
-      final grows = RaftScaled.grows(context);
-      final button = Opacity(
-        opacity: opacity,
-        child: RaftRecipeBox(
-          style: raftGrowingHeight(context, s),
-          tokens: tokens,
-          applyText: false,
-          applyOpacity: false,
-          overflowCenter: true,
-          child: Row(
-            mainAxisSize: widget.expand ? MainAxisSize.max : MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (widget.glyph != null) ...[
-                RaftIcon(
-                  widget.glyph!,
-                  size: widget.glyphSize ?? svg?.width ?? 16,
-                  color: text.color,
-                ),
-                if (widget.label.isNotEmpty) SizedBox(width: s.columnGap ?? 6),
-              ],
-              if (widget.label.isNotEmpty)
-                // Above the default text size the label wraps inside the
-                // button instead of escaping it.
-                if (grows)
-                  Flexible(
-                    child: Text(
-                      raftText(context, widget.label),
-                      textAlign: TextAlign.center,
-                      style: text,
-                    ),
-                  )
-                else
-                  Text(
-                    raftText(context, widget.label),
-                    maxLines: 1,
-                    softWrap: false,
-                    style: text,
-                  ),
-              if (widget.trailingGlyph != null) ...[
-                SizedBox(width: s.columnGap ?? 6),
-                RaftIcon(
-                  widget.trailingGlyph!,
-                  size: widget.glyphSize ?? svg?.width ?? 16,
-                  color: text.color,
-                ),
-              ],
-            ],
-          ),
-        ),
-      );
-      final name = widget.semanticLabel;
-      return name == null
-          ? button
-          : Semantics(
-              button: true,
-              enabled: state.enabled,
-              label: name,
-              excludeSemantics: true,
-              child: button,
-            );
-    },
-  );
+  Widget build(BuildContext context) {
+    final both = widget.glyph != null && widget.trailingGlyph != null;
+    final rest = widget.restColor != null && !_hovered
+        ? widget.restColor
+        : null;
+    final button = RaftButton(
+      label: widget.label,
+      onPressed: widget.onPressed,
+      uiVariant: RaftButtonVariant.fromRecipe(widget.variant),
+      uiSize: RaftButtonSize.fromRecipe(widget.size),
+      glyph: widget.trailingGlyph ?? widget.glyph,
+      iconInlineEnd: widget.trailingGlyph != null,
+      leading: both
+          ? RaftIcon(widget.glyph!, size: widget.glyphSize ?? 16)
+          : null,
+      glyphSize: widget.glyphSize,
+      expand: widget.expand,
+      disabledOpacity: widget.disabledOpacity,
+      semanticLabel: widget.semanticLabel,
+      foreground: rest,
+    );
+    if (widget.restColor == null) return button;
+    return RaftHoverRegion(
+      onEnter: (_) => setState(() => _hovered = true),
+      onExit: (_) => setState(() => _hovered = false),
+      child: button,
+    );
+  }
 }
 
 /// FormField.tsx `labelStyle="plain" size="compact"`: raft-ui `Field`
