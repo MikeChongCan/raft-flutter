@@ -40,10 +40,7 @@ void main() {
         );
         // Source sidebar fallback is the 10px User glyph inside the 19px frame.
         final placeholder = t.widget<RaftIcon>(
-          find.descendant(
-            of: avatar,
-            matching: find.byType(RaftIcon),
-          ),
+          find.descendant(of: avatar, matching: find.byType(RaftIcon)),
         );
         expect(placeholder.glyph, RaftGlyph.user);
         expect(placeholder.size, 10);
