@@ -789,7 +789,8 @@ Future<void> _androidInteractions(
         );
         overlay.insert(marker);
         addTearDown(() {
-          if (marker.mounted) marker.remove();
+          // Unmounting the widget does not remove the entry's overlay ownership.
+          marker.remove();
           marker.dispose();
         });
       case 'key':

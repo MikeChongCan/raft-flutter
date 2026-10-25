@@ -61,6 +61,41 @@ void main() {
     expect(File('${out.path}/scroll-action.png').existsSync(), isTrue);
   });
 
+  testWidgets('a crop marker releases its entry after the capture unmounts', (
+    t,
+  ) async {
+    final out = Directory.systemTemp.createTempSync('parity-marker-lifecycle-');
+    addTearDown(() => out.deleteSync(recursive: true));
+    final visual = _case('marker-lifecycle')
+      ..['capture'] = {
+        'androidKey': 'states-crop',
+        'contract': 'component-bounds',
+        'androidInteractions': [
+          {'type': 'mark', 'key': 'action', 'pad': 6},
+        ],
+      };
+    await captureParityCase(
+      t,
+      visualCase: visual,
+      mapping: ParityCase(
+        widgets: const ['TextButton'],
+        build: (_) => Center(
+          child: TextButton(
+            key: const ValueKey('action'),
+            onPressed: () {},
+            child: const Text('Marked'),
+          ),
+        ),
+      ),
+      fixtures: const {},
+      outputDir: out,
+      runInfo: const {},
+    );
+    expect(File('${out.path}/marker-lifecycle.png').existsSync(), isTrue);
+    expect(find.byKey(const ValueKey('states-crop')), findsNothing);
+    expect(t.takeException(), isNull);
+  });
+
   testWidgets('an offstage action never produces a successful capture', (
     t,
   ) async {

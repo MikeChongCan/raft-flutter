@@ -62,7 +62,11 @@ def build_fixture():
             **{f'GET /channels/{i}': records[i] for i in records},
         }
         route_sets[f'fr-{name}'] = routes
-    route_sets['fr-channel'] = {**route_sets['fr-default'], **screens['routeSets']['scr-channel']}
+    route_sets['fr-channel'] = {
+        **route_sets['fr-default'], **screens['routeSets']['scr-channel'],
+        # The mounted task endpoint returns an object, not the old fallback array.
+        f"GET /tasks/channel/{screens['scenes']['channel']['selected']}": {'tasks': []},
+    }
     route_sets['fr-activity'] = {**route_sets['fr-mobile'], **screens['routeSets']['scr-activity']}
     doc = {'name': 'frame cases', 'scope': 'tool/parity-ext/build-frame-cases.py (generated; derived from shell.json and screens.json)',
            'routes': shell['routes'], 'routeSets': route_sets}

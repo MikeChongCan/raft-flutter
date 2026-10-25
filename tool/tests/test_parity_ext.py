@@ -336,6 +336,16 @@ class ThemeSamplingTest(unittest.TestCase):
                          sum(c['theme'] == 'brutal-light' for c in full['cases']))
 
 
+class FrameFixtureContractTest(unittest.TestCase):
+    def test_channel_tasks_use_the_canonical_empty_projection(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            builders.build_manifest(pathlib.Path(tmp))
+        frame = json.loads((EXT / 'fixtures/frame.json').read_text())
+        screens = json.loads((EXT / 'fixtures/screens.json').read_text())
+        channel = screens['scenes']['channel']['selected']
+        self.assertEqual(frame['routeSets']['fr-channel'].get(f'GET /tasks/channel/{channel}'), {'tasks': []})
+
+
 class PageInventoryTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

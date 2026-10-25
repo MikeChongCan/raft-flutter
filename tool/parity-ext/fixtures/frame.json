@@ -1264,6 +1264,9 @@
     "hasMore": false,
     "historyLimited": false,
     "threadSummariesByParentMessageId": {}
+   },
+   "GET /tasks/channel/shell-design": {
+    "tasks": []
    }
   },
   "fr-activity": {
