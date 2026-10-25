@@ -74,7 +74,7 @@ void main() {
     expect(t.takeException(), isNull);
   });
 
-  testWidgets('settings button keeps 28px at 1.0x and grows with its label', (
+  testWidgets('settings button keeps 32px at 1.0x and grows with its label', (
     t,
   ) async {
     const key = ValueKey('save');
@@ -86,10 +86,11 @@ void main() {
       ),
     );
     await _pump(t, button());
-    expect(t.getSize(find.byKey(key)).height, 28);
+    // raft-ui 0.7.0 Button sm is h-8.
+    expect(t.getSize(find.byKey(key)).height, 32);
     await _pump(t, button(), scale: 2.0);
     final big = t.getSize(find.byKey(key));
-    expect(big.height, greaterThan(28));
+    expect(big.height, greaterThan(32));
     // The label is inside the button box.
     final label = t.getRect(find.text('Save Changes'));
     expect(label.height, lessThanOrEqualTo(big.height));

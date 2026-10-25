@@ -34,14 +34,14 @@ void main() {
         expect(find.byType(RaftOverflowSheet), findsOneWidget);
         expect(find.byType(RaftChannelSettingsSheet), findsNothing);
         // Web's Drawer header below md: `h-panel-header` (62px fallback) with
-        // px-4 and the 28px outline Back, its touch area extended to 48.
+        // px-4 and the icon-sm Back, `size-8` in raft-ui 0.7.0 (32px).
         expect(find.byType(RaftMobilePageHeader), findsNothing);
         final back = find.byKey(const ValueKey('channel-overflow-back'));
-        expect(t.getSize(back), const Size.square(28));
+        expect(t.getSize(back), const Size.square(32));
         // No left edge line on the phone (owner decision 2026-10-12).
-        expect(t.getCenter(back).dx, 16 + 14);
+        expect(t.getCenter(back).dx, 16 + 16);
         // Centred in the border-box less its bottom edge (1px).
-        expect(t.getTopLeft(back).dy, (62 - 1 - 28) / 2);
+        expect(t.getTopLeft(back).dy, (62 - 1 - 32) / 2);
         expect(
           t.getSemantics(find.text(title)).flagsCollection.isHeader,
           isTrue,
