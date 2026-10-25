@@ -25,6 +25,7 @@ import 'recipes/button_variants.g.dart';
 import 'recipes/panel_action.g.dart';
 import 'recipes/panel_header.g.dart';
 import 'raft/tabs.dart';
+import 'raft/blink_snap.dart';
 import 'raft/button.dart';
 import 'raft/button_surface.dart';
 import 'raft/ui_tokens.dart';
@@ -1140,24 +1141,27 @@ class RaftPanelIconButton extends StatelessWidget {
           disabled: disabled,
           overlay: (state.hovered || state.pressed) && !disabled,
         );
-        Widget button = RaftButtonSurface(
-          variant: RaftButtonVariant.ghost,
-          size: size,
-          metrics: metrics,
-          colors: colors,
-          state: state,
-          disabled: disabled,
-          padding: EdgeInsets.zero,
-          expand: false,
-          // Product artwork keeps its own box: the surface hands its child tight
-          // constraints, which would stretch a bare SizedBox.
-          child: icon != null
-              ? Center(
-                  widthFactor: 1,
-                  heightFactor: 1,
-                  child: icon!(metrics.icon, colors.foreground),
-                )
-              : RaftIcon(glyph, size: metrics.icon, color: colors.foreground),
+        // Blink paints a box centred on a half pixel at the whole pixel.
+        Widget button = RaftBlinkSnap(
+          child: RaftButtonSurface(
+            variant: RaftButtonVariant.ghost,
+            size: size,
+            metrics: metrics,
+            colors: colors,
+            state: state,
+            disabled: disabled,
+            padding: EdgeInsets.zero,
+            expand: false,
+            // Product artwork keeps its own box: the surface hands its child tight
+            // constraints, which would stretch a bare SizedBox.
+            child: icon != null
+                ? Center(
+                    widthFactor: 1,
+                    heightFactor: 1,
+                    child: icon!(metrics.icon, colors.foreground),
+                  )
+                : RaftIcon(glyph, size: metrics.icon, color: colors.foreground),
+          ),
         );
         if (anchorLink != null) {
           button = CompositedTransformTarget(
