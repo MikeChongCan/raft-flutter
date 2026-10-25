@@ -204,6 +204,15 @@ final class RaftTitleBar: NSObject {
   private var previousToolbar: NSToolbar?
   private var previousToolbarStyle: Int?
   private var previousButtonFrames: [NSWindow.ButtonType: NSRect] = [:]
+  private struct PointerGesture {
+    let down: NSEvent
+    let frameOrigin: NSPoint
+    let start: NSPoint
+    var end: NSPoint?
+    var consumed = false
+  }
+  private var pointerGesture: PointerGesture?
+  private var pointerMonitor: Any?
   private static let buttons: [NSWindow.ButtonType] = [.closeButton, .miniaturizeButton, .zoomButton]
 
   init(window: NSWindow, messenger: FlutterBinaryMessenger) {
@@ -213,6 +222,11 @@ final class RaftTitleBar: NSObject {
     window.titleVisibility = .hidden
     window.titlebarAppearsTransparent = true
     window.styleMask.insert(.fullSizeContentView)
+    pointerMonitor = NSEvent.addLocalMonitorForEvents(matching: [.leftMouseDown, .leftMouseUp]) {
+      [weak self] event in
+      self?.recordPointer(event)
+      return event
+    }
     channel.setMethodCallHandler { [weak self] call, result in
       guard let self = self else {
         result(FlutterMethodNotImplemented)
@@ -226,19 +240,25 @@ final class RaftTitleBar: NSObject {
       NSWindow.didEnterFullScreenNotification,
       NSWindow.willExitFullScreenNotification,
       NSWindow.didExitFullScreenNotification,
+      NSWindow.didUpdateNotification,
     ]
     for name in names {
       observers.append(
         NotificationCenter.default.addObserver(
           forName: name, object: window, queue: .main
         ) { [weak self] _ in
-          self?.publish()
+          if name == NSWindow.didUpdateNotification {
+            self?.positionButtons()
+          } else {
+            self?.publish()
+          }
         })
     }
   }
 
   deinit {
     for observer in observers { NotificationCenter.default.removeObserver(observer) }
+    if let pointerMonitor { NSEvent.removeMonitor(pointerMonitor) }
   }
 
   /// The system title bar's height: what the content view has above the
@@ -301,22 +321,57 @@ final class RaftTitleBar: NSObject {
   }
 
   private func positionButtons() {
-    guard let window, let height = integratedHeight,
+    guard let window, let content = window.contentView, let height = integratedHeight,
       !window.styleMask.contains(.fullScreen),
       let close = window.standardWindowButton(.closeButton), let parent = close.superview
     else { return }
     parent.layoutSubtreeIfNeeded()
-    let start = close.frame.minX
+    let start = close.convert(close.bounds, to: content).minX
     let offsets = Self.buttons.compactMap { type -> (NSButton, CGFloat)? in
       guard let button = window.standardWindowButton(type), button.superview === parent else { return nil }
-      return (button, button.frame.minX - start)
+      return (button, button.convert(button.bounds, to: content).minX - start)
     }
     for (button, offset) in offsets {
       // The native view remains the clipping boundary. A very tall custom row
       // keeps the controls reachable instead of moving them outside that view.
-      let center = min(height / 2, parent.bounds.height - button.frame.height / 2)
-      button.setFrameOrigin(NSPoint(x: 14 + offset,
-        y: parent.bounds.height - center - button.frame.height / 2))
+      let desired = parent.convert(NSPoint(x: 14 + offset,
+        y: content.bounds.maxY - height / 2), from: content)
+      let half = button.frame.height / 2
+      let center = min(max(desired.y, parent.bounds.minY + half), parent.bounds.maxY - half)
+      let origin = NSPoint(x: desired.x, y: center - half)
+      if abs(button.frame.minX - origin.x) > 0.01 || abs(button.frame.minY - origin.y) > 0.01 {
+        button.setFrameOrigin(origin)
+      }
+    }
+  }
+
+  private func recordPointer(_ event: NSEvent) {
+    guard let window, event.window === window else { return }
+    if event.type == .leftMouseDown {
+      pointerGesture = PointerGesture(down: event, frameOrigin: window.frame.origin,
+        start: window.convertPoint(toScreen: event.locationInWindow))
+    } else if event.type == .leftMouseUp, pointerGesture?.consumed == false {
+      pointerGesture?.end = window.convertPoint(toScreen: event.locationInWindow)
+    }
+  }
+
+  private func startDragging() {
+    guard let window, !window.styleMask.contains(.fullScreen) else { return }
+    if var gesture = pointerGesture {
+      guard !gesture.consumed else { return }
+      gesture.consumed = true
+      pointerGesture = gesture
+      if let end = gesture.end {
+        // A quick pointer sequence may finish before Dart's platform message.
+        // Preserve that user's movement without starting a second mouse loop.
+        window.setFrameOrigin(NSPoint(x: gesture.frameOrigin.x + end.x - gesture.start.x,
+          y: gesture.frameOrigin.y + end.y - gesture.start.y))
+      } else {
+        window.performDrag(with: gesture.down)
+      }
+    } else if let event = NSApp.currentEvent,
+      event.type == .leftMouseDown || event.type == .leftMouseDragged {
+      window.performDrag(with: event)
     }
   }
 
@@ -359,11 +414,7 @@ final class RaftTitleBar: NSObject {
       }
       result(nil)
     case "startDragging":
-      if let window = window, let event = NSApp.currentEvent,
-        event.type == .leftMouseDown || event.type == .leftMouseDragged
-      {
-        window.performDrag(with: event)
-      }
+      startDragging()
       result(nil)
     case "doubleClick":
       // The user's System Settings choice for a title bar double-click.
