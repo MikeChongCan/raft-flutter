@@ -174,6 +174,19 @@ final ParityCase _case = ParityCase(
       return true;
     });
     expect(owned, isTrue, reason: 'Keyboard focus must belong to $key');
+    final detectors = find
+        .descendant(
+          of: find.byKey(ValueKey<String>(key)),
+          matching: find.byType(FocusableActionDetector),
+          matchRoot: true,
+        )
+        .evaluate()
+        .map((element) => element.widget as FocusableActionDetector);
+    expect(
+      detectors.any((detector) => detector.focusNode?.hasPrimaryFocus ?? false),
+      isTrue,
+      reason: 'The interactive button must have primary focus: $key',
+    );
   },
 );
 

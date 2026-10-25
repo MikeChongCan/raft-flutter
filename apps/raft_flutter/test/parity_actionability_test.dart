@@ -1,7 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:raft_ui/raft_ui.dart';
 
 import 'parity/parity_harness.dart';
 
@@ -94,6 +96,56 @@ void main() {
     expect(File('${out.path}/marker-lifecycle.png').existsSync(), isTrue);
     expect(find.byKey(const ValueKey('states-crop')), findsNothing);
     expect(t.takeException(), isNull);
+  });
+
+  testWidgets('focus reaches the button inside a keyboard listener wrapper', (
+    t,
+  ) async {
+    final out = Directory.systemTemp.createTempSync('parity-button-focus-');
+    addTearDown(() => out.deleteSync(recursive: true));
+    final listener = FocusNode();
+    final button = FocusNode();
+    addTearDown(listener.dispose);
+    addTearDown(button.dispose);
+    var activations = 0;
+    final visual = _case('button-focus')
+      ..['capture'] = {
+        'androidInteractions': [
+          {'type': 'focus', 'key': 'action'},
+        ],
+      };
+    await captureParityCase(
+      t,
+      visualCase: visual,
+      mapping: ParityCase(
+        widgets: const ['RaftControl'],
+        build: (_) => Center(
+          child: KeyedSubtree(
+            key: const ValueKey('action'),
+            child: Focus(
+              focusNode: listener,
+              skipTraversal: true,
+              child: RaftControl(
+                focusNode: button,
+                onPressed: () => activations++,
+                child: const Text('Activate'),
+              ),
+            ),
+          ),
+        ),
+        interact: (t, _) async {
+          expect(listener.hasPrimaryFocus, isFalse);
+          expect(button.hasPrimaryFocus, isTrue);
+          await t.sendKeyEvent(LogicalKeyboardKey.enter);
+          await t.pump();
+          expect(activations, 1);
+        },
+      ),
+      fixtures: const {},
+      outputDir: out,
+      runInfo: const {},
+    );
+    expect(File('${out.path}/button-focus.png').existsSync(), isTrue);
   });
 
   testWidgets('an offstage action never produces a successful capture', (

@@ -54,10 +54,24 @@ class StateCaseTests(unittest.TestCase):
             self.assertEqual(c['capture']['androidKey'], 'states-crop')
             self.assertEqual(c['variants'][0]['props']['machineryRev'], states.MACHINERY_REV)
 
-    def test_web_only_controls_have_no_flutter_key(self):
+    def test_unmapped_controls_have_no_flutter_key(self):
         cases = {c['id']: c for c in states.build_cases()}
-        self.assertFalse(cases['components.states.desktop.topbar-search.hover.brutal']['flutterSurface'])
+        self.assertFalse(cases['components.states.desktop.activity-row-done.hover.brutal']['flutterSurface'])
         self.assertTrue(cases['components.states.desktop.rail-tab.hover.brutal']['flutterSurface'])
+
+    def test_topbar_states_reach_the_mounted_native_controls(self):
+        cases = states.build_cases()
+        keys = {'topbar-search': 'topbar-search', 'topbar-bell': 'topbar-notifications',
+                'topbar-workspace': 'topbar-workspace'}
+        selected = [case for case in cases if case['variants'][0]['props'].get('control') in keys]
+        self.assertEqual(len(selected), 33)
+        for case in selected:
+            control = case['variants'][0]['props']['control']
+            self.assertTrue(case['flutterSurface'], case['id'])
+            self.assertEqual(case['capture']['androidInteractions'][-1]['key'], keys[control])
+            web = case['capture']['interactions']
+            reveal = next(i for i, step in enumerate(web) if step.get('target') == '[data-testid="desktop-workspace-strip"]')
+            self.assertLess(reveal, len(web) - 1)
 
     def test_settings_clones_keep_the_base_family(self):
         base = {'id': 'components.ext-settings.appearance.page.brutal', 'title': 't',

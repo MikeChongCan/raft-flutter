@@ -753,10 +753,28 @@ Future<void> _androidInteractions(
         FocusManager.instance.highlightStrategy =
             FocusHighlightStrategy.alwaysTraditional;
         FocusNode? node;
+        // A keyed control can wrap its button in a keyboard listener Focus.
+        // Prefer the interactive detector, not that listener's focus node.
         for (final e
             in find
-                .descendant(of: target!.first, matching: find.byType(Focus))
+                .descendant(
+                  of: target!.first,
+                  matching: find.byType(FocusableActionDetector),
+                  matchRoot: true,
+                )
                 .evaluate()) {
+          final detector = e.widget as FocusableActionDetector;
+          final n = detector.focusNode;
+          if (detector.enabled && n != null && n.canRequestFocus) {
+            node = n;
+            break;
+          }
+        }
+        for (final e
+            in find
+                .descendant(of: target.first, matching: find.byType(Focus))
+                .evaluate()) {
+          if (node != null) break;
           final n = (e.widget as Focus).focusNode ?? Focus.maybeOf(e);
           if (n != null && n.canRequestFocus) {
             node = n;
