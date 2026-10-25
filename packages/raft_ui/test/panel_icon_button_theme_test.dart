@@ -102,6 +102,29 @@ void main() {
     expect(t.takeException(), isNull);
   });
 
+  testWidgets('product artwork keeps the 18px / 22px glyph box', (t) async {
+    addTearDown(() => t.pumpWidget(const SizedBox()));
+    for (final (width, glyph) in [(800.0, 18.0), (390.0, 22.0)]) {
+      await viewport(t, width);
+      await t.pumpWidget(
+        MaterialApp(
+          theme: raftTheme(pack: packForThemeId(raftThemePackId)),
+          home: Scaffold(
+            body: Center(
+              child: RaftPanelIconButton(
+                icon: (size, color) =>
+                    SizedBox.square(key: const Key('art'), dimension: size),
+                tooltip: 'Direct Message',
+                onPressed: () {},
+              ),
+            ),
+          ),
+        ),
+      );
+      expect(t.getSize(find.byKey(const Key('art'))), Size.square(glyph));
+    }
+  });
+
   for (final id in [elegantThemePackId, brutalThemePackId]) {
     testWidgets('$id keeps the a57b9dab outline Button icon-sm', (t) async {
       for (final width in [390.0, 800.0]) {

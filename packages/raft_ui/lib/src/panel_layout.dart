@@ -1149,8 +1149,14 @@ class RaftPanelIconButton extends StatelessWidget {
           disabled: disabled,
           padding: EdgeInsets.zero,
           expand: false,
+          // Product artwork keeps its own box: the surface hands its child tight
+          // constraints, which would stretch a bare SizedBox.
           child: icon != null
-              ? icon!(metrics.icon, colors.foreground)
+              ? Center(
+                  widthFactor: 1,
+                  heightFactor: 1,
+                  child: icon!(metrics.icon, colors.foreground),
+                )
               : RaftIcon(glyph, size: metrics.icon, color: colors.foreground),
         );
         if (anchorLink != null) {
