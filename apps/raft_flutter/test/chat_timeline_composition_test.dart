@@ -131,8 +131,8 @@ void main() {
             of: composer,
             matching: find.byType(TextField),
           );
-          expect(t.widget<RaftComposer>(composer).autofocus, thread);
-          expect(t.widget<TextField>(editor).focusNode!.hasFocus, thread);
+          expect(t.widget<RaftComposer>(composer).autofocus, true);
+          expect(t.widget<TextField>(editor).focusNode!.hasFocus, true);
           await t.enterText(editor, 'Public retained 中文');
           await t.pump();
           await t.binding.setSurfaceSize(const Size(390, 800));

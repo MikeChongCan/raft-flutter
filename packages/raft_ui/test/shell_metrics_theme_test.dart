@@ -14,22 +14,53 @@ RaftTokens _tokens(String id) => RaftTokens.theme(pack: packForThemeId(id));
 
 void main() {
   group('shell dimensions follow the theme', () {
-    test('tall viewport: Raft and Elegant 56, Brutal 64', () {
-      expect(RaftLayoutMetrics.railWidth(_tokens(raftThemePackId), 800), 56);
+    test('tall viewport: Raft 57, Elegant 56, Brutal 64', () {
+      expect(RaftLayoutMetrics.railWidth(_tokens(raftThemePackId), 800), 57);
       expect(RaftLayoutMetrics.railWidth(_tokens(elegantThemePackId), 800), 56);
       expect(RaftLayoutMetrics.railWidth(_tokens(brutalThemePackId), 800), 64);
     });
 
-    test('short viewport: only Brutal narrows, to 50', () {
+    test('short viewport: Raft narrows to 49 and Brutal to 50', () {
       // The 600px threshold is a form rule and lives in the component; the widths
       // are theme values and live in the packs.
-      expect(RaftLayoutMetrics.railWidth(_tokens(raftThemePackId), 600), 56);
+      expect(RaftLayoutMetrics.railWidth(_tokens(raftThemePackId), 600), 49);
       expect(RaftLayoutMetrics.railWidth(_tokens(elegantThemePackId), 600), 56);
       expect(RaftLayoutMetrics.railWidth(_tokens(brutalThemePackId), 600), 50);
       // Just above and just below the threshold.
       expect(RaftLayoutMetrics.railWidth(_tokens(brutalThemePackId), 601), 64);
       expect(RaftLayoutMetrics.railWidth(_tokens(brutalThemePackId), 599), 50);
     });
+
+    test(
+      'Activity inset leaves the seam to Raft rail and retains legacy edges',
+      () {
+        for (final (id, width) in [
+          (raftThemePackId, 0),
+          (elegantThemePackId, 1),
+          (brutalThemePackId, 1),
+        ]) {
+          for (final dark in [false, true]) {
+            final tokens = RaftTokens.theme(
+              pack: packForThemeId(id),
+              dark: dark,
+            );
+            final side = RaftPanelEdge.side(
+              tokens,
+              RaftPanelEdgeStyle.activityInbox,
+            );
+            expect(side?.width ?? 0, width, reason: '$id/$dark');
+            expect(
+              RaftPanelEdge.leftFor(
+                tokens,
+                RaftPanelPresentation.phonePage,
+                RaftPanelEdgeStyle.activityInbox,
+              ),
+              isNull,
+            );
+          }
+        }
+      },
+    );
 
     test('the three rails are not all one width', () {
       // The bug was a single literal for every theme.
@@ -78,7 +109,7 @@ void main() {
           ).rowHeight(viewportWidth: width, viewportHeight: height);
       // (desktop tall, desktop short, phone tall, phone short)
       final expected = {
-        raftThemePackId: [34.0, 34.0, 34.0, 34.0],
+        raftThemePackId: [36.0, 36.0, 44.0, 44.0],
         elegantThemePackId: [34.0, 30.0, 34.0, 30.0],
         brutalThemePackId: [32.0, 32.0, 40.0, 32.0],
       };

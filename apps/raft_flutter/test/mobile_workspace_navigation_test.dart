@@ -718,7 +718,7 @@ void main() {
       );
       expect(
         (sidebar.slivers.first as SliverPadding).padding,
-        const EdgeInsetsDirectional.fromSTEB(8, 12, 8, 68),
+        const EdgeInsetsDirectional.fromSTEB(8, 4, 8, 8),
       );
       final channelRow = find.byKey(const ValueKey('sidebar-channel-c'));
       expect(
@@ -729,32 +729,31 @@ void main() {
         of: channelRow,
         matching: find.byType(RaftIcon),
       );
-      expect(tester.widget<RaftIcon>(channelGlyph).size, 14);
+      expect(tester.widget<RaftIcon>(channelGlyph).size, 16);
       expect(tester.widget<RaftIcon>(channelGlyph).strokeWidth, 2);
       final dmRow = find.byKey(const ValueKey('sidebar-channel-dm'));
       expect(
         tester.widget<RaftNavItem>(dmRow).conversationKind,
         RaftConversationNavKind.directMessage,
       );
-      // raft-ui 0.7.1 sticker avatar: the sidebar-list avatar occupies 18px and its person placeholder is the
+      // raft-ui 0.7.1 sticker avatar: the sidebar-list avatar occupies 19px and its person placeholder is the
       // sticker `xs` fallback icon (12px; the old 10px User glyph).
       final dmAvatar = find.descendant(
         of: dmRow,
         matching: find.byType(RaftAvatar),
       );
-      expect(tester.getSize(dmAvatar), const Size(18, 18));
+      expect(tester.getSize(dmAvatar), const Size(19, 19));
       expect(
         tester.widget<RaftAvatar>(dmAvatar).mountedContext,
         RaftMountedAvatarContext.sidebarList,
       );
-      final dmPlaceholder = tester.widget<RaftAvatarPlaceholder>(
-        find.descendant(
-          of: dmAvatar,
-          matching: find.byType(RaftAvatarPlaceholder),
-        ),
+      // Current sidebar-list fallback is the Source 10px User glyph,
+      // independently sized from its 19px sticker frame.
+      final dmPlaceholder = tester.widget<RaftIcon>(
+        find.descendant(of: dmAvatar, matching: find.byType(RaftIcon)),
       );
-      expect(dmPlaceholder.size, RaftAvatarSize.xs);
-      expect(dmPlaceholder.size.icon, 12);
+      expect(dmPlaceholder.glyph, RaftGlyph.user);
+      expect(dmPlaceholder.size, 10);
 
       expect(find.byKey(const Key('nav-tasks')), findsNothing);
       expect(find.byKey(const Key('account-navigation')), findsNothing);
@@ -787,7 +786,7 @@ void main() {
         tester.getRect(find.byKey(const Key('nav-saved'))).bottom,
       );
       expect(tester.getRect(section).top, groupRect('joint').bottom);
-      expect(tester.getRect(disclosure).top - tester.getRect(section).top, 12);
+      expect(tester.getRect(disclosure).top - tester.getRect(section).top, 16);
       await tester.tap(disclosure);
       await tester.pumpAndSettle();
       expect(find.byKey(const ValueKey('sidebar-channel-c')), findsNothing);

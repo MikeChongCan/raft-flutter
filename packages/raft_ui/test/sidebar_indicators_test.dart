@@ -55,7 +55,7 @@ void main() {
         for (final name in ['muted', 'unjoined', 'selected']) {
           expect(
             t.widget<Text>(find.text(name)).style!.fontWeight,
-            FontWeight.w500,
+            name == 'selected' ? FontWeight.w700 : FontWeight.w500,
           );
         }
         expect(
@@ -66,11 +66,11 @@ void main() {
           of: find.byType(RaftSidebarQuietUnreadCount).first,
           matching: find.byType(Text),
         );
-        expect(t.widget<Text>(quiet).style!.fontSize, 10);
-        expect(t.widget<Text>(quiet).style!.height, 1);
+        expect(t.widget<Text>(quiet).style!.fontSize, 12);
+        expect(t.widget<Text>(quiet).style!.height, 16 / 12);
         expect(
           t.widget<Text>(quiet).style!.color,
-          tokens.colors['foreground-muted'],
+          tokens.colors['foreground-hint'],
         );
         expect(
           t.getSize(find.byType(RaftSidebarMutedIcon)),

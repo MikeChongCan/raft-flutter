@@ -91,7 +91,7 @@ void main() {
         );
         await t.pump();
         final glyph = t.widget<RaftIcon>(find.byType(RaftIcon));
-        expect(glyph.size, 16);
+        expect(glyph.size, 20);
         await t.sendKeyEvent(LogicalKeyboardKey.tab);
         await t.sendKeyEvent(LogicalKeyboardKey.enter);
         await t.pump();

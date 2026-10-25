@@ -140,20 +140,12 @@ void main() {
               expect(sub.height, 16);
               continue;
             }
-            final inline = width >= 768;
-            if (inline) {
-              expect(sub.left - head.right, closeTo(8, .02));
-              expect(
-                baseline(t, heading),
-                closeTo(baseline(t, subtitle), .001),
-              );
-              expect(head.height, 21.25);
-              expect(sub.height, 12);
-            } else {
-              expect(sub.left, head.left);
-              expect(sub.top - head.bottom, 4);
-              expect(sub.height, 15);
-            }
+            // Current PanelHeadline/PanelMeta are a 22px/16px stack,
+            // with no gap, at desktop and phone widths (raft-ui PanelHeader).
+            expect(sub.left, head.left);
+            expect(sub.top - head.bottom, 0);
+            expect(head.height, 22);
+            expect(sub.height, 16);
           }
           final heading = t.widget<RaftCssText>(css('design'));
           final meta = t.widget<RaftCssText>(css('Product and UI decisions'));

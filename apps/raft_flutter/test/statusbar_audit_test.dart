@@ -468,13 +468,22 @@ Future<void> _expectColumnsContinue(
     isEmpty,
     reason: '$theme: status bar row differs from the columns below',
   );
-  // More than one colour: the columns are not flattened into a single bar.
   final colours = {for (var x = 0; x < image.width; x++) image.px(x, strip)};
-  expect(
-    colours.length,
-    greaterThan(1),
-    reason: '$theme: wide strip must follow the columns',
-  );
+  if (find.byType(RaftWorkspaceTopBar).evaluate().isNotEmpty) {
+    // BAR_FRAME is w-full/bg-layer-frame in AppTopBar.tsx. A uniform strip
+    // is correct here; asserting its actual frame colour still rejects a
+    // uniform canvas/black bar. The column case below remains independent.
+    final tokens = RaftTokens.of(
+      t.element(find.byType(RaftWorkspaceTopBar).first),
+    );
+    expect(colours, {tokens.colors['layer-frame']!.toARGB32()});
+  } else {
+    expect(
+      colours.length,
+      greaterThan(1),
+      reason: '$theme: wide strip must follow the contrasting columns',
+    );
+  }
   final renderView = t.binding.renderViews.first;
   final style = (renderView.debugLayer! as OffsetLayer)
       .find<SystemUiOverlayStyle>(

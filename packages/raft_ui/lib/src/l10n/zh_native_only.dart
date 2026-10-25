@@ -1,6 +1,7 @@
 // Chinese (zh) strings, see the catalog header in ../localization.dart.
 // English source text is the key. Part of `raftChinese` (merged by the generated zh_index.g.dart).
 const Map<String, String> zhCatalogNativeOnly = <String, String>{
+  "Appearance mode": "明暗模式",
   "Open Raft": "打开 Raft",
   "Hide Window": "隐藏窗口",
   "Quit Raft": "退出 Raft",
@@ -74,12 +75,17 @@ const Map<String, String> zhCatalogNativeOnly = <String, String>{
   "View Release": "查看发布",
   // Error and status copy with no Web counterpart (zh approved by the owner).
   "Join a channel before creating a task.": "创建任务前请先加入一个频道。",
-  "Refresh Activity before marking this conversation done.": "请先刷新动态，再将此会话标为完成。",
+  "Refresh Activity before marking this conversation done.":
+      "请先刷新动态，再将此会话标为完成。",
   "Could not remove the raft:// registration.": "无法移除 raft:// 注册。",
-  "xdg-utils is not installed, so raft:// links cannot be set up.": "未安装 xdg-utils，无法设置 raft:// 链接。",
-  "The default handler for raft:// links could not be read.": "无法读取 raft:// 链接的默认处理程序。",
-  "The desktop did not accept Raft as the raft:// handler.": "桌面环境未接受 Raft 作为 raft:// 处理程序。",
-  "The desktop kept another handler for raft:// links.": "桌面环境保留了另一个 raft:// 链接处理程序。",
+  "xdg-utils is not installed, so raft:// links cannot be set up.":
+      "未安装 xdg-utils，无法设置 raft:// 链接。",
+  "The default handler for raft:// links could not be read.":
+      "无法读取 raft:// 链接的默认处理程序。",
+  "The desktop did not accept Raft as the raft:// handler.":
+      "桌面环境未接受 Raft 作为 raft:// 处理程序。",
+  "The desktop kept another handler for raft:// links.":
+      "桌面环境保留了另一个 raft:// 链接处理程序。",
   "Saved {name}": "已保存 {name}",
   "Download failed. Try again.": "下载失败，请重试。",
   "No application can open this file.": "没有可打开此文件的应用。",
@@ -88,21 +94,29 @@ const Map<String, String> zhCatalogNativeOnly = <String, String>{
   "Select encrypted headers to save a header credential.": "请选择加密请求头后再保存请求头凭据。",
   "Select encrypted headers to test a credential.": "请选择加密请求头后再测试凭据。",
   "Requested. Applies when the computer reconnects.": "已请求。计算机重新连接后生效。",
-  "Request accepted. Check runtime status for completion.": "请求已接受。请查看运行时状态确认是否完成。",
-  "Enter the server origin, such as https://raft.example.com.": "请输入服务器地址，例如 https://raft.example.com。",
+  "Request accepted. Check runtime status for completion.":
+      "请求已接受。请查看运行时状态确认是否完成。",
+  "Enter the server origin, such as https://raft.example.com.":
+      "请输入服务器地址，例如 https://raft.example.com。",
   "Your session has expired. Sign in again.": "登录已过期，请重新登录。",
-  "Server membership changed. Choose an available server again.": "服务器成员身份已变更，请重新选择可用的服务器。",
+  "Server membership changed. Choose an available server again.":
+      "服务器成员身份已变更，请重新选择可用的服务器。",
   "Enter your current password.": "请输入当前密码。",
-  "Allow nearby devices access in system settings to connect to this local server.": "请在系统设置中允许访问附近设备，以连接此本地服务器。",
+  "Allow nearby devices access in system settings to connect to this local server.":
+      "请在系统设置中允许访问附近设备，以连接此本地服务器。",
   "Local network access is off": "本地网络访问已关闭",
-  "Android blocks Raft from reaching this server on your local network until you allow nearby devices access. You are still signed in.": "在你允许访问附近设备之前，Android 会阻止 Raft 连接本地网络中的此服务器。你仍处于登录状态。",
+  "Android blocks Raft from reaching this server on your local network until you allow nearby devices access. You are still signed in.":
+      "在你允许访问附近设备之前，Android 会阻止 Raft 连接本地网络中的此服务器。你仍处于登录状态。",
   "Allow local network access": "允许本地网络访问",
   "Your saved sign-in is not available yet": "已保存的登录暂不可用",
   "Cannot reach Raft right now": "暂时无法连接 Raft",
   "Raft could not confirm your session": "Raft 无法确认你的会话",
-  "Your device could not open the secure storage that holds your sign-in. It is still saved. This usually clears after the device is unlocked.": "设备无法打开保存登录信息的安全存储。登录信息仍已保存，通常在设备解锁后即可恢复。",
-  "You are still signed in. Raft will keep trying to reconnect.": "你仍处于登录状态，Raft 会持续尝试重新连接。",
-  "You are still signed in. Raft will keep trying to confirm your session.": "你仍处于登录状态，Raft 会持续尝试确认你的会话。",
+  "Your device could not open the secure storage that holds your sign-in. It is still saved. This usually clears after the device is unlocked.":
+      "设备无法打开保存登录信息的安全存储。登录信息仍已保存，通常在设备解锁后即可恢复。",
+  "You are still signed in. Raft will keep trying to reconnect.":
+      "你仍处于登录状态，Raft 会持续尝试重新连接。",
+  "You are still signed in. Raft will keep trying to confirm your session.":
+      "你仍处于登录状态，Raft 会持续尝试确认你的会话。",
   "Notification settings could not be loaded on this device.": "无法在此设备上加载通知设置。",
   "System notification permission could not be checked.": "无法检查系统通知权限。",
   "Notification settings could not be saved on this device.": "无法在此设备上保存通知设置。",
@@ -121,7 +135,8 @@ const Map<String, String> zhCatalogNativeOnly = <String, String>{
   // Documents the server would not preview: read the original or hand it to the system app (Kevin approved 2026-10-13).
   "Open with System App": "用系统应用打开",
   "Open Full File": "打开完整文件",
-  "This file is too large to open here. Download it instead.": "文件太大，无法在此打开，请下载后查看。",
+  "This file is too large to open here. Download it instead.":
+      "文件太大，无法在此打开，请下载后查看。",
   "The file could not be downloaded. Try again.": "文件下载失败，请重试。",
   // Image viewer on phones (native-only: Web has no photo-library save; its
   // "Save image" is a different action). Wording follows the iOS / Android
@@ -138,8 +153,7 @@ const Map<String, String> zhCatalogNativeOnly = <String, String>{
   "Attachments, previews, profile pictures and icons you open are kept on this device so they open again without downloading. Your sign-in, drafts, settings and files you saved are not part of the cache.":
       "你打开过的附件、预览、头像和图标会保存在此设备上，再次打开时无需重新下载。登录信息、草稿、设置和你保存的文件不属于缓存。",
   "Clear cache": "清除缓存",
-  "Downloaded attachments and previews, profile pictures and icons, and temporary preview files are removed from this device. They are downloaded again the next time you open them. Files that are open right now are kept, and so are your sign-in, drafts, settings, files you saved and files shared to Raft.":
-      "将从此设备移除已下载的附件和预览、头像和图标，以及临时预览文件，下次打开时会重新下载。正在打开的文件会保留，登录信息、草稿、设置、你保存的文件和分享给 Raft 的文件也不受影响。",
+  "Downloaded attachments and previews, profile pictures and icons, and temporary preview files are removed from this device. They are downloaded again the next time you open them. Files that are open right now are kept, and so are your sign-in, drafts, settings, files you saved and files shared to Raft.": "将从此设备移除已下载的附件和预览、头像和图标，以及临时预览文件，下次打开时会重新下载。正在打开的文件会保留，登录信息、草稿、设置、你保存的文件和分享给 Raft 的文件也不受影响。",
   "Attachments and previews": "附件和预览",
   "Profile pictures and icons": "头像和图标",
   "Some of the cache could not be cleared. Try again.": "部分缓存未能清除，请重试。",

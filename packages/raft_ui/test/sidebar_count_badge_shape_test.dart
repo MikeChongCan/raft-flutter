@@ -4,18 +4,18 @@ import 'package:raft_ui/raft_ui.dart';
 import 'package:raft_ui/test_themes.dart';
 
 /// Every unread count in the sidebar, the rail and the phone tab bar is the
-/// Web `SidebarItemCount`/`AppRailItemBadge` chip: a 16px tall capsule that
+/// Web `SidebarItemCount`/`AppRailItemBadge` chip: a 20px tall capsule that
 /// keeps its own size, whatever the height of the row around it. A row hands
 /// its trailing child loose vertical constraints, so a count that centres
 /// its content with an `Align` (a `Container(alignment:)`) stretches to the
 /// full row height: the tall pink bar in the Activity row (v0.1.0+31).
 void main() {
   const counts = [1, 12, 120];
-  // The test font is Ahem (10px per character): the chip's natural width is
-  // its text plus the 6+6 padding and 1+1 border of the widest (Brutal)
-  // recipe. A stretched chip is far taller, not wider, so the cap only has to
+  // The test font is Ahem (12px per character for the current count role): the chip's natural width is
+  // its text plus the Source's 6+6 layout padding (its border paints
+  // inside that box). A stretched chip is far taller, not wider, so the cap only has to
   // keep the width a function of the digits.
-  double maxWidth(int count) => 14.0 + 10 * (count > 99 ? 3 : '$count'.length);
+  double maxWidth(int count) => 12.0 + 12 * (count > 99 ? 3 : '$count'.length);
 
   for (final dark in raftThemeMatrix([false, true], full: true)) {
     for (final (width, density) in [
@@ -103,7 +103,18 @@ void main() {
         expect(chip.width, lessThanOrEqualTo(maxWidth(count)), reason: reason);
         if (centered) {
           expect(
-            (chip.center.dy - tester.getRect(find.text(label!)).center.dy)
+            (chip.center.dy -
+                    tester
+                        .getRect(
+                          find
+                              .ancestor(
+                                of: find.text(label!),
+                                matching: find.byType(RaftCssLineBox),
+                              )
+                              .first,
+                        )
+                        .center
+                        .dy)
                 .abs(),
             lessThanOrEqualTo(1),
             reason: '$reason vertical centre',

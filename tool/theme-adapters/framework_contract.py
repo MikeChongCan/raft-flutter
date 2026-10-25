@@ -17,6 +17,8 @@ RAFT_GEOMETRY = {
     'stroke.composerShell': 1.5,
     # Mounted raft-ui drawer axis=x max-w-[420px]; a57 OverflowSheet was 448 / 544.
     'size.channelOverflowDrawer': 420,
+    # ThreadsInbox uses ActivityInboxPanel edge=inset; the rail owns its seam.
+    'stroke.activityInboxEdge': 0,
     'type.mobileWorkspaceTitle.size': 17, 'type.mobileWorkspaceTitle.line': 22,
     'space.mobileWorkspaceGap': 8, 'space.mobileWorkspaceStart': 12,
     'space.mobileWorkspaceEnd': 10, 'space.mobileWorkspaceBlock': 0,
@@ -124,6 +126,7 @@ ELEGANT_GEOMETRY = {
     'type.emptyBody.size': 16, 'type.emptyBody.line': 24,
     'stroke.composerShell': 0,
     'size.channelOverflowDrawer': 448,
+    'stroke.activityInboxEdge': 1,
     'type.mobileWorkspaceTitle.size': 16, 'type.mobileWorkspaceTitle.line': 24,
     'space.mobileWorkspaceGap': 6, 'space.mobileWorkspaceStart': 14,
     'space.mobileWorkspaceEnd': 14, 'space.mobileWorkspaceBlock': 6,
@@ -217,6 +220,7 @@ BRUTAL_GEOMETRY = {
     **ELEGANT_GEOMETRY,
     'stroke.composerShell': 2,
     'size.channelOverflowDrawer': 544,
+    'stroke.activityInboxEdge': 1,
     'size.conversationHeaderIcon': 36,
     'radius.conversationHeaderIcon': 0,
     'stroke.conversationHeaderIcon': 2,

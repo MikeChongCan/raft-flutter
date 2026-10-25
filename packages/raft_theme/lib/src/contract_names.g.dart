@@ -708,6 +708,7 @@ const Set<String> raftGeometryTokens = {
   'space.standaloneContinueInline',
   'space.switchInset',
   'space.tasksViewportInline',
+  'stroke.activityInboxEdge',
   'stroke.bannerBorder',
   'stroke.bannerRing',
   'stroke.channelFooter',

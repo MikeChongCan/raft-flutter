@@ -46,9 +46,11 @@ void main() {
         final help = find.byKey(const Key('rail-help'));
         final settings = find.byKey(const Key('rail-settings'));
         final bell = find.byType(RaftMobileNotificationButton);
-        expect(t.getRect(bell).top, 642);
-        expect(t.getRect(help).top, 692);
-        expect(t.getRect(settings).top, 742);
+        // raft-ui 0.7.0 appRail.footer: three 40px items, gap-1.5 (6px),
+        // pb-2 (8px), inside this 800px-high window.
+        expect(t.getRect(bell).top, 660);
+        expect(t.getRect(help).top, 706);
+        expect(t.getRect(settings).top, 752);
         expect(t.getSize(bell), const Size(40, 40));
         expect(t.widget<RaftWorkspaceHelpMenu>(help).attention, true);
         final attention = find.descendant(

@@ -66,7 +66,8 @@ abstract final class RaftPanelEdge {
       case RaftPanelEdgeStyle.attachedPanel:
         return BorderSide(color: t.colors['line-muted']!, width: 1);
       case RaftPanelEdgeStyle.activityInbox:
-        return BorderSide(color: t.line);
+        final width = t.size('stroke.activityInboxEdge', fallback: 1);
+        return width == 0 ? null : BorderSide(color: t.line, width: width);
       case RaftPanelEdgeStyle.drawer:
         return null;
     }

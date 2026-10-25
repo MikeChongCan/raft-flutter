@@ -368,7 +368,13 @@ Future<void> tapElement(Ctx c, TapElement e) async {
       matching: find.textContaining(text, findRichText: true),
     );
     expect(target, findsWidgets, reason: '${c.host.id}: $text not on screen');
-    await t.tap(target.first, warnIfMissed: false);
+    // The last message can be partly covered by the composer. Exercise the
+    // visible reference after scrolling the real timeline, rather than
+    // tapping through the composer (search-816's #8 was at y=799).
+    await t.ensureVisible(target.first);
+    await t.pumpAndSettle();
+    expect(target.first.hitTestable(), findsOneWidget);
+    await t.tap(target.first);
     return;
   }
   final finder = find$(c, e)!;

@@ -8,7 +8,8 @@ void main() {
   test(
     'sidebar directional geometry keeps overlay and in-flow headers distinct',
     () {
-      final elegant = raftTheme().extension<RaftTokens>()!;
+      final elegant = raftTheme(pack: packForThemeId(elegantThemePackId))
+          .extension<RaftTokens>()!;
       final desktop = RaftSidebarRecipe(
         elegant,
         viewportWidth: 1024,
@@ -43,7 +44,8 @@ void main() {
     'rail keeps source theme glyph and compact face dimensions separate',
     () {
       final elegant = RaftRailRecipe(
-        raftTheme().extension<RaftTokens>()!,
+        raftTheme(pack: packForThemeId(elegantThemePackId))
+            .extension<RaftTokens>()!,
         viewportHeight: 560,
       );
       expect(elegant.glyphSize, 16);
@@ -66,9 +68,12 @@ void main() {
     );
     expect(
       desktop.contentInset(),
-      const EdgeInsetsDirectional.fromSTEB(8, 12, 8, 12),
+      const EdgeInsetsDirectional.fromSTEB(8, 8, 8, 8),
     );
-    expect(desktop.contentInset(headerInFlow: true), desktop.contentInset());
+    expect(
+      desktop.contentInset(headerInFlow: true),
+      const EdgeInsetsDirectional.fromSTEB(8, 4, 8, 8),
+    );
     final workspace = RaftSidebarRecipe(
       t,
       viewportWidth: 1024,
@@ -85,9 +90,9 @@ void main() {
       variant: RaftSidebarVariant.mountedProduct,
     );
     expect(mobile.headerInset.start, 16);
-    expect(mobile.contentInset().bottom, 68);
+    expect(mobile.contentInset().bottom, 8);
     // Nothing is attached above the tab bar: clearance is the capsule only.
-    expect(mobile.contentInset(bottomInset: 24).bottom, 92);
+    expect(mobile.contentInset(bottomInset: 24).bottom, 32);
   });
   test(
     'sidebar uses the source body role across theme and responsive variants',

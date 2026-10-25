@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:raft_ui/raft_ui.dart' show RaftCssText;
 
 import '../../../tool/testing/text_scale_audit.dart';
 
@@ -90,6 +91,118 @@ void main() {
         mode: AuditMode.base,
       );
       expect(base.ok, isTrue, reason: base.failures.join('\n'));
+    },
+  );
+
+  testWidgets('CSS line blank leading does not paint outside its control', (
+    t,
+  ) async {
+    const cssStyle = TextStyle(
+      fontFamily: 'packages/raft_ui/SpaceGrotesk',
+      fontSize: 17,
+      height: 22 / 17,
+      leadingDistribution: TextLeadingDistribution.even,
+    );
+    final r = await run(
+      t,
+      () => const Align(
+        alignment: Alignment.topLeft,
+        child: SizedBox(
+          height: 44,
+          child: RaftCssText(
+            'design',
+            style: cssStyle,
+            maxLines: 1,
+            softWrap: false,
+            strutStyle: StrutStyle(
+              fontFamily: 'packages/raft_ui/SpaceGrotesk',
+              fontSize: 17,
+              height: 22 / 17,
+              forceStrutHeight: true,
+              leadingDistribution: TextLeadingDistribution.even,
+            ),
+          ),
+        ),
+      ),
+    );
+    expect(r.escapes, isEmpty, reason: r.failures.join('\n'));
+    expect(r.inkClipped, isEmpty, reason: r.failures.join('\n'));
+  });
+
+  testWidgets('CSS text that really overpaints its control is still reported', (
+    t,
+  ) async {
+    final r = await run(
+      t,
+      () => const Align(
+        alignment: Alignment.topLeft,
+        child: SizedBox(
+          height: 16,
+          child: OverflowBox(
+            maxHeight: double.infinity,
+            child: RaftCssText(
+              'Gypsy',
+              style: TextStyle(fontSize: 17, height: 22 / 17),
+            ),
+          ),
+        ),
+      ),
+    );
+    expect(r.escapes, isNotEmpty);
+  });
+
+  testWidgets(
+    'CSS guard retains ink overpaint and clips across fonts and locales',
+    (t) async {
+      for (final font in ['SpaceGrotesk', 'SpaceMono']) {
+        for (final (mode, text) in [
+          (
+            const AuditMode(
+              'zh-2.0x',
+              textScale: 2,
+              locale: Locale('zh', 'CN'),
+            ),
+            'Gypsy 骨直令',
+          ),
+          (AuditMode.x31, 'Gypsy lower descenders'),
+          (
+            const AuditMode(
+              'zh-3.1x',
+              textScale: 3.1,
+              locale: Locale('zh', 'CN'),
+            ),
+            '骨直令 Gypsy',
+          ),
+        ]) {
+          for (final clipped in [false, true]) {
+            Widget build() {
+              final control = SizedBox(
+                height: 16,
+                child: OverflowBox(
+                  maxHeight: double.infinity,
+                  child: RaftCssText(
+                    text,
+                    style: TextStyle(
+                      fontFamily: 'packages/raft_ui/$font',
+                      fontSize: 17,
+                      height: 22 / 17,
+                    ),
+                  ),
+                ),
+              );
+              return Align(
+                alignment: Alignment.topLeft,
+                child: clipped ? ClipRect(child: control) : control,
+              );
+            }
+
+            final report = await run(t, build, mode: mode);
+            final reason = '$font/${mode.name}/clipped=$clipped';
+            expect(report.escapes, isNotEmpty, reason: reason);
+            if (clipped) expect(report.inkClipped, isNotEmpty, reason: reason);
+          }
+        }
+      }
     },
   );
 

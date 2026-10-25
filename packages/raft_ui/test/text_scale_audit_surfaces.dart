@@ -53,6 +53,7 @@ import 'package:raft_ui/notification_previews.dart';
 import 'package:raft_ui/notification_settings_previews.dart';
 import 'package:raft_ui/popover_surface_previews.dart';
 import 'package:raft_ui/popup_collision_previews.dart';
+import 'package:raft_ui/workspace_top_bar_previews.dart';
 import 'package:raft_ui/previews.dart';
 import 'package:raft_ui/pull_to_refresh_previews.dart';
 import 'package:raft_ui/quick_reaction_picker_previews.dart';
@@ -1488,6 +1489,13 @@ final auditSurfaces = <AuditSurface>[
     'Invite accept signed in',
     inviteAcceptSignedInPreview,
     Size(390, 700),
+    representative: true,
+  ),
+  AuditSurface(
+    'workspaceTopBarPreview',
+    'Workspace browser top bar',
+    workspaceTopBarPreview,
+    Size(856, 260),
     representative: true,
   ),
 ];

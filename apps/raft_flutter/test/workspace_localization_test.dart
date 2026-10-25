@@ -47,9 +47,19 @@ void main() {
       await tester.pumpAndSettle();
       await tester.pumpWidget(application(const Locale('zh', 'CN')));
       await tester.pumpAndSettle();
-      for (final label in ['明暗模式', '浅色', '深色', '系统', '跟随系统会随设备切换明暗。']) {
+      // The current mode picker is three preview cards; its group label is
+      // accessible semantics rather than a repeated visible heading.
+      expect(find.bySemanticsLabel('明暗模式'), findsOneWidget);
+      for (final label in ['浅色', '深色', '系统']) {
         expect(find.text(label), findsOneWidget);
       }
+      expect(
+        find.descendant(
+          of: find.byKey(const ValueKey('appearance-theme-system')),
+          matching: find.text('已保存到此设备。'),
+        ),
+        findsOneWidget,
+      );
       expect(find.text('Appearance'), findsNothing);
       await tester.tap(find.text('深色'));
       await tester.pumpAndSettle();

@@ -90,7 +90,8 @@ void main() {
           await mouse.addPointer(location: Offset.zero);
           await mouse.moveTo(t.getCenter(find.byKey(row)));
           await t.pumpAndSettle();
-          final selectedFill = tokens.colors['fill-muted']!;
+          // SidebarItem data-active: bg-brand-400, sticker ink/rim, rounded-lg.
+          final selectedFill = tokens.colors['brand-400']!;
           // The blank interior raster catches actual opaque hover/gradient paint.
           expect(await sample(t), selectedFill);
           AnimatedContainer face() => t.widget<AnimatedContainer>(
@@ -101,13 +102,13 @@ void main() {
           );
           final decoration = face().decoration! as BoxDecoration;
           expect(decoration.color, selectedFill);
-          expect(decoration.borderRadius, BorderRadius.circular(6));
+          expect(decoration.borderRadius, BorderRadius.circular(8));
           expect(
             t.widget<Text>(find.text('Owned conversation')).style!.color,
             // Source Sidebar.tsx3754 supplies inherited Brutalist black;
             // DmRow's title at 1001 adds no text-color override.
             // Ordinary channel rendering remains independently asserted here.
-            tokens.colors['foreground-strong'],
+            tokens.colors['sticker-ink'],
           );
           final overlays = t.widgetList<DecoratedBox>(
             find.descendant(
@@ -123,7 +124,9 @@ void main() {
             ),
             isFalse,
           );
-          expect(decoration.boxShadow, isEmpty);
+          expect(decoration.boxShadow, [
+            BoxShadow(color: tokens.colors['sticker-edge']!, spreadRadius: 1.5),
+          ]);
           final bounds = t.getRect(find.byKey(row));
           await mouse.down(t.getCenter(find.byKey(row)));
           await t.pumpAndSettle();
@@ -134,9 +137,7 @@ void main() {
           expect(activations, 0);
           update(() => selected = false);
           await t.pumpAndSettle();
-          final hoverFill = tokens.dark
-              ? tokens.colors['ink-6']!
-              : tokens.colors['fill-strong']!.withValues(alpha: .8);
+          final hoverFill = tokens.colors['fill-pressed']!;
           expect((face().decoration! as BoxDecoration).color, hoverFill);
           await mouse.moveTo(const Offset(600, 500));
           await t.pumpAndSettle();

@@ -99,14 +99,15 @@ class _SelectionPopoverPreviewState extends State<SelectionPopoverPreview> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            Wrap(
+              spacing: 12,
+              runSpacing: 8,
               children: [
                 RaftButton(
                   label: 'Choose Channel',
                   focusNode: trigger,
                   onPressed: () => setState(() => open = !open),
                 ),
-                const SizedBox(width: 12),
                 RaftButton(
                   label: caller ? 'Use Default' : 'Use Caller Surface',
                   onPressed: () => setState(() => caller = !caller),

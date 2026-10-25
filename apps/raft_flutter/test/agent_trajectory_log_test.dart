@@ -227,9 +227,15 @@ void main() {
       );
       expect(paragraph, findsOneWidget);
       final style = (t.widget<RichText>(paragraph).text as TextSpan).style!;
-      expect(style.fontSize, 14);
+      expect(style.fontSize, 13);
       expect(style.height! * style.fontSize!, closeTo(20, .001));
-      expect(t.getSize(paragraph).height, closeTo(40, .001));
+      // Web renders the title and detail as independent mono13/20 and
+      // mono12/16 lines, each unaffected by the inherited 24px host style.
+      expect(t.getSize(paragraph).height, closeTo(20, .001));
+      final detail = find.text('first\nsecond');
+      expect(detail, findsOneWidget);
+      expect(t.widget<Text>(detail).style!.fontSize, 12);
+      expect(t.widget<Text>(detail).style!.height, 16 / 12);
     });
   }
   late _Client c;

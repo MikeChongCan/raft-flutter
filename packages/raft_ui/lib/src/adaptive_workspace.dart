@@ -7,6 +7,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 
 import 'theme.dart';
+import 'localization.dart';
 import 'panel_edge.dart';
 import 'design_primitives.dart';
 import 'icons.dart';
@@ -926,6 +927,16 @@ class RaftWorkspaceRail extends StatelessWidget {
                             child: RaftWorkspaceRailAction(
                               key: ValueKey('rail-${d.id}'),
                               label: d.label,
+                              semanticLabel: d.unread > 0
+                                  ? raftFormat(
+                                      context,
+                                      '{label}, {count} unread',
+                                      {
+                                        'label': d.label,
+                                        'count': '${d.unread}',
+                                      },
+                                    )
+                                  : d.label,
                               glyph: d.glyph,
                               icon: railGlyph(d, recipe.glyphSize),
                               navigation: true,

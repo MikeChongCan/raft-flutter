@@ -67,7 +67,7 @@ void main() {
               find.text(chinese ? '开启通知' : 'Enable Notifications'),
             );
             final close = t.getRect(find.byType(RaftCloseButton));
-            expect(close.size, const Size(28, 28));
+            expect(close.size, const Size(32, 32));
             Map<String, double> rect(Rect r) => {
               'x': r.left,
               'y': r.top,

@@ -58,6 +58,7 @@ void main() {
     required bool mobile,
     bool dark = false,
     bool unread = true,
+    RaftThemePack? pack,
   }) async {
     final client = _Client();
     final w = WorkspaceController(client)
@@ -71,7 +72,11 @@ void main() {
     });
     await t.pumpWidget(
       MaterialApp(
-        theme: raftTheme(dark: dark),
+        theme: raftTheme(
+          dark: dark,
+          pack: pack,
+          platform: mobile ? TargetPlatform.android : TargetPlatform.linux,
+        ),
         home: Scaffold(
           body: Align(
             alignment: Alignment.topLeft,
@@ -114,7 +119,12 @@ void main() {
     expect(find.byType(RaftRailAttention), findsNothing);
   });
 
-  for (final (dark, size) in [(false, 16.0), (true, 16.0)]) {
+  Color? renderedBellColor(WidgetTester t) {
+    final icon = find.byWidget(bell(t));
+    return bell(t).color ?? IconTheme.of(t.element(icon)).color;
+  }
+
+  for (final (dark, size) in [(false, 20.0), (true, 20.0)]) {
     testWidgets('[$dark] rail bell glyph is the rail icon size', (t) async {
       await mount(t, mobile: false, dark: dark);
       expect(bell(t).size, size);
@@ -122,13 +132,13 @@ void main() {
   }
 
   testWidgets(
-    'elegant rail bell reads foreground-icon and brightens on hover',
+    'elegant rail bell opens on hover and restores its idle foreground',
     (t) async {
-      await mount(t, mobile: false);
+      await mount(t, mobile: false, pack: packForThemeId(elegantThemePackId));
       final tokens = RaftTokens.of(
         t.element(find.byType(RaftMobileNotificationButton)),
       );
-      expect(bell(t).color, tokens.colors['foreground-icon']);
+      expect(renderedBellColor(t), tokens.colors['foreground-icon']);
       final mouse = await t.createGesture(kind: PointerDeviceKind.mouse);
       await mouse.addPointer(location: Offset.zero);
       addTearDown(mouse.removePointer);
@@ -136,16 +146,37 @@ void main() {
         t.getCenter(find.byType(RaftMobileNotificationButton)),
       );
       await t.pump(const Duration(milliseconds: 300));
-      expect(bell(t).color, tokens.colors['foreground-strong']);
+      // The real aggregator opens on hover (not a bare rail action). Once
+      // open, the selected-state colour wins over the transient hover colour.
+      expect(
+        t
+            .widget<RaftMobileNotificationButton>(
+              find.byType(RaftMobileNotificationButton),
+            )
+            .open,
+        isTrue,
+      );
+      expect(renderedBellColor(t), tokens.colors['foreground-muted']);
+      await mouse.moveTo(const Offset(350, 350));
+      await t.pump(const Duration(milliseconds: 300));
+      expect(
+        t
+            .widget<RaftMobileNotificationButton>(
+              find.byType(RaftMobileNotificationButton),
+            )
+            .open,
+        isFalse,
+      );
+      expect(renderedBellColor(t), tokens.colors['foreground-icon']);
     },
   );
 
-  testWidgets('mobile bell stays 16px muted', (t) async {
+  testWidgets('mobile bell keeps its 22px navbar glyph', (t) async {
     await mount(t, mobile: true);
     final tokens = RaftTokens.of(
       t.element(find.byType(RaftMobileNotificationButton)),
     );
-    expect(bell(t).size, 16);
-    expect(bell(t).color, tokens.muted);
+    expect(bell(t).size, 22);
+    expect(renderedBellColor(t), tokens.ui.stickerInk);
   });
 }

@@ -15,13 +15,14 @@ void main() {
       Widget child, {
       double height = 900,
       double width = 1280,
+      RaftThemePack? pack,
     }) async {
       tester.view.physicalSize = Size(width, height);
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.reset);
       await tester.pumpWidget(
         MaterialApp(
-          theme: raftTheme(dark: dark),
+          theme: raftTheme(dark: dark, pack: pack),
           home: Scaffold(
             body: RaftDensityScope(density: RaftDensity.desktop, child: child),
           ),
@@ -146,7 +147,14 @@ void main() {
         expect(counter.top, surface.top + border - 4);
         expect(
           tester
-              .getSemantics(find.byKey(const ValueKey('rail-activity')))
+              .getSemantics(
+                find.descendant(
+                  of: find.byKey(const ValueKey('rail-activity')),
+                  matching: find.byWidgetPredicate(
+                    (w) => w is Semantics && w.properties.selected != null,
+                  ),
+                ),
+              )
               .toString(),
           contains('12'),
         );
@@ -186,6 +194,7 @@ void main() {
               ],
             ),
             width: width,
+            pack: packForThemeId(elegantThemePackId),
           );
           final strip = find.byType(RaftConversationTabs);
           final mobile = width < 768;

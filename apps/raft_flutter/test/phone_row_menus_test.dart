@@ -602,7 +602,8 @@ void main() {
               .dx,
         ),
       );
-      expect(tester.getSize(marker), const Size(16, 16));
+      // raft-ui 0.7.0 sidebarItemIndicator: size-5 min-w-5 (20px).
+      expect(tester.getSize(marker), const Size(20, 20));
     });
 
     testWidgets('no @ marker once the channel is read or for a DM', (

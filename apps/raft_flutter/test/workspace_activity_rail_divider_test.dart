@@ -21,7 +21,7 @@ void main() {
         await mountShell(t, w, dark);
         final help = find.byKey(const Key('rail-help'));
         final expectedCenter = 28.0;
-        void checkGeometry(double borderWidth) {
+        void checkGeometry() {
           expect(t.getRect(help).width, 40);
           expect(t.getCenter(help).dx, expectedCenter);
           final rail = find.byType(RaftWorkspaceRail);
@@ -37,22 +37,28 @@ void main() {
                   decoration.border is Border;
             }),
           );
-          expect(border, findsNothing);
+          expect(border, findsOneWidget);
+          final edge =
+              (t.widget<DecoratedBox>(border).decoration as BoxDecoration)
+                      .border!
+                  as Border;
+          expect(edge.right.width, 1);
+          expect(t.getRect(rail).width, 57);
         }
 
         expect(t.getRect(help).width, 40);
-        checkGeometry(1);
+        checkGeometry();
         await t.tap(find.byKey(const Key('rail-chat')));
         await frames(t, () {});
         await t.pumpAndSettle();
         expect(w.location.route, RaftRoute.channel);
         expect(w.location.entityId, 'c1');
-        checkGeometry(2);
+        checkGeometry();
         await t.tap(find.byKey(const Key('rail-activity')));
         await frames(t, () {});
         await t.pumpAndSettle();
         expect(w.location.route, RaftRoute.activity);
-        checkGeometry(1);
+        checkGeometry();
         await retire(t);
       },
       variant: TargetPlatformVariant({TargetPlatform.linux}),

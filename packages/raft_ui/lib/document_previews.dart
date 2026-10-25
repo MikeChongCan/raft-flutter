@@ -17,9 +17,12 @@ class _PreviewState extends State<_Preview> {
   Duration position = Duration.zero;
   double volume = 100;
   @override
-  Widget build(BuildContext context) => Column(
+  // This gallery combines independently scrollable media demos. The gallery
+  // itself must also scroll when the audio controls grow with the text.
+  Widget build(BuildContext context) => ListView(
     children: [
-      Expanded(
+      SizedBox(
+        height: 160,
         child: RaftDocumentPreview(
           data: const {
             'kind': 'xlsx',

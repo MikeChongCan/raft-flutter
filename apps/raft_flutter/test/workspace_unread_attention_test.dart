@@ -206,7 +206,7 @@ void main() {
           matching: find.byType(RaftSidebarUnreadCount),
         );
         expect(badge, findsOneWidget);
-        expect(tester.getSize(badge).height, 16);
+        expect(tester.getSize(badge).height, 20);
         expect(
           find.descendant(of: badge, matching: find.text('12')),
           findsOneWidget,
@@ -219,8 +219,8 @@ void main() {
         final text = tester.widget<Text>(
           find.descendant(of: badge, matching: find.text('12')),
         );
-        expect(text.style!.fontSize, 10);
-        expect(text.style!.fontWeight, FontWeight.w400);
+        expect(text.style!.fontSize, 12);
+        expect(text.style!.fontWeight, FontWeight.w700);
         expect(tester.takeException(), isNull);
         await tester.pumpWidget(const SizedBox());
       },

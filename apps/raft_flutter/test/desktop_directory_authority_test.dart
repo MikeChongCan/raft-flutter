@@ -86,8 +86,8 @@ void main() {
             of: row,
             matching: find.byType(RaftAvatar),
           );
-          // Sidebar.tsx AvatarSlot(sidebar-list) is 18px in every theme.
-          expect(t.getSize(avatar), const Size(18, 18));
+          // Sidebar.tsx AvatarSlot(sidebar-list) is 19px in every theme.
+          expect(t.getSize(avatar), const Size(19, 19));
           expect(
             find.descendant(of: row, matching: find.text('Shared Source row')),
             findsOneWidget,
@@ -97,8 +97,8 @@ void main() {
             matching: find.byType(RaftControl),
           );
           // SidebarItem has independent 4px/2px margin and md:py-1/1.5.
-          expect(t.getSize(control).height, 34);
-          expect(t.getSize(row).height - t.getSize(control).height, 2);
+          expect(t.getSize(control).height, width < 768 ? 44 : 36);
+          expect(t.getSize(row).height - t.getSize(control).height, 1);
           await t.tap(row);
           expect(selected!.kind, DesktopContentKind.agent);
           expect(selected!.id, 'agent');

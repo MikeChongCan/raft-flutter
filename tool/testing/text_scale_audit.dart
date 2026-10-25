@@ -544,6 +544,38 @@ Future<void> inspectPumped(
         );
         final over = math.max(r.bottom - a.size.height, -r.top);
         if (over > tolerance) {
+          // A CSS baseline snap can move only the paragraph's blank leading
+          // outside its line box. Confirm actual painted overflow before
+          // reporting text over its neighbours; keep the same tolerance and
+          // the independent clip checks above. Inline widgets retain their
+          // conservative line-metric measurement in _inkRect.
+          ink ??= await _inkRect(
+            t,
+            box,
+            span,
+            scaler,
+            maxLines,
+            overflow,
+            softWrap,
+            dir,
+            locale,
+            strut,
+            basis,
+            thb,
+            align,
+            xf,
+          );
+          if (ink != null) {
+            final inverse = Matrix4.tryInvert(a.getTransformTo(null));
+            if (inverse != null) {
+              final localInk = MatrixUtils.transformRect(inverse, ink);
+              final paintedOver = math.max(
+                -localInk.top,
+                localInk.bottom - a.size.height,
+              );
+              if (paintedOver <= tolerance) break;
+            }
+          }
           // Only a problem when the ancestor does not clip it away
           // (clipped text is reported as inkClipped) or hide it.
           report.escapes.add(
@@ -722,7 +754,9 @@ Future<Rect?> _inkRect(
     textHeightBehavior: thb,
     textAlign: align,
   );
-  if (softWrap) {
+  // RenderParagraph constrains nowrap text too when it draws an ellipsis.
+  // An unbounded replica measures hidden letters, not the displayed glyphs.
+  if (softWrap || overflow == TextOverflow.ellipsis) {
     painter.layout(
       maxWidth: constraintsMax.isFinite ? constraintsMax : box.size.width,
     );
@@ -776,7 +810,23 @@ Future<Rect?> _inkRect(
   // The paragraph itself is positioned by its parent; x offset is irrelevant
   // for vertical checks, and horizontal alignment inside the box is replicated
   // by the replica's own alignment within `painter.width`.
-  return MatrixUtils.transformRect(xf, local);
+  var visibleInk = local;
+  if (box is RenderEditable && box.maxLines != 1) {
+    final offset = box.offset;
+    // An editor that fits a full line and has real scroll extent is itself a
+    // viewport, like RenderAbstractViewport above. Audit its visible ink;
+    // external clips still apply. A single line or a box too short for even
+    // one line must keep failing, even if its caret can scroll.
+    if (offset is ScrollPosition &&
+        offset.hasContentDimensions &&
+        offset.maxScrollExtent > 0 &&
+        box.size.height >= box.preferredLineHeight) {
+      visibleInk = local
+          .shift(Offset(0, -offset.pixels))
+          .intersect(Offset.zero & box.size);
+    }
+  }
+  return MatrixUtils.transformRect(xf, visibleInk);
 }
 
 /// Pumps [build] under [mode] and returns the report.

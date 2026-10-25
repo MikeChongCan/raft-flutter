@@ -12,7 +12,7 @@ import 'workspace_source_location_contract_test.dart' show pageFixture;
 void main() {
   for (final dark in raftThemeMatrix([false, true])) {
     testWidgets(
-      '[K08g] ${dark ? 'dark' : 'light'} actual mobile human DM keeps the 18px sticker avatar and its placeholder',
+      '[K08g] ${dark ? 'dark' : 'light'} actual mobile human DM keeps the 19px sticker avatar and its placeholder',
       (t) async {
         final (w, api) = await pageFixture(t, section: 'home');
         w.dms = [
@@ -33,7 +33,7 @@ void main() {
           of: row,
           matching: find.byType(RaftAvatar),
         );
-        expect(t.getSize(avatar), const Size(18, 18));
+        expect(t.getSize(avatar), const Size(19, 19));
         expect(
           t.widget<RaftAvatar>(avatar).mountedContext,
           RaftMountedAvatarContext.sidebarList,

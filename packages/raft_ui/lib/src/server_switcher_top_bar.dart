@@ -346,7 +346,9 @@ class _TopBarServerTriggerState extends State<_TopBarServerTrigger>
                     ),
                 hiddenUnread: hiddenUnread,
               ),
-              const SizedBox(width: 8),
+              // CSS flex gap exists only between children; an unloaded
+              // workspace has an avatar but no name to separate from it.
+              if (widget.workspaceName.isNotEmpty) const SizedBox(width: 8),
             ],
             if (widget.workspaceName.isNotEmpty)
               Flexible(

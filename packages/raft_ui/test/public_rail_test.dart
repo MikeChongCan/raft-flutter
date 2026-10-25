@@ -50,7 +50,7 @@ void main() {
           .whereType<BoxDecoration>()
           .map((d) => d.color)
           .whereType<Color>();
-      expect(ground, isNot(contains(tokens.product.softSignal)));
+      expect(ground, contains(tokens.colors['layer-workspace-rail']));
 
       await tester.tap(find.byKey(const ValueKey('rail-chat')));
       await tester.tap(find.byKey(const ValueKey('public-rail-settings')));

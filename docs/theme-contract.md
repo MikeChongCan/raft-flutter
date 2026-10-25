@@ -1172,3 +1172,7 @@ Raft 采用 Sidebar.tsx 的圆角墨色贴纸、黄色名称和整体 -2° 倾�
 
 拖动期间的 Escape 与 dnd-kit PointerSensor 一样独立于头像焦点：只在拖动
 期间注册键盘监听，放下、取消和卸载时移除。其他控件获得焦点不会阻止取消。
+
+Activity 侧边框由组件数值 `stroke.activityInboxEdge` 控制：Raft 为0，因
+ThreadsInbox 使用 `ActivityInboxPanel edge="inset"`，侧轨自己绘制分界线；
+Elegant / Brutal 明暗为1，保持 a57 的面板边线。手机整页仍按既有规则不画侧边框。

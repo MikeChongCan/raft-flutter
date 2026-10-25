@@ -140,6 +140,7 @@ class RaftWorkspaceRailAction extends StatelessWidget {
   const RaftWorkspaceRailAction({
     super.key,
     required this.label,
+    this.semanticLabel,
     this.glyph,
     this.icon,
     required this.onPressed,
@@ -152,6 +153,7 @@ class RaftWorkspaceRailAction extends StatelessWidget {
     this.attention = false,
   }) : assert(glyph != null || icon != null);
   final String label;
+  final String? semanticLabel;
   final RaftGlyph? glyph;
   final Widget? icon;
   final bool navigation;
@@ -172,7 +174,7 @@ class RaftWorkspaceRailAction extends StatelessWidget {
     final size = extent ?? recipe.itemSize;
     Widget iconFor() => icon ?? RaftIcon(glyph!, size: recipe.glyphSize);
     final control = RaftInteractive(
-      semanticLabel: label,
+      semanticLabel: semanticLabel ?? label,
       selected: selected,
       focusNode: focusNode,
       tooltip: showTooltip ? label : null,
