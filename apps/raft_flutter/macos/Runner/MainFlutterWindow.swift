@@ -206,7 +206,7 @@ final class RaftTitleBar: NSObject {
   private var previousButtonFrames: [NSWindow.ButtonType: NSRect] = [:]
   private struct PointerGesture {
     let down: NSEvent
-    let frameOrigin: NSPoint
+    let frame: NSRect
     let start: NSPoint
     var end: NSPoint?
     var consumed = false
@@ -348,7 +348,7 @@ final class RaftTitleBar: NSObject {
   private func recordPointer(_ event: NSEvent) {
     guard let window, event.window === window else { return }
     if event.type == .leftMouseDown {
-      pointerGesture = PointerGesture(down: event, frameOrigin: window.frame.origin,
+      pointerGesture = PointerGesture(down: event, frame: window.frame,
         start: window.convertPoint(toScreen: event.locationInWindow))
     } else if event.type == .leftMouseUp, pointerGesture?.consumed == false {
       pointerGesture?.end = window.convertPoint(toScreen: event.locationInWindow)
@@ -361,11 +361,14 @@ final class RaftTitleBar: NSObject {
       guard !gesture.consumed else { return }
       gesture.consumed = true
       pointerGesture = gesture
+      // AppKit may already have moved or zoomed the window while Dart was
+      // recognizing this gesture. Do not replay it over that newer frame.
+      guard window.frame == gesture.frame else { return }
       if let end = gesture.end {
         // A quick pointer sequence may finish before Dart's platform message.
         // Preserve that user's movement without starting a second mouse loop.
-        window.setFrameOrigin(NSPoint(x: gesture.frameOrigin.x + end.x - gesture.start.x,
-          y: gesture.frameOrigin.y + end.y - gesture.start.y))
+        window.setFrameOrigin(NSPoint(x: gesture.frame.origin.x + end.x - gesture.start.x,
+          y: gesture.frame.origin.y + end.y - gesture.start.y))
       } else {
         window.performDrag(with: gesture.down)
       }

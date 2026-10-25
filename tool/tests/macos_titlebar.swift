@@ -106,6 +106,22 @@ for (type, point, time) in [
 _ = messenger.invoke("startDragging")
 check(window.frame.origin == afterDrag, "another window's pointer input must not move this window")
 
+for (type, point, time) in [
+  (NSEvent.EventType.leftMouseDown, NSPoint(x: 500, y: 300), stamp + 0.04),
+  (NSEvent.EventType.leftMouseUp, NSPoint(x: 620, y: 360), stamp + 0.05),
+] {
+  NSApp.sendEvent(NSEvent.mouseEvent(with: type, location: point, modifierFlags: [],
+    timestamp: time, windowNumber: window.windowNumber, context: nil,
+    eventNumber: 3, clickCount: 1, pressure: 0)!)
+}
+var systemFrame = window.frame
+systemFrame.origin.x += 30
+systemFrame.size.width += 10
+window.setFrame(systemFrame, display: false)
+_ = messenger.invoke("startDragging")
+check(window.frame == systemFrame,
+  "a late drag must not overwrite a frame already changed by native window handling")
+
 let restored = messenger.invoke("setIntegrated", ["enabled": false, "height": 48]) as? [String: Any]
 check(restored?["integrated"] as? Bool == false, "leaving the workspace must restore the original titlebar")
 check(restored?["leadingInset"] as? Double == 0, "the standalone strip must not reserve a second gutter")
@@ -113,6 +129,6 @@ check(window.toolbar == nil, "leaving the workspace must remove the integration 
 check(abs(window.contentView!.bounds.height - closeRect(window).midY - standardCenter) < 0.01, "the original native button position must be restored")
 
 for failure in failures { print("FAIL: \(failure)") }
-print("Native integrated titlebar: 5 cases, \(failures.count) failed assertions")
+print("Native integrated titlebar: 6 cases, \(failures.count) failed assertions")
 withExtendedLifetime(titlebar) {}
 exit(failures.isEmpty ? 0 : 1)
