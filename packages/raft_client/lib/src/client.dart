@@ -1919,6 +1919,10 @@ class RaftClient {
       'POST',
       '/attachments/upload',
       data: form,
+      // Like Web's upload request, wait for server-side file processing rather
+      // than inheriting the ordinary API's 30s response timer. The connection
+      // timeout, network errors and explicit cancellation still apply.
+      receiveTimeout: Duration.zero,
       cancellation: cancellation,
       onSendProgress: onProgress,
     );
@@ -1950,6 +1954,7 @@ class RaftClient {
           contentType: _partType(mimeType),
         ),
       }),
+      receiveTimeout: Duration.zero,
       cancellation: cancellation,
       onSendProgress: onProgress,
     );
