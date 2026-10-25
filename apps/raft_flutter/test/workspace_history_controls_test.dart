@@ -1,5 +1,8 @@
+import 'dart:ui' show SemanticsAction;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:raft_client/raft_client.dart';
 import 'package:raft_flutter/data/raft_location.dart';
 import 'package:raft_flutter/data/raft_navigation_history.dart';
@@ -9,6 +12,62 @@ import 'package:raft_flutter/features/workspace_history_controls.dart';
 import 'mounted_message_navigation_test.dart' show pageFixture, mountPage;
 
 void main() {
+  for (final language in ['en', 'zh']) {
+    for (final width in [856.0, 1280.0]) {
+      testWidgets(
+        'history buttons have localized accessible names/$language/$width',
+        (t) async {
+          final handle = t.ensureSemantics();
+          final (w, _) = await pageFixture(t);
+          // Bind the initial location before adding the second history entry.
+          final initial = w.location;
+          w.setSection('home');
+          expect(w.navigation.entries.first.uri, initial.uri);
+          t.view.physicalSize = Size(width, 800);
+          t.view.devicePixelRatio = 1;
+          addTearDown(t.view.reset);
+          Future<void> mount() => t.pumpWidget(
+            MaterialApp(
+              locale: Locale(language),
+              supportedLocales: const [Locale('en'), Locale('zh')],
+              localizationsDelegates: GlobalMaterialLocalizations.delegates,
+              theme: raftTheme(),
+              home: Scaffold(body: WorkspaceHistoryControls(controller: w)),
+            ),
+          );
+          void button(String label, {required bool enabled}) {
+            final finder = find.bySemanticsLabel(label);
+            expect(finder, findsOneWidget);
+            final data = t.getSemantics(finder).getSemanticsData();
+            expect(data.label, label);
+            expect(data.flagsCollection.isButton, isTrue);
+            expect(data.hasAction(SemanticsAction.tap), enabled);
+          }
+
+          final back = language == 'zh' ? '后退' : 'Go back';
+          final forward = language == 'zh' ? '前进' : 'Go forward';
+          final history = language == 'zh' ? '历史' : 'History';
+          await mount();
+          await t.pumpAndSettle();
+          button(history, enabled: true);
+          if (width >= 1000) {
+            button(back, enabled: true);
+            button(forward, enabled: false);
+            // Both disabled and enabled navigation buttons keep their names.
+            w.navigation.back();
+            await mount();
+            await t.pumpAndSettle();
+            button(back, enabled: false);
+            button(forward, enabled: true);
+          }
+          expect(t.takeException(), isNull);
+          await t.pumpWidget(const SizedBox.shrink());
+          handle.dispose();
+        },
+        variant: TargetPlatformVariant.only(TargetPlatform.linux),
+      );
+    }
+  }
   for (final width in [856.0, 1280.0]) {
     testWidgets('desktop history restores channels and forward branch/$width', (
       t,
