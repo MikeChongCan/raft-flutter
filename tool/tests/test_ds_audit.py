@@ -16,6 +16,7 @@ _loader.exec_module(ds_audit)
 
 FIXTURE = 'apps/raft_flutter/test/fixtures/ds_audit_sample.dart'
 CONTRACT_FIXTURES = 'packages/raft_ui/test/fixtures/ds_audit_contract'
+BYPASS_FIXTURES = 'apps/raft_flutter/test/fixtures/ds_audit_bypass'
 
 
 class CompareTest(unittest.TestCase):
@@ -214,6 +215,115 @@ class ContractScannerFixtureTest(unittest.TestCase):
         report = ds_audit.aggregate(ds_audit.run_scanner([CONTRACT_FIXTURES], contract=[]))
         self.assertTrue(all(not c.startswith('contract.') for c in report['totals']))
         self.assertEqual(report['generated'], {})
+
+
+class BypassRatchetTest(unittest.TestCase):
+    """The bypass group: raw Material/Cupertino controls and overlays in app and raft_ui."""
+
+    APP = 'apps/raft_flutter/lib/features/x.dart'
+    UI = 'packages/raft_ui/lib/src/y.dart'
+    BASELINE = {'files': {APP: {'bypass.dialog': 2, 'widget.dialog': 2}, UI: {'bypass.text_field': 1}}}
+
+    def check(self, files, **extra):
+        return ContractRatchetTest.check(self, files, baseline=self.BASELINE, **extra)
+
+    def test_growth_in_either_scope_fails_and_names_the_raft_component(self):
+        for name, category, use in ((self.APP, 'bypass.dialog', 'showRaftAlertDialog'),
+                                    (self.UI, 'bypass.text_field', 'RaftTextInput'),
+                                    (self.UI, 'bypass.menu', 'RaftDropdownMenu'),
+                                    (self.APP, 'bypass.button', 'RaftButton')):
+            files = {self.APP: {'bypass.dialog': 2, 'widget.dialog': 2}, self.UI: {'bypass.text_field': 1}}
+            files.setdefault(name, {})
+            files[name][category] = files[name].get(category, 0) + 1
+            code, output = self.check(files)
+            self.assertEqual(code, 1, category)
+            self.assertIn(f'{name}: {category}', output)
+            self.assertIn(f'{category}: ', output)
+            self.assertIn(use, output)
+            self.assertIn('BYPASS_ALLOWLIST', output)
+
+    def test_every_family_has_a_raft_replacement_hint(self):
+        for category in ('bypass.dialog', 'bypass.bottom_sheet', 'bypass.menu', 'bypass.select', 'bypass.tooltip',
+                         'bypass.button', 'bypass.icon_button', 'bypass.toggle', 'bypass.chip', 'bypass.list_tile',
+                         'bypass.progress', 'bypass.refresh', 'bypass.divider', 'bypass.text_field',
+                         'bypass.picker', 'bypass.snackbar', 'bypass.overlay'):
+            self.assertIn(category, ds_audit.BYPASS_USE)
+            self.assertIn('Raft', ds_audit.BYPASS_USE[category])
+
+    def test_decreases_and_unchanged_counts_pass(self):
+        for files in (self.BASELINE['files'],
+                      {self.APP: {'bypass.dialog': 1, 'widget.dialog': 2}},
+                      {}):
+            code, output = self.check(files)
+            self.assertEqual(code, 0, files)
+            self.assertNotIn('GREW', output)
+
+    def test_a_new_file_with_a_bypass_fails(self):
+        code, output = self.check({**self.BASELINE['files'], 'apps/raft_flutter/lib/new.dart': {'bypass.tooltip': 1}})
+        self.assertEqual(code, 1)
+        self.assertIn('new.dart: bypass.tooltip 0 -> 1', output)
+
+    def test_the_wrapper_allowlist_is_explicit_small_and_points_at_real_files(self):
+        self.assertLessEqual(len(ds_audit.BYPASS_ALLOWLIST), 8)
+        for name, families in ds_audit.BYPASS_ALLOWLIST.items():
+            self.assertTrue((ROOT / name).is_file(), name)
+            self.assertTrue(name.startswith('packages/raft_ui/lib/'), name)  # wrappers only, never the app
+            for family, reason in families.items():
+                self.assertIn(f'bypass.{family}', ds_audit.BYPASS_USE, f'{name}: {family}')
+                self.assertGreater(len(reason), 10, f'{name}: {family} needs a reason')
+
+    def test_scanner_scopes_cover_app_and_raft_ui(self):
+        self.assertEqual(ds_audit.BYPASS_SCOPES, ['apps/raft_flutter/lib', 'packages/raft_ui/lib'])
+
+
+class BypassScannerFixtureTest(unittest.TestCase):
+    """Exact counts for the resolved-AST bypass scan on a fixture with negatives."""
+
+    WRAPPER = f'{BYPASS_FIXTURES}/wrapper_sample.dart'
+
+    @classmethod
+    def setUpClass(cls):
+        cls.document = ds_audit.run_scanner(
+            [BYPASS_FIXTURES], contract=[], bypass=[BYPASS_FIXTURES],
+            bypass_allow={cls.WRAPPER: {'text_field': 'fixture stands in for the input wrapper'}})
+        cls.report = ds_audit.aggregate(cls.document)
+
+    def bypass(self, table):
+        return {c: n for c, n in table.items() if c.startswith('bypass.')}
+
+    def test_fixture_counts_per_family(self):
+        self.assertEqual(self.bypass(self.report['totals']), {
+            'bypass.bottom_sheet': 1, 'bypass.button': 2, 'bypass.chip': 1,
+            'bypass.dialog': 5,  # AlertDialog, SimpleDialog, Dialog.fullscreen, showDialog(), showDialog tear-off
+            'bypass.divider': 1, 'bypass.icon_button': 2, 'bypass.list_tile': 1, 'bypass.menu': 2,
+            'bypass.overlay': 3, 'bypass.picker': 1, 'bypass.progress': 2, 'bypass.refresh': 1,
+            'bypass.select': 2, 'bypass.text_field': 2, 'bypass.toggle': 2,
+            'bypass.tooltip': 2,  # Tooltip( and `extends Tooltip`
+        })
+
+    def test_wrapper_allowlist_reports_separately_and_only_its_families(self):
+        self.assertEqual(self.bypass(self.report['files'][self.WRAPPER]), {'bypass.overlay': 1})
+        self.assertEqual(self.bypass(self.report['allowed'][self.WRAPPER]), {'bypass.text_field': 1})
+        reasons = [f['allowReason'] for f in self.document['findings'] if f['file'] == self.WRAPPER and f['allowed']]
+        self.assertEqual(reasons, ['raft_ui wrapper: fixture stands in for the input wrapper'])
+
+    def test_ds_allow_comments_work_for_bypass_findings(self):
+        self.assertEqual(self.bypass(self.report['allowedTotals']), {'bypass.dialog': 2, 'bypass.text_field': 1})
+        self.assertEqual(self.report['malformedAllows'], [])
+
+    def test_same_name_non_material_classes_and_raft_components_are_not_counted(self):
+        lookalikes = [f for f in self.document['findings'] if f['file'].endswith('lookalikes.dart')]
+        self.assertEqual(lookalikes, [])
+        names = {f['name'] for f in self.document['findings'] if f['category'].startswith('bypass.')}
+        self.assertFalse({n for n in names if n.startswith(('fake', 'Raft'))})
+        sample = [f for f in self.document['findings']
+                  if f['file'].endswith('bypass_sample.dart') and f['category'].startswith('bypass.')]
+        self.assertTrue(all(f['line'] < 78 or f['name'] == 'extends Tooltip' for f in sample), sample)
+
+    def test_without_the_bypass_prefix_nothing_is_counted(self):
+        report = ds_audit.aggregate(ds_audit.run_scanner([BYPASS_FIXTURES], contract=[], bypass=[]))
+        self.assertFalse([c for c in report['totals'] if c.startswith('bypass.')])
+        self.assertTrue(any(c.startswith('widget.') for c in report['totals']))  # the app rules still run
 
 
 class RatchetTest(unittest.TestCase):

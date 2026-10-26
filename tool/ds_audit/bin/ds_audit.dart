@@ -8,7 +8,11 @@
 /// apps/raft_flutter/lib). Each `--contract PREFIX` marks a directory (relative
 /// to --root) scanned with the theme-contract rules instead of the app rules;
 /// generated `*.g.dart` files there are excluded from the literal categories
-/// and only their recipe constants are counted. Exits 2 when a scanned file has
+/// and only their recipe constants are counted. Each `--bypass PREFIX` also
+/// runs the bypass scan (raw Material/Cupertino controls, `bypass.*`) on the
+/// files under that directory; `--bypass-allow JSON` is a map
+/// `{file: {family: reason}}` of designated raft_ui wrapper files whose
+/// findings are reported as allowlisted. Exits 2 when a scanned file has
 /// analysis errors, because unresolved code would silently undercount.
 library;
 
@@ -19,6 +23,7 @@ import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/diagnostic/diagnostic.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
+import 'package:ds_audit/bypass_audit.dart';
 import 'package:ds_audit/contract_audit.dart';
 import 'package:ds_audit/ds_audit.dart';
 
@@ -26,11 +31,20 @@ Future<void> main(List<String> argv) async {
   var root = Directory.current.path;
   final targets = <String>[];
   final contractPrefixes = <String>[];
+  final bypassPrefixes = <String>[];
+  var bypassAllow = <String, Map<String, String>>{};
   for (var i = 0; i < argv.length; i++) {
     if (argv[i] == '--root') {
       root = argv[++i];
     } else if (argv[i] == '--contract') {
       contractPrefixes.add(argv[++i]);
+    } else if (argv[i] == '--bypass') {
+      bypassPrefixes.add(argv[++i]);
+    } else if (argv[i] == '--bypass-allow') {
+      bypassAllow = {
+        for (final e in (jsonDecode(argv[++i]) as Map<String, Object?>).entries)
+          e.key: (e.value as Map<String, Object?>).cast<String, String>(),
+      };
     } else {
       targets.add(argv[i]);
     }
@@ -48,6 +62,9 @@ Future<void> main(List<String> argv) async {
   );
   final contractRoots = [
     for (final p in contractPrefixes) context.normalize(context.join(root, p)),
+  ];
+  final bypassRoots = [
+    for (final p in bypassPrefixes) context.normalize(context.join(root, p)),
   ];
   final findings = <Finding>[];
   final generated = <String, int>{};
@@ -94,6 +111,15 @@ Future<void> main(List<String> argv) async {
           : DsAuditVisitor(relative, result);
       result.unit.accept(visitor);
       findings.addAll(visitor.findings);
+      if (bypassRoots.any((p) => file == p || context.isWithin(p, file))) {
+        final bypass = BypassAuditVisitor(
+          relative,
+          result,
+          wrapperAllow: bypassAllow[relative] ?? const {},
+        );
+        result.unit.accept(bypass);
+        findings.addAll(bypass.findings);
+      }
     }
   }
   await collection.dispose();

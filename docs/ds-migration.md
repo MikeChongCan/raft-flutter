@@ -55,6 +55,30 @@ change as work lands.
 SizedBox(height: _gap)`) is not counted. Reviewers should reject new private size or color
 constants in feature files.
 
+### Bypass rules (`apps/raft_flutter/lib` and `packages/raft_ui/lib`)
+
+`bypass.<family>` counts raw Material/Cupertino controls and overlays that should be a Raft component, in both scopes (previews and demos count like any other file). It runs next to the `widget.*` and `contract.*` rules, so one site can appear in both (`widget.dialog` and `bypass.dialog`); migrating it lowers both. A finding is a constructor call (including named constructors such as `Dialog.fullscreen`), constructor tear-off, `X.styleFrom()`, call or tear-off of a listed function, or an `extends` clause naming a listed class, whose resolved declaration is in the Flutter material, cupertino or (for `showGeneralDialog`, `EditableText`, `OverlayEntry`, `OverlayPortal`) widgets library. A Raft or app class with the same name does not count. Type arguments and annotations (`DropdownMenuItem<T>` in a signature) do not count.
+
+| Category | Counts | Use instead |
+|---|---|---|
+| `bypass.dialog` | `AlertDialog`, `SimpleDialog(Option)`, `Dialog`, `AboutDialog`, Cupertino alert dialogs, `showDialog`, `showAdaptiveDialog`, `showCupertinoDialog`, `showAboutDialog`, `showGeneralDialog` | `RaftDialog` / `showRaftDialog`, `showRaftAlertDialog`, `RaftFormDialog`, `showRaftModal` |
+| `bypass.bottom_sheet` | `BottomSheet`, `showModalBottomSheet`, `showBottomSheet`, Cupertino action sheets/popups | `RaftBottomSheet` / `RaftSheet`, `showRaftOverflowSheet` |
+| `bypass.menu` | `PopupMenuButton` and items, `MenuAnchor`, `MenuItemButton`, `SubmenuButton`, `MenuBar`, `showMenu`, Cupertino context menus | `RaftDropdownMenu` (`RaftMenuItem`, `RaftMenuEntry`) |
+| `bypass.select` | `DropdownButton`, `DropdownButtonFormField`, `DropdownMenuItem(...)`, `DropdownMenu` | `RaftSelectField` |
+| `bypass.tooltip` | `Tooltip` | `RaftTooltip` |
+| `bypass.button` / `bypass.icon_button` | `TextButton`, `OutlinedButton`, `ElevatedButton`, `FilledButton`, `MaterialButton`, `FloatingActionButton`, `CupertinoButton`, `.styleFrom` / `IconButton`, `BackButton`, `CloseButton` | `RaftButton`, `RaftTextButton` / `RaftIconButton`, `RaftBackButton` |
+| `bypass.toggle` | `Checkbox`, `Switch`, `Radio`, their `*ListTile` forms and Cupertino variants | `RaftCheckbox`, `RaftSwitch` |
+| `bypass.chip` | `Chip`, `ActionChip`, `FilterChip`, `ChoiceChip`, `InputChip`, `RawChip` | `RaftBadge`, `RaftSegmentedControl`, `RaftPickerTriggerButton` |
+| `bypass.list_tile` | `ListTile`, `ExpansionTile`, `CupertinoListTile` | `RaftListRow` |
+| `bypass.progress` / `bypass.refresh` | `CircularProgressIndicator`, `LinearProgressIndicator`, `CupertinoActivityIndicator` / `RefreshIndicator` | `RaftSpinner`, `RaftProgressBar` / `RaftPullToRefresh` |
+| `bypass.divider` | `Divider`, `VerticalDivider` | the Raft separator recipe, `RaftMenuEntry.separator()` |
+| `bypass.text_field` | `TextField`, `TextFormField`, `EditableText`, `CupertinoTextField`, `SearchBar` | `RaftTextInput`, `RaftTextarea`, `RaftPrefixedInput`, `RaftSlugInput`, `RaftDialogTextInput` |
+| `bypass.picker` | `showDatePicker`, `showTimePicker`, `showDateRangePicker`, date/time picker widgets | no Raft date picker yet |
+| `bypass.snackbar` | `SnackBar`, `MaterialBanner`, `showSnackBar`, `showMaterialBanner` | `showRaftToast` / `RaftToast` |
+| `bypass.overlay` | `OverlayEntry`, `OverlayPortal` (hand-built popovers) | `RaftAnchoredPopup`, `RaftPopoverSurface`, `showRaftToast` |
+
+**Wrapper allowlist.** `BYPASS_ALLOWLIST` in `tool/ds-audit` names the raft_ui files that implement a Raft primitive on a Material one (the file behind `RaftTextInput` may use `TextField`, `RaftTooltip` may use `Tooltip`, ...). It maps file to family with the reason; those findings are reported as allowlisted and never counted. The allowlist stays explicit and small, never covers the app, and a new entry is reviewed like an API change. Genuinely platform-only code elsewhere uses `// ds-allow: <reason>`.
+
 ### Contract rules (`packages/raft_ui/lib`)
 
 Scope: every `*.dart` under `packages/raft_ui/lib` except generated `*.g.dart`, which are never

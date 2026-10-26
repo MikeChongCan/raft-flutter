@@ -337,12 +337,19 @@ abstract class AuditVisitorBase extends RecursiveAstVisitor<void> {
   final List<String> _lines;
   final List<Finding> findings = [];
 
-  void add(AstNode node, String category, String name, {List<String>? shape}) {
+  void add(
+    AstNode node,
+    String category,
+    String name, {
+    List<String>? shape,
+    String? forcedAllow,
+  }) {
     final location = _lineInfo.getLocation(node.offset);
     final line = location.lineNumber;
-    String? reason;
+    String? reason = forcedAllow;
     String? error;
     for (final candidate in [line, line - 1]) {
+      if (forcedAllow != null) break;
       if (candidate < 1 || candidate > _lines.length) continue;
       final text = _lines[candidate - 1];
       if (candidate == line - 1 && !text.trimLeft().startsWith('//')) continue;

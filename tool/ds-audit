@@ -15,6 +15,8 @@ Two scopes share one baseline (files are keyed by path):
   apps/raft_flutter/lib   widget.* and style.* (Material widgets and raw style literals);
   packages/raft_ui/lib    contract.* (docs/theme-contract.md 7.3: literal colours, font sizes,
                           radii and stroke widths, theme-name branches, direct RaftRecipeTheme use).
+  both scopes      bypass.* (raw Material/Cupertino controls and overlays that should be a Raft component;
+                   only the wrapper files in BYPASS_ALLOWLIST may host a Material primitive).
 The independent recipe tables and runtime are also scanned; theme pack data definitions are not.
 Generated *.g.dart recipe files are not scanned for literals; their `const`
 variables are counted per recipe file as `generated.recipe_constants`, which is
@@ -49,6 +51,48 @@ ENGINE_SCOPES = [
 ]
 SCOPES = [SCOPE, CONTRACT_SCOPE, *ENGINE_SCOPES]
 CONTRACT_SCOPES = [CONTRACT_SCOPE, *ENGINE_SCOPES]  # excludes theme-pack definitions
+# Directories whose files also get the bypass scan (raw Material/Cupertino controls, `bypass.*`).
+BYPASS_SCOPES = [SCOPE, CONTRACT_SCOPE]
+# Designated raft_ui wrapper files that legitimately host a Material primitive: {file: {family: reason}}.
+# Their findings are reported as allowlisted, never counted by --check. Keep this small; everything else
+# in the app and in raft_ui must go through the Raft component (see BYPASS_USE).
+_UI = 'packages/raft_ui/lib/src/'
+BYPASS_ALLOWLIST = {
+    _UI + 'form_controls.dart': {
+        'text_field': 'implements RaftTextInput, RaftTextarea, RaftPrefixedInput and RaftSlugInput on TextField'},
+    _UI + 'dialog_card.dart': {
+        'dialog': 'showRaftModal is the Raft dialog route host',
+        'text_field': 'RaftDialogTextInput is the dialog input wrapper'},
+    _UI + 'search_input.dart': {
+        'text_field': 'RaftSearchInput is the Raft search field wrapper'},
+    _UI + 'tooltip.dart': {
+        'tooltip': 'RaftTooltip extends Tooltip',
+        'overlay': 'RaftTooltip renders its own popup'},
+    _UI + 'toast.dart': {
+        'overlay': 'RaftToastPortal is the toast host'},
+    _UI + 'pull_to_refresh.dart': {
+        'refresh': 'RaftPullToRefresh wraps RefreshIndicator.adaptive'},
+}
+# What to use instead, per bypass family (names from packages/raft_ui/lib/raft_ui.dart).
+BYPASS_USE = {
+    'bypass.dialog': 'RaftDialog / showRaftDialog, showRaftAlertDialog (RaftAlertDialog), RaftFormDialog, showRaftModal',
+    'bypass.bottom_sheet': 'RaftBottomSheet / RaftSheet, showRaftOverflowSheet',
+    'bypass.menu': 'RaftDropdownMenu (RaftMenuItem / RaftMenuEntry / RaftMenuPanel)',
+    'bypass.select': 'RaftSelectField (or RaftDropdownMenu for actions)',
+    'bypass.tooltip': 'RaftTooltip',
+    'bypass.button': 'RaftButton / RaftTextButton',
+    'bypass.icon_button': 'RaftIconButton / RaftBackButton',
+    'bypass.toggle': 'RaftCheckbox / RaftSwitch',
+    'bypass.chip': 'RaftBadge / RaftSegmentedControl / RaftPickerTriggerButton',
+    'bypass.list_tile': 'RaftListRow',
+    'bypass.progress': 'RaftSpinner / RaftProgressBar',
+    'bypass.refresh': 'RaftPullToRefresh',
+    'bypass.divider': 'the Raft separator (RaftSeparatorRecipe) or a RaftMenuEntry.separator()',
+    'bypass.text_field': 'RaftTextInput / RaftTextarea / RaftPrefixedInput / RaftSlugInput / RaftDialogTextInput',
+    'bypass.picker': 'a Raft picker (RaftPickerTriggerButton + RaftAnchoredPopup); there is no Raft date picker yet',
+    'bypass.snackbar': 'showRaftToast / RaftToast',
+    'bypass.overlay': 'RaftAnchoredPopup / RaftPopoverSurface / showRaftToast / RaftTooltip',
+}
 BASELINE = ROOT / 'tool/ds-audit-baseline.json'
 REPORT = ROOT / '.local/ds-audit.json'
 UPDATE_HINT = 'tool/ds-audit --update-baseline'
@@ -71,20 +115,26 @@ def dart_executable():
     return pathlib.Path(flutter_root) / 'bin' / ('dart.bat' if os.name == 'nt' else 'dart')
 
 
-def run_scanner(paths, contract=None):
+def run_scanner(paths, contract=None, bypass=None, bypass_allow=None):
     """Return the raw scanner document ({scanned, errors, findings, generated}).
 
     `contract` lists the directories (relative to the repo) scanned with the
-    theme-contract rules; it defaults to CONTRACT_SCOPES.
+    theme-contract rules; it defaults to CONTRACT_SCOPES. `bypass` lists the
+    directories that also get the bypass scan (default BYPASS_SCOPES) and
+    `bypass_allow` the wrapper allowlist (default BYPASS_ALLOWLIST).
     """
     contract = CONTRACT_SCOPES if contract is None else contract
+    bypass = BYPASS_SCOPES if bypass is None else bypass
+    bypass_allow = BYPASS_ALLOWLIST if bypass_allow is None else bypass_allow
     package_config = ROOT / '.dart_tool/package_config.json'
     if not package_config.is_file() or '"ds_audit"' not in package_config.read_text():
         raise AuditError('workspace is not resolved; run `tool/flutter pub get` at the repository root')
     out = subprocess.run(
         [str(dart_executable()), f'--packages={package_config}',
          str(ROOT / 'tool/ds_audit/bin/ds_audit.dart'), '--root', str(ROOT),
-         *[arg for prefix in contract for arg in ('--contract', prefix)], *paths],
+         *[arg for prefix in contract for arg in ('--contract', prefix)],
+         *[arg for prefix in bypass for arg in ('--bypass', prefix)],
+         '--bypass-allow', json.dumps(bypass_allow), *paths],
         cwd=ROOT, capture_output=True, text=True)
     if out.returncode != 0:
         raise AuditError(f'ds_audit scanner failed (exit {out.returncode}):\n{out.stderr.strip()}')
@@ -102,7 +152,9 @@ def aggregate(document):
     for f in document['findings']:
         (allowed if f['allowed'] else files)[f['file']][f['category']] += 1
         if f.get('allowError'):
-            malformed.append(f"{f['file']}:{f['line']}: {f['allowError']}")
+            message = f"{f['file']}:{f['line']}: {f['allowError']}"
+            if message not in malformed:  # a line can carry both an app and a bypass finding
+                malformed.append(message)
     as_dict = lambda table: {name: dict(sorted(c.items())) for name, c in sorted(table.items()) if c}
     files, allowed = as_dict(files), as_dict(allowed)
     generated = dict(sorted(document.get('generated', {}).items()))
@@ -197,6 +249,11 @@ def format_comparison(regressions, improvements):
     if regressions:
         lines.append(f'DESIGN-SYSTEM DRIFT GREW in {len(regressions)} file/category pair(s):')
         lines += [f'  {f}: {c} {b} -> {n}' for f, c, b, n in regressions]
+        bypass = sorted({c for _, c, _, _ in regressions if c in BYPASS_USE})
+        if bypass:
+            lines.append('A raw Material/Cupertino control or overlay bypasses the design system. Use the Raft component:')
+            lines += [f'  {c}: {BYPASS_USE[c]}' for c in bypass]
+            lines.append('Only the designated wrapper files in BYPASS_ALLOWLIST (tool/ds-audit) may host a Material primitive.')
         lines.append('Use raft_ui components/tokens and the theme pack instead (docs/ds-migration.md). Genuinely '
                      'platform-only code may carry `// ds-allow: <reason>` for review.')
     if improvements:
