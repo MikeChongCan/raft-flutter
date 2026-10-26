@@ -1,3 +1,4 @@
+import 'recipes/recipe_router.dart';
 // Panel chrome shared by the Web detail panels (AgentDetailPanel,
 // HumanDetailPanel, MachineDetailPanel): the canonical PanelHeader row, its
 // PanelAction buttons, the scrollable underline Tabs strip and the section
@@ -27,10 +28,9 @@ import 'recipes/panel_header.g.dart';
 import 'raft/tabs.dart';
 import 'raft/blink_snap.dart';
 import 'raft/button.dart';
-import 'raft/button_surface.dart';
 import 'raft/ui_tokens.dart';
 import 'recipes/token_binding.dart';
-import 'recipe_surface.dart' show raftCssText;
+import 'recipe_surface.dart' show raftCssText, RaftRecipeBinding;
 import 'status_bar.dart';
 import 'text_scaling.dart' show RaftChrome, RaftScaled;
 import 'large_content_viewer.dart';
@@ -1120,115 +1120,75 @@ class RaftPanelIconButton extends StatelessWidget {
     );
   }
 
-  Widget _ghost(BuildContext context, RaftTokens t) {
-    final size =
-        MediaQuery.sizeOf(context).width < RaftLayoutMetrics.desktopBreakpoint
+  Widget _button(BuildContext context) => RaftButton(
+    glyph: icon == null ? glyph : null,
+    iconBuilder: icon,
+    uiVariant: RaftButtonVariant.ghost,
+    uiSize: RaftInteraction.of(context).touch
         ? RaftButtonSize.iconLg
-        : RaftButtonSize.iconMd;
-    final metrics = RaftButtonMetrics.of(size, RaftButtonVariant.ghost, t);
-    return RaftInteractive(
-      onPressed: onPressed,
-      focusNode: focusNode,
-      onKeyboardActivate: onKeyboardActivate,
-      semanticLabel: tooltip,
-      tooltip: tooltip,
-      builder: (context, state) {
-        final disabled = onPressed == null;
-        final colors = RaftButtonColors.themed(
-          t,
-          RaftButtonVariant.ghost,
-          iconSize: true,
-          disabled: disabled,
-          overlay: (state.hovered || state.pressed) && !disabled,
+        : RaftButtonSize.iconMd,
+    onPressed: onPressed,
+    onKeyboardActivate: onKeyboardActivate,
+    focusNode: focusNode,
+    semanticLabel: tooltip,
+    tooltip: tooltip,
+    legacyBuilder: _paintLegacy,
+    surfaceBuilder: (context, surface) {
+      if (usesLegacyRecipes(RaftTokens.of(context).recipeTokens))
+        return surface;
+      Widget button = RaftBlinkSnap(child: surface);
+      if (anchorLink != null)
+        button = CompositedTransformTarget(
+          key: anchorKey,
+          link: anchorLink!,
+          child: button,
         );
-        // Blink paints a box centred on a half pixel at the whole pixel.
-        Widget button = RaftBlinkSnap(
-          child: RaftButtonSurface(
-            variant: RaftButtonVariant.ghost,
-            size: size,
-            metrics: metrics,
-            colors: colors,
-            state: state,
-            disabled: disabled,
-            padding: EdgeInsets.zero,
-            expand: false,
-            // Product artwork keeps its own box: the surface hands its child tight
-            // constraints, which would stretch a bare SizedBox.
-            child: icon != null
-                ? Center(
-                    widthFactor: 1,
-                    heightFactor: 1,
-                    child: icon!(metrics.icon, colors.foreground),
-                  )
-                : RaftIcon(glyph, size: metrics.icon, color: colors.foreground),
-          ),
-        );
-        if (anchorLink != null) {
-          button = CompositedTransformTarget(
-            key: anchorKey,
-            link: anchorLink!,
-            child: button,
-          );
-        }
-        return button;
-      },
-    );
-  }
+      return button;
+    },
+  );
 
-  Widget _button(BuildContext context) {
+  Widget _paintLegacy(BuildContext context, RaftInteractionState state) {
     final t = RaftTokens.of(context);
-    if (t.option('panelAction.surface', or: 'outline') == 'ghost') {
-      return _ghost(context, t);
-    }
     final rt = RaftRecipeTokens(t);
-    return RaftInteractive(
-      onPressed: onPressed,
-      focusNode: focusNode,
-      onKeyboardActivate: onKeyboardActivate,
-      semanticLabel: tooltip,
-      tooltip: tooltip,
-      builder: (context, state) {
-        final s = RaftButtonRecipe.resolve(
-          theme: raftRecipeTheme(t),
-          variant: RaftButtonRecipeVariant.outline,
-          size: RaftButtonRecipeSize.iconSm,
-          states: RaftRecipeStates({
-            if (state.hovered) RaftRecipeStates.hover,
-            if (state.pressed) RaftRecipeStates.active,
-            if (state.focusVisible) RaftRecipeStates.focusVisible,
-            if (onPressed == null) RaftRecipeStates.disabled,
-            if (t.dark) RaftRecipeStates.dark,
-          }),
-          tokens: rt,
-        ).root;
-        Widget button = Container(
-          width: s.width,
-          height: s.height,
-          alignment: Alignment.center,
-          decoration: s.decoration(rt),
-          child: icon != null
-              ? icon!(iconSize, s.color?.resolve(rt) ?? t.strong)
-              : RaftIcon(
-                  glyph,
-                  size: iconSize,
-                  color: s.color?.resolve(rt) ?? t.strong,
-                ),
-        );
-        if (anchorLink != null) {
-          button = CompositedTransformTarget(
-            key: anchorKey,
-            link: anchorLink!,
-            child: button,
-          );
-        }
-        return Opacity(
-          opacity: s.opacity ?? 1,
-          child: Transform.translate(
-            offset: s.translate ?? Offset.zero,
-            child: button,
-          ),
-        );
-      },
+    final s = RaftButtonRecipe.resolve(
+      theme: raftRecipeTheme(t),
+      variant: RaftButtonRecipeVariant.outline,
+      size: RaftButtonRecipeSize.iconSm,
+      states: RaftRecipeStates({
+        if (state.hovered) RaftRecipeStates.hover,
+        if (state.pressed) RaftRecipeStates.active,
+        if (state.focusVisible) RaftRecipeStates.focusVisible,
+        if (onPressed == null) RaftRecipeStates.disabled,
+        if (t.dark) RaftRecipeStates.dark,
+      }),
+      tokens: rt,
+    ).root;
+    Widget button = Container(
+      width: s.width,
+      height: s.height,
+      alignment: Alignment.center,
+      decoration: s.decoration(rt),
+      child: icon != null
+          ? icon!(iconSize, s.color?.resolve(rt) ?? t.strong)
+          : RaftIcon(
+              glyph,
+              size: iconSize,
+              color: s.color?.resolve(rt) ?? t.strong,
+            ),
+    );
+    if (anchorLink != null) {
+      button = CompositedTransformTarget(
+        key: anchorKey,
+        link: anchorLink!,
+        child: button,
+      );
+    }
+    return Opacity(
+      opacity: s.opacity ?? 1,
+      child: Transform.translate(
+        offset: s.translate ?? Offset.zero,
+        child: button,
+      ),
     );
   }
 }

@@ -77,7 +77,7 @@ class _ComputersPreviewState extends State<_ComputersPreview> {
       Wrap(
         children: [
           for (final option in ['loaded', 'loading', 'empty', 'error'])
-            TextButton(
+            RaftButton.text(
               onPressed: () => setState(() => state = option),
               child: Text(option),
             ),

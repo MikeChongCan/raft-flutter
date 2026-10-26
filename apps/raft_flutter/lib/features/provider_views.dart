@@ -260,7 +260,7 @@ class _ProviderConnectionsState
                         if (a['deleted'] == true)
                           RaftTooltip(
                             message: 'Detach Deleted Agent',
-                            child: IconButton(
+                            child: RaftButton.iconAction(
                               icon: const RaftIcon(
                                 RaftGlyph.link2Off,
                                 size: 15,
@@ -278,7 +278,7 @@ class _ProviderConnectionsState
             ),
           ),
           actions: [
-            TextButton(
+            RaftButton.text(
               onPressed: () => Navigator.pop(context),
               child: const Text('Close'),
             ),
@@ -497,7 +497,7 @@ class _ProviderConnectionsState
             ),
           ),
           actions: [
-            TextButton(
+            RaftButton.text(
               onPressed: () => Navigator.pop(context),
               child: const Text('Close'),
             ),
@@ -564,7 +564,7 @@ class _ProviderConnectionsState
             ),
           ),
           actions: [
-            TextButton(
+            RaftButton.text(
               onPressed: () => Navigator.pop(dialog),
               child: Text(raftText(context, 'Close')),
             ),

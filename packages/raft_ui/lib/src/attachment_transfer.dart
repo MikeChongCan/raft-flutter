@@ -1,4 +1,4 @@
-import 'hover_region.dart';
+import 'raft/list_row_action.dart';
 
 import 'dart:math' as math;
 
@@ -424,10 +424,10 @@ class RaftImageTransferOverlay extends StatelessWidget {
                 button: true,
                 label: raftText(context, 'Download failed · tap to retry'),
                 // InkWell: focusable, Enter / Space retry.
-                child: InkWell(
-                  hoverColor: RaftHoverScope.materialHoverColor(context),
+                child: RaftListRowAction(
                   key: const ValueKey('attachment-retry'),
-                  onTap: onRetry,
+                  onPressed: onRetry,
+                  child: const SizedBox.expand(),
                 ),
               ),
             ),

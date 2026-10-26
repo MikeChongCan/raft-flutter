@@ -502,7 +502,7 @@ abstract class ManagementState<T extends StatefulWidget> extends State<T>
           ),
         ),
         actions: [
-          TextButton(
+          RaftButton.text(
             onPressed: () => Navigator.pop(context),
             child: Text(raftText(context, 'Close')),
           ),
@@ -527,7 +527,7 @@ abstract class ManagementState<T extends StatefulWidget> extends State<T>
             );
             final refresh = RaftTooltip(
               message: raftText(context, 'Refresh'),
-              child: IconButton(
+              child: RaftButton.iconAction(
                 onPressed: busy ? null : reload,
                 icon: const Icon(Icons.refresh),
               ),
@@ -588,7 +588,7 @@ abstract class ManagementState<T extends StatefulWidget> extends State<T>
     IconData? icon,
     RaftGlyph? glyph,
     double glyphSize = 14,
-  }) => TextButton.icon(
+  }) => RaftButton.text(
     onPressed: busy ? null : callback,
     icon: glyph != null
         ? RaftIcon(glyph, size: glyphSize)

@@ -140,7 +140,7 @@ class _AccountSettingsState extends ManagementState<AccountSettings> {
             ),
           ),
           actions: [
-            TextButton(
+            RaftButton.text(
               onPressed: () => Navigator.pop(context, false),
               child: Text(raftText(context, 'Keep Image')),
             ),
@@ -311,10 +311,9 @@ class _AccountSettingsState extends ManagementState<AccountSettings> {
     final card = RaftSettingsProfileCard(
       avatar: RaftTooltip(
         message: raftText(context, 'Change Profile Image'),
-        child: InkWell(
-          hoverColor: RaftHoverScope.materialHoverColor(context),
+        child: RaftListRowAction(
           key: const Key('account-profile-image'),
-          onTap: mediaBusy ? null : () => image(),
+          onPressed: mediaBusy ? null : () => image(),
           child: Opacity(
             opacity: mediaBusy ? .7 : 1,
             child: t.option('sticker.ring', or: 'none') == 'dieCut'

@@ -484,7 +484,7 @@ class _WorkspacePreviewState extends State<_WorkspacePreview> {
                   title: const Text('Thread'),
                   trailing: RaftTooltip(
                     message: 'Close Thread',
-                    child: IconButton(
+                    child: RaftButton.iconAction(
                       icon: const Icon(Icons.close),
                       onPressed: () => setState(() => thread = false),
                     ),

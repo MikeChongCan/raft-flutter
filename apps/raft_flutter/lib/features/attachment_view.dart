@@ -63,7 +63,9 @@ DialogRoute<void> attachmentDownloadProgressRoute({
       builder: (_, value, _) =>
           RaftProgressBar(value: value == null ? null : value * 100),
     ),
-    actions: [TextButton(onPressed: onCancel, child: const Text('Cancel'))],
+    actions: [
+      RaftButton.text(onPressed: onCancel, child: const Text('Cancel')),
+    ],
   ),
 );
 

@@ -390,7 +390,7 @@ class _SidebarPreferencesState extends ManagementState<SidebarPreferencesView> {
                             ? 'Show Direct Message'
                             : 'Hide Direct Message',
                       ),
-                      child: IconButton(
+                      child: RaftButton.iconAction(
                         icon: Icon(
                           hidden.contains(c.id)
                               ? Icons.visibility_off
@@ -478,7 +478,7 @@ class _SidebarPreferencesState extends ManagementState<SidebarPreferencesView> {
                   ),
                   RaftTooltip(
                     message: raftText(context, 'Remove Section'),
-                    child: IconButton(
+                    child: RaftButton.iconAction(
                       icon: const RaftIcon(RaftGlyph.trash2, size: 14),
                       onPressed: busy
                           ? null

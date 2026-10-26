@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+
 import 'raft_selection_area.dart';
+
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as parser;
@@ -157,9 +159,11 @@ class RaftHtmlPreview extends StatelessWidget {
                         return InlineCustomWidget(
                           child: Semantics(
                             link: true,
-                            child: TextButton(
-                              style: TextButton.styleFrom(
-                                minimumSize: const Size(48, 48),
+                            child: RaftButton.text(
+                              legacyStyle: ButtonStyle(
+                                minimumSize: WidgetStatePropertyAll(
+                                  const Size(48, 48),
+                                ),
                               ),
                               onPressed: onLink == null
                                   ? null

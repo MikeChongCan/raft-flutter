@@ -1,3 +1,4 @@
+import 'raft/button.dart';
 export 'empty_state.dart';
 
 import 'raft/css_box.dart' show raftControlBorderPx;
@@ -1847,7 +1848,7 @@ class RaftMessageTile extends StatelessWidget {
                       .map(
                         (a) =>
                             attachmentBuilder?.call(a) ??
-                            OutlinedButton.icon(
+                            RaftButton.outlined(
                               onPressed: () => onAttachment?.call(a),
                               icon: const Icon(Icons.attach_file, size: 16),
                               label: Text(
@@ -1947,7 +1948,7 @@ class RaftMessageTile extends StatelessWidget {
                     threadPreview == null &&
                     threadRepliesBadge == null &&
                     onThread != null)
-                  TextButton.icon(
+                  RaftButton.text(
                     onPressed: onThread,
                     icon: const Icon(Icons.forum_outlined, size: 15),
                     label: Text(

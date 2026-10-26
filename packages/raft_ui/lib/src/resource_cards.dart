@@ -1,3 +1,4 @@
+import 'raft/list_row_action.dart';
 import 'hover_region.dart';
 
 import 'package:flutter/material.dart';
@@ -389,15 +390,10 @@ class _RaftConversationCardState extends State<RaftConversationCard> {
               selected: selected,
               label: widget.semanticLabel,
               child: surface(
-                InkWell(
-                  splashFactory: NoSplash.splashFactory,
-                  highlightColor: Colors.transparent,
-                  hoverColor: Colors.transparent,
-                  focusColor: Colors.transparent,
-                  // InkWell.onDoubleTap would delay the first onTap before the
-                  // consumer sees it. Count successful primary
-                  // taps without installing a double-tap recognizer instead.
-                  onTapDown:
+                RaftListRowAction(
+                  onTapDown: // InkWell.onDoubleTap would delay the first onTap before the
+                      // consumer sees it. Count successful primary
+                      // taps without installing a double-tap recognizer instead.
                       widget.onActivate == null &&
                           widget.onPointerActivate == null
                       ? null
@@ -411,7 +407,7 @@ class _RaftConversationCardState extends State<RaftConversationCard> {
                     pendingTapTime = null;
                     pendingTapPosition = null;
                   },
-                  onTap: deliverActivation,
+                  onPressed: deliverActivation,
                   focusNode: focusNode,
                   onLongPress: widget.onContextMenu == null
                       ? null
@@ -419,7 +415,6 @@ class _RaftConversationCardState extends State<RaftConversationCard> {
                   onSecondaryTapDown: widget.onContextMenu == null
                       ? null
                       : (details) => openContextMenu(details.globalPosition),
-                  borderRadius: recipe.radius,
                   child: Padding(
                     // RecipeBox includes its CSS border in Container padding;
                     // the Saved Material shape only paints the border.
@@ -456,6 +451,7 @@ class _RaftConversationCardState extends State<RaftConversationCard> {
                       ],
                     ),
                   ),
+                  decorate: false,
                 ),
               ),
             ),

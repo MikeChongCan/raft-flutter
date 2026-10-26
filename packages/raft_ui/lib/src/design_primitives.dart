@@ -31,6 +31,8 @@ import 'control_typography.dart';
 import 'recipe_surface.dart';
 import 'raft/css_box.dart';
 import 'raft/ui_tokens.dart';
+import 'raft/button.dart';
+import 'raft/control_button_style.dart';
 import 'raft/segmented_control.dart';
 import 'raft/tabs.dart';
 import 'raft/pixel_spinner.dart';
@@ -803,7 +805,7 @@ class RaftControlRecipe {
 }
 
 /// A Web-recipe visual surface inside a keyboard and touch accessible target.
-class RaftControl extends StatefulWidget {
+class RaftControl extends StatelessWidget {
   const RaftControl({
     super.key,
     required this.child,
@@ -852,7 +854,87 @@ class RaftControl extends StatefulWidget {
   final FocusNode? focusNode;
   final RaftControlRecipe? recipe;
   @override
-  State<RaftControl> createState() => _RaftControlState();
+  Widget build(BuildContext context) => asButton();
+
+  /// Compatibility wrappers reuse the frozen paint while letting the current
+  /// Button compose label / icon slots from its own recipe.
+  Widget legacySurface(BuildContext context, RaftInteractionState state) =>
+      _RaftLegacyControlSurface(this, state);
+
+  Widget asButton({
+    String? label,
+    RaftGlyph? glyph,
+    RaftGlyph? trailingGlyph,
+    bool useComponentRecipe = true,
+  }) {
+    final tab =
+        kind == RaftControlKind.tab || kind == RaftControlKind.segmentedButton;
+    // Tab/sidebar appearances belong to their own component family, not the
+    // Button variant axis. They keep the shared input and original surface.
+    if (tab || kind == RaftControlKind.sidebar) {
+      return RaftInteractive(
+        onPressed: onPressed,
+        busy: busy,
+        focusNode: focusNode,
+        focusOnPointer: focusOnPointer,
+        tooltip: tooltip,
+        semanticLabel: semanticLabel,
+        button: !tab,
+        checked: tab ? selected : null,
+        inMutuallyExclusiveGroup: tab,
+        selected: kind == RaftControlKind.sidebar ? selected : null,
+        inertWhenDisabled: inertWhenDisabled,
+        builder: (context, state) => _RaftLegacyControlSurface(this, state),
+      );
+    }
+    final square = visualWidth != null && visualWidth == visualHeight;
+    return RaftButton(
+      label: label ?? '',
+      child: label == null && glyph == null ? child : null,
+      glyph: glyph,
+      trailingGlyph: trailingGlyph,
+      onPressed: onPressed,
+      busy: busy,
+      variant: variant,
+      uiVariant: kind == RaftControlKind.textLink
+          ? RaftButtonVariant.link
+          : null,
+      uiSize: kind == RaftControlKind.textLink
+          ? RaftButtonSize.inline
+          : square
+          ? (visualHeight <= 24
+                ? RaftButtonSize.iconXs
+                : visualHeight <= 28
+                ? RaftButtonSize.iconSm
+                : visualHeight <= 32
+                ? RaftButtonSize.iconMd
+                : RaftButtonSize.iconLg)
+          : null,
+      visualHeight: visualHeight,
+      visualWidth: square ? null : visualWidth,
+      minimumTargetSize: minimumTargetSize,
+      focusNode: focusNode,
+      focusOnPointer: focusOnPointer,
+      tooltip: tooltip,
+      semanticLabel: semanticLabel,
+      toggled: kind == RaftControlKind.savedAction ? selected : null,
+      inertWhenDisabled: inertWhenDisabled,
+      padding: padding?.resolve(TextDirection.ltr),
+      styleBuilder: recipe == null
+          ? null
+          : (context, state, root) {
+              final tokens = RaftTokens.of(context);
+              final sourceShape =
+                  tokens.option('iconButton.surface', or: 'generic') ==
+                      'generic' &&
+                  tokens.option('press.effect', or: 'overlay') == 'overlay';
+              return !useComponentRecipe && sourceShape
+                  ? root
+                  : raftControlButtonStyle(context, this, state, root);
+            },
+      legacyBuilder: (context, state) => _RaftLegacyControlSurface(this, state),
+    );
+  }
 }
 
 /// CSS focus-visible is keyboard modality, not Flutter's mouse/traditional
@@ -892,68 +974,18 @@ class _RaftFocusVisible extends ChangeNotifier {
   }
 }
 
-class _RaftControlState extends State<RaftControl> {
-  bool hovered = false, focused = false, pressed = false;
-  // Tooltip admission follows a focus entry, while outline paint follows the
-  // current modality. Escape can change the latter without entering focus.
-  bool tooltipKeyboardFocused = false;
-  final ownedFocus = FocusNode();
-  FocusNode get controlFocus => widget.focusNode ?? ownedFocus;
-  @override
-  void initState() {
-    super.initState();
-    _RaftFocusVisible.shared.acquire();
-    _RaftFocusVisible.shared.addListener(focusModeChanged);
-  }
-
-  void focusModeChanged() {
-    final next =
-        enabled && controlFocus.hasFocus && _RaftFocusVisible.shared.keyboard;
-    final tooltipNext = tooltipKeyboardFocused && next;
-    if (mounted && (focused != next || tooltipKeyboardFocused != tooltipNext)) {
-      setState(() {
-        focused = next;
-        tooltipKeyboardFocused = tooltipNext;
-      });
-    }
-  }
-
-  void focusEntered(bool hasFocus) {
-    if (!mounted) return;
-    setState(() {
-      focused = enabled && hasFocus && _RaftFocusVisible.shared.keyboard;
-      tooltipKeyboardFocused = focused;
-    });
-  }
-
-  @override
-  void dispose() {
-    _RaftFocusVisible.shared.removeListener(focusModeChanged);
-    _RaftFocusVisible.shared.release();
-    ownedFocus.dispose();
-    super.dispose();
-  }
-
-  void activateControl() {
-    if (!enabled) return;
-    controlFocus.requestFocus();
-    widget.onPressed?.call();
-  }
-
-  bool get enabled => widget.onPressed != null && !widget.busy;
-  @override
-  void didUpdateWidget(RaftControl oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (!enabled) {
-      pressed = false;
-      hovered = false;
-      focused = false;
-      tooltipKeyboardFocused = false;
-    }
-  }
-
+/// Frozen control paint. The enclosing Button / Interactive owns all input.
+class _RaftLegacyControlSurface extends StatelessWidget {
+  const _RaftLegacyControlSurface(this.control, this.state);
+  final RaftControl control;
+  final RaftInteractionState state;
   @override
   Widget build(BuildContext context) {
+    final widget = control;
+    final enabled = state.enabled;
+    final hovered = state.hovered;
+    final pressed = state.pressed;
+    final focused = state.focusVisible;
     final t = RaftTokens.of(context);
     final reducedMotion = MediaQuery.disableAnimationsOf(context);
     final flexible = widget.flexibleHeight || RaftScaled.grows(context);
@@ -977,247 +1009,145 @@ class _RaftControlState extends State<RaftControl> {
       pressed: pressed,
     );
     final inert = widget.inertWhenDisabled && !enabled;
-    Widget result = Semantics(
-      label: widget.semanticLabel,
-      excludeSemantics: widget.busy,
-      button:
-          !inert &&
-          !{
-            RaftControlKind.tab,
-            RaftControlKind.segmentedButton,
-          }.contains(widget.kind),
-      checked:
-          {
-            RaftControlKind.tab,
-            RaftControlKind.segmentedButton,
-          }.contains(widget.kind)
-          ? widget.selected
-          : null,
-      inMutuallyExclusiveGroup: {
-        RaftControlKind.tab,
-        RaftControlKind.segmentedButton,
-      }.contains(widget.kind),
-      selected: widget.kind == RaftControlKind.sidebar ? widget.selected : null,
-      toggled: widget.kind == RaftControlKind.savedAction
-          ? widget.selected
-          : null,
-      enabled: inert ? null : enabled,
-      onTap: enabled ? activateControl : null,
-      child: RaftHoverRegion(
-        onEnter: enabled ? (_) => setState(() => hovered = true) : null,
-        onExit: (_) => setState(() => hovered = false),
-        child: FocusableActionDetector(
-          focusNode: controlFocus,
-          enabled: enabled,
-          mouseCursor: enabled
-              ? SystemMouseCursors.click
-              : SystemMouseCursors.basic,
-          onShowFocusHighlight: (_) => focusModeChanged(),
-          onFocusChange: focusEntered,
-          actions: {
-            ButtonActivateIntent: CallbackAction<ButtonActivateIntent>(
-              onInvoke: (_) {
-                activateControl();
-                return null;
-              },
-            ),
-            ActivateIntent: CallbackAction<ActivateIntent>(
-              onInvoke: (_) {
-                activateControl();
-                return null;
-              },
-            ),
-          },
-          child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            excludeFromSemantics: true,
-            onTapDown: enabled
-                ? (_) {
-                    if (widget.focusOnPointer) controlFocus.requestFocus();
-                    setState(() => pressed = true);
-                  }
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        minWidth:
+            widget.minimumTargetSize ??
+            (RaftDensityScope.of(context) == RaftDensity.touch
+                ? RaftMetrics.touchTarget
+                : widget.visualWidth ?? 0),
+        minHeight: bounds.layoutHeight,
+      ),
+      child: Align(
+        widthFactor: 1,
+        heightFactor: 1,
+        child: Opacity(
+          opacity: enabled || widget.busy || inert ? 1 : recipe.disabledOpacity,
+          child: AnimatedContainer(
+            duration: MediaQuery.disableAnimationsOf(context)
+                ? Duration.zero
+                : RaftPrimitives.controlDuration,
+            curve: RaftPrimitives.controlCurve,
+            // A control labelled with scaled text is a minimum height
+            // (CSS min-height): at 1.0x it is the pinned visual height.
+            height: flexible ? null : widget.visualHeight,
+            constraints: flexible
+                ? BoxConstraints(minHeight: widget.visualHeight)
                 : null,
-            onTapUp: enabled
-                ? (details) {
-                    setState(() => pressed = false);
-                    final box = context.findRenderObject();
-                    // A finger may land in the enlarged touch target around
-                    // the control (RaftTapSlopAnchor / RaftTouchTarget), so
-                    // touch taps accept the target's reach, not just the box.
-                    final reach = details.kind == PointerDeviceKind.touch
-                        ? RaftMetrics.touchTarget / 2
-                        : 0.0;
-                    if (box is RenderBox &&
-                        (Offset.zero & box.size)
-                            .inflate(reach)
-                            .contains(details.localPosition)) {
-                      widget.onPressed?.call();
-                    }
-                  }
-                : null,
-            onTapCancel: enabled ? () => setState(() => pressed = false) : null,
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minWidth:
-                    widget.minimumTargetSize ??
-                    (RaftDensityScope.of(context) == RaftDensity.touch
-                        ? RaftMetrics.touchTarget
-                        : widget.visualWidth ?? 0),
-                minHeight: bounds.layoutHeight,
-              ),
-              child: Align(
-                widthFactor: 1,
-                heightFactor: 1,
-                child: Opacity(
-                  opacity: enabled || widget.busy || inert
-                      ? 1
-                      : recipe.disabledOpacity,
-                  child: AnimatedContainer(
-                    duration: MediaQuery.disableAnimationsOf(context)
-                        ? Duration.zero
-                        : RaftPrimitives.controlDuration,
-                    curve: RaftPrimitives.controlCurve,
-                    // A control labelled with scaled text is a minimum height
-                    // (CSS min-height): at 1.0x it is the pinned visual height.
-                    height: flexible ? null : widget.visualHeight,
-                    constraints: flexible
-                        ? BoxConstraints(minHeight: widget.visualHeight)
-                        : null,
-                    width: widget.visualWidth,
-                    transformAlignment: Alignment.center,
-                    transform: recipe.interactionTransform(
+            width: widget.visualWidth,
+            transformAlignment: Alignment.center,
+            transform: recipe.interactionTransform(
+              hovered: hovered,
+              pressed: pressed,
+              reducedMotion: reducedMotion,
+            ),
+            decoration: RaftCssBoxDecoration(
+              color: bg,
+              borderRadius: recipe.radius,
+              border: Border.fromBorderSide(recipe.side(hovered: hovered)),
+              boxShadow: widget.shadow
+                  ? recipe.shadows(
                       hovered: hovered,
                       pressed: pressed,
-                      reducedMotion: reducedMotion,
-                    ),
-                    decoration: RaftCssBoxDecoration(
-                      color: bg,
-                      borderRadius: recipe.radius,
-                      border: Border.fromBorderSide(
-                        recipe.side(hovered: hovered),
+                      focused: focused,
+                    )
+                  : focused
+                  ? [
+                      BoxShadow(
+                        color: recipe.focusRing.withValues(
+                          alpha: recipe.focusRing.a * .8,
+                        ),
+                        spreadRadius: 2,
                       ),
-                      boxShadow: widget.shadow
-                          ? recipe.shadows(
-                              hovered: hovered,
-                              pressed: pressed,
-                              focused: focused,
-                            )
-                          : focused
-                          ? [
-                              BoxShadow(
-                                color: recipe.focusRing.withValues(
-                                  alpha: recipe.focusRing.a * .8,
-                                ),
-                                spreadRadius: 2,
-                              ),
-                            ]
-                          : null,
-                    ),
-                    child: Stack(
-                      alignment: Alignment.center,
-                      clipBehavior: Clip.none,
-                      children: [
-                        if (focused && recipe.focusOutlineWidth > 0)
-                          Positioned.fill(
-                            child: IgnorePointer(
-                              child: CustomPaint(
-                                painter: _ControlFocusOutlinePainter(
-                                  color: recipe.focusRing,
-                                  width: recipe.focusOutlineWidth,
-                                  offset: recipe.focusOutlineOffset,
-                                  radius: recipe.radius.resolve(
-                                    Directionality.of(context),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        if (focused &&
-                            (widget.kind == RaftControlKind.textLink))
-                          Positioned.fill(
-                            child: IgnorePointer(
-                              child: CustomPaint(
-                                painter: _TextLinkFocusPainter(
-                                  t.colors['line-strong']!,
-                                ),
-                              ),
-                            ),
-                          ),
-                        if (recipe.overlayGradient != null)
-                          Positioned.fill(
-                            child: IgnorePointer(
-                              child: DecoratedBox(
-                                decoration: BoxDecoration(
-                                  gradient: recipe.overlayGradient,
-                                  borderRadius: recipe.radius,
-                                ),
-                              ),
-                            ),
-                          ),
-                        if (recipe.insetHighlightAlpha > 0)
-                          Positioned.fill(
-                            child: IgnorePointer(
-                              child: CustomPaint(
-                                painter: _InsetHighlightPainter(
-                                  recipe.radius,
-                                  Colors.white.withValues(
-                                    alpha: recipe.insetHighlightAlpha,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        Padding(
-                          padding:
-                              widget.padding ??
-                              (widget.visualWidth == null
-                                  ? recipe.padding
-                                  : EdgeInsets.zero),
-                          child: IconTheme(
-                            data: IconThemeData(
-                              color:
-                                  widget.kind == RaftControlKind.textLink &&
-                                      hovered
-                                  ? t.strong
-                                  : recipe.iconForegroundFor(hovered: hovered),
-                              size: recipe.iconSize,
-                            ),
-                            child: DefaultTextStyle(
-                              style: RaftControlTypography.of(
-                                context,
-                                recipe.textStyle.copyWith(
-                                  color:
-                                      widget.kind == RaftControlKind.textLink &&
-                                          hovered
-                                      ? t.strong
-                                      : recipe.foregroundFor(hovered: hovered),
-                                ),
-                              ),
-                              child: Center(
-                                widthFactor: 1,
-                                child: widget.child,
-                              ),
-                            ),
+                    ]
+                  : null,
+            ),
+            child: Stack(
+              alignment: Alignment.center,
+              clipBehavior: Clip.none,
+              children: [
+                if (focused && recipe.focusOutlineWidth > 0)
+                  Positioned.fill(
+                    child: IgnorePointer(
+                      child: CustomPaint(
+                        painter: _ControlFocusOutlinePainter(
+                          color: recipe.focusRing,
+                          width: recipe.focusOutlineWidth,
+                          offset: recipe.focusOutlineOffset,
+                          radius: recipe.radius.resolve(
+                            Directionality.of(context),
                           ),
                         ),
-                      ],
+                      ),
+                    ),
+                  ),
+                if (focused && (widget.kind == RaftControlKind.textLink))
+                  Positioned.fill(
+                    child: IgnorePointer(
+                      child: CustomPaint(
+                        painter: _TextLinkFocusPainter(
+                          t.colors['line-strong']!,
+                        ),
+                      ),
+                    ),
+                  ),
+                if (recipe.overlayGradient != null)
+                  Positioned.fill(
+                    child: IgnorePointer(
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          gradient: recipe.overlayGradient,
+                          borderRadius: recipe.radius,
+                        ),
+                      ),
+                    ),
+                  ),
+                if (recipe.insetHighlightAlpha > 0)
+                  Positioned.fill(
+                    child: IgnorePointer(
+                      child: CustomPaint(
+                        painter: _InsetHighlightPainter(
+                          recipe.radius,
+                          Colors.white.withValues(
+                            alpha: recipe.insetHighlightAlpha,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                Padding(
+                  padding:
+                      widget.padding ??
+                      (widget.visualWidth == null
+                          ? recipe.padding
+                          : EdgeInsets.zero),
+                  child: IconTheme(
+                    data: IconThemeData(
+                      color: widget.kind == RaftControlKind.textLink && hovered
+                          ? t.strong
+                          : recipe.iconForegroundFor(hovered: hovered),
+                      size: recipe.iconSize,
+                    ),
+                    child: DefaultTextStyle(
+                      style: RaftControlTypography.of(
+                        context,
+                        recipe.textStyle.copyWith(
+                          color:
+                              widget.kind == RaftControlKind.textLink && hovered
+                              ? t.strong
+                              : recipe.foregroundFor(hovered: hovered),
+                        ),
+                      ),
+                      child: Center(widthFactor: 1, child: widget.child),
                     ),
                   ),
                 ),
-              ),
+              ],
             ),
           ),
         ),
       ),
     );
-    if (widget.tooltip != null) {
-      result = RaftTooltip(
-        message: widget.tooltip!,
-        keyboardFocused: tooltipKeyboardFocused,
-        child: result,
-      );
-    }
-    return result;
   }
 }
 
@@ -1281,7 +1211,7 @@ class RaftIconButton extends StatelessWidget {
       child: busy
           ? RaftSpinner(size: glyphSize)
           : RaftIcon(glyph, size: glyphSize ?? (visualSize <= 28 ? 14 : 16)),
-    );
+    ).asButton(glyph: glyph, useComponentRecipe: false);
     final label = tooltip;
     // An icon button is fixed chrome: at large text sizes a long press shows
     // its icon and label large (Large Content Viewer).
@@ -1383,36 +1313,41 @@ class RaftTextButton extends StatelessWidget {
   final bool selected;
   final String? tooltip;
   @override
-  Widget build(BuildContext context) => RaftControl(
-    kind: kind,
-    selected: selected,
-    tooltip: tooltip,
-    onPressed: onPressed,
-    variant: variant,
-    visualHeight: visualHeight,
-    minimumTargetSize: minimumTargetSize,
-    child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        if (glyph != null) ...[
-          RaftIcon(glyph!, size: visualHeight <= 28 ? 14 : 16),
-          // ds-allow: Web raft-ui/button.tsx md `gap-[5.5px]`
-          const SizedBox(width: 5.5),
-        ],
-        Flexible(
-          child: Text(
-            raftText(context, label),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
+  Widget build(BuildContext context) =>
+      RaftControl(
+        kind: kind,
+        selected: selected,
+        tooltip: tooltip,
+        onPressed: onPressed,
+        variant: variant,
+        visualHeight: visualHeight,
+        minimumTargetSize: minimumTargetSize,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (glyph != null) ...[
+              RaftIcon(glyph!, size: visualHeight <= 28 ? 14 : 16),
+              // ds-allow: Web raft-ui/button.tsx md `gap-[5.5px]`
+              const SizedBox(width: 5.5),
+            ],
+            Flexible(
+              child: Text(
+                raftText(context, label),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            if (trailingGlyph != null) ...[
+              const SizedBox(width: 6),
+              RaftIcon(trailingGlyph!, size: 12),
+            ],
+          ],
         ),
-        if (trailingGlyph != null) ...[
-          const SizedBox(width: 6),
-          RaftIcon(trailingGlyph!, size: 12),
-        ],
-      ],
-    ),
-  );
+      ).asButton(
+        label: raftText(context, label),
+        glyph: glyph,
+        trailingGlyph: trailingGlyph,
+      );
 }
 
 /// Shared field frame: retains the editor's focus/selection/validation behavior.
@@ -3090,14 +3025,25 @@ class RaftInteractive extends StatefulWidget {
     this.onPressed,
     this.onKeyboardActivate,
     this.onShowHoverHighlight,
+    this.onTapDown,
+    this.onTapCancel,
+    this.onLongPress,
+    this.onSecondaryTapDown,
+    this.semanticContainer,
+    this.cancelOutsideRelease = false,
     this.busy = false,
     this.focusNode,
     this.focusOnPointer = true,
     this.semanticLabel,
     this.semanticRole,
+    this.semanticValue,
+    this.liveRegion = false,
     this.button = true,
     this.selected,
     this.checked,
+    this.toggled,
+    this.inMutuallyExclusiveGroup = false,
+    this.inertWhenDisabled = false,
     this.tooltip,
   });
 
@@ -3111,17 +3057,39 @@ class RaftInteractive extends StatefulWidget {
 
   /// Modality-gated hover paint, as supplied by [FocusableActionDetector].
   final ValueChanged<bool>? onShowHoverHighlight;
-  final bool busy, focusOnPointer, button;
-  final bool? selected, checked;
+  final GestureTapDownCallback? onTapDown;
+  final GestureTapCancelCallback? onTapCancel;
+  final GestureLongPressCallback? onLongPress;
+  final GestureTapDownCallback? onSecondaryTapDown;
+  final bool? semanticContainer;
+  final bool busy, focusOnPointer, button, cancelOutsideRelease;
+  final bool? selected, checked, toggled;
+  final bool inMutuallyExclusiveGroup, inertWhenDisabled;
   final FocusNode? focusNode;
   final String? semanticLabel, tooltip;
   final SemanticsRole? semanticRole;
+  final String? semanticValue;
+  final bool liveRegion;
 
   @override
   State<RaftInteractive> createState() => _RaftInteractiveState();
 }
 
-class _RaftInteractiveState extends State<RaftInteractive> {
+class _RaftInteractiveState extends State<RaftInteractive>
+    with AutomaticKeepAliveClientMixin<RaftInteractive> {
+  @override
+  bool get wantKeepAlive => pressed || heldPointers.isNotEmpty;
+  final heldPointers = <int>{};
+  void holdPointer(PointerEvent event) {
+    heldPointers.add(event.pointer);
+    updateKeepAlive();
+  }
+
+  void releasePointer(PointerEvent event) {
+    heldPointers.remove(event.pointer);
+    updateKeepAlive();
+  }
+
   bool hovered = false, focused = false, pressed = false;
   bool tooltipKeyboardFocused = false;
   final ownedFocus = FocusNode();
@@ -3148,6 +3116,7 @@ class _RaftInteractiveState extends State<RaftInteractive> {
     super.didUpdateWidget(oldWidget);
     if (!enabled) {
       pressed = hovered = focused = tooltipKeyboardFocused = false;
+      updateKeepAlive();
     }
   }
 
@@ -3177,6 +3146,7 @@ class _RaftInteractiveState extends State<RaftInteractive> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final touch = RaftDensityScope.of(context) == RaftDensity.touch;
     final state = RaftInteractionState(
       hovered: hovered,
@@ -3184,21 +3154,28 @@ class _RaftInteractiveState extends State<RaftInteractive> {
       focusVisible: focused,
       enabled: enabled,
     );
+    final inert = widget.inertWhenDisabled && !enabled;
     Widget result = Semantics(
       // TouchTarget supplies this boundary and its larger semantics rect on
       // touch devices, including controls whose inner density is desktop to
       // preserve visual geometry. Other desktop controls own their boundary.
       container:
-          !touch &&
-          context.findAncestorWidgetOfExactType<RaftTouchTarget>() == null,
+          widget.semanticContainer ??
+          (!touch &&
+              context.findAncestorWidgetOfExactType<RaftTouchTarget>() == null),
       label: widget.semanticLabel,
+      value: widget.semanticValue,
+      liveRegion: widget.liveRegion,
       excludeSemantics: widget.busy,
-      button: widget.button,
+      button: !inert && widget.button,
       role: widget.semanticRole,
       selected: widget.selected,
       checked: widget.checked,
-      enabled: enabled,
+      toggled: widget.toggled,
+      inMutuallyExclusiveGroup: widget.inMutuallyExclusiveGroup,
+      enabled: inert ? null : enabled,
       onTap: enabled ? activateControl : null,
+      onLongPress: enabled ? widget.onLongPress : null,
       child: RaftHoverRegion(
         onEnter: enabled ? (_) => setState(() => hovered = true) : null,
         onExit: (_) => setState(() => hovered = false),
@@ -3225,23 +3202,52 @@ class _RaftInteractiveState extends State<RaftInteractive> {
               },
             ),
           },
-          child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            excludeFromSemantics: true,
-            onTapDown: enabled
-                ? (_) {
-                    if (widget.focusOnPointer) node.requestFocus();
-                    setState(() => pressed = true);
-                  }
-                : null,
-            onTapUp: enabled
-                ? (_) {
-                    setState(() => pressed = false);
-                    widget.onPressed?.call();
-                  }
-                : null,
-            onTapCancel: enabled ? () => setState(() => pressed = false) : null,
-            child: widget.builder(context, state),
+          child: Listener(
+            onPointerDown: enabled ? holdPointer : null,
+            onPointerUp: releasePointer,
+            onPointerCancel: releasePointer,
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              excludeFromSemantics: true,
+              onTapDown: enabled
+                  ? (details) {
+                      if (widget.focusOnPointer) node.requestFocus();
+                      setState(() => pressed = true);
+                      updateKeepAlive();
+                      widget.onTapDown?.call(details);
+                    }
+                  : null,
+              onTapUp: enabled
+                  ? (details) {
+                      setState(() => pressed = false);
+                      updateKeepAlive();
+                      if (!widget.cancelOutsideRelease) {
+                        widget.onPressed?.call();
+                        return;
+                      }
+                      final box = context.findRenderObject();
+                      final reach = details.kind == PointerDeviceKind.touch
+                          ? RaftMetrics.touchTarget / 2
+                          : 0.0;
+                      if (box is RenderBox &&
+                          (Offset.zero & box.size)
+                              .inflate(reach)
+                              .contains(details.localPosition)) {
+                        widget.onPressed?.call();
+                      }
+                    }
+                  : null,
+              onTapCancel: enabled
+                  ? () {
+                      setState(() => pressed = false);
+                      updateKeepAlive();
+                      widget.onTapCancel?.call();
+                    }
+                  : null,
+              onLongPress: enabled ? widget.onLongPress : null,
+              onSecondaryTapDown: enabled ? widget.onSecondaryTapDown : null,
+              child: widget.builder(context, state),
+            ),
           ),
         ),
       ),

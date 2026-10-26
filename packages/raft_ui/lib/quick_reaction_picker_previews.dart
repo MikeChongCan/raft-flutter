@@ -1,3 +1,5 @@
+import 'src/raft/button.dart';
+
 import 'package:flutter/material.dart';
 
 import 'previews.dart';
@@ -26,7 +28,7 @@ class _PickerState extends State<_Picker> {
   Widget build(BuildContext context) => Column(
     mainAxisSize: MainAxisSize.min,
     children: [
-      TextButton(
+      RaftButton.text(
         focusNode: opener,
         onPressed: () => setState(() => open = true),
         child: const Text('Open Reactions'),

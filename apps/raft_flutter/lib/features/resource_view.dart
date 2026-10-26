@@ -2570,7 +2570,7 @@ class _ResourceViewState extends State<ResourceView> {
                           ? 'Show Task List'
                           : 'Show Task Board',
                     ),
-                    child: IconButton(
+                    child: RaftButton.iconAction(
                       icon: RaftIcon(
                         taskLayout == 'board'
                             ? RaftGlyph.layoutList
@@ -2587,7 +2587,7 @@ class _ResourceViewState extends State<ResourceView> {
                 if (widget.section == 'tasks')
                   RaftTooltip(
                     message: raftText(context, 'Create Task'),
-                    child: IconButton(
+                    child: RaftButton.iconAction(
                       onPressed: w.server?.string('role') == 'guest'
                           ? null
                           : () => createTask(sourceScope: scope),
@@ -2911,7 +2911,7 @@ class _ResourceViewState extends State<ResourceView> {
       itemBuilder: (context, index) => index == shown.length
           ? widget.section == 'saved'
                 ? savedSentinel()
-                : TextButton(
+                : RaftButton.text(
                     onPressed: () => load(append: true),
                     child: Text(raftText(context, 'Load More')),
                   )
@@ -4296,7 +4296,7 @@ class _ResourceViewState extends State<ResourceView> {
                 ],
                 if (hasMore && !lanePaged)
                   SliverToBoxAdapter(
-                    child: TextButton(
+                    child: RaftButton.text(
                       onPressed: () => load(append: true),
                       child: Text(raftText(context, 'Load More')),
                     ),
@@ -4695,7 +4695,7 @@ class _ResourceViewState extends State<ResourceView> {
                 : activityCard(row, authority, viewFilter: value),
         ],
         if (viewFilter == null && hasMore)
-          TextButton(
+          RaftButton.text(
             onPressed: () => load(append: true),
             child: Text(raftText(context, 'Load More')),
           ),
@@ -5655,7 +5655,7 @@ class _ResourceViewState extends State<ResourceView> {
           title: Text(raftText(context, 'Delete Task')),
           content: Text('${task['title']}'),
           actions: [
-            TextButton(
+            RaftButton.text(
               onPressed: () => closeOwnedDialog(context, scope, false),
               child: Text(raftText(context, 'Keep Task')),
             ),

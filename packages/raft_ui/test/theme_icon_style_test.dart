@@ -33,9 +33,48 @@ Widget _host({
   ),
 );
 
-BoxDecoration _paint(WidgetTester t) =>
-    t.widget<AnimatedContainer>(find.byType(AnimatedContainer)).decoration!
-        as BoxDecoration;
+BoxDecoration _paint(WidgetTester t) {
+  final old = find.descendant(
+    of: find.byType(RaftIconButton),
+    matching: find.byType(AnimatedContainer),
+  );
+  if (old.evaluate().isNotEmpty)
+    return t.widget<AnimatedContainer>(old.first).decoration! as BoxDecoration;
+  final root = find.descendant(
+    of: find.byType(RaftIconButton),
+    matching: find.byType(DecoratedBox),
+  );
+  final decoration =
+      t.widget<DecoratedBox>(root.first).decoration as BoxDecoration;
+  final shadows = t
+      .widgetList<CustomPaint>(
+        find.descendant(
+          of: find.byType(RaftIconButton),
+          matching: find.byType(CustomPaint),
+        ),
+      )
+      .map((paint) => paint.painter)
+      .whereType<RaftOuterShadowPainter>()
+      .expand((p) => p.shadows)
+      .toList();
+  return decoration.copyWith(boxShadow: shadows);
+}
+
+Matrix4 _transform(WidgetTester t) {
+  final old = find.byType(AnimatedContainer);
+  if (old.evaluate().isNotEmpty)
+    return t.widget<AnimatedContainer>(old.first).transform!;
+  return t
+      .widget<Transform>(
+        find
+            .descendant(
+              of: find.byType(RaftIconButton),
+              matching: find.byType(Transform),
+            )
+            .first,
+      )
+      .transform;
+}
 
 void main() {
   testWidgets(
@@ -53,21 +92,13 @@ void main() {
       await mouse.moveTo(t.getCenter(find.byType(RaftIconButton)));
       await t.pumpAndSettle();
       expect(_paint(t).boxShadow!.single.offset, const Offset(4, 4));
-      expect(
-        t
-            .widget<AnimatedContainer>(find.byType(AnimatedContainer))
-            .transform!
-            .entry(1, 3),
-        -1,
-      );
+      expect(_transform(t).entry(1, 3), -1);
       final down = await t.startGesture(
         t.getCenter(find.byType(RaftIconButton)),
       );
       await t.pump(const Duration(milliseconds: 500));
       expect(_paint(t).boxShadow!.single.offset, const Offset(1, 1));
-      final transform = t
-          .widget<AnimatedContainer>(find.byType(AnimatedContainer))
-          .transform!;
+      final transform = _transform(t);
       expect(transform.entry(0, 0), 1);
       expect(transform.entry(0, 3), 1);
       expect(transform.entry(1, 3), 1);
@@ -112,9 +143,7 @@ void main() {
     await t.pumpAndSettle();
     final down = await t.startGesture(t.getCenter(find.byType(RaftIconButton)));
     await t.pump();
-    final transform = t
-        .widget<AnimatedContainer>(find.byType(AnimatedContainer))
-        .transform!;
+    final transform = _transform(t);
     expect(transform.entry(0, 0), 1);
     expect(transform.entry(1, 1), 1);
     expect(transform.entry(0, 3), 0);
@@ -205,7 +234,7 @@ void main() {
           visualHeight: 24,
         );
         final raised = configuration.surface == 'raised';
-        expect(_paint(t).border!.top.width, raised ? 2 : 0);
+        expect(_paint(t).border?.top.width ?? 0, raised ? 2 : 0);
         expect(
           _paint(t).borderRadius,
           raised ? BorderRadius.circular(7) : generic.radius,
@@ -229,9 +258,7 @@ void main() {
           t.getCenter(find.byType(RaftIconButton)),
         );
         await t.pump(const Duration(milliseconds: 500));
-        final transform = t
-            .widget<AnimatedContainer>(find.byType(AnimatedContainer))
-            .transform!;
+        final transform = _transform(t);
         final offset = configuration.effect == 'offsetShadow';
         expect(transform.entry(0, 0), offset ? 1 : .985);
         expect(transform.entry(0, 3), offset ? 1 : 0);

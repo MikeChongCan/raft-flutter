@@ -1,3 +1,5 @@
+import 'raft/button.dart';
+
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -99,9 +101,10 @@ class RaftTextSelectionToolbar extends StatelessWidget {
         ),
         children: [
           for (var i = 0; i < buttonItems.length; i++)
-            TextButton(
+            RaftButton.text(
+              focusOnPointer: false,
               onPressed: buttonItems[i].onPressed,
-              style: ButtonStyle(
+              legacyStyle: ButtonStyle(
                 // The same geometry as TextSelectionToolbarTextButton.
                 minimumSize: const WidgetStatePropertyAll(
                   Size(kMinInteractiveDimension, kMinInteractiveDimension),

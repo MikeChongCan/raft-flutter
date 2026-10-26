@@ -143,7 +143,7 @@ Future<void> showCredential(
       ),
     ),
     actions: [
-      TextButton(
+      RaftButton.text(
         onPressed: () => _closeFleetDialog(dialog),
         child: Text(raftText(context, 'Close')),
       ),
@@ -483,7 +483,7 @@ class _FleetViewState extends State<FleetView> {
             ),
             RaftTooltip(
               message: raftText(context, 'Refresh'),
-              child: IconButton(
+              child: RaftButton.iconAction(
                 onPressed: load,
                 icon: const Icon(Icons.refresh),
               ),
@@ -504,7 +504,7 @@ class _FleetViewState extends State<FleetView> {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Align(
             alignment: Alignment.centerRight,
-            child: TextButton.icon(
+            child: RaftButton.text(
               onPressed: managed,
               icon: const RaftIcon(RaftGlyph.bot, size: 14),
               label: Text(raftText(context, 'Create Managed Agent')),
@@ -1804,7 +1804,7 @@ class _FleetInspectionState extends State<FleetInspection> {
           ),
         ),
         actions: [
-          TextButton(
+          RaftButton.text(
             onPressed: () => _closeFleetDialog(dialog),
             child: Text(raftText(context, 'Close')),
           ),
@@ -1828,7 +1828,7 @@ class _FleetInspectionState extends State<FleetInspection> {
       actions: [
         RaftTooltip(
           message: raftText(context, 'Refresh'),
-          child: IconButton(
+          child: RaftButton.iconAction(
             onPressed: load,
             icon: const RaftIcon(RaftGlyph.refreshCw, size: 12),
           ),

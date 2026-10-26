@@ -1,3 +1,4 @@
+import 'raft/button.dart';
 import 'hover_region.dart';
 
 import 'dart:math' as math;
@@ -875,16 +876,20 @@ class RaftWorkspaceRail extends StatelessWidget {
                       height: headerHeight,
                       child: RaftTooltip(
                         message: workspaceTooltip,
-                        child: IconButton(
+                        child: RaftButton.iconAction(
                           key: const Key('rail-workspace'),
                           constraints: BoxConstraints.tightFor(
                             width: bounds.layoutHeight,
                             height: bounds.layoutHeight,
                           ),
-                          style: IconButton.styleFrom(
-                            minimumSize: Size.square(bounds.layoutHeight),
+                          legacyStyle: ButtonStyle(
+                            minimumSize: WidgetStatePropertyAll(
+                              Size.square(bounds.layoutHeight),
+                            ),
                             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            shape: const RoundedRectangleBorder(),
+                            shape: WidgetStatePropertyAll(
+                              const RoundedRectangleBorder(),
+                            ),
                           ),
                           onPressed: onWorkspace,
                           icon: _RailAvatar(

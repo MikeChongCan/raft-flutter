@@ -1,3 +1,5 @@
+import 'raft/list_row_action.dart';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -181,11 +183,7 @@ class _RaftConversationListRowState extends State<RaftConversationListRow> {
               label: widget.semanticLabel,
               child: Material(
                 color: fill,
-                child: InkWell(
-                  splashFactory: NoSplash.splashFactory,
-                  highlightColor: Colors.transparent,
-                  hoverColor: Colors.transparent,
-                  focusColor: Colors.transparent,
+                child: RaftListRowAction(
                   onTapDown:
                       widget.onActivate == null &&
                           widget.onPointerActivate == null
@@ -200,7 +198,7 @@ class _RaftConversationListRowState extends State<RaftConversationListRow> {
                     pendingTapTime = null;
                     pendingTapPosition = null;
                   },
-                  onTap: deliverActivation,
+                  onPressed: deliverActivation,
                   focusNode: focusNode,
                   onLongPress: widget.onContextMenu == null
                       ? null
@@ -319,6 +317,7 @@ class _RaftConversationListRowState extends State<RaftConversationListRow> {
                         ),
                     ],
                   ),
+                  decorate: false,
                 ),
               ),
             ),

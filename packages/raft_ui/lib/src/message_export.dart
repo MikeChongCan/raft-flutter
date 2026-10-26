@@ -1,3 +1,5 @@
+import 'raft/button.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
@@ -374,7 +376,7 @@ class RaftImageReview extends StatelessWidget {
               ),
               RaftTooltip(
                 message: raftText(context, 'Close Preview'),
-                child: IconButton(
+                child: RaftButton.iconAction(
                   onPressed: busy ? null : onClose,
                   icon: const Icon(Icons.close),
                 ),

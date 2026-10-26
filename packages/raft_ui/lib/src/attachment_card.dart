@@ -1,3 +1,4 @@
+import 'raft/list_row_action.dart';
 import 'hover_region.dart';
 
 import 'dart:math' as math;
@@ -300,9 +301,8 @@ class RaftAttachmentCard extends StatelessWidget {
                     Semantics(
                       label: '${raftText(context, 'Preview')} $filename',
                       button: !exportMode,
-                      child: InkWell(
-                        hoverColor: RaftHoverScope.materialHoverColor(context),
-                        onTap: exportMode ? null : onOpen,
+                      child: RaftListRowAction(
+                        onPressed: exportMode ? null : onOpen,
                         child:
                             preview ??
                             (previewPending && error == null ||
@@ -351,15 +351,8 @@ class RaftAttachmentCard extends StatelessWidget {
             if (exportMode)
               content
             else
-              TextButton(
+              RaftListRowAction(
                 onPressed: busy ? null : onOpen,
-                style: TextButton.styleFrom(
-                  padding: EdgeInsets.zero,
-                  foregroundColor: t.strong,
-                  minimumSize: Size.zero,
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  shape: const RoundedRectangleBorder(),
-                ),
                 child: content,
               ),
             if (busy && !exportMode)

@@ -22,7 +22,7 @@ class _CommentsPreviewState extends State<_CommentsPreview> {
         Wrap(
           crossAxisAlignment: WrapCrossAlignment.center,
           children: [
-            TextButton(
+            RaftButton.text(
               onPressed: () => setState(() => blocked = !blocked),
               child: const Text('Toggle Read-only'),
             ),

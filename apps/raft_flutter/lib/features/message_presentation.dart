@@ -751,7 +751,7 @@ class MessagePresentation extends StatelessWidget {
         ),
       ),
       actions: [
-        TextButton(
+        RaftButton.text(
           onPressed: () => Navigator.pop(ctx),
           child: Text(raftText(ctx, 'Close')),
         ),

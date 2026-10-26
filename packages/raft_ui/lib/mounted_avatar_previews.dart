@@ -1,3 +1,5 @@
+import 'src/raft/button.dart';
+
 import 'package:flutter/material.dart';
 
 import 'previews.dart';
@@ -76,15 +78,15 @@ class _MountedAvatarsState extends State<_MountedAvatars> {
           spacing: 8,
           children: [
             for (final state in RaftAvatarActivity.values)
-              TextButton(
+              RaftButton.text(
                 onPressed: () => setState(() => activity = state),
                 child: Text(state.name),
               ),
-            TextButton(
+            RaftButton.text(
               onPressed: () => setState(() => deactivated = !deactivated),
               child: Text(deactivated ? 'Activate Agent' : 'Deactivate Agent'),
             ),
-            TextButton(
+            RaftButton.text(
               onPressed: () => setState(() => muted = !muted),
               child: Text(muted ? 'Joined channel' : 'Not in channel'),
             ),

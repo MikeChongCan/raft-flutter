@@ -1,20 +1,25 @@
-// raft-ui 0.7.0 `Button` (dist `buttonVariants`): stickers (primary / accent / warning / danger), outline paper
-// buttons, ghost, on-frame and link. Sizes 32 / 44 / 52 and the icon squares. Press and hover lay one overlay over
-// the resting colour; disabled and loading read `fill-muted`; keyboard focus draws the `focus-ring`.
+// The single Button entry point. All visual states of the Raft look resolve
+// the complete raft-ui 0.7.0 Button recipe; compatibility wrappers retain only
+// frozen legacy paint and delegate their interaction to this component.
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart' show SemanticsRole;
 
-import '../control_typography.dart';
 import '../css_opacity.dart';
 import '../design_primitives.dart';
 import '../icons.dart';
 import '../localization.dart';
 import '../recipes/button_variants.g.dart';
+import '../recipes/recipe_router.dart';
+import '../recipes/recipe_runtime.dart';
+import '../recipe_surface.dart';
+import '../text_scaling.dart' show RaftScaled;
+import '../raft_underline.dart';
+import 'legacy_button_surface.dart';
+import 'button_color_transition.dart';
+import 'legacy_material_button_surface.dart';
 import '../theme.dart';
 import '../tokens/tokens.dart';
-import 'button_surface.dart';
-import 'button_colors.dart';
 export 'button_colors.dart';
-import 'ui_tokens.dart';
 
 /// `variant` axis of `buttonVariants`. `accent` and `primary` are the same pink sticker.
 enum RaftButtonVariant {
@@ -32,6 +37,14 @@ enum RaftButtonVariant {
   ghost,
   onFrame,
   link;
+
+  String get css => switch (this) {
+    standard => 'default',
+    dangerSecondary => 'danger-secondary',
+    dangerOutline => 'danger-outline',
+    onFrame => 'on-frame',
+    _ => name,
+  };
 
   bool get isSticker =>
       this == primary || this == accent || this == warning || this == danger;
@@ -86,6 +99,9 @@ enum RaftButtonSize {
   iconSm,
   iconMd,
   iconLg;
+
+  String get css =>
+      name.replaceAllMapped(RegExp(r'[A-Z]'), (m) => '-${m[0]!.toLowerCase()}');
 
   bool get isIcon =>
       this == iconXs || this == iconSm || this == iconMd || this == iconLg;
@@ -154,6 +170,35 @@ class RaftButtonMetrics {
     RaftButtonVariant variant,
     RaftTokens t,
   ) {
+    final tokens = t.recipeTokens;
+    if (!usesLegacyRecipes(tokens)) {
+      Map<String, RaftSlotStyle> resolve([Iterable<String> extra = const []]) =>
+          RaftButtonRecipe.resolveProps(
+            {'variant': variant.css, 'size': size.css},
+            states: t.recipeStates(extra: extra),
+            tokens: tokens,
+          );
+      final root = resolve()['root']!;
+      final start = resolve([RaftRecipeStates.iconInlineStart])['root']!;
+      final end = resolve([RaftRecipeStates.iconInlineEnd])['root']!;
+      final text = root.text(tokens);
+      final fontSize = text.fontSize ?? RaftTypeScale.body.fontSize;
+      return RaftButtonMetrics(
+        height: root.height ?? 0,
+        paddingX: root.padding.left,
+        iconStartPaddingLeft: start.padding.left,
+        iconEndPaddingRight: end.padding.right,
+        text: RaftTypeStyle(
+          fontSize,
+          fontSize * (text.height ?? 1),
+          fontWeight: text.fontWeight?.value.toInt() ?? 700,
+        ),
+        icon: root.target("& svg:not([class*='size-'])")?.width ?? fontSize,
+        gap: root.columnGap ?? 0,
+        square: size.isIcon,
+      );
+    }
+    // Pre-0.7 geometry remains frozen with the legacy paint adapters.
     final frame =
         variant == RaftButtonVariant.onFrame &&
         (size == RaftButtonSize.xs ||
@@ -222,16 +267,23 @@ class RaftButtonMetrics {
   }
 }
 
-/// raft-ui `Button`. [uiVariant] / [uiSize] are the current Web axes; the older [variant] / [tone] / [size] /
-/// [visualHeight] parameters map onto them for call sites that have not been converted.
+/// raft-ui Button, shared by text, icon, composer and dialog actions.
+/// [uiVariant] and [uiSize] select the source axes. The earlier parameters are
+/// compatibility aliases; new callers can pass [child] for composed content.
 class RaftButton extends StatelessWidget {
   const RaftButton({
     super.key,
-    required this.label,
+    this.label = '',
+    this.child,
     this.onPressed,
+    this.onKeyboardActivate,
     this.icon,
     this.glyph,
+    this.trailingGlyph,
+    this.iconBuilder,
     this.busy = false,
+    this.disabled = false,
+    this.loadingLabel = 'Loading',
     this.secondary = false,
     this.destructive = false,
     this.variant,
@@ -241,12 +293,28 @@ class RaftButton extends StatelessWidget {
     this.uiSize,
     this.visualHeight = RaftMetrics.buttonMd,
     this.physicalHeight,
+    this.visualWidth,
+    this.minimumTargetSize,
     this.metricsKey,
     this.expand = false,
     this.focusNode,
+    this.focusOnPointer = true,
+    this.focusRing = false,
     this.tooltip,
     this.semanticLabel,
+    this.button = true,
+    this.semanticRole,
+    this.selected,
+    this.checked,
+    this.toggled,
+    this.inMutuallyExclusiveGroup = false,
+    this.inertWhenDisabled = false,
     this.foreground,
+    this.padding,
+    this.textStep,
+    this.fontWeight,
+    this.underline = false,
+    this.autoHeight = false,
     this.iconInlineStart = true,
     this.opacityCompositing = RaftOpacityCompositing.layer,
     this.leading,
@@ -254,69 +322,130 @@ class RaftButton extends StatelessWidget {
     this.iconInlineEnd = false,
     this.glyphSize,
     this.disabledOpacity,
+    this.legacyBuilder,
+    this.surfaceBuilder,
+    this.styleBuilder,
+    this.legacyKind,
+    this.legacyStyle,
+    this.legacyConstraints,
+    this.legacyPadding,
   });
 
-  /// Callsite icon size (`<Trash2 size={14} />`); null keeps the size axis's
-  /// glyph size from the pack.
-  final double? glyphSize;
+  /// Migration constructors: current Button variants with frozen pre-0.7
+  /// style data for the legacy looks. No Material input implementation remains.
+  const RaftButton.text({
+    Key? key,
+    Widget? child,
+    Widget? label,
+    Widget? icon,
+    VoidCallback? onPressed,
+    FocusNode? focusNode,
+    ButtonStyle? legacyStyle,
+    bool focusOnPointer = true,
+  }) : this(
+         key: key,
+         child: child ?? label,
+         leading: icon,
+         onPressed: onPressed,
+         focusNode: focusNode,
+         focusOnPointer: focusOnPointer,
+         uiVariant: RaftButtonVariant.ghost,
+         legacyKind: RaftLegacyButtonKind.text,
+         legacyStyle: legacyStyle,
+         autoHeight: true,
+       );
 
-  /// Callsite `disabled:opacity-*`: the opacity of a disabled button, in place
-  /// of the pack's `opacity.buttonDisabled`.
-  final double? disabledOpacity;
+  const RaftButton.outlined({
+    Key? key,
+    Widget? child,
+    Widget? label,
+    Widget? icon,
+    VoidCallback? onPressed,
+    FocusNode? focusNode,
+    ButtonStyle? legacyStyle,
+  }) : this(
+         key: key,
+         child: child ?? label,
+         leading: icon,
+         onPressed: onPressed,
+         focusNode: focusNode,
+         uiVariant: RaftButtonVariant.outline,
+         legacyKind: RaftLegacyButtonKind.outlined,
+         legacyStyle: legacyStyle,
+       );
 
-  /// Visible text. Empty with an icon renders the icon square when [uiSize] is an icon size.
+  const RaftButton.iconAction({
+    Key? key,
+    required Widget icon,
+    VoidCallback? onPressed,
+    String? tooltip,
+    ButtonStyle? legacyStyle,
+    BoxConstraints? constraints,
+    EdgeInsetsGeometry? padding,
+  }) : this(
+         key: key,
+         child: icon,
+         onPressed: onPressed,
+         tooltip: tooltip,
+         uiVariant: RaftButtonVariant.ghost,
+         uiSize: RaftButtonSize.iconMd,
+         legacyKind: RaftLegacyButtonKind.icon,
+         legacyStyle: legacyStyle,
+         legacyConstraints: constraints,
+         legacyPadding: padding,
+       );
+
+  final RaftLegacyButtonKind? legacyKind;
+  final ButtonStyle? legacyStyle;
+  final BoxConstraints? legacyConstraints;
+  final EdgeInsetsGeometry? legacyPadding;
   final String label;
-
-  /// A custom leading node (a brand mark) before the label, separated by [gap] (default 8).
-  final Widget? leading;
-  final double? gap;
-
-  /// Whether the icon is `data-icon="inline-start"` (the smaller start padding).
-  final bool iconInlineStart;
-
-  /// The icon follows the label (`data-icon="inline-end"`).
-  final bool iconInlineEnd;
-
-  /// Explicit caller text/icon colour; null keeps the variant's.
-  final Color? foreground;
-  final VoidCallback? onPressed;
+  final Widget? child, leading;
+  final VoidCallback? onPressed, onKeyboardActivate;
   final IconData? icon;
-
-  /// Lucide glyph; wins over [icon].
-  final RaftGlyph? glyph;
-  final bool busy, secondary, destructive;
-
-  /// Legacy variant axis; mapped onto [RaftButtonVariant].
+  final RaftGlyph? glyph, trailingGlyph;
+  final Widget Function(double size, Color color)? iconBuilder;
+  final bool busy, disabled, secondary, destructive, expand;
+  final String loadingLabel;
   final RaftControlVariant? variant;
-
-  /// Legacy recipe variant (wins over [variant]).
   final RaftButtonRecipeVariant? tone;
-
-  /// Legacy recipe size; when null it follows [visualHeight].
   final RaftButtonRecipeSize? size;
-
-  /// 0.7.1 variant / size; win over the legacy parameters.
   final RaftButtonVariant? uiVariant;
   final RaftButtonSize? uiSize;
   final double visualHeight;
-
-  /// A caller-owned physical height; typography still follows the size axis.
-  /// Large text may grow past it, as with the normal size metrics.
-  final double? physicalHeight;
-
-  /// Component geometry/type namespace; independent of the theme identity.
+  final double? physicalHeight, visualWidth, minimumTargetSize;
   final String? metricsKey;
-
-  /// `w-full` (stretch to the parent width; content stays centered).
-  final bool expand;
   final FocusNode? focusNode;
-  final String? tooltip;
-
-  /// Explicit authored aria-label.
-  final String? semanticLabel;
-
-  /// Kept for call sites; the 0.7.1 disabled style is not an opacity.
+  final bool focusOnPointer, focusRing;
+  final String? tooltip, semanticLabel;
+  final bool button, inMutuallyExclusiveGroup, inertWhenDisabled;
+  final SemanticsRole? semanticRole;
+  final bool? selected, checked, toggled;
+  final Color? foreground;
+  final EdgeInsets? padding;
+  final (double, double)? textStep;
+  final FontWeight? fontWeight;
+  final bool underline, autoHeight;
+  final bool iconInlineStart, iconInlineEnd;
+  final double? gap, glyphSize, disabledOpacity;
   final RaftOpacityCompositing opacityCompositing;
+
+  /// Frozen paint adapter used only by the pre-0.7 compatibility wrappers.
+  /// New compositions use the recipe and its normal class overrides above.
+  final Widget Function(BuildContext, RaftInteractionState)? legacyBuilder;
+
+  /// Product positioning around the painted border box, e.g. a popup anchor.
+  /// Runs inside interaction so hit testing/semantics track the same surface.
+  final Widget Function(BuildContext, Widget)? surfaceBuilder;
+
+  /// Explicit product class overrides for composed controls (reaction chips,
+  /// picker triggers). Their input and rendering still belong to Button.
+  final RaftSlotStyle Function(
+    BuildContext,
+    RaftInteractionState,
+    RaftSlotStyle,
+  )?
+  styleBuilder;
 
   RaftButtonVariant get resolvedVariant =>
       uiVariant ??
@@ -335,224 +464,299 @@ class RaftButton extends StatelessWidget {
       uiSize ??
       (size != null
           ? RaftButtonSize.fromRecipe(size!)
-          : (visualHeight <= 24
-                ? RaftButtonSize.xs
-                : visualHeight <= 28
-                ? RaftButtonSize.sm
-                : visualHeight <= 32
-                ? RaftButtonSize.md
-                : RaftButtonSize.lg));
+          : visualHeight <= 24
+          ? RaftButtonSize.xs
+          : visualHeight <= 28
+          ? RaftButtonSize.sm
+          : visualHeight <= 32
+          ? RaftButtonSize.md
+          : RaftButtonSize.lg);
 
   @override
   Widget build(BuildContext context) {
-    final t = RaftTokens.of(context);
-    final variantValue = resolvedVariant;
-    final sizeValue = resolvedSize;
-    final baseMetrics = RaftButtonMetrics.of(
-      sizeValue,
-      variantValue,
-      t,
-    ).forComponent(t, metricsKey);
-    final metrics = physicalHeight == null
-        ? baseMetrics
-        : RaftButtonMetrics(
-            height: physicalHeight!,
-            paddingX: baseMetrics.paddingX,
-            iconStartPaddingLeft: baseMetrics.iconStartPaddingLeft,
-            iconEndPaddingRight: baseMetrics.iconEndPaddingRight,
-            text: baseMetrics.text,
-            icon: baseMetrics.icon,
-            gap: baseMetrics.gap,
-            square: baseMetrics.square,
-          );
     final text = raftText(context, label);
-    final hint = tooltip;
+    final childText = child is Text ? (child as Text).data : null;
     final accessibleLabel =
         semanticLabel ??
-        (text.isEmpty && hint != null
-            ? raftText(context, hint)
+        (text.isEmpty && tooltip != null
+            ? raftText(context, tooltip!)
             : busy
-            ? text
+            ? (text.isNotEmpty
+                  ? text
+                  : childText ?? raftText(context, loadingLabel))
             : null);
     return RaftInteractive(
-      onPressed: onPressed,
+      onPressed: disabled ? null : onPressed,
+      onKeyboardActivate: onKeyboardActivate,
       busy: busy,
       focusNode: focusNode,
+      focusOnPointer: focusOnPointer,
+      cancelOutsideRelease: true,
       tooltip: tooltip,
       semanticLabel: accessibleLabel,
-      builder: (context, st) {
-        final disabled = onPressed == null || busy;
-        final colors = RaftButtonColors.themed(
-          t,
-          variantValue,
-          iconSize: sizeValue.isIcon,
-          highContrast: MediaQuery.highContrastOf(context),
-          disabled: disabled,
-          overlay: (st.hovered || st.pressed) && !disabled,
-        );
-        final fg = foreground ?? colors.foreground;
-        final inline = sizeValue == RaftButtonSize.inline;
-        final iconSize = glyphSize ?? metrics.icon;
-        final gapValue = gap ?? (inline ? 4.0 : metrics.gap);
-
-        Widget? iconWidget;
-        if (glyph != null) {
-          iconWidget = RaftIcon(glyph!, size: iconSize, color: fg);
-        } else if (icon != null) {
-          iconWidget = RaftSymbol(icon!, size: iconSize, color: fg);
-        }
-
-        TextStyle labelStyle = t.scale(metrics.text, color: fg);
-        if (inline) {
-          final inherited = DefaultTextStyle.of(context).style;
-          labelStyle = inherited.copyWith(
-            color: fg,
-            fontFamily: t.bodyFont,
-            fontFamilyFallback: t.fontFallback,
-            fontWeight: raftFontWeight(
-              t.size('type.button.weight', fallback: 700),
-            ),
-          );
-        } else if ((sizeValue == RaftButtonSize.xs ||
-                sizeValue == RaftButtonSize.iconXs) &&
-            t.option('button.xsLine', or: 'fixed') == 'inherited') {
-          labelStyle = labelStyle.copyWith(
-            height:
-                DefaultTextStyle.of(context).style.height ?? kTextHeightNone,
-          );
-        }
-        labelStyle = RaftControlTypography.of(context, labelStyle);
-        if (variantValue == RaftButtonVariant.link &&
-            t.option('button.linkDecoration', or: 'underline') == 'underline') {
-          labelStyle = labelStyle.copyWith(
-            decoration: TextDecoration.underline,
-            decorationColor: fg,
-            decorationThickness: 1.5,
-          );
-        }
-
-        final children = <Widget>[
-          if (leading != null) ...[
-            // A leading-only slot can contain the whole workspace label. Pass
-            // the button's available width to it instead of laying it out
-            // unbounded, including fractional widths at non-integer DPRs.
-            if (text.isEmpty) Flexible(child: leading!) else leading!,
-            SizedBox(width: gapValue),
-          ],
-          if (iconWidget != null && !iconInlineEnd) iconWidget,
-          if (iconWidget != null && !iconInlineEnd && text.isNotEmpty)
-            SizedBox(width: gapValue),
-          if (text.isNotEmpty)
-            Flexible(
-              child: Text(
-                text,
-                maxLines: 1,
-                softWrap: false,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-              ),
-            ),
-          if (iconWidget != null && iconInlineEnd) ...[
-            if (text.isNotEmpty) SizedBox(width: gapValue),
-            iconWidget,
-          ],
-        ];
-        // The label style and icon colour are inherited, like the Web `content` span: a leading slot (brand
-        // mark) and the caller's own text widgets pick them up.
-        Widget content = DefaultTextStyle.merge(
-          style: labelStyle,
-          child: IconTheme.merge(
-            data: IconThemeData(color: fg, size: iconSize),
-            child: Row(
-              mainAxisSize: expand ? MainAxisSize.max : MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: children,
-            ),
-          ),
-        );
-        if (busy) {
-          content = IconTheme.merge(
-            data: IconThemeData(color: fg),
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                Visibility.maintain(visible: false, child: content),
-                const RaftSpinner(),
-              ],
-            ),
-          );
-        }
-
-        if (accessibleLabel != null) content = ExcludeSemantics(child: content);
-
-        final start =
-            iconWidget != null &&
-                !iconInlineEnd &&
-                iconInlineStart &&
-                text.isNotEmpty
-            ? metrics.iconStartPaddingLeft
-            : metrics.paddingX;
-        final end = iconWidget != null && iconInlineEnd && text.isNotEmpty
-            ? metrics.iconEndPaddingRight
-            : metrics.paddingX;
-        final EdgeInsets padding = inline
-            ? EdgeInsets.zero
-            : metrics.square
-            ? EdgeInsets.zero
-            : EdgeInsets.only(
-                left:
-                    variantValue == RaftButtonVariant.link &&
-                        t.option('button.linkPadding', or: 'none') == 'none'
-                    ? 0
-                    : start,
-                right:
-                    variantValue == RaftButtonVariant.link &&
-                        t.option('button.linkPadding', or: 'none') == 'none'
-                    ? 0
-                    : end,
-              );
-
-        final box = RaftButtonSurface(
-          variant: variantValue,
-          size: sizeValue,
-          metrics: metrics,
-          colors: colors,
-          state: st,
-          disabled: disabled,
-          padding: padding,
-          expand: expand,
-          child: content,
-        );
-        final overridden = disabled && !busy && disabledOpacity != null;
-        if (t.option('button.disabledSurface', or: 'muted') == 'opacity') {
-          final opacity = busy || !disabled
-              ? 1.0
-              : disabledOpacity ??
-                    t.size('opacity.buttonDisabled', fallback: 1);
-          return switch (opacityCompositing) {
-            RaftOpacityCompositing.layer => Opacity(
-              opacity: opacity,
-              child: box,
-            ),
-            RaftOpacityCompositing.alphaFilter => RaftCssOpacity(
-              opacity: opacity,
-              child: box,
-            ),
-          };
-        }
-        return overridden
-            ? switch (opacityCompositing) {
-                RaftOpacityCompositing.layer => Opacity(
-                  opacity: disabledOpacity!,
-                  child: box,
-                ),
-                RaftOpacityCompositing.alphaFilter => RaftCssOpacity(
-                  opacity: disabledOpacity!,
-                  child: box,
-                ),
-              }
-            : box;
+      semanticValue: busy && accessibleLabel != raftText(context, loadingLabel)
+          ? raftText(context, loadingLabel)
+          : null,
+      liveRegion: busy,
+      button: button,
+      semanticRole: semanticRole,
+      selected: selected,
+      checked: checked,
+      toggled: toggled,
+      inMutuallyExclusiveGroup: inMutuallyExclusiveGroup,
+      inertWhenDisabled: inertWhenDisabled,
+      builder: (context, state) {
+        final t = RaftTokens.of(context);
+        Widget surface = usesLegacyRecipes(t.recipeTokens)
+            ? legacyBuilder?.call(context, state) ??
+                  (legacyKind != null
+                      ? RaftLegacyMaterialButtonSurface(
+                          button: this,
+                          state: state,
+                        )
+                      : RaftLegacyButtonSurface(button: this, state: state))
+            : _recipeSurface(context, state, accessibleLabel);
+        if (surfaceBuilder != null) surface = surfaceBuilder!(context, surface);
+        return surface;
       },
     );
+  }
+
+  Widget _recipeSurface(
+    BuildContext context,
+    RaftInteractionState state,
+    String? accessibleLabel,
+  ) {
+    final t = RaftTokens.of(context);
+    final tokens = t.recipeTokens;
+    final inactive = disabled || !state.enabled;
+    final inert = inactive && inertWhenDisabled;
+    final hasIcon = glyph != null || icon != null || iconBuilder != null;
+    final inlineStart =
+        hasIcon && iconInlineStart && !iconInlineEnd && label.isNotEmpty;
+    final inlineEnd =
+        (hasIcon && iconInlineEnd || trailingGlyph != null) && label.isNotEmpty;
+    final states = t.recipeStates(
+      hovered: state.hovered && !inactive,
+      pressed: state.pressed && !inactive,
+      focusVisible:
+          state.focusVisible || focusRing && (focusNode?.hasFocus ?? false),
+      disabled: inactive && !inert,
+      ariaDisabled: busy,
+      extra: [
+        if (busy) RaftRecipeStates.loading,
+        if (inlineStart) RaftRecipeStates.iconInlineStart,
+        if (inlineEnd) RaftRecipeStates.iconInlineEnd,
+        if (MediaQuery.disableAnimationsOf(context))
+          RaftRecipeStates.motionReduce,
+      ],
+    );
+    final slots = RaftButtonRecipe.resolveProps(
+      {'variant': resolvedVariant.css, 'size': resolvedSize.css},
+      states: states,
+      tokens: tokens,
+    );
+    var recipeRoot = slots['root'] ?? absentSlot(tokens);
+    // Theme-authored structural roles refine the source shape without selecting
+    // another Button variant. Every rounded source size uses rounded-control.
+    final shapeRadius = recipeRoot.borderRadius;
+    final radius = t.themeValues?.geometry['radius.control'];
+    final stroke = t.themeValues?.geometry['stroke.control'];
+    recipeRoot = recipeRoot.copyWith(
+      properties: {
+        ...recipeRoot.properties,
+        if (radius != null && shapeRadius != null && shapeRadius.topLeft.x > 0)
+          for (final corner in [
+            'top-left',
+            'top-right',
+            'bottom-left',
+            'bottom-right',
+          ])
+            'border-$corner-radius': CssNum(radius, 'px'),
+        if (stroke != null && recipeRoot.borderWidth != EdgeInsets.zero)
+          for (final side in ['top', 'right', 'bottom', 'left'])
+            'border-$side-width': CssNum(stroke, 'px'),
+      },
+    );
+    var root = styleBuilder?.call(context, state, recipeRoot) ?? recipeRoot;
+    root = raftUniformOverlay(root, tokens);
+    final profile = metricsKey == null
+        ? null
+        : RaftButtonMetrics.of(
+            resolvedSize,
+            resolvedVariant,
+            t,
+          ).forComponent(t, metricsKey);
+    final overrides = <String, CssValue>{
+      if (autoHeight) ...{
+        'height': const CssKeyword('auto'),
+        'min-height': CssNum(root.height ?? 0, 'px'),
+      },
+      if (physicalHeight != null || profile != null)
+        'height': CssNum(physicalHeight ?? profile!.height, 'px'),
+      if (visualWidth != null) 'width': CssNum(visualWidth!, 'px'),
+      if (profile != null) ...{
+        'padding-left': CssNum(profile.paddingX, 'px'),
+        'padding-right': CssNum(profile.paddingX, 'px'),
+        'font-size': CssNum(profile.text.fontSize, 'px'),
+        'line-height': CssNum(profile.text.lineHeight, 'px'),
+      },
+      if (foreground != null)
+        'color': CssColor(foreground!.toARGB32(), null, foreground!),
+      if (fontWeight != null)
+        'font-weight': CssNum(fontWeight!.value.toDouble()),
+      if (textStep != null) ...{
+        'font-size': CssNum(textStep!.$1, 'px'),
+        'line-height': CssNum(textStep!.$2, 'px'),
+      },
+      if (underline) 'text-decoration-line': const CssKeyword('underline'),
+    };
+    root = root.copyWith(properties: {...root.properties, ...overrides});
+    return RaftButtonColorTransition(
+      style: root,
+      tokens: tokens,
+      builder: (context, animated) => _paintRecipeContent(
+        context,
+        state,
+        accessibleLabel,
+        animated,
+        slots,
+        profile,
+      ),
+    );
+  }
+
+  Widget _paintRecipeContent(
+    BuildContext context,
+    RaftInteractionState state,
+    String? accessibleLabel,
+    RaftSlotStyle root,
+    Map<String, RaftSlotStyle> slots,
+    RaftButtonMetrics? profile,
+  ) {
+    final t = RaftTokens.of(context);
+    final tokens = t.recipeTokens;
+    final inactive = disabled || !state.enabled;
+    final inherited = DefaultTextStyle.of(context).style;
+    final style = root.text(tokens, base: inherited);
+    final ink = style.color ?? t.ink;
+    final svg = root.target("& svg:not([class*='size-'])");
+    final extent =
+        glyphSize ?? profile?.icon ?? svg?.width ?? style.fontSize ?? 16;
+    final spacing = gap ?? profile?.gap ?? root.columnGap ?? 0;
+    final wraps = autoHeight || RaftScaled.grows(context);
+    final iconWidget = iconBuilder != null
+        ? iconBuilder!(extent, ink)
+        : glyph != null
+        ? RaftIcon(glyph!, size: extent, color: ink)
+        : icon != null
+        ? RaftSymbol(icon!, size: extent, color: ink)
+        : null;
+    final line = root['text-decoration-line']?.toString() ?? '';
+    final labelNode =
+        child ??
+        (label.isEmpty
+            ? null
+            : line.contains('underline')
+            ? RaftUnderlinedText(
+                raftText(context, label),
+                underlineColor:
+                    RaftColorRef.fromCss(root['text-decoration-color'])
+                        ?.resolve(tokens) ??
+                    ink,
+                underlineOffset: root.length('text-underline-offset'),
+                underlineThickness: root.length('text-decoration-thickness'),
+                maxLines: wraps ? null : 1,
+                softWrap: wraps,
+                textAlign: TextAlign.center,
+                overflow: wraps ? TextOverflow.clip : TextOverflow.ellipsis,
+              )
+            : Text(
+                raftText(context, label),
+                maxLines: wraps ? null : 1,
+                softWrap: wraps,
+                textAlign: TextAlign.center,
+                overflow: wraps ? TextOverflow.clip : TextOverflow.ellipsis,
+              ));
+    Widget content = Row(
+      mainAxisSize: expand ? MainAxisSize.max : MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        if (leading != null) ...[
+          if (labelNode == null) Flexible(child: leading!) else leading!,
+          if (labelNode != null || iconWidget != null) SizedBox(width: spacing),
+        ],
+        if (iconWidget != null && !iconInlineEnd) ...[
+          iconWidget,
+          if (labelNode != null) SizedBox(width: spacing),
+        ],
+        if (labelNode != null) Flexible(child: labelNode),
+        if (iconWidget != null && iconInlineEnd) ...[
+          if (labelNode != null) SizedBox(width: spacing),
+          iconWidget,
+        ],
+        if (trailingGlyph != null) ...[
+          if (labelNode != null || iconWidget != null) SizedBox(width: spacing),
+          RaftIcon(trailingGlyph!, size: extent, color: ink),
+        ],
+      ],
+    );
+    // The source content slot stays in layout while its loading indicator
+    // overlays it; no state-dependent width/height or live duplicate label.
+    content = RaftRecipeBox(
+      style:
+          slots['content'] ??
+          RaftSlotStyle(const {}, const {}, const [], tokens),
+      tokens: tokens,
+      child: Visibility.maintain(visible: !busy, child: content),
+    );
+    content = Stack(
+      alignment: Alignment.center,
+      children: [
+        content,
+        if (busy)
+          Positioned.fill(
+            child: RaftRecipeBox(
+              style:
+                  slots['loadingIndicator'] ??
+                  RaftSlotStyle(const {}, const {}, const [], tokens),
+              tokens: tokens,
+              alignment: Alignment.center,
+              child: Semantics(
+                label: raftText(context, loadingLabel),
+                liveRegion: true,
+                child: const ExcludeSemantics(child: RaftSpinner()),
+              ),
+            ),
+          ),
+      ],
+    );
+    if (accessibleLabel != null) content = ExcludeSemantics(child: content);
+    Widget surface = RaftRecipeBox(
+      style: root,
+      tokens: tokens,
+      controlLabel: true,
+      overflowCenter: true,
+      growWithText: true,
+      opacityCompositing: opacityCompositing,
+      width: expand ? double.infinity : null,
+      padding: padding,
+      child: IconTheme.merge(
+        data: IconThemeData(size: extent),
+        child: content,
+      ),
+    );
+    if (inactive && !busy && disabledOpacity != null) {
+      surface = Opacity(opacity: disabledOpacity!, child: surface);
+    }
+    if (minimumTargetSize != null)
+      surface = ConstrainedBox(
+        constraints: BoxConstraints(
+          minWidth: minimumTargetSize!,
+          minHeight: minimumTargetSize!,
+        ),
+        child: Center(widthFactor: 1, heightFactor: 1, child: surface),
+      );
+    return surface;
   }
 }

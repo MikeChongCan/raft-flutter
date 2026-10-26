@@ -47,12 +47,12 @@ class _ConversionPreviewState extends State<_ConversionPreview> {
           ),
           const SizedBox(height: 12),
           if (status == 'failed')
-            TextButton(
+            RaftButton.text(
               onPressed: () => setState(() => status = 'running'),
               child: Text(raftText(context, 'Retry Conversion')),
             ),
           if (status == 'running' || status == 'failed')
-            TextButton(
+            RaftButton.text(
               onPressed: () => setState(() => status = 'canceled'),
               child: Text(raftText(context, 'Cancel Conversion')),
             ),

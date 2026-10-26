@@ -292,16 +292,16 @@ class _ThreadActionsState extends State<ThreadActions> {
                       ),
               ),
               if (loadError != null && following == null)
-                TextButton(
+                RaftButton.text(
                   onPressed: retry,
                   child: Text(raftText(context, 'Retry')),
                 )
               else
-                TextButton.icon(
+                RaftButton.text(
                   key: const Key('thread-follow-toggle'),
                   onPressed: following == null || busy ? null : toggle,
-                  // Web ThreadOverflowMenu.tsx:110 MessageCircleOff/MessageCirclePlus.
-                  icon: RaftIcon(
+                  icon: // Web ThreadOverflowMenu.tsx:110 MessageCircleOff/MessageCirclePlus.
+                  RaftIcon(
                     following == true
                         ? RaftGlyph.messageCircleOff
                         : RaftGlyph.messageCirclePlus,

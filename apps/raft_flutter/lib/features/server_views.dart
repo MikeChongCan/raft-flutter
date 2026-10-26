@@ -555,7 +555,7 @@ class _MembersViewState extends State<MembersView> {
               '${value['description'] ?? ''}\n\n${value['email'] ?? ''}',
             ),
             actions: [
-              TextButton(
+              RaftButton.text(
                 onPressed: () => Navigator.pop(context),
                 child: Text(raftText(context, 'Close')),
               ),
@@ -640,7 +640,7 @@ class _MembersViewState extends State<MembersView> {
                         ),
                         RaftTooltip(
                           message: raftText(context, 'Refresh Members'),
-                          child: IconButton(
+                          child: RaftButton.iconAction(
                             onPressed: load,
                             icon: const Icon(Icons.refresh),
                           ),

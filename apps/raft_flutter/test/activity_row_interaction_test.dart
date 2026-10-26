@@ -70,7 +70,7 @@ void main() {
             final row = find.byType(RaftConversationCard);
             final stamp = find.byType(RaftConversationTimestamp);
             final action = find.byType(RaftIconButton);
-            expect(tester.getSize(action), const Size(28, 28));
+            expect(tester.getSize(action), const Size(32, 32));
             final rect = tester.getRect(row), stampRect = tester.getRect(stamp);
             double timestampOpacity() => tester
                 .widget<AnimatedOpacity>(

@@ -1,3 +1,5 @@
+import 'raft/button.dart';
+
 import 'package:flutter/material.dart';
 
 import 'status_bar.dart';
@@ -124,7 +126,7 @@ class RaftMobileBackButton extends StatelessWidget {
   final String tooltip;
 
   @override
-  Widget build(BuildContext context) => IconButton(
+  Widget build(BuildContext context) => RaftButton.iconAction(
     onPressed: onPressed,
     tooltip: raftText(context, tooltip),
     constraints: const BoxConstraints.tightFor(width: 48, height: 48),

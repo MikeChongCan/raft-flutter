@@ -1,3 +1,5 @@
+import '../raft/button.dart';
+
 // raft-ui Dialog / AlertDialog (`dialog`, `alertDialog` recipes): overlay
 // (layer-backdrop, elegant blur(2px)), centered content (calc(100% - 32px),
 // max-width per size), Header (title + corner close), Body, Footer, Title,
@@ -463,49 +465,53 @@ class RaftGlyphButton extends StatelessWidget {
   final String? tooltip;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => RaftButton(
+    glyph: glyph,
+    tone: tone,
+    size: size,
+    glyphSize: glyphSize,
+    semanticLabel: semanticLabel,
+    tooltip: tooltip,
+    onPressed: onPressed,
+    legacyBuilder: _paintLegacy,
+  );
+
+  Widget _paintLegacy(BuildContext context, RaftInteractionState st) {
     final t = RaftTokens.of(context);
     final rt = t.recipeTokens;
-    return RaftInteractive(
-      onPressed: onPressed,
-      semanticLabel: semanticLabel,
-      tooltip: tooltip,
-      builder: (context, st) {
-        final s = RaftButtonRecipe.resolve(
-          theme: t.recipeTheme,
-          variant: tone,
-          size: size,
-          states: t.recipeStates(
-            hovered: st.hovered,
-            pressed: st.pressed,
-            focusVisible: st.focusVisible,
-            disabled: onPressed == null,
-          ),
-          tokens: rt,
-        ).root;
-        final svg = s.target("& svg:not([class*='size-'])");
-        final color = quiet
-            ? (st.hovered
-                  ? t.semantic.foregroundStrong
-                  : restColor ?? t.semantic.foregroundPlaceholder)
-            : null;
-        return RaftRecipeBox(
-          style: s,
-          tokens: rt,
-          padding: quiet ? EdgeInsets.zero : null,
-          alignment: Alignment.center,
-          decorationOverride: quiet
-              ? (d) => d.copyWith(color: Colors.transparent)
-              : null,
-          child: Builder(
-            builder: (context) => RaftIcon(
-              glyph,
-              size: glyphSize ?? svg?.width ?? 16,
-              color: color ?? DefaultTextStyle.of(context).style.color,
-            ),
-          ),
-        );
-      },
+    final s = RaftButtonRecipe.resolve(
+      theme: t.recipeTheme,
+      variant: tone,
+      size: size,
+      states: t.recipeStates(
+        hovered: st.hovered,
+        pressed: st.pressed,
+        focusVisible: st.focusVisible,
+        disabled: onPressed == null,
+      ),
+      tokens: rt,
+    ).root;
+    final svg = s.target("& svg:not([class*='size-'])");
+    final color = quiet
+        ? (st.hovered
+              ? t.semantic.foregroundStrong
+              : restColor ?? t.semantic.foregroundPlaceholder)
+        : null;
+    return RaftRecipeBox(
+      style: s,
+      tokens: rt,
+      padding: quiet ? EdgeInsets.zero : null,
+      alignment: Alignment.center,
+      decorationOverride: quiet
+          ? (d) => d.copyWith(color: Colors.transparent)
+          : null,
+      child: Builder(
+        builder: (context) => RaftIcon(
+          glyph,
+          size: glyphSize ?? svg?.width ?? 16,
+          color: color ?? DefaultTextStyle.of(context).style.color,
+        ),
+      ),
     );
   }
 }

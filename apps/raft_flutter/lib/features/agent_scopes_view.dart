@@ -221,7 +221,7 @@ class _AgentScopesViewState extends State<AgentScopesView> {
                     busy: busy,
                     onPressed: save,
                   ),
-                  TextButton(
+                  RaftButton.text(
                     onPressed: busy ? null : () => save(defaults: true),
                     child: Text(
                       raftText(context, 'Restore Default Permissions'),

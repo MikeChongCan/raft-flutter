@@ -69,11 +69,21 @@ class RaftThreadReplies extends StatelessWidget {
     // Larger text: a reply stacks (author and time above, the preview wrapped
     // below) instead of squeezing the preview out of a single line.
     final grows = RaftScaled.grows(context);
-    final style = TextButton.styleFrom(
+    final style = ButtonStyle(
       alignment: Alignment.centerLeft,
-      minimumSize: const Size(48, 48),
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      foregroundColor: tokens.muted,
+      minimumSize: WidgetStatePropertyAll(const Size(48, 48)),
+      padding: WidgetStatePropertyAll(
+        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      ),
+      // Frozen TextButton.styleFrom foreground also supplied these overlays.
+      overlayColor: WidgetStateProperty.fromMap({
+        WidgetState.pressed: tokens.muted.withValues(alpha: .1),
+        WidgetState.hovered: tokens.muted.withValues(alpha: .08),
+        WidgetState.focused: tokens.muted.withValues(alpha: .1),
+      }),
+      foregroundColor: WidgetStateProperty.resolveWith(
+        (states) => states.contains(WidgetState.disabled) ? null : tokens.muted,
+      ),
     );
     return Padding(
       padding: const EdgeInsets.only(top: 6),
@@ -87,9 +97,9 @@ class RaftThreadReplies extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              TextButton(
+              RaftButton.text(
                 onPressed: onOpen,
-                style: style,
+                legacyStyle: style,
                 child: Row(
                   children: [
                     Flexible(
@@ -106,12 +116,12 @@ class RaftThreadReplies extends StatelessWidget {
                 ),
               ),
               for (final reply in visible)
-                TextButton(
+                RaftButton.text(
                   key: ValueKey('thread-preview-${reply.id}'),
                   onPressed: onOpenReply == null
                       ? null
                       : () => onOpenReply!(reply.id),
-                  style: style,
+                  legacyStyle: style,
                   child: Semantics(
                     label: raftFormat(
                       context,

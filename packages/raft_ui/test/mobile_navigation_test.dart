@@ -136,7 +136,7 @@ void main() {
                   (w is RaftInteractive &&
                       w.semanticLabel == tabs[index].label),
             );
-            final target = tester.getRect(control);
+            final target = tester.getRect(control.first);
             targets.add(target);
             expect(target.size, const Size(48, 48));
             expect(target.left - capsule.left, 2 + index * 52);
@@ -146,9 +146,12 @@ void main() {
               capsule.contains(target.bottomRight - const Offset(.01, .01)),
               isTrue,
             );
-            expect(tester.getSemantics(control).rect.size, const Size(48, 48));
+            expect(
+              tester.getSemantics(control.first).rect.size,
+              const Size(48, 48),
+            );
             final face = find.descendant(
-              of: control,
+              of: control.first,
               matching: find.byType(AnimatedContainer),
             );
             expect(tester.getSize(face), const Size(44, 44));

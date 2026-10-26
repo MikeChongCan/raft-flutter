@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_ui/raft_ui.dart';
 import 'package:raft_ui/test_themes.dart';
 
-// raft-ui 0.7.1 `Button`: sizes 32 / 44 / 52, icon squares, sticker / outline / ghost / on-frame fills, the
+// raft-ui 0.7.0 `Button`: sizes 32 / 44 / 52, icon squares, sticker / outline / ghost / on-frame fills, the
 // disabled and loading style (fill-muted, not opacity) and the keyboard focus ring.
 Widget _app(bool dark, Widget child) => MaterialApp(
   theme: raftTheme(dark: dark),
@@ -138,11 +138,13 @@ void main() {
         );
         final d = _decoration(tester, find.byKey(const ValueKey('b')));
         expect(d.color, ui.fillMuted);
+        // CSS keeps the hairline translucent; the box painter composites
+        // it over the fill rather than baking the fill into the border.
+        expect((d.border! as Border).top.color, ui.lineHairline);
         expect(
-          (d.border! as Border).top.color,
-          raftChromeBlend(ui.lineHairline, ui.fillMuted),
+          find.byWidgetPredicate((w) => w is Opacity && w.opacity < 1),
+          findsNothing,
         );
-        expect(find.byType(Opacity), findsNothing);
 
         await tester.pumpWidget(
           _app(
@@ -201,7 +203,7 @@ void main() {
       await mouse.addPointer(location: Offset.zero);
       addTearDown(mouse.removePointer);
       await mouse.moveTo(tester.getCenter(find.byKey(const ValueKey('b'))));
-      await tester.pump();
+      await tester.pumpAndSettle();
       expect(
         _decoration(tester, find.byKey(const ValueKey('b'))).color,
         raftChromeBlend(ui.fillPressed, ui.layerCard),

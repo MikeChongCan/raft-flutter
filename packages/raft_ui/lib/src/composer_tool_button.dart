@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'design_primitives.dart';
+import 'raft/button.dart';
 import 'icons.dart';
 import 'localization.dart';
 import 'theme.dart';
@@ -78,7 +79,7 @@ class RaftComposerToolButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
     final label = raftText(context, tooltip);
-    return RaftControl(
+    final legacy = RaftControl(
       focusOnPointer: false,
       visualWidth: face,
       visualHeight: face,
@@ -94,6 +95,21 @@ class RaftComposerToolButton extends StatelessWidget {
       tooltip: label,
       onPressed: onPressed,
       child: RaftIcon(glyph, size: RaftMetrics.iconSm),
+    );
+    return RaftButton(
+      glyph: glyph,
+      uiVariant: on ? RaftButtonVariant.outline : RaftButtonVariant.ghost,
+      uiSize: face <= 24
+          ? RaftButtonSize.iconXs
+          : face <= 32
+          ? RaftButtonSize.iconMd
+          : RaftButtonSize.iconLg,
+      onPressed: onPressed,
+      focusOnPointer: false,
+      toggled: on,
+      semanticLabel: label,
+      tooltip: label,
+      legacyBuilder: legacy.legacySurface,
     );
   }
 }
