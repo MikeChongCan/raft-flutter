@@ -116,7 +116,10 @@ class DesktopTitleBarController {
 
   /// macOS's standard title bar, until the window says otherwise. The first
   /// frame is drawn before the runner's answer arrives.
-  static const macosDefaultHeight = 28.0;
+  static const macosDefaultHeight = 48.0;
+
+  /// Reference desktop traffic lights end at x=76; content starts at x=80.
+  static const macosControlsInset = 80.0;
 
   static final DesktopTitleBarController platform = DesktopTitleBarController();
 
@@ -136,7 +139,7 @@ class DesktopTitleBarController {
   late final ValueNotifier<DesktopTitleBarState> state = ValueNotifier(
     DesktopTitleBarState(
       height: mode == DesktopTitleBarMode.strip ? macosDefaultHeight : 0,
-      leadingInset: mode == DesktopTitleBarMode.strip ? 82 : 0,
+      leadingInset: mode == DesktopTitleBarMode.strip ? macosControlsInset : 0,
     ),
   );
   Future<void>? _starting;
@@ -308,7 +311,7 @@ class _DesktopTitleBarState extends State<DesktopTitleBar> {
 
   void _syncLayout() => unawaited(
     _controller.setIntegrated(
-      widget.integrated,
+      _controller.mode == DesktopTitleBarMode.strip || widget.integrated,
       height: widget.integratedHeight,
     ),
   );
@@ -331,6 +334,9 @@ class _DesktopTitleBarState extends State<DesktopTitleBar> {
       valueListenable: controller.state,
       child: KeyedSubtree(key: _contentKey, child: widget.child),
       builder: (context, state, child) {
+        final macFrame =
+            controller.mode == DesktopTitleBarMode.strip &&
+            (state.height > 0 || state.fullscreen);
         final draggable =
             widget.integrated &&
             (controller.mode == DesktopTitleBarMode.strip ||
@@ -345,8 +351,14 @@ class _DesktopTitleBarState extends State<DesktopTitleBar> {
           onDoubleTap: draggable
               ? () => unawaited(controller.doubleClick())
               : null,
-          child: child!,
+          child: RaftAuthHeaderScope(
+            external: macFrame && !widget.integrated,
+            child: child!,
+          ),
         );
+        if (controller.mode == DesktopTitleBarMode.strip && !macFrame) {
+          return content;
+        }
         if (controller.mode == DesktopTitleBarMode.native ||
             (widget.integrated && !nativeCaption)) {
           return content;
@@ -356,8 +368,26 @@ class _DesktopTitleBarState extends State<DesktopTitleBar> {
           // the actual caption height and all native window interactions.
           height: nativeCaption
               ? RaftTitleBarRecipe(RaftTokens.of(context)).ruleWidth
-              : state.height,
-          fullscreen: state.fullscreen,
+              : widget.integratedHeight,
+          // Non-workspace Mac pages retain the same branded row in fullscreen.
+          fullscreen: nativeCaption && state.fullscreen,
+          title: nativeCaption
+              ? null
+              : Padding(
+                  // ds-allow: measured native traffic-light geometry, not theme spacing.
+                  padding: const EdgeInsets.only(
+                    left: DesktopTitleBarController.macosControlsInset,
+                  ),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: RaftBrandMark(
+                      RaftTokens.of(context).dark
+                          ? RaftBrandMarkKind.logoMonoLight
+                          : RaftBrandMarkKind.logo,
+                      height: 20,
+                    ),
+                  ),
+                ),
           onDragStart: nativeCaption
               ? null
               : () => unawaited(controller.startDragging()),

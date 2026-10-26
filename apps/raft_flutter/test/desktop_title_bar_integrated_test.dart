@@ -162,7 +162,7 @@ void main() {
     expect(runner.calls.where((c) => c.method == 'doubleClick'), hasLength(1));
   });
 
-  testWidgets('height changes once and leaving workspace restores the strip', (
+  testWidgets('leaving the workspace retains the 48px branded Mac frame', (
     tester,
   ) async {
     final runner = _Runner(tester);
@@ -184,9 +184,39 @@ void main() {
     expect(runner.calls.length, count);
     await tester.pumpWidget(_app(controller, integrated: false));
     await tester.pumpAndSettle();
-    expect(runner.integrated, isFalse);
+    expect(runner.integrated, isTrue);
     expect(find.byType(RaftDesktopTitleStrip), findsOneWidget);
-    expect(tester.getTopLeft(find.byKey(const Key('content'))).dy, 28);
+    expect(tester.getSize(find.byType(RaftDesktopTitleStrip)).height, 48);
+    expect(find.byType(RaftBrandMark), findsOneWidget);
+    expect(tester.getTopLeft(find.byKey(const Key('content'))).dy, 48);
     expect(tester.getSize(find.byKey(const Key('native-controls'))).width, 0);
   });
+
+  testWidgets(
+    'Mac chooser and narrow frame preserve content through fullscreen',
+    (tester) async {
+      tester.view.physicalSize = const Size(390, 800);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final runner = _Runner(tester);
+      final controller = DesktopTitleBarController(
+        platform: TargetPlatform.macOS,
+        web: false,
+      );
+      await tester.pumpWidget(_app(controller, integrated: false));
+      await tester.pumpAndSettle();
+      expect(runner.integrated, isTrue);
+      expect(tester.getTopLeft(find.byType(RaftBrandMark)).dx, 80);
+      expect(tester.getTopLeft(find.byKey(const Key('content'))).dy, 48);
+      final content = tester.element(find.byKey(const Key('content')));
+      await runner.fullscreen(true);
+      expect(tester.element(find.byKey(const Key('content'))), same(content));
+      expect(tester.getTopLeft(find.byKey(const Key('content'))).dy, 48);
+      expect(find.byType(RaftBrandMark), findsOneWidget);
+      await runner.fullscreen(false);
+      expect(tester.element(find.byKey(const Key('content'))), same(content));
+      expect(tester.takeException(), isNull);
+    },
+  );
 }

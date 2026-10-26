@@ -37,18 +37,23 @@ let window = NSWindow(contentRect: NSRect(x: 100, y: 100, width: 1000, height: 7
   styleMask: [.titled, .closable, .miniaturizable, .resizable], backing: .buffered, defer: false)
 window.isReleasedWhenClosed = false
 private let messenger = Messenger()
-let titlebar = RaftTitleBar(window: window, messenger: messenger)
+window.styleMask.insert(.fullSizeContentView)
 let standardCenter = window.contentView!.bounds.height - closeRect(window).midY
+let titlebar = RaftTitleBar(window: window, messenger: messenger)
+let boot = messenger.invoke("status") as? [String: Any]
+check(boot?["integrated"] as? Bool == true, "the native window must start with the 48pt frame before Dart or login is ready")
+check(abs(closeRect(window).minX - 16) < 0.01, "the first native frame must already use the reference left inset")
+check(abs(window.contentView!.bounds.height - closeRect(window).maxY - 17) < 0.01, "the first native frame must already use the reference top inset")
 
 let integrated = messenger.invoke("setIntegrated", ["enabled": true, "height": 48]) as? [String: Any]
 print("Native integrated geometry:", integrated ?? [:])
 check(integrated?["integrated"] as? Bool == true, "the runner must accept the integrated header")
 let zoom = window.standardWindowButton(.zoomButton)!
-let expectedInset = Double(zoom.convert(zoom.bounds, to: window.contentView).maxX + 14)
+let expectedInset = Double(zoom.convert(zoom.bounds, to: window.contentView).maxX + 4)
 check(integrated?["leadingInset"] as? Double == expectedInset, "the row must reserve the native controls plus their gutter")
 let rect = closeRect(window)
 check(abs(window.contentView!.bounds.height - rect.midY - 24) < 0.01, "traffic lights must centre on the 48pt row")
-check(abs(rect.minX - 14) < 0.01, "traffic lights must keep the desktop shell's 14pt edge inset")
+check(abs(rect.minX - 16) < 0.01, "traffic lights must keep the reference desktop shell's 16pt edge inset")
 check(window.standardWindowButton(.closeButton)?.target != nil, "standard controls must retain native targets")
 
 window.setContentSize(NSSize(width: 900, height: 600))
@@ -141,6 +146,6 @@ check(window.toolbar == nil, "leaving the workspace must remove the integration 
 check(abs(window.contentView!.bounds.height - closeRect(window).midY - standardCenter) < 0.01, "the original native button position must be restored")
 
 for failure in failures { print("FAIL: \(failure)") }
-print("Native integrated titlebar: 7 cases, \(failures.count) failed assertions")
+print("Native integrated titlebar: 8 cases, \(failures.count) failed assertions")
 withExtendedLifetime(titlebar) {}
 exit(failures.isEmpty ? 0 : 1)

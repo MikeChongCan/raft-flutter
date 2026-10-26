@@ -222,6 +222,9 @@ final class RaftTitleBar: NSObject {
     window.titleVisibility = .hidden
     window.titlebarAppearsTransparent = true
     window.styleMask.insert(.fullSizeContentView)
+    // Match the reference desktop frame before Flutter's first frame, including
+    // sign-in, workspace selection and narrow layouts.
+    setIntegrated(true, height: 48)
     pointerMonitor = NSEvent.addLocalMonitorForEvents(matching: [.leftMouseDown, .leftMouseUp]) {
       [weak self] event in
       self?.recordPointer(event)
@@ -284,7 +287,7 @@ final class RaftTitleBar: NSObject {
       "height": fullscreen || !height.isFinite || height < 0 ? 0 : Double(height),
       "fullscreen": fullscreen,
       "integrated": integratedHeight != nil,
-      "leadingInset": integratedHeight != nil && !fullscreen ? Double(trailingEdge + 14) : 0,
+      "leadingInset": integratedHeight != nil && !fullscreen ? Double(trailingEdge + 4) : 0,
     ]
   }
 
@@ -349,7 +352,7 @@ final class RaftTitleBar: NSObject {
     for (button, offset) in offsets {
       // The native view remains the clipping boundary. A very tall custom row
       // keeps the controls reachable instead of moving them outside that view.
-      let desired = parent.convert(NSPoint(x: 14 + offset,
+      let desired = parent.convert(NSPoint(x: 16 + offset,
         y: content.bounds.maxY - height / 2), from: content)
       let half = button.frame.height / 2
       let center = min(max(desired.y, parent.bounds.minY + half), parent.bounds.maxY - half)

@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_flutter/platform/desktop_title_bar.dart';
 import 'package:raft_ui/raft_ui.dart';
+
 import 'flutter_test_config.dart' show leakDebt;
 
 /// A runner stand-in on `app.raft/titlebar`: records what the app sends and
@@ -70,9 +71,7 @@ Widget _app(
 void main() {
   // Leak debt (other): see docs/development.md, Leak tracking.
   leakDebt(const ['ValueNotifier<DesktopTitleBarState>']);
-  testWidgets('macOS: strip at the reported height, content below it', (
-    tester,
-  ) async {
+  testWidgets('macOS: the standalone brand row stays 48px', (tester) async {
     final runner = _Runner(tester, height: 32);
     final controller = DesktopTitleBarController(
       platform: TargetPlatform.macOS,
@@ -81,13 +80,14 @@ void main() {
     await tester.pumpWidget(_app(controller));
     await tester.pump();
     expect(find.byType(RaftDesktopTitleStrip), findsOneWidget);
-    expect(tester.getSize(find.byType(RaftDesktopTitleStrip)).height, 32);
-    expect(tester.getRect(find.byKey(const Key('content'))).top, 32);
+    expect(tester.getSize(find.byType(RaftDesktopTitleStrip)).height, 48);
+    expect(tester.getRect(find.byKey(const Key('content'))).top, 48);
     expect(runner.named('status'), hasLength(1));
   });
 
-  testWidgets('macOS: fullscreen removes the strip, leaving fullscreen '
-      'brings it back', (tester) async {
+  testWidgets('macOS: fullscreen retains the standalone brand row', (
+    tester,
+  ) async {
     final runner = _Runner(tester);
     final controller = DesktopTitleBarController(
       platform: TargetPlatform.macOS,
@@ -96,13 +96,13 @@ void main() {
     await tester.pumpWidget(_app(controller));
     await tester.pump();
     expect(find.byType(RaftDesktopTitleStrip), findsOneWidget);
-    // The runner reports zero height and fullscreen together.
+    // Native controls hide, while the Flutter brand row remains.
     await runner.push(height: 0, fullscreen: true);
-    expect(find.byType(RaftDesktopTitleStrip), findsNothing);
-    expect(tester.getRect(find.byKey(const Key('content'))).top, 0);
-    // A stale height is not enough to draw an empty strip in fullscreen.
+    expect(find.byType(RaftDesktopTitleStrip), findsOneWidget);
+    expect(tester.getRect(find.byKey(const Key('content'))).top, 48);
+    // Native measurements do not change the reference frame height.
     await runner.push(height: 28, fullscreen: true);
-    expect(find.byType(RaftDesktopTitleStrip), findsNothing);
+    expect(find.byType(RaftDesktopTitleStrip), findsOneWidget);
     await runner.push(height: 28, fullscreen: false);
     expect(find.byType(RaftDesktopTitleStrip), findsOneWidget);
   });

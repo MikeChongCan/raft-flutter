@@ -27,6 +27,9 @@ enum RaftBrandMarkKind {
   /// public/brand/raft-logo.svg (RaftBrandLockup).
   logo(_raftLogo),
 
+  /// public/brand/raft-logo-mono-light.svg (desktop chrome on dark backgrounds).
+  logoMonoLight(_raftLogoMonoLight),
+
   /// src/assets/icons/provider_*.svg (SocialProviderButton, `size-5`).
   google(_providerGoogle),
   github(_providerGithub),

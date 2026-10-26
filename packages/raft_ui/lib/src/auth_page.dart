@@ -29,6 +29,28 @@ import 'tokens/tokens.dart' show RaftTypeScale;
 import 'theme.dart' hide RaftFieldRecipe;
 import 'recipe_surface.dart' show RaftCssBoxDecoration, RaftRecipeBinding;
 
+/// An enclosing desktop frame already provides the page's brand header.
+/// The shell retains its native-only server action in the page footer.
+class RaftAuthHeaderScope extends InheritedWidget {
+  const RaftAuthHeaderScope({
+    super.key,
+    required this.external,
+    required super.child,
+  });
+
+  final bool external;
+
+  static bool externalOf(BuildContext context) =>
+      context
+          .dependOnInheritedWidgetOfExactType<RaftAuthHeaderScope>()
+          ?.external ??
+      false;
+
+  @override
+  bool updateShouldNotify(RaftAuthHeaderScope oldWidget) =>
+      external != oldWidget.external;
+}
+
 /// RaftAuthShell (packages/web/src/components/brand/RaftAuthShell.tsx):
 /// `bg-layer-canvas font-display safe-top safe-bottom`, brand top bar, then
 /// `flex min-h-0 flex-1 items-center justify-center px-5 pb-10 pt-10`, content
@@ -66,6 +88,7 @@ class RaftAuthShell extends StatelessWidget {
     final t = RaftTokens.of(context);
     final safe = MediaQuery.paddingOf(context);
     final keyboard = MediaQuery.viewInsetsOf(context).bottom;
+    final externalHeader = RaftAuthHeaderScope.externalOf(context);
     final wide = MediaQuery.sizeOf(context).width >= 640; // Tailwind `sm`
     final content = Padding(
       padding:
@@ -108,15 +131,17 @@ class RaftAuthShell extends StatelessWidget {
                 return Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [bar, content],
+                  children: [if (!externalHeader) bar, content],
                 );
               }
-              final barHeight = RaftAuthTopBar.heightFor(t);
+              final barHeight = externalHeader
+                  ? 0.0
+                  : RaftAuthTopBar.heightFor(t);
               return RaftKeyboardScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    bar,
+                    if (!externalHeader) bar,
                     // `flex-1 items-center justify-center` under `min-h-full`.
                     ConstrainedBox(
                       constraints: BoxConstraints(
@@ -136,7 +161,8 @@ class RaftAuthShell extends StatelessWidget {
       ),
     );
     // The status bar shows the brand bar's colour, not the page canvas.
-    if (overlayLink == null) {
+    final footerServer = externalHeader && server != null;
+    if (overlayLink == null && !footerServer) {
       return RaftStatusBarHost(fallback: t.canvas, child: page);
     }
     return RaftStatusBarHost(
@@ -145,12 +171,31 @@ class RaftAuthShell extends StatelessWidget {
       child: Stack(
         children: [
           Positioned.fill(child: page),
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: safe.bottom + 24,
-            child: Center(child: overlayLink),
-          ),
+          if (overlayLink != null)
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: safe.bottom + 24,
+              child: Center(child: overlayLink),
+            ),
+          if (footerServer)
+            Positioned(
+              right: 24,
+              bottom: safe.bottom + (overlayLink == null ? 24 : 64),
+              child: Semantics(
+                button: true,
+                enabled: onServer != null,
+                onTap: onServer,
+                excludeSemantics: true,
+                label: '${raftText(context, 'Server URL')}: $server',
+                child: RaftAuthTextLink(
+                  key: const Key('login-server'),
+                  label: server!,
+                  onTap: onServer,
+                  small: true,
+                ),
+              ),
+            ),
         ],
       ),
     );

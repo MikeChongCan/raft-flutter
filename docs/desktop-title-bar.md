@@ -9,9 +9,16 @@ integratedHeight: 48)` removes the former empty strip; fullscreen releases the
 traffic-light inset while retaining the shared toolbar. The shared composition
 must explicitly enable this mode while its toolbar is present.
 
-Outside the workspace, the earlier "D simplified" strip remains: the native
-title bar keeps its height and is painted in the nav rail's colours with a
-bottom rule and no app controls.
+On macOS, sign-in, workspace selection and narrow windows keep a 48 pt brand
+row, including in fullscreen. The native traffic lights start at x=16, y=17
+with the system's 23 pt spacing, matching Raft Desktop 1.21.33. Content begins
+at x=80. The host configures this frame before Flutter starts. Auth pages use
+`RaftAuthHeaderScope` to omit their second brand header; their native-only
+server URL action remains available in the page footer.
+
+The reference desktop app limits windows to 960 pt; Flutter continues to
+support narrower layouts with the same window frame. Window double-clicks
+continue to follow the user's macOS Zoom/Fill/Minimize/None preference.
 
 | Theme | Strip | Rule |
 |---|---|---|
@@ -45,8 +52,8 @@ returns its current state. State adds `integrated` and `leadingInset`; the
 latter is the native buttons' actual trailing edge plus their gutter, not a
 fixed width. The host temporarily installs a transparent compact toolbar so
 the original AppKit buttons fit in the shared row, retaining their native
-targets and accessibility. Disabling integration restores the previous
-toolbar and button placement. Only empty regions forward drag or double-click;
+targets and accessibility. The Mac Dart host keeps native integration enabled on every page. The shared
+row replaces the standalone branding while a workspace toolbar is present. Only empty regions forward drag or double-click;
 the shared row's buttons must handle their own pointer events.
 
 Phones and foldables are untouched: the status-bar mechanism
@@ -60,8 +67,8 @@ strip colour is the rail's constant, not the header currently under it.
 `macos/Runner/MainFlutterWindow.swift`: `RaftTitleBar` sets
 `titlebarAppearsTransparent`, `titleVisibility = .hidden` and
 `.fullSizeContentView`, so Flutter fills the window and the traffic lights stay
-where the system puts them in standalone mode. Integrated mode centres them
-on the shared row instead. It reports
+at the same 16/17 inset on every page. The 48 pt shared or standalone row
+occupies that area. It reports
 `height = contentView.height - contentLayoutRect.height` (zero in fullscreen)
 and `fullscreen`, pushed on resize and on will/did enter/exit fullscreen. The
 Dart strip is the drag area: pan start calls `performDrag(with:)` with the
@@ -69,15 +76,15 @@ current event; a double tap applies the system's `AppleActionOnDoubleClick`
 (Maximize/zoom by default, Minimize, None, and macOS 15's Fill, which fills
 the screen's usable area and restores on a second double-click; before macOS
 15 only the `AppleMiniaturizeOnDoubleClick` bool exists). `setStyle` also sets
-`window.backgroundColor` so a resize shows the strip colour. No new file in the
-Xcode project and no toolbar (RemoteSurface adds an NSToolbar for a 52 pt row;
-the approved design keeps the standard bar height).
+`window.backgroundColor` so a resize shows the strip colour. The transparent compact toolbar only sizes the native control container; it
+is hidden before entering fullscreen so it cannot obscure Flutter content.
 
 ### Shared global actions
 
 Wide native desktop workspaces mount the 48 px shared toolbar for every theme.
-The host enables integrated mode only while that row is visible, so resizing to
-phone width or leaving the workspace restores standalone window chrome. Browser
+The shared row is mounted while a workspace and desktop layout are available.
+On Mac, a standalone brand row keeps the same 48 pt frame at other widths
+or outside the workspace. Browser
 visibility still follows `shell.browserTopBar`; the native navigation entry
 points are a host feature rather than a theme choice.
 

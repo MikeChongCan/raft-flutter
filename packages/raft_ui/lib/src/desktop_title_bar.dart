@@ -37,6 +37,7 @@ class RaftDesktopTitleStrip extends StatelessWidget {
   const RaftDesktopTitleStrip({
     super.key,
     required this.height,
+    this.title,
     this.onDragStart,
     this.onDoubleTap,
   });
@@ -44,6 +45,9 @@ class RaftDesktopTitleStrip extends StatelessWidget {
   /// The whole strip, rule included: the system title bar's height, or just
   /// [RaftTitleBarRecipe.ruleWidth] below an independently drawn native bar.
   final double height;
+
+  /// Optional noninteractive branding in the otherwise draggable strip.
+  final Widget? title;
 
   /// Begin moving the window; the press that started the move is the pointer
   /// event being handled.
@@ -66,6 +70,7 @@ class RaftDesktopTitleStrip extends StatelessWidget {
           onDoubleTap: onDoubleTap,
           child: DecoratedBox(
             key: const Key('desktop-title-strip'),
+            child: title,
             decoration: BoxDecoration(
               color: recipe.background,
               border: Border(
@@ -92,12 +97,16 @@ class RaftDesktopTitleBar extends StatelessWidget {
     super.key,
     required this.height,
     required this.child,
+    this.title,
     this.fullscreen = false,
     this.onDragStart,
     this.onDoubleTap,
   });
 
   final double height;
+
+  /// Optional noninteractive branding in the otherwise draggable strip.
+  final Widget? title;
   final bool fullscreen;
   final VoidCallback? onDragStart;
   final VoidCallback? onDoubleTap;
@@ -113,6 +122,7 @@ class RaftDesktopTitleBar extends StatelessWidget {
       children: [
         RaftDesktopTitleStrip(
           height: height,
+          title: title,
           onDragStart: onDragStart,
           onDoubleTap: onDoubleTap,
         ),

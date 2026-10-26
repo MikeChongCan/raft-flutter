@@ -14,6 +14,7 @@ web = pathlib.Path(os.environ.get(
 marks = [
     ('raftIcon', web / 'public/brand/raft-icon.svg'),
     ('raftLogo', web / 'public/brand/raft-logo.svg'),
+    ('raftLogoMonoLight', web / 'public/brand/raft-logo-mono-light.svg'),
     ('providerGoogle', web / 'src/assets/icons/provider_google.svg'),
     ('providerGithub', web / 'src/assets/icons/provider_github.svg'),
     ('providerApple', web / 'src/assets/icons/provider_apple.svg'),
@@ -32,7 +33,7 @@ for name, path in marks:
         attrs = m.group(1)
         d = re.search(r'\bd=["\']([^"\']*)["\']', attrs).group(1)
         fill = re.search(r'\bfill=["\']([^"\']*)["\']', attrs).group(1)
-        fill = {'black': '#000000'}.get(fill, fill)
+        fill = {'black': '#000000', 'white': '#ffffff'}.get(fill, fill)
         out.append(f"    (0xFF{fill[1:].upper()}, '{d}'),")
     out.append('  ],')
     out.append(');')
