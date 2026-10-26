@@ -202,7 +202,11 @@ void main() {
         await tester.pump(const Duration(milliseconds: 100));
         // variant=accent (pink sticker) hover: one sticker-pressed overlay over the resting fill.
         final hovered = buttonDecoration(tester, target);
-        expect(hovered.color, raftChromeBlend(ui.stickerPressed, ui.attention));
+        // CSS compositing retains channel precision until the final pixel.
+        expect(
+          hovered.color!.toARGB32(),
+          raftChromeBlend(ui.stickerPressed, ui.attention).toARGB32(),
+        );
         final gesture = await tester.startGesture(tester.getCenter(target));
         await tester.pump();
         // Press feedback is the overlay only: no scale, no translation.

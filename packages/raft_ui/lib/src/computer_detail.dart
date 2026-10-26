@@ -381,7 +381,7 @@ Widget _actionButton(
       glyph: glyph,
       glyphSize: sourceSize ? null : 14,
       variant: current ? raftVariant ?? variant : variant,
-      size: sourceSize ? raftSize! : RaftButtonRecipeSize.sm,
+      size: sourceSize ? raftSize : RaftButtonRecipeSize.sm,
       padding: sourceSize
           ? null
           : EdgeInsets.symmetric(horizontal: horizontal, vertical: 8),
