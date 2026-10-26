@@ -170,13 +170,10 @@ void main() {
       ),
     );
     await _pump(t, input());
-    expect(
-      t.getSize(find.byKey(const ValueKey('area'))).height,
-      96 - 0,
-      skip: false,
-    );
+    // The textarea recipe's `min-h-24` box.
+    expect(t.getSize(find.byType(RaftTextarea)).height, 96);
     await _pump(t, input(), scale: 2.0);
-    final field = t.getSize(find.byType(RaftFieldSurface));
+    final field = t.getSize(find.byType(RaftTextarea));
     expect(field.height, greaterThan(96));
 
     expect(_truncated(t), isEmpty);

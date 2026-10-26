@@ -149,6 +149,7 @@ class RaftField extends StatelessWidget {
     final base = DefaultTextStyle.of(context).style;
     final labelStyle = f.label.text(rt, base: base);
     final labelText = Text.rich(
+      style: labelStyle,
       raftLabelSpan(
         context,
         text: label,
@@ -205,6 +206,32 @@ class RaftField extends StatelessWidget {
       children: [
         if (labelAccessory == null && labelAction == null)
           labelText
+        else if (reserveMessage && labelAccessory != null)
+          // StableField: the accessory sits at the end of the label row without making the row taller than its
+          // label (the pack's `space.fieldLabelAccessoryOutset` is how far it pokes out above and below).
+          Row(
+            spacing: _tw * 2,
+            children: [
+              Flexible(child: labelText),
+              const Spacer(),
+              SizedBox(
+                height:
+                    (_tw * 8 -
+                            2 *
+                                t.size(
+                                  'space.fieldLabelAccessoryOutset',
+                                  fallback: 0,
+                                ))
+                        .clamp(0, double.infinity),
+                child: OverflowBox(
+                  fit: OverflowBoxFit.deferToChild,
+                  minHeight: 0,
+                  maxHeight: double.infinity,
+                  child: labelAccessory!,
+                ),
+              ),
+            ],
+          )
         else
           Row(
             spacing: _tw,
@@ -391,10 +418,21 @@ class _RaftTextInputState extends State<RaftTextInput>
     super.initState();
     // Programmatic focus (autofocus) places the caret at the end without the
     // touch selection handles, like a focused Web input.
-    if (!controller.selection.isValid) {
-      controller.selection = TextSelection.collapsed(
-        offset: controller.text.length,
-      );
+    void caretToEnd() {
+      if (!controller.selection.isValid) {
+        controller.selection = TextSelection.collapsed(
+          offset: controller.text.length,
+        );
+      }
+    }
+
+    if (widget.controller == null) {
+      caretToEnd();
+    } else {
+      // A caller's controller may have listeners that rebuild: not while this widget is being built.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) caretToEnd();
+      });
     }
   }
 
@@ -479,7 +517,6 @@ class _RaftTextInputState extends State<RaftTextInput>
         ],
       );
     }
-    final content = s.padding.vertical == 0 || widget.padding != null;
     final box = RaftRecipeBox(
       // A callsite padding lets the height follow the content (`h-11` is not applied there).
       style: widget.padding == null
@@ -488,11 +525,16 @@ class _RaftTextInputState extends State<RaftTextInput>
       tokens: rt,
       applyText: false,
       growWithText: true,
+      applyOpacity: false,
       height: widget.height,
       padding: widget.padding,
       decorationOverride: (d) => raftSnapBorder(context, d),
-      alignment: content ? Alignment.centerLeft : null,
-      child: SizedBox(width: double.infinity, child: field),
+      // An `<input>` centres its line in a box taller than the line; with no height of its own the box follows it.
+      child: Align(
+        alignment: Alignment.centerLeft,
+        heightFactor: 1,
+        child: SizedBox(width: double.infinity, child: field),
+      ),
     );
     return Semantics(label: widget.semanticLabel, child: hoverRegion(box));
   }
@@ -649,6 +691,7 @@ class RaftTextarea extends StatefulWidget {
     this.textStep,
     this.lineHeight,
     this.minHeight,
+    this.growsWithScale = false,
     this.legacy = RaftLegacyInput.field,
   });
 
@@ -671,6 +714,10 @@ class RaftTextarea extends StatefulWidget {
 
   /// Callsite `min-h-*`: the box grows with its text from this height instead of holding [rows].
   final double? minHeight;
+
+  /// Above the default text size the rows are a minimum and the box grows with its text, instead of holding a
+  /// bounded height (a dialog's description field).
+  final bool growsWithScale;
 
   /// How the frozen Elegant and Brutal looks paint this textarea.
   final RaftLegacyInput legacy;
@@ -729,8 +776,10 @@ class _RaftTextareaState extends State<RaftTextarea>
       ),
       tokens: rt,
     ).root;
-    final grows = widget.minHeight != null;
-    if (grows) {
+    // Above the default text size the rows are a minimum (`min-h-*`): the box grows with the text it holds.
+    final scaled = widget.growsWithScale && RaftScaled.grows(context);
+    final grows = widget.minHeight != null || scaled;
+    if (widget.minHeight != null) {
       s = s.copyWith(
         properties: {
           ...s.properties,
@@ -779,7 +828,9 @@ class _RaftTextareaState extends State<RaftTextarea>
             enabled: widget.enabled,
             autofocus: widget.autofocus,
             onChanged: widget.onChanged,
-            minLines: grows ? 1 : null,
+            minLines: widget.minHeight != null
+                ? 1
+                : (scaled ? widget.rows : null),
             maxLines: null,
             expands: !grows,
             textAlignVertical: TextAlignVertical.top,

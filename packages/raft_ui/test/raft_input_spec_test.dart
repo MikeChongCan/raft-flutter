@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_ui/raft_ui.dart';
 import 'package:raft_ui/test_themes.dart';
 
-// raft-ui 0.7.1 `Input`: 44px, `px-3`, 16/24 field text, `rounded-control border-[1.5px] border-line-strong
+// raft-ui 0.7.0 `Input`: 44px, `px-3`, 16/24 field text, `rounded-control border-[1.5px] border-line-strong
 // bg-layer-card`, invalid `border-danger-strong`, `focus:shadow-focus`, disabled `fill-muted` / `line-hairline`.
 Widget _app(bool dark, Widget child, {double width = 358}) => MaterialApp(
   theme: raftTheme(dark: dark),
@@ -15,12 +15,29 @@ Widget _app(bool dark, Widget child, {double width = 358}) => MaterialApp(
   ),
 );
 
-RaftCssBox _box(WidgetTester tester) => tester.widget<RaftCssBox>(
-  find.descendant(
-    of: find.byType(RaftTextInput),
-    matching: find.byType(RaftCssBox),
-  ),
+/// The painted box of the input: its decoration, its content padding and the outer (focus ring) shadows.
+Container _container(WidgetTester tester) => tester.widget<Container>(
+  find
+      .descendant(
+        of: find.byType(RaftTextInput),
+        matching: find.byType(Container),
+      )
+      .first,
 );
+
+BoxDecoration _decoration(WidgetTester tester) =>
+    _container(tester).decoration! as BoxDecoration;
+
+List<BoxShadow> _rings(WidgetTester tester) => [
+  for (final paint in tester.widgetList<CustomPaint>(
+    find.descendant(
+      of: find.byType(RaftTextInput),
+      matching: find.byType(CustomPaint),
+    ),
+  ))
+    if (paint.painter is RaftOuterShadowPainter)
+      ...(paint.painter! as RaftOuterShadowPainter).shadows,
+];
 
 void main() {
   for (final dark in raftThemeMatrix([false, true])) {
@@ -34,12 +51,21 @@ void main() {
           _app(dark, const RaftTextInput(hintText: 'you@example.com')),
         );
         expect(tester.getSize(find.byType(RaftTextInput)), const Size(358, 44));
-        final box = _box(tester);
-        expect(box.radius, 8);
-        expect(box.padding, const EdgeInsets.symmetric(horizontal: 12));
-        expect(box.fill, ui.layerCard);
-        expect(box.borderColor, ui.lineStrong);
-        expect(box.rings, isEmpty);
+        final decoration = _decoration(tester);
+        expect(decoration.borderRadius, BorderRadius.circular(8));
+        expect(
+          _container(tester).padding,
+          const EdgeInsets.symmetric(horizontal: 12),
+        );
+        expect(decoration.color, ui.layerCard);
+        final border = decoration.border! as Border;
+        expect(border.top.color, ui.lineStrong);
+        // `border-[1.5px]` floors to whole device pixels like the other controls.
+        expect(
+          border.top.width,
+          raftControlBorderPx(tester.element(find.byType(RaftTextInput)), 1.5),
+        );
+        expect(_rings(tester), isEmpty);
         expect(find.byType(Opacity), findsNothing);
         final field = tester.widget<TextField>(find.byType(TextField));
         expect(field.style!.fontSize, 16);
@@ -78,8 +104,11 @@ void main() {
           const RaftTextInput(initialValue: 'not-an-email', invalid: true),
         ),
       );
-      expect(_box(tester).borderColor, ui['danger-strong']);
-      expect(_box(tester).fill, ui.layerCard);
+      expect(
+        (_decoration(tester).border! as Border).top.color,
+        ui['danger-strong'],
+      );
+      expect(_decoration(tester).color, ui.layerCard);
     });
 
     testWidgets(
@@ -95,10 +124,10 @@ void main() {
             ),
           ),
         );
-        final box = _box(tester);
-        expect(box.fill, ui.fillMuted);
-        expect(box.borderColor, raftChromeBlend(ui.lineHairline, ui.fillMuted));
-        final ink = raftChromeBlend(ui.foregroundDisabled, ui.fillMuted);
+        final box = _decoration(tester);
+        expect(box.color, ui.fillMuted);
+        expect((box.border! as Border).top.color, ui.lineHairline);
+        final ink = ui.foregroundDisabled;
         expect(
           tester.widget<TextField>(find.byType(TextField)).style!.color,
           ink,
@@ -124,13 +153,17 @@ void main() {
         await tester.pumpWidget(
           _app(dark, RaftTextInput(onChanged: changes.add)),
         );
-        expect(_box(tester).rings, isEmpty);
+        expect(_rings(tester), isEmpty);
         await tester.tap(find.byType(TextField));
         await tester.pump();
-        expect(_box(tester).rings, [
-          for (final layer in ui.focusRing.layers)
-            RaftRing(layer.spread, layer.color),
-        ]);
+        expect(
+          [for (final ring in _rings(tester)) (ring.spreadRadius, ring.color)],
+          [
+            // CSS lists the top layer first; Flutter paints the first shadow underneath.
+            for (final layer in ui.focusRing.layers.reversed)
+              (layer.spread, layer.color),
+          ],
+        );
         await tester.enterText(find.byType(TextField), 'hello');
         expect(changes, ['hello']);
         expect(

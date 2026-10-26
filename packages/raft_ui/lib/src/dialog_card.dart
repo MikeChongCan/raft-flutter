@@ -1189,6 +1189,7 @@ class RaftDialogTextInput extends StatelessWidget {
             readOnly: readOnly,
             mono: mono,
             textStep: mono ? RaftTextSteps.xs : null,
+            growsWithScale: true,
             legacy: RaftLegacyInput.dialog,
           )
         : RaftTextInput(

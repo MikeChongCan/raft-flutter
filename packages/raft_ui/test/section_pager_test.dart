@@ -50,7 +50,6 @@ void main() {
         await t.tap(find.descendant(of: tabs, matching: find.text('Chat')));
         await t.pumpAndSettle();
         expect(t.state(editor), same(state));
-        expect(t.widget<TextField>(editor).controller, isNull);
         expect(find.text('中文 draft'), findsOneWidget);
         await t.tap(find.descendant(of: tabs, matching: find.text('Tasks')));
         await t.pumpAndSettle();

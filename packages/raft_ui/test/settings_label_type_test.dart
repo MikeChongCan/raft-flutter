@@ -20,8 +20,13 @@ Widget _host(RaftThemePack pack) => MaterialApp(
   ),
 );
 
-TextStyle _style(WidgetTester t, String text) =>
-    t.widget<Text>(find.text(text)).style!;
+/// The style a text paints with (a field label is a rich text: its span carries the style).
+TextStyle _style(WidgetTester t, String text) {
+  final finder = find.text(text, findRichText: true);
+  final rich = t.widgetList(finder).first;
+  if (rich is Text) return rich.style ?? rich.textSpan!.style!;
+  return (rich as RichText).text.style!;
+}
 
 void main() {
   for (final (id, size, line, weight) in [

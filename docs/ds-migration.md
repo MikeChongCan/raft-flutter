@@ -72,7 +72,7 @@ constants in feature files.
 | `bypass.list_tile` | `ListTile`, `ExpansionTile`, `CupertinoListTile` | `RaftListRow` |
 | `bypass.progress` / `bypass.refresh` | `CircularProgressIndicator`, `LinearProgressIndicator`, `CupertinoActivityIndicator` / `RefreshIndicator` | `RaftSpinner`, `RaftProgressBar` / `RaftPullToRefresh` |
 | `bypass.divider` | `Divider`, `VerticalDivider` | the Raft separator recipe, `RaftMenuEntry.separator()` |
-| `bypass.text_field` | `TextField`, `TextFormField`, `EditableText`, `CupertinoTextField`, `SearchBar` | `RaftTextInput`, `RaftTextarea`, `RaftPrefixedInput`, `RaftSlugInput`, `RaftDialogTextInput` |
+| `bypass.text_field` | `TextField`, `TextFormField`, `EditableText`, `CupertinoTextField`, `SearchBar` | `RaftTextInput`, `RaftTextarea`, `RaftInputGroup` (`RaftPrefixedInput`, `RaftSlugInput`, `RaftSearchInput`), `RaftBareInput` for the text inside another component's chrome; a text field of a composer stays `TextField` until the Composer family |
 | `bypass.picker` | `showDatePicker`, `showTimePicker`, `showDateRangePicker`, date/time picker widgets | no Raft date picker yet |
 | `bypass.snackbar` | `SnackBar`, `MaterialBanner`, `showSnackBar`, `showMaterialBanner` | `showRaftToast` / `RaftToast` |
 | `bypass.overlay` | `OverlayEntry`, `OverlayPortal` (hand-built popovers) | `RaftAnchoredPopup`, `RaftPopoverSurface`, `showRaftToast` |

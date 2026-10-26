@@ -9,7 +9,7 @@ import 'theme.dart';
 /// Tailwind `ml-1`: the markers sit one spacing step after the label text.
 const double _ml1 = 4;
 
-/// The label text of a `Label` / `FieldLabel`: [text], then the `LabelAsterisk` (required) or the
+/// The label text of a `Label` / `FieldLabel` (set it in [style] on the `Text.rich`): [text], then the `LabelAsterisk` (required) or the
 /// `LabelOptional` marker, each after `ml-1`, in the `label` recipe's `asterisk` / `sub` slots.
 TextSpan raftLabelSpan(
   BuildContext context, {
@@ -23,12 +23,14 @@ TextSpan raftLabelSpan(
   bool disabled = false,
 }) {
   return TextSpan(
-    style: style,
     children: [
       TextSpan(text: raftText(context, text)),
       if (required) ...[
         WidgetSpan(child: SizedBox(width: _ml1)),
-        TextSpan(text: '*', style: recipe.asterisk.text(tokens, base: style)),
+        TextSpan(
+          text: '*',
+          style: recipe.asterisk.text(tokens, base: style),
+        ),
       ],
       if (optional) ...[
         WidgetSpan(child: SizedBox(width: _ml1)),
@@ -74,6 +76,7 @@ class RaftLabel extends StatelessWidget {
       base: DefaultTextStyle.of(context).style,
     );
     return Text.rich(
+      style: style,
       raftLabelSpan(
         context,
         text: text,
