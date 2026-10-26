@@ -376,14 +376,12 @@ class _DesktopTitleBarState extends State<DesktopTitleBar> {
               : Padding(
                   // ds-allow: measured native traffic-light geometry, not theme spacing.
                   padding: const EdgeInsets.only(
-                    left: DesktopTitleBarController.macosControlsInset,
+                    left: DesktopTitleBarController.macosControlsInset + 2,
                   ),
                   child: Align(
                     alignment: Alignment.centerLeft,
-                    child: RaftBrandMark(
-                      RaftTokens.of(context).dark
-                          ? RaftBrandMarkKind.logoMonoLight
-                          : RaftBrandMarkKind.logo,
+                    child: const RaftBrandMark(
+                      RaftBrandMarkKind.logo,
                       height: 20,
                     ),
                   ),

@@ -207,7 +207,7 @@ void main() {
       await tester.pumpWidget(_app(controller, integrated: false));
       await tester.pumpAndSettle();
       expect(runner.integrated, isTrue);
-      expect(tester.getTopLeft(find.byType(RaftBrandMark)).dx, 80);
+      expect(tester.getTopLeft(find.byType(RaftBrandMark)).dx, 82);
       expect(tester.getTopLeft(find.byKey(const Key('content'))).dy, 48);
       final content = tester.element(find.byKey(const Key('content')));
       await runner.fullscreen(true);

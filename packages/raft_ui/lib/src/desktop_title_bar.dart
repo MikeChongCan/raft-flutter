@@ -70,7 +70,12 @@ class RaftDesktopTitleStrip extends StatelessWidget {
           onDoubleTap: onDoubleTap,
           child: DecoratedBox(
             key: const Key('desktop-title-strip'),
-            child: title,
+            child: title == null
+                ? null
+                : Padding(
+                    padding: EdgeInsets.only(bottom: recipe.ruleWidth),
+                    child: title,
+                  ),
             decoration: BoxDecoration(
               color: recipe.background,
               border: Border(
