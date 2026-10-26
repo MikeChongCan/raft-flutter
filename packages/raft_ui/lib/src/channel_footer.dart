@@ -14,6 +14,7 @@ import 'icons.dart';
 import 'localization.dart';
 import 'recipes/button_variants.g.dart'
     show RaftButtonRecipeVariant, RaftButtonRecipeSize;
+import 'recipes/recipe_runtime.dart' show RaftRecipeSet;
 import 'theme.dart';
 
 /// `border-t border-line-muted bg-layer-panel` / brutal `border-t-2 border-black bg-white`.
@@ -77,8 +78,10 @@ class RaftChannelBannerFooter extends StatelessWidget {
   }
 }
 
-/// `This channel is archived.` + `Unarchive` on `bg-warning-soft` /
-/// brutal `bg-brutal-orange/20`.
+/// `This channel is archived.` + `Unarchive`. The Raft look is the Web's
+/// `<Banner status="warning" className="justify-center text-center font-bold">`
+/// in a `p-3` host ([RaftChannelBannerFooter]); the frozen looks keep their
+/// `bg-warning-soft` / brutal `bg-brutal-orange/20` strip.
 class RaftChannelArchivedFooter extends StatelessWidget {
   const RaftChannelArchivedFooter({
     super.key,
@@ -93,6 +96,14 @@ class RaftChannelArchivedFooter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
+    if (t.recipeSet == RaftRecipeSet.raft) {
+      return RaftChannelBannerFooter(
+        key: const ValueKey('channel-archived-footer'),
+        message: message,
+        linkLabel: linkLabel,
+        onLink: onLink,
+      );
+    }
     final color = t.colors['warning-strong'];
     final text = RaftTypography.heading(t, size: 14, line: 20, color: color);
     return Container(

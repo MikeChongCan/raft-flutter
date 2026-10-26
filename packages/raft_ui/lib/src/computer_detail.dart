@@ -14,6 +14,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../raft_ui.dart';
+import 'recipes/recipe_runtime.dart' show RaftRecipeSet;
 
 // ------------------------------------------------------------------- data
 
@@ -818,11 +819,86 @@ class _RaftComputerDetailViewState extends State<RaftComputerDetailView> {
     ),
   );
 
+  /// raft-ui look of the identity block (MachineDetailPanel): `flex items-start
+  /// gap-4 px-5 py-5`, a neutral `IconTile size="lg"`, the PanelTitle, a soft
+  /// status `Badge` (square `Status` + one word) and the hostname in
+  /// `text-mono-meta text-foreground-hint`.
+  Widget _identityRaft(RaftTokens t) {
+    final tone = online
+        ? RaftStatusVariant.success
+        : upgrading
+        ? RaftStatusVariant.primary
+        : RaftStatusVariant.default_;
+    return _rule(
+      t,
+      key: const ValueKey('computer-section-identity'),
+      top: false,
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const RaftIconTile(
+              glyph: RaftGlyph.monitor,
+              size: RaftIconTileSize.lg,
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 4,
+                children: [
+                  RaftCssText(
+                    '${d.name}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: raftPanelTitleStyle(t),
+                  ),
+                  RaftBadge(
+                    label: raftText(
+                      context,
+                      online
+                          ? 'Connected'
+                          : upgrading
+                          ? 'Upgrading…'
+                          : 'Offline',
+                    ),
+                    appearance: RaftBadgeRecipeAppearance.soft,
+                    variant: switch (tone) {
+                      RaftStatusVariant.success =>
+                        RaftBadgeRecipeVariant.success,
+                      RaftStatusVariant.primary =>
+                        RaftBadgeRecipeVariant.primary,
+                      _ => RaftBadgeRecipeVariant.muted,
+                    },
+                    leading: RaftStatus(variant: tone),
+                  ),
+                  if ((d.hostname ?? '').isNotEmpty)
+                    Text(
+                      d.hostname!,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: t.scale(
+                        RaftTypeScale.monoMeta,
+                        mono: true,
+                        color: t.ui.foregroundHint,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   /// `flex items-start gap-4 px-5 py-5 border-b`: Card size-16 + Monitor 28,
   /// name (`text-lg font-bold leading-tight`), status (StatusDot + `text-sm
   /// font-mono` muted/60), hostname (`text-sm font-mono` muted/50).
   Widget _identity(RaftTokens t) {
     final ink = _Ink(t);
+    if (t.recipeSet == RaftRecipeSet.raft) return _identityRaft(t);
     return _rule(
       t,
       key: const ValueKey('computer-section-identity'),

@@ -56,7 +56,7 @@ class _RaftCopyableCodeState extends State<RaftCopyableCode> {
 
   /// raft-ui 0.7 `CopyableCode`: the recipe's code box (13/20 Space Mono, 9 x 12
   /// padding, 40px high, `layer-code` with a hairline and radius 8) and a ghost
-  /// `icon-md` action holding a 12px copy mark that becomes a check.
+  /// `icon-md` action holding the 16px copy mark (the recipe's `iconSwap`) that becomes a check.
   Widget _raft(
     RaftTokens t,
     RaftTokenResolver rt,
@@ -79,7 +79,7 @@ class _RaftCopyableCodeState extends State<RaftCopyableCode> {
           uiVariant: RaftButtonVariant.ghost,
           uiSize: RaftButtonSize.iconMd,
           glyph: copied ? RaftGlyph.check : RaftGlyph.copy,
-          glyphSize: 12,
+          glyphSize: 16,
           tooltip: widget.copyLabel,
           onPressed: copy,
         ),

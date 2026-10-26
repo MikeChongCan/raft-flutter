@@ -11,7 +11,7 @@ import 'design_primitives.dart' hide RaftPanelHeaderRecipe;
 import 'error_presentation.dart' show RaftErrorBanner;
 import 'icons.dart';
 import 'localization.dart';
-import 'indicators.dart' show RaftSkeletonRow;
+import 'indicators.dart' show RaftBadge, RaftSkeletonRow;
 import 'panel_layout.dart' show raftRecipeTheme, RaftCssText;
 import 'recipe_surface.dart' show raftCssText, RaftCssOverflowY, RaftRecipeBox;
 import 'recipes/badge.g.dart';
@@ -84,6 +84,18 @@ class RaftRuntimeChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
+    // The Web draws the runtime tags with raft-ui's Badge: soft information
+    // when detected, soft muted when not.
+    if (t.recipeSet == RaftRecipeSet.raft) {
+      return RaftBadge(
+        label: label,
+        appearance: RaftBadgeRecipeAppearance.soft,
+        variant: detected
+            ? RaftBadgeRecipeVariant.information
+            : RaftBadgeRecipeVariant.muted,
+        trailing: trailing,
+      );
+    }
     final rt = RaftRecipeTokens(t);
     final s = RaftBadgeRecipe.resolve(
       theme: raftRecipeTheme(t),

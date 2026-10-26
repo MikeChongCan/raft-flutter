@@ -58,15 +58,17 @@ void main() {
     );
 
     testWidgets(
-      'reduced motion slows the sweep to 2.4s, it still runs (dark=$dark)',
+      'reduced motion rests the stripe at its half-width base (dark=$dark)',
       (tester) async {
         await tester.pumpWidget(
           host(raftTheme(dark: dark), const RaftProgressBar(), reduced: true),
         );
         await tester.pump(const Duration(milliseconds: 1200));
-        final (x, s) = sweep(tester);
-        expect(x, closeTo(70, 1e-6), reason: '50% of 2.4s');
-        expect(s, closeTo(.6, 1e-6));
+        expect(
+          find.byKey(const ValueKey('progress-indeterminate-shift')),
+          findsNothing,
+        );
+        expect(tester.hasRunningAnimations, isFalse);
       },
     );
 

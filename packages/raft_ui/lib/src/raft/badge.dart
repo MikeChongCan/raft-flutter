@@ -122,6 +122,7 @@ class RaftBadge extends StatelessWidget {
     this.appearance = RaftBadgeRecipeAppearance.solid,
     this.variant = RaftBadgeRecipeVariant.default_,
     this.leading,
+    this.trailing,
     this.glyph,
     this.onPressed,
     this.disabled = false,
@@ -136,6 +137,9 @@ class RaftBadge extends StatelessWidget {
   final RaftBadgeRecipeAppearance appearance;
   final RaftBadgeRecipeVariant variant;
   final Widget? leading;
+
+  /// Inline content after the label (a runtime's usage-health [RaftStatus]).
+  final Widget? trailing;
 
   /// A Lucide glyph before the label (`[&_svg]:size-3.5`, 13px in the solid appearance).
   final RaftGlyph? glyph;
@@ -232,6 +236,7 @@ class RaftBadge extends StatelessWidget {
             ),
           ),
         ),
+      if (trailing != null) trailing!,
     ];
     final row = Row(
       mainAxisSize: MainAxisSize.min,

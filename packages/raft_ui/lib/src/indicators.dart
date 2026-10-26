@@ -137,7 +137,9 @@ class RaftCheckbox extends StatelessWidget {
 /// text-foreground-muted theme-brutal:text-black/60`) and the recipe track +
 /// indicator. Indeterminate ([value] null) renders the `w-1/2` stripe; in the
 /// Raft look it runs raft-ui's `raft-progress-indeterminate` sweep (1.4s,
-/// `ease-in-out`; 2.4s with reduced motion, as `progress.tsx` slows it). The
+/// `ease-in-out`). With the system's reduced-motion setting the stripe rests at
+/// the start of the sweep like every other loop in the client (the Web
+/// reference is captured with animations disabled, which is that frame). The
 /// frozen Elegant and Brutal looks keep the static stripe they always drew.
 class RaftProgressBar extends StatelessWidget {
   const RaftProgressBar({
@@ -355,8 +357,9 @@ class RaftProgressBar extends StatelessWidget {
 
 /// raft-ui `@keyframes raft-progress-indeterminate` on the half-width stripe:
 /// `translateX(-65%) scaleX(.35)` to `(70%) (.6)` to `(185%) (.35)` of its own
-/// width, origin left, `ease-in-out` per leg, 1.4s per loop (2.4s with reduced
-/// motion). The track clips it (the stripe paints outside its own box).
+/// width, origin left, `ease-in-out` per leg, 1.4s per loop. With reduced motion
+/// it does not run: the stripe rests un-transformed (the `w-1/2` base style the
+/// Web shows when animations are disabled). The track clips it.
 class _IndeterminateSweep extends StatefulWidget {
   const _IndeterminateSweep({required this.child});
   final Widget child;
@@ -368,18 +371,19 @@ class _IndeterminateSweep extends StatefulWidget {
 class _IndeterminateSweepState extends State<_IndeterminateSweep>
     with SingleTickerProviderStateMixin {
   late final AnimationController _loop = AnimationController(vsync: this);
-  Duration? _period;
+  bool _reduced = false;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final period = Duration(
-      milliseconds: MediaQuery.disableAnimationsOf(context) ? 2400 : 1400,
-    );
-    if (_period == period) return;
-    _period = period;
-    _loop.duration = period;
-    // ignore: raft_lints/avoid_unreviewed_idle_work -- Loop driven by an AnimationController whose vsync is this State, so TickerMode (hidden routes, offstage tabs, folded panels) mutes it and it is disposed with the widget; reduced motion only slows it, as raft-ui does.
+    _reduced = MediaQuery.disableAnimationsOf(context);
+    if (_reduced) {
+      _loop.stop();
+      return;
+    }
+    if (_loop.isAnimating) return;
+    _loop.duration = const Duration(milliseconds: 1400);
+    // ignore: raft_lints/avoid_unreviewed_idle_work -- Loop driven by an AnimationController whose vsync is this State, so TickerMode (hidden routes, offstage tabs, folded panels) mutes it, it is disposed with the widget, and reduced motion stops it.
     _loop.repeat();
   }
 
@@ -392,32 +396,33 @@ class _IndeterminateSweepState extends State<_IndeterminateSweep>
   static const _ease = Curves.easeInOut;
 
   @override
-  Widget build(BuildContext context) => RepaintBoundary(
-    child: AnimatedBuilder(
-      animation: _loop,
-      child: widget.child,
-      builder: (context, child) {
-        final v = _loop.value;
-        final leg = v < .5;
-        final k = _ease.transform(leg ? v * 2 : (v - .5) * 2);
-        final from = leg ? -.65 : .70, to = leg ? .70 : 1.85;
-        final scaleFrom = leg ? .35 : .6, scaleTo = leg ? .6 : .35;
-        final shift = from + (to - from) * k;
-        final scale = scaleFrom + (scaleTo - scaleFrom) * k;
-        // `translateX(%)` is a fraction of the stripe's own (unscaled) width,
-        // so the shift wraps the scale; neither needs the track's width.
-        return FractionalTranslation(
-          key: const ValueKey('progress-indeterminate-shift'),
-          translation: Offset(shift, 0),
-          child: Transform(
-            key: const ValueKey('progress-indeterminate-sweep'),
-            alignment: Alignment.centerLeft,
-            transform: Matrix4.diagonal3Values(scale, 1, 1),
-            child: child,
-          ),
-        );
-      },
-    ),
+  Widget build(BuildContext context) =>
+      _reduced ? widget.child : RepaintBoundary(child: _sweep());
+
+  Widget _sweep() => AnimatedBuilder(
+    animation: _loop,
+    child: widget.child,
+    builder: (context, child) {
+      final v = _loop.value;
+      final leg = v < .5;
+      final k = _ease.transform(leg ? v * 2 : (v - .5) * 2);
+      final from = leg ? -.65 : .70, to = leg ? .70 : 1.85;
+      final scaleFrom = leg ? .35 : .6, scaleTo = leg ? .6 : .35;
+      final shift = from + (to - from) * k;
+      final scale = scaleFrom + (scaleTo - scaleFrom) * k;
+      // `translateX(%)` is a fraction of the stripe's own (unscaled) width,
+      // so the shift wraps the scale; neither needs the track's width.
+      return FractionalTranslation(
+        key: const ValueKey('progress-indeterminate-shift'),
+        translation: Offset(shift, 0),
+        child: Transform(
+          key: const ValueKey('progress-indeterminate-sweep'),
+          alignment: Alignment.centerLeft,
+          transform: Matrix4.diagonal3Values(scale, 1, 1),
+          child: child,
+        ),
+      );
+    },
   );
 }
 
