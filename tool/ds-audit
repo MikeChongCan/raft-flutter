@@ -73,6 +73,8 @@ BYPASS_ALLOWLIST = {
         'overlay': 'RaftToastPortal is the toast host'},
     _UI + 'pull_to_refresh.dart': {
         'refresh': 'RaftPullToRefresh wraps RefreshIndicator.adaptive'},
+    _UI + 'raft/legacy_material_button_surface.dart': {
+        'button': 'RaftButton frozen legacy painter reads unmounted TextButton/OutlinedButton default styles; it never mounts their input widgets'},
 }
 # What to use instead, per bypass family (names from packages/raft_ui/lib/raft_ui.dart).
 BYPASS_USE = {
