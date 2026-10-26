@@ -16,7 +16,14 @@
 // Values come from the recipes; the few Tailwind classes written directly in
 // Web JSX are cited next to the number that resolves them.
 
-import 'form_controls.dart' show RaftTextInput, RaftTextarea, RaftLegacyInput, RaftField, RaftLegacyField;
+import 'form_controls.dart'
+    show
+        RaftTextInput,
+        RaftTextarea,
+        RaftLegacyInput,
+        RaftField,
+        RaftLegacyField;
+
 import 'dart:math' as math;
 
 import 'package:flutter/gestures.dart';
