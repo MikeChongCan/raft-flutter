@@ -65,7 +65,7 @@ def main():
     os.chdir(source)
     # Only the helper comes from the workflow revision. Product and packaging
     # inputs are the original, clean tag checkout, never the runner wiring branch.
-    release.ROOT, release.APP, release.OUT = source, source / 'apps/raft_flutter', source / 'build/release'
+    output = source / 'build/release'
     if args.action == 'build':
         if platform == 'macos':
             import macos_runner
@@ -78,13 +78,14 @@ def main():
                         [sys.executable, source / 'tool/release.py', 'build', platform]):
             subprocess.run([str(x) for x in command], cwd=source, env=env, check=True)
         checked_source(source, tag, commit)
-        release.verify_artifacts(release.OUT, {'include': [{'platform': platform, 'arch': {'macos': 'arm64', 'appimage': 'x64'}[platform]}]},
+        release.verify_artifacts(output, {'include': [{'platform': platform, 'arch': {'macos': 'arm64', 'appimage': 'x64'}[platform]}]},
                                  identity['version'], commit, number, tag)
     else:
         # An explicit manual-only entry point for an already prepared release.
         # The normal tag-push publisher keeps its original trigger guard.
         if os.environ.get('GITHUB_EVENT_NAME') != 'workflow_dispatch':
             raise ValueError('Backfill publication requires an explicit manual workflow dispatch')
+        release.ROOT, release.APP, release.OUT = source, source / 'apps/raft_flutter', output
         release.append_platform(platform, identity, commit)
 
 
