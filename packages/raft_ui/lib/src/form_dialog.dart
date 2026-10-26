@@ -11,6 +11,7 @@ import 'form_presentation.dart';
 import 'settings_layout.dart' show RaftSpace;
 import 'error_presentation.dart';
 import 'theme.dart';
+import 'recipes/recipe_runtime.dart' show RaftRecipeSet;
 import 'design_primitives.dart';
 import 'icons.dart';
 
@@ -320,21 +321,33 @@ class _RaftFormDialogState extends State<RaftFormDialog> {
     ),
   );
 
-  List<Widget> _actions() => [
-    RaftTextButton(
-      label: widget.cancelLabel,
-      variant: RaftControlVariant.outline,
-      onPressed: busy ? null : () => Navigator.pop(context, false),
-    ),
-    RaftButton(
-      label: busy && widget.busyLabel != null
-          ? widget.busyLabel!
-          : widget.submitLabel,
-      busy: busy,
-      onPressed: widget.submitEnabled ? submit : null,
-      destructive: widget.destructive,
-    ),
-  ];
+  List<Widget> _actions() {
+    final legacy = RaftTokens.of(context).recipeSet == RaftRecipeSet.legacy;
+    return [
+      if (legacy)
+        RaftTextButton(
+          label: widget.cancelLabel,
+          variant: RaftControlVariant.outline,
+          onPressed: busy ? null : () => Navigator.pop(context, false),
+        )
+      else
+        RaftButton(
+          label: widget.cancelLabel,
+          uiVariant: RaftButtonVariant.ghost,
+          uiSize: RaftButtonSize.lg,
+          onPressed: busy ? null : () => Navigator.pop(context, false),
+        ),
+      RaftButton(
+        label: busy && widget.busyLabel != null
+            ? widget.busyLabel!
+            : widget.submitLabel,
+        uiSize: legacy ? null : RaftButtonSize.lg,
+        busy: busy,
+        onPressed: widget.submitEnabled ? submit : null,
+        destructive: widget.destructive,
+      ),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) => PopScope(

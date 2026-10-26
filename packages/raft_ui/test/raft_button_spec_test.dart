@@ -4,6 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_ui/raft_ui.dart';
 import 'package:raft_ui/test_themes.dart';
 
+import 'control_transition_paint_test.dart' show paintHost, pixel;
+
 // raft-ui 0.7.0 `Button`: sizes 32 / 44 / 52, icon squares, sticker / outline / ghost / on-frame fills, the
 // disabled and loading style (fill-muted, not opacity) and the keyboard focus ring.
 Widget _app(bool dark, Widget child) => MaterialApp(
@@ -189,8 +191,8 @@ void main() {
       tester,
     ) async {
       await tester.pumpWidget(
-        _app(
-          dark,
+        paintHost(
+          raftTheme(dark: dark),
           RaftButton(
             key: const ValueKey('b'),
             label: 'Assign',
@@ -205,8 +207,8 @@ void main() {
       await mouse.moveTo(tester.getCenter(find.byKey(const ValueKey('b'))));
       await tester.pumpAndSettle();
       expect(
-        _decoration(tester, find.byKey(const ValueKey('b'))).color,
-        raftChromeBlend(ui.fillPressed, ui.layerCard),
+        await pixel(tester, const Offset(24, 24)),
+        Color(Color.alphaBlend(ui.fillPressed, ui.layerCard).toARGB32()),
       );
     });
   }

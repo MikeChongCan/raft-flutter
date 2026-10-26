@@ -17,6 +17,7 @@ import '../raft_underline.dart';
 import 'legacy_button_surface.dart';
 import 'button_color_transition.dart';
 import 'button_colors.dart';
+import 'css_box.dart' show raftControlBorderPx;
 import 'legacy_material_button_surface.dart';
 import '../theme.dart';
 import '../control_typography.dart';
@@ -601,8 +602,27 @@ class RaftButton extends StatelessWidget {
             'border-$side-width': CssNum(stroke, 'px'),
       },
     );
+    // Blink floors fractional CSS border widths to device pixels. Keep that
+    // projection in Button for every variant, including the social outline;
+    // generated recipes retain the specified 1.5px value.
+    final widths = recipeRoot.borderWidth;
+    recipeRoot = recipeRoot.copyWith(
+      properties: {
+        ...recipeRoot.properties,
+        for (final (side, width) in [
+          ('top', widths.top),
+          ('right', widths.right),
+          ('bottom', widths.bottom),
+          ('left', widths.left),
+        ])
+          if (width > 0)
+            'border-$side-width': CssNum(
+              raftControlBorderPx(context, width),
+              'px',
+            ),
+      },
+    );
     var root = styleBuilder?.call(context, state, recipeRoot) ?? recipeRoot;
-    root = raftUniformOverlay(root, tokens);
     // Theme-authored variant colour roles remain independent of the source's
     // motion and edge axes. The built-in look uses the generated overlay.
     if (t.option('button.hoverSurface', or: 'overlay') == 'variant') {

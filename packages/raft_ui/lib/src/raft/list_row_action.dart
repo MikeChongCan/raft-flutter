@@ -61,10 +61,9 @@ class RaftListRowAction extends StatelessWidget {
           ),
           tokens: tokens.recipeTokens,
         ).root;
-        final painted = raftUniformOverlay(recipe, tokens.recipeTokens);
-        final paintOnly = painted.copyWith(
+        final paintOnly = recipe.copyWith(
           properties: {
-            for (final entry in painted.properties.entries)
+            for (final entry in recipe.properties.entries)
               if (entry.key.startsWith('--') ||
                   entry.key.startsWith('background-') ||
                   entry.key.startsWith('outline-') ||

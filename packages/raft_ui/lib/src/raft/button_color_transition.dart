@@ -1,10 +1,8 @@
-import 'package:flutter/material.dart' show Colors;
 import 'package:flutter/widgets.dart';
 import 'package:flutter/foundation.dart' show mapEquals;
 
 import '../recipe_surface.dart';
 import '../recipes/recipe_runtime.dart';
-import 'ui_tokens.dart' show raftChromeBlend;
 
 /// Only the colour properties in Button's `transition-colors` declaration
 /// interpolate. Geometry, focus shadows and loading layout change atomically.
@@ -75,27 +73,4 @@ class _ColorTween extends Tween<_ButtonColors> {
           raftCssColorLerp(begin!.values[entry.key], entry.value, t) ??
           entry.value,
   });
-}
-
-/// Flatten the uniform CSS press-overlay layer used by Button and ListRow.
-RaftSlotStyle raftUniformOverlay(
-  RaftSlotStyle style,
-  RaftTokenResolver tokens,
-) {
-  final image = style['background-image'];
-  if (image is! CssFunction ||
-      image.name != 'linear-gradient' ||
-      image.args.length != 2 ||
-      image.args.first.toString() != image.args.last.toString())
-    return style;
-  final overlay = RaftColorRef.fromCss(image.args.first)?.resolve(tokens);
-  if (overlay == null) return style;
-  final fill = style.backgroundColor?.resolve(tokens) ?? Colors.transparent;
-  final blended = raftChromeBlend(overlay, fill);
-  return style.copyWith(
-    properties: {
-      ...style.properties,
-      'background-color': CssColor(blended.toARGB32(), null, blended),
-    },
-  );
 }

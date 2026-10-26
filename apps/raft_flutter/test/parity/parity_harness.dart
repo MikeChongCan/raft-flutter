@@ -782,6 +782,10 @@ Future<void> _androidInteractions(
           }
         }
         node ??= Focus.maybeOf(t.element(target.first));
+        // Exercise keyboard modality as the focus-state case promises. A
+        // prior editor tap is pointer modality; changing Flutter's highlight
+        // strategy alone does not make it a keyboard interaction.
+        await t.sendKeyEvent(LogicalKeyboardKey.tab);
         node?.requestFocus();
         await t.pump();
       case 'tab':

@@ -320,30 +320,35 @@ Widget _smallButton(
   Key? key,
   RaftGlyph? glyph,
   RaftButtonRecipeVariant variant = RaftButtonRecipeVariant.outline,
+  RaftButtonRecipeVariant? raftVariant,
   VoidCallback? onPressed,
   bool brutalDisabledFill = false,
   String? tooltip,
 }) {
-  final button = RaftRecipeButton(
-    // `theme-brutal:disabled:bg-gray-200` (bulk action bar).
-    brutalSurface: brutalDisabledFill && onPressed == null
-        ? (t, _) => BoxDecoration(
-            color: const Color(0xFFE5E7EB),
-            border: Border.all(color: Colors.black, width: 2),
-            boxShadow: RaftShadowSet.brutalSm,
-          )
-        : null,
-    key: key,
-    label: label,
-    glyph: glyph,
-    glyphSize: 12,
-    variant: variant,
-    size: RaftButtonRecipeSize.sm,
-    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-    textStep: (12, 16),
-    gap: 4,
-    disabled: onPressed == null,
-    onPressed: onPressed,
+  final button = Builder(
+    builder: (context) => RaftRecipeButton(
+      // `theme-brutal:disabled:bg-gray-200` (bulk action bar).
+      brutalSurface: brutalDisabledFill && onPressed == null
+          ? (t, _) => BoxDecoration(
+              color: const Color(0xFFE5E7EB),
+              border: Border.all(color: Colors.black, width: 2),
+              boxShadow: RaftShadowSet.brutalSm,
+            )
+          : null,
+      key: key,
+      label: label,
+      glyph: glyph,
+      glyphSize: 12,
+      variant: RaftTokens.of(context).recipeSet == RaftRecipeSet.raft
+          ? raftVariant ?? variant
+          : variant,
+      size: RaftButtonRecipeSize.sm,
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      textStep: (12, 16),
+      gap: 4,
+      disabled: onPressed == null,
+      onPressed: onPressed,
+    ),
   );
   // A hover tooltip (Web `<Tooltip content>`); the button keeps its own label.
   return tooltip == null
@@ -363,21 +368,31 @@ Widget _actionButton(
   RaftButtonRecipeVariant variant = RaftButtonRecipeVariant.outline,
   VoidCallback? onPressed,
   double horizontal = 12,
+  RaftButtonRecipeVariant? raftVariant,
+  RaftButtonRecipeSize? raftSize,
   String? tooltip,
-}) => RaftRecipeButton(
-  key: key,
-  label: label,
-  glyph: glyph,
-  glyphSize: 14,
-  variant: variant,
-  size: RaftButtonRecipeSize.sm,
-  padding: EdgeInsets.symmetric(horizontal: horizontal, vertical: 8),
-  textStep: (14, 20),
-  gap: 6,
-  tooltip: tooltip,
-  fontWeight: FontWeight.w700,
-  disabled: onPressed == null,
-  onPressed: onPressed,
+}) => Builder(
+  builder: (context) {
+    final current = RaftTokens.of(context).recipeSet == RaftRecipeSet.raft;
+    final sourceSize = current && raftSize != null;
+    return RaftRecipeButton(
+      key: key,
+      label: label,
+      glyph: glyph,
+      glyphSize: sourceSize ? null : 14,
+      variant: current ? raftVariant ?? variant : variant,
+      size: sourceSize ? raftSize! : RaftButtonRecipeSize.sm,
+      padding: sourceSize
+          ? null
+          : EdgeInsets.symmetric(horizontal: horizontal, vertical: 8),
+      textStep: sourceSize ? null : (14, 20),
+      gap: sourceSize ? null : 6,
+      tooltip: tooltip,
+      fontWeight: sourceSize ? null : FontWeight.w700,
+      disabled: onPressed == null,
+      onPressed: onPressed,
+    );
+  },
 );
 
 // ------------------------------------------------------------------ panel
@@ -1622,6 +1637,7 @@ class _RaftComputerDetailViewState extends State<RaftComputerDetailView> {
             ),
             _smallButton(
               'Cancel',
+              raftVariant: RaftButtonRecipeVariant.ghost,
               glyph: RaftGlyph.x,
               onPressed: () => setState(() {
                 selectionMode = false;
@@ -2454,6 +2470,32 @@ class _BulkResetDialogState extends State<_BulkResetDialog> {
     ];
     // ignore: raft_lints/avoid_render_where_without_or_else -- `options` is a fixed list holding every mode the state can take.
     final current = options.firstWhere((o) => o.$1 == mode);
+    final legacy = t.recipeSet == RaftRecipeSet.legacy;
+    final actions = [
+      _actionButton(
+        'Cancel',
+        raftVariant: RaftButtonRecipeVariant.ghost,
+        raftSize: RaftButtonRecipeSize.lg,
+        horizontal: 16,
+        onPressed: () => Navigator.of(context).pop(),
+      ),
+      if (legacy) const SizedBox(width: 12),
+      _actionButton(
+        current.$2,
+        raftSize: RaftButtonRecipeSize.lg,
+        raftVariant: mode == RaftComputerBulk.full
+            ? RaftButtonRecipeVariant.danger
+            : RaftButtonRecipeVariant.warning,
+        glyph: RaftGlyph.rotateCcw,
+        horizontal: 16,
+        variant: mode == RaftComputerBulk.full
+            ? RaftButtonRecipeVariant.danger
+            : mode == RaftComputerBulk.session
+            ? RaftButtonRecipeVariant.warning
+            : RaftButtonRecipeVariant.information,
+        onPressed: () => Navigator.of(context).pop(mode),
+      ),
+    ];
     return Center(
       child: Material(
         type: MaterialType.transparency,
@@ -2508,28 +2550,18 @@ class _BulkResetDialogState extends State<_BulkResetDialog> {
                   ),
                 ],
                 const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    _actionButton(
-                      'Cancel',
-                      horizontal: 16,
-                      onPressed: () => Navigator.of(context).pop(),
-                    ),
-                    const SizedBox(width: 12),
-                    _actionButton(
-                      current.$2,
-                      glyph: RaftGlyph.rotateCcw,
-                      horizontal: 16,
-                      variant: mode == RaftComputerBulk.full
-                          ? RaftButtonRecipeVariant.danger
-                          : mode == RaftComputerBulk.session
-                          ? RaftButtonRecipeVariant.warning
-                          : RaftButtonRecipeVariant.information,
-                      onPressed: () => Navigator.of(context).pop(mode),
-                    ),
-                  ],
-                ),
+                if (legacy)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: actions,
+                  )
+                else
+                  OverflowBar(
+                    alignment: MainAxisAlignment.end,
+                    spacing: RaftSpace.x2,
+                    overflowSpacing: RaftSpace.x2,
+                    children: actions,
+                  ),
               ],
             ),
           ),
