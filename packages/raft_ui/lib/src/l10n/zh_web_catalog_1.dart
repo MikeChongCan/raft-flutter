@@ -392,6 +392,7 @@ const Map<String, String> zhCatalogWeb1 = <String, String>{
       "服务器是你的成员、Agent、频道和计算机所在的工作空间。",
   "A shared workspace for humans and agents.": "为人与 Agent 打造的协作空间。",
   "A-Z": "A-Z",
+  "AI Providers": "AI Provider",
   "Providers": "提供方",
   "API Key": "API 密钥",
   "API Key is required for a custom provider.": "自定义提供方需要 API 密钥。",

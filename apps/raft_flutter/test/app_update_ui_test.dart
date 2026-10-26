@@ -45,7 +45,17 @@ bool _entryDot(WidgetTester t, double width) => _phone(width)
     : _railDotIn(find.byKey(const Key('rail-settings'))).evaluate().isNotEmpty;
 
 Future<void> _openDestination(WidgetTester t, String id) async {
-  await t.tap(find.byKey(ValueKey('workspace-settings-nav-$id')));
+  final row = find.byKey(ValueKey('workspace-settings-nav-$id'));
+  // Rows are 36px (raft-ui SidebarItem): the last ones sit below the fold, and
+  // on the phone the bottom bar overlays the list's lower edge. Scroll the row
+  // clear of it, as a user would.
+  await t.ensureVisible(row);
+  final screen = t.view.physicalSize.height / t.view.devicePixelRatio;
+  if (t.getCenter(row).dy > screen - 120) {
+    await t.drag(find.byType(RaftSettingsSidebarList), const Offset(0, -400));
+    await t.pumpAndSettle();
+  }
+  await t.tap(row);
   for (var i = 0; i < 10; i++) {
     await t.pump(const Duration(milliseconds: 100));
   }

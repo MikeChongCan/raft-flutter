@@ -506,7 +506,12 @@ void main() {
           w.setSection('settings');
           await tester.pumpAndSettle();
           final list = find.byType(RaftSettingsSidebarList);
-          final row = find.descendant(of: list, matching: find.text(d.label));
+          // The row is located by its key (every row's own `nav-<id>`), not its
+          // label: the Raft look names two rows the way Web does (`AI Providers`).
+          final row = find.descendant(
+            of: list,
+            matching: find.byKey(ValueKey('workspace-settings-nav-${d.id}')),
+          );
           expect(row, findsWidgets, reason: '$name: ${d.id} row');
           await tester.ensureVisible(row.first);
           await tester.tap(row.first);
