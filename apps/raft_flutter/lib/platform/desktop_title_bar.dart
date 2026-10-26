@@ -430,12 +430,11 @@ class _DesktopTitleBarState extends State<DesktopTitleBar> {
               ? () => unawaited(controller.doubleClick())
               : null,
           child: RaftWindowChromeScope(
-            // ds-allow: native window-control bounds, independent of theme spacing.
+            // The integrated workspace toolbar remains visible in fullscreen,
+            // even when the native window controls are hidden. An external
+            // brand strip is already outside the router and needs no padding.
             overlayInsets: EdgeInsets.only(
-              top:
-                  (macFrame || custom) && widget.integrated && !state.fullscreen
-                  ? widget.integratedHeight
-                  : 0,
+              top: widget.integrated ? widget.integratedHeight : 0,
             ),
             child: RaftAuthHeaderScope(
               external: (macFrame || custom) && !widget.integrated,
