@@ -44,7 +44,7 @@ edited by the tool:
 
 ## The weekly flow
 
-1. **Check.** `python3 tool/upstream_sync.py status` fetches tags into our own mirror and prints pinned vs latest.
+1. **Check.** `python3 tool/upstream_sync.py status` fetches tags into our own mirror and prints pinned vs latest. It also compares the raft-ui version the Web depends on with the one our recipes were generated from (`docs/component-recipes.md`) and prints a drift line when they differ: the Web can change design-system releases without a source change we would otherwise notice; regenerate with `tool/recipes/run`.
    Nothing newer: stop.
 2. **Report.** `python3 tool/upstream_sync.py report` (writes `/tmp/upstream-sync/report.md` + `report.json`; `--from/--to`
    pick other tags; `--out DIR`). Takes a few seconds; read-only network, no credentials.

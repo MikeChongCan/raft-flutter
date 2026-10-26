@@ -2104,6 +2104,47 @@ def resolve_range(mirror: Path, repo: Path, frm: str | None, to: str | None) -> 
     return a, b
 
 
+RAFT_UI_PACKAGE = "@botiverse/raft-ui"
+RECIPES_DOC = "docs/component-recipes.md"
+
+
+def web_raft_ui_version(mirror: Path, tag: str) -> str | None:
+    """The raft-ui version the Web client depends on at [tag]."""
+    text = show(mirror, tag, "packages/web/package.json")
+    if not text:
+        return None
+    deps = json.loads(text)
+    for field in ("dependencies", "devDependencies"):
+        for name in (RAFT_UI_PACKAGE, "raft-ui"):  # the alias reads "npm:@botiverse/raft-ui@0.7.0"
+            spec = (deps.get(field) or {}).get(name)
+            if spec:
+                return spec.rsplit("@", 1)[-1].lstrip("^~=") if spec.startswith("npm:") else spec.lstrip("^~=")
+    return None
+
+
+def recipes_raft_ui_version(repo: Path) -> str | None:
+    """The raft-ui version our generated recipes were built from."""
+    path = repo / RECIPES_DOC
+    if not path.is_file():
+        return None
+    m = re.search(r"from raft-ui ([0-9][0-9A-Za-z.+-]*)", path.read_text())
+    return m.group(1) if m else None
+
+
+def design_system_drift(mirror: Path, repo: Path, tag: str) -> str | None:
+    """A warning when the Web's raft-ui differs from the one our recipes use.
+
+    The Web can move to a new design-system release without a source change we
+    would notice; the recipes then stay on the old look (2026-10-26: Web on
+    0.7.0, recipes on 0.5.52). Fix: regenerate with tool/recipes/run.
+    """
+    web, ours = web_raft_ui_version(mirror, tag), recipes_raft_ui_version(repo)
+    if web and ours and web != ours:
+        return (f"design system drift: Web {tag} uses raft-ui {web}, our recipes are built from {ours}; "
+                f"regenerate with tool/recipes/run (RAFT_UI_SOURCE=<raft-ui {web} package>)")
+    return None
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("--mirror", default=os.environ.get("RAFT_SOURCE_MIRROR", str(DEFAULT_MIRROR)))
@@ -2140,6 +2181,8 @@ def main(argv=None) -> int:
             tags = list_tags(mirror)
             newer = [t for t in tags if tag_key(t) > tag_key(st["pinned"])]
             print(f"pinned: {st['pinned']}\nlatest: {tags[-1]}\nnewer tags: {', '.join(newer) or 'none'}")
+            drift = design_system_drift(mirror, repo, tags[-1])
+            print(drift or f"design system: recipes match Web raft-ui {recipes_raft_ui_version(repo) or '?'}")
             for h in st.get("history", [])[-5:]:
                 print(f"  {h.get('date', '')} {h.get('tag', '')} {h.get('decision', '')} {h.get('note', '')}")
         elif args.cmd == "pins":
