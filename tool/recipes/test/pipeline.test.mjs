@@ -36,11 +36,17 @@ test('every tv$1 call is extracted with literal options', () => {
     }
   };
   walk(acorn.parse(code, { ecmaVersion: 'latest', sourceType: 'module' }));
-  assert.equal(raw.recipes.length, calls);
+  const products = raw.recipes.filter((r) => r.region?.startsWith('Web '));
+  assert.equal(products.length, raw.productRecipeCount ?? 0);
+  assert.equal(raw.recipes.length - products.length, calls);
   assert.equal(raw.rawCallCount, calls);
-  assert.equal(model.recipes.length, calls);
+  assert.equal(model.recipes.length, calls + products.length);
+  for (const product of products) {
+    assert.match(product.region, /^Web src\/.+\.tsx sha256:[a-f0-9]{64}$/);
+    assert.ok(model.recipes.some((r) => r.name === product.name), product.name);
+  }
   assert.deepEqual(raw.recipes.filter((r) => r.nonLiteral.length).map((r) => r.name), []);
-  assert.equal(new Set(raw.recipes.map((r) => r.name)).size, calls);
+  assert.equal(new Set(raw.recipes.map((r) => r.name)).size, calls + products.length);
 });
 
 test('every class is resolved, descendant, a marker, or explicitly unresolved', () => {
