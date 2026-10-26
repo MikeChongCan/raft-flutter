@@ -162,10 +162,12 @@ def windows_package(stage):
     source = APP / 'build/windows/x64/runner/Release'
     for name in ['raft_flutter.exe', 'flutter_windows.dll', 'data/icudtl.dat',
                  'data/app.so', 'data/flutter_assets', 'raft.ico', 'notification_icon.png',
-                 'Microsoft.WindowsAppRuntime.Bootstrap.dll']:
+                 'Microsoft.WindowsAppRuntime.Bootstrap.dll',
+                 'msvcp140.dll', 'vcruntime140.dll', 'vcruntime140_1.dll']:
         if not (source / name).exists():
             raise ValueError(f'Incomplete Windows bundle: {name}')
     shutil.copytree(source, stage)
+    tool_module('windows_dependencies').check(stage)
     copy_docs(stage)
     shutil.copy2(ROOT / 'tool/windows-notification-register.ps1', stage)
     (stage / 'RUN.txt').write_text(
