@@ -17,7 +17,7 @@ void main() {
         ...flags,
         if (hover) 'hover',
         if (focus) 'focus-visible',
-        if (disabled) 'disabled',
+        if (disabled) 'disabled' else 'enabled',
       },
       1280,
       height,
@@ -115,6 +115,21 @@ void main() {
         );
       },
     );
+
+    test('span badge $dark does not match button-only enabled hover', () {
+      final span = RaftBadgeRecipe.resolve(
+        appearance: RaftBadgeRecipeAppearance.soft,
+        tokens: tokens,
+        states: RaftRecipeStates({...flags, 'hover'}),
+      ).root;
+      final button = RaftBadgeRecipe.resolve(
+        appearance: RaftBadgeRecipeAppearance.soft,
+        tokens: tokens,
+        states: RaftRecipeStates({...flags, 'hover', 'enabled'}),
+      ).root;
+      expect(span['background-image'], isNull);
+      expect(button['background-image'], isNotNull);
+    });
 
     test(
       'Web selection panel $dark reads source surface and search geometry',

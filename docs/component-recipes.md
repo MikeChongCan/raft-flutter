@@ -878,7 +878,7 @@ Dart: `RaftBadgeRecipe` · source: `src/components/badge/badge.tsx` (index.mjs:1
 | root | self | text-transform | none |
 | root | self | font-variant-numeric | tabular-nums |
 | root | self | **disabled** | color: token(foregroundDisabled); background-color: token(fillMuted); box-shadow: inset 0 0 0 0 token(stickerInk), 0 0 0 1.5 token(stickerEdge); opacity: 100%;… |
-| root | self | **hover** | background-image: linear-gradient(token(stickerPressed), token(stickerPressed)) |
+| root | self | **enabled+hover** | background-image: linear-gradient(token(stickerPressed), token(stickerPressed)) |
 | root | & svg | width | 13 |
 | root | & svg | height | 13 |
 | root | & svg | flex-shrink | 0 |
@@ -8442,9 +8442,9 @@ Dart: `RaftTaskCardStatusRecipe` · source: `src/components/task-card/task-card-
 | base | self | flex-shrink | 0 |
 | base | self | touch-action | manipulation |
 | base | self | align-items | center |
-| base | self | **active+button** | background-image: linear-gradient(token(fillPressed), token(fillPressed)); cursor: pointer |
+| base | self | **active+button+enabled** | background-image: linear-gradient(token(fillPressed), token(fillPressed)); cursor: pointer |
 | base | self | **button** | cursor: pointer |
-| base | self | **button+hover** | background-image: linear-gradient(token(fillPressed), token(fillPressed)); cursor: pointer |
+| base | self | **button+enabled+hover** | background-image: linear-gradient(token(fillPressed), token(fillPressed)); cursor: pointer |
 | base | self | **data-busy=true** | opacity: 60%; cursor: wait; pointer-events: none |
 | base | self | **data-busy=true+disabled** | opacity: 100%; cursor: wait; pointer-events: none |
 | base | self | **disabled** | opacity: 100%; cursor: default |
@@ -9666,9 +9666,9 @@ Dart: `RaftWebMenuActionRecipe` · source: `Web src/components/ui/MenuItem.tsx s
 | root | self | align-items | center |
 | root | self | text-align | left |
 | root | self | **disabled** | color: token(foregroundDisabled); cursor: not-allowed |
-| root | self | **focus-visible** | background-color: token(brandSoft) |
+| root | self | **enabled+focus-visible** | background-color: token(brandSoft) |
+| root | self | **enabled+hover** | background-color: token(brandSoft) |
 | root | self | **height<=600** | min-height: 32; padding: top:4 right:10 bottom:4 left:10 |
-| root | self | **hover** | background-color: token(brandSoft) |
 | root | & > svg | flex-shrink | 0 |
 | root | & > svg:first-child | color | token(foregroundMuted) |
 | root | & > svg:first-child | **disabled** | color: token(foregroundDisabled) |

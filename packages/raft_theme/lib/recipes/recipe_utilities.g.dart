@@ -3730,7 +3730,7 @@ const List<RaftUtility> raftRecipeUtilities = <RaftUtility>[
     [
       RaftLayer(
         'self',
-        ['active', 'button', 'not:disabled'],
+        ['active', 'button', 'enabled'],
         3001,
         [RaftDecl('background-image', _v149)],
       ),
@@ -3743,7 +3743,7 @@ const List<RaftUtility> raftRecipeUtilities = <RaftUtility>[
     [
       RaftLayer(
         'self',
-        ['button', 'hover', 'not:disabled'],
+        ['button', 'enabled', 'hover'],
         3001,
         [RaftDecl('background-image', _v149)],
       ),
@@ -8797,7 +8797,7 @@ const List<RaftUtility> raftRecipeUtilities = <RaftUtility>[
     [
       RaftLayer(
         'self',
-        ['focus-visible', 'not:disabled'],
+        ['enabled', 'focus-visible'],
         3000,
         [RaftDecl('background-color', _v156)],
       ),
@@ -8806,7 +8806,7 @@ const List<RaftUtility> raftRecipeUtilities = <RaftUtility>[
   RaftUtility('enabled:hover:bg-brand-soft', 1114, RaftUtilityStatus.resolved, [
     RaftLayer(
       'self',
-      ['hover', 'not:disabled'],
+      ['enabled', 'hover'],
       3000,
       [RaftDecl('background-color', _v156)],
     ),
@@ -8818,7 +8818,7 @@ const List<RaftUtility> raftRecipeUtilities = <RaftUtility>[
     [
       RaftLayer(
         'self',
-        ['hover', 'not:disabled'],
+        ['enabled', 'hover'],
         3000,
         [RaftDecl('background-color', _v57)],
       ),
@@ -8827,7 +8827,7 @@ const List<RaftUtility> raftRecipeUtilities = <RaftUtility>[
   RaftUtility('enabled:hover:press-overlay', 1116, RaftUtilityStatus.resolved, [
     RaftLayer(
       'self',
-      ['hover', 'not:disabled'],
+      ['enabled', 'hover'],
       3000,
       [RaftDecl('background-image', _v149)],
     ),
@@ -8839,7 +8839,7 @@ const List<RaftUtility> raftRecipeUtilities = <RaftUtility>[
     [
       RaftLayer(
         'self',
-        ['hover', 'not:disabled'],
+        ['enabled', 'hover'],
         3000,
         [RaftDecl('background-image', _v159)],
       ),
