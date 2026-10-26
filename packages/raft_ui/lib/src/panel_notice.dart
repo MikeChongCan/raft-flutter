@@ -66,7 +66,9 @@ class RaftPanelNotice extends StatelessWidget {
       tokens,
       base: DefaultTextStyle.of(context).style,
     );
-    final lineHeight = (style.fontSize ?? 14) * (style.height ?? 20 / 14);
+    // The first line grows with the text size, and the actions are centred on it.
+    final lineHeight = MediaQuery.textScalerOf(context)
+        .scale((style.fontSize ?? 14) * (style.height ?? 20 / 14));
     final gap = recipe.root.columnGap ?? 10;
     return Semantics(
       liveRegion: true,
