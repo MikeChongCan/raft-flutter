@@ -28,6 +28,7 @@ import 'package:raft_ui/conversation_card_previews.dart';
 import 'package:raft_ui/css_recipe_radius_previews.dart';
 import 'package:raft_ui/desktop_title_bar_previews.dart';
 import 'package:raft_ui/dialog_previews.dart';
+import 'package:raft_ui/dialog_surface_previews.dart';
 import 'package:raft_ui/directory_navigation_previews.dart';
 import 'package:raft_ui/document_previews.dart';
 import 'package:raft_ui/dropdown_viewport_previews.dart';
@@ -96,6 +97,13 @@ class AuditSurface {
 }
 
 final auditSurfaces = <AuditSurface>[
+  AuditSurface(
+    'dialogSurfacePreview',
+    'Dialog surface and backdrop',
+    dialogSurfacePreview,
+    Size(390, 240),
+    representative: true,
+  ),
   AuditSurface(
     'avatarContextsPreview',
     'Profile and account avatar contexts',
