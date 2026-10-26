@@ -9,6 +9,7 @@ import 'localization.dart';
 import 'recipes/button_variants.g.dart';
 import 'selection_toolbar_recipe.dart';
 import 'system_inset.dart';
+import 'separator.dart';
 import 'theme.dart';
 import 'tooltip.dart' show RaftTooltip;
 
@@ -381,7 +382,7 @@ class RaftImageReview extends StatelessWidget {
             ],
           ),
         ),
-        const Divider(height: 1),
+        const RaftSeparator(),
         Expanded(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(16),
@@ -393,7 +394,7 @@ class RaftImageReview extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: RaftErrorBanner(error!, small: true, bold: true),
           ),
-        const Divider(height: 1),
+        const RaftSeparator(),
         Padding(
           padding: const EdgeInsets.all(12),
           child: Wrap(

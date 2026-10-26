@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'design_primitives.dart';
 import 'settings_layout.dart';
+import 'separator.dart';
 import 'theme.dart';
 import 'tooltip.dart' show RaftTooltip;
 
@@ -179,8 +180,7 @@ class RaftSettingsProfileCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: RaftSettingsProfileRecipe.gap),
-            Divider(
-              height: RaftSettingsProfileRecipe.dividerWidth,
+            RaftSeparator(
               thickness: RaftSettingsProfileRecipe.dividerWidth,
               color: recipe.divider,
             ),

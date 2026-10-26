@@ -14,6 +14,7 @@ import 'indicators.dart';
 import 'localization.dart';
 import 'recipes/button_variants.g.dart';
 import 'settings_controls.dart' show RaftSettingsRecipeButton;
+import 'separator.dart';
 import 'theme.dart';
 import 'tooltip.dart';
 
@@ -201,8 +202,7 @@ class RaftChannelJointSectionView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   for (var i = 0; i < servers.length; i++) ...[
-                    if (i > 0)
-                      Divider(height: 1, thickness: 1, color: hairline),
+                    if (i > 0) RaftSeparator(thickness: 1, color: hairline),
                     rowFor(servers[i]),
                   ],
                 ],
@@ -256,7 +256,7 @@ class RaftChannelJointSectionView extends StatelessWidget {
           ],
           if (showInvite) ...[
             const SizedBox(height: 16),
-            Divider(height: 1, thickness: 1, color: hairline),
+            RaftSeparator(thickness: 1, color: hairline),
             const SizedBox(height: 16),
             Text(
               raftText(context, 'Channel connection invitation'),

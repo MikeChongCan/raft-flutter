@@ -15,6 +15,7 @@ import 'localization.dart';
 import 'recipe_surface.dart';
 import 'recipes/banner.g.dart';
 import 'recipes/button_variants.g.dart';
+import 'separator.dart';
 import 'theme.dart';
 
 /// One selectable picker row: stable [key], [label], optional
@@ -134,8 +135,7 @@ class RaftCreateChannelDialogView extends StatelessWidget {
             ),
             if (slackField != null) ...[
               gap,
-              Divider(
-                height: 1,
+              RaftSeparator(
                 thickness: 1,
                 color: RaftTokens.of(context).colors['line-muted'],
               ),

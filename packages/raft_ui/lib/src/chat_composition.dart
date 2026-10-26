@@ -11,6 +11,7 @@ import 'viewport_breakpoints.dart';
 import 'icons.dart';
 import 'panel_layout.dart' show RaftCssText;
 import 'sidebar_section.dart';
+import 'separator.dart';
 import 'theme.dart';
 import 'status_bar.dart';
 import 'text_scaling.dart';
@@ -806,8 +807,7 @@ class RaftConversationDateHeader extends StatelessWidget {
       line: 16.5,
       color: t.muted,
     ).copyWith(fontFamily: t.monoFont, fontWeight: FontWeight.w400);
-    final line = Divider(
-      height: 1,
+    final line = RaftSeparator(
       thickness: 1,
       color: t.colors[t.dark ? 'ink-4' : 'line-hairline'],
     );
