@@ -70,8 +70,8 @@ abstract final class RaftTaskLoadingRecipe {
 
   /// Distinct class lists (indices into [raftRecipeUtilities]).
   static const List<List<int>> _lists = [
-    [959, 961, 1014],
-    [959, 1473, 961, 1584, 1014, 1696, 618, 631, 594, 1725],
+    [965, 967, 1022],
+    [965, 1481, 967, 1592, 1022, 1704, 620, 633, 596, 1733],
   ];
 
   /// Per combination (mixed radix over [axes]): class list per slot.

@@ -6,6 +6,7 @@
 //
 // Usage: node tool/recipes/extract.mjs [--source /tmp/rui] [--out build/recipes]
 import { createHash } from 'node:crypto';
+import { execFileSync } from 'node:child_process';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -310,6 +311,19 @@ const recipes = calls
   })
   .sort((a, b) => a.line - b.line);
 
+// Web-authored menu compositions still belong to the same generated family.
+// Parse their actual TSX class expressions; never copy a list into Dart.
+const webCss = process.env.RAFT_WEB_CSS;
+let productRecipeCount = 0;
+if (webCss) {
+  const web = dirname(dirname(resolve(webCss)));
+  const products = JSON.parse(execFileSync(process.execPath, [
+    join(here, 'menu-compositions.mjs'), '--web', web, '--raw',
+  ], { encoding: 'utf8' }));
+  recipes.push(...products);
+  productRecipeCount = products.length;
+}
+
 // Sanity: count raw `tv$1(` occurrences so the test can assert full coverage.
 const rawCallCount = [...TV_CALLEES].reduce((n, c) => n + (code.match(new RegExp(`\\b${c.replace(/\$/g, '\\$')}\\(`, 'g')) ?? []).length, 0);
 
@@ -332,6 +346,7 @@ const out = {
   tvImport,
   tvWrapperSource,
   rawCallCount,
+  productRecipeCount,
   recipeCount: recipes.length,
   recipes,
 };

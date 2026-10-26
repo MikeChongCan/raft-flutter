@@ -67,7 +67,7 @@ abstract final class RaftComposerToolbarLabelRecipe {
 
   /// Distinct class lists (indices into [raftRecipeUtilities]).
   static const List<List<int>> _lists = [
-    [1296, 661, 1714, 1310, 1468, 1014, 1007, 1798, 1008, 1807, 1250, 1251],
+    [1304, 664, 1722, 1318, 1476, 1022, 1015, 1807, 1016, 1816, 1258, 1259],
   ];
 
   /// Per combination (mixed radix over [axes]): class list per slot.

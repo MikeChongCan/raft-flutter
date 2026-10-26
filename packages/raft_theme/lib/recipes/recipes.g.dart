@@ -128,6 +128,9 @@ import 'search_entity.g.dart';
 import 'search_message.g.dart';
 import 'search_thread.g.dart';
 import 'search_trigger.g.dart';
+import 'web_selection_panel.g.dart';
+import 'web_menu_action.g.dart';
+import 'web_selection_row.g.dart';
 
 export 'recipe_utilities.g.dart';
 export 'spinner.g.dart';
@@ -254,6 +257,9 @@ export 'search_entity.g.dart';
 export 'search_message.g.dart';
 export 'search_thread.g.dart';
 export 'search_trigger.g.dart';
+export 'web_selection_panel.g.dart';
+export 'web_menu_action.g.dart';
+export 'web_selection_row.g.dart';
 
 typedef RaftRecipeResolver = Map<String, RaftSlotStyle> Function(
   Map<String, String?> props, {
@@ -391,4 +397,7 @@ const Map<String, RaftRecipeResolver> raftRecipes = {
   'searchMessage': RaftSearchMessageRecipe.resolveProps,
   'searchThread': RaftSearchThreadRecipe.resolveProps,
   'searchTrigger': RaftSearchTriggerRecipe.resolveProps,
+  'webSelectionPanel': RaftWebSelectionPanelRecipe.resolveProps,
+  'webMenuAction': RaftWebMenuActionRecipe.resolveProps,
+  'webSelectionRow': RaftWebSelectionRowRecipe.resolveProps,
 };

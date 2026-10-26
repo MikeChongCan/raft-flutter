@@ -8,6 +8,7 @@ store="${RAFT_PNPM_STORE:-/home/kevinzhow/.slock/agents/9a92b742-8942-488c-8635-
 # Directory-name globs inside the pnpm store; the newest match wins, so a
 # raft-source revision that bumps tailwindcss / postcss / acorn needs no edit.
 declare -A deps=(
+  [typescript]="typescript@*/node_modules/typescript"
   [acorn]="acorn@*/node_modules/acorn"
   [postcss]="postcss@*/node_modules/postcss"
   [tailwind-variants]="tailwind-variants@*/node_modules/tailwind-variants"

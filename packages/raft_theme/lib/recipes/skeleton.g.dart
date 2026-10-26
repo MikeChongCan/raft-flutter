@@ -82,9 +82,9 @@ abstract final class RaftSkeletonRecipe {
 
   /// Distinct class lists (indices into [raftRecipeUtilities]).
   static const List<List<int>> _lists = [
-    [471, 1490, 1617, 786, 785, 784, 783, 1171],
-    [471, 1490, 1617, 786, 785, 784, 783],
-    [471, 1490, 1617, 786, 785, 784, 783, 1703, 579],
+    [473, 1498, 1625, 789, 788, 787, 786, 1179],
+    [473, 1498, 1625, 789, 788, 787, 786],
+    [473, 1498, 1625, 789, 788, 787, 786, 1711, 581],
   ];
 
   /// Per combination (mixed radix over [axes]): class list per slot.

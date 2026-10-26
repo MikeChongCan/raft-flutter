@@ -128,3 +128,6 @@ export 'toast_action.g.dart';
 export 'toast_styles.g.dart';
 export 'toggle_group.g.dart';
 export 'tooltip.g.dart';
+export 'web_menu_action.g.dart';
+export 'web_selection_panel.g.dart';
+export 'web_selection_row.g.dart';

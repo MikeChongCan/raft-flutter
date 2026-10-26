@@ -85,9 +85,9 @@ abstract final class RaftTaskDndRecipe {
 
   /// Distinct class lists (indices into [raftRecipeUtilities]).
   static const List<List<int>> _lists = [
-    [1152, 1669, 660, 1854, 426, 1565, 683, 682, 674, 679, 1696, 988],
-    [1151, 1617, 1924, 45],
-    [1256, 1912, 1727, 1160, 1696, 620, 624, 633, 613, 686],
+    [1160, 1677, 662, 1864, 428, 1573, 686, 685, 677, 682, 1704, 995],
+    [1159, 1625, 1934, 45],
+    [1264, 1922, 1735, 1168, 1704, 622, 626, 635, 615, 689],
   ];
 
   /// Per combination (mixed radix over [axes]): class list per slot.

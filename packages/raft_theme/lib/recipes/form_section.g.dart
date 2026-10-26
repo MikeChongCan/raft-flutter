@@ -103,11 +103,11 @@ abstract final class RaftFormSectionRecipe {
 
   /// Distinct class lists (indices into [raftRecipeUtilities]).
   static const List<List<int>> _lists = [
-    [959, 961, 1016, 1662, 953, 401, 400],
-    [959, 1473, 961, 1011],
-    [959, 1473, 1310, 1014],
-    [1348, 1473, 960, 1007, 1806, 999, 1811],
-    [1348, 1007, 1806, 1808],
+    [965, 967, 1024, 1670, 959, 403, 402],
+    [965, 1481, 967, 1019],
+    [965, 1481, 1318, 1022],
+    [1356, 1481, 966, 1015, 1815, 1007, 1821],
+    [1356, 1015, 1815, 1818],
   ];
 
   /// Per combination (mixed radix over [axes]): class list per slot.

@@ -59,7 +59,7 @@ void main() {
   test(
     'each generated slot retains source identity independently of raft_ui',
     () {
-      expect(raftRecipes, hasLength(124));
+      expect(raftRecipes, hasLength(127));
       for (final recipe in raftRecipes.entries) {
         final slots = recipe.value(const {});
         expect(slots, isNotEmpty, reason: recipe.key);

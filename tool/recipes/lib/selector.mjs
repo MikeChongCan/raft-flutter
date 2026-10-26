@@ -279,7 +279,7 @@ function atomOf(x, ctx) {
     case 'pseudo-element':
       return null; // handled as target
     case 'pseudo-class': {
-      if (x.args == null) return x.name;
+      if (x.args == null) return x.name === 'enabled' ? 'not:disabled' : x.name;
       if ((x.name === 'where' || x.name === 'is') && isDarkWhere(x.args)) return 'dark';
       if (x.name === 'where' || x.name === 'is') {
         const alts = splitTopLevel(x.args);

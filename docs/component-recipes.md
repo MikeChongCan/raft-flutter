@@ -12,12 +12,12 @@ Authoritative data: `build/recipes/recipes.json`; Dart: `packages/raft_theme/lib
 
 ## Coverage
 
-- Recipes: 124; variant combinations: 956
-- Distinct classes in recipe sources: 1932
-  - descendant: 324
+- Recipes: 127; variant combinations: 966
+- Distinct classes in recipe sources: 1942
+  - descendant: 326
   - marker: 32
   - no-css: 4
-  - resolved: 1572
+  - resolved: 1580
 
 Classes for which Tailwind emits no CSS (inert on the Web as well):
 
@@ -152,6 +152,9 @@ Classes for which Tailwind emits no CSS (inert on the Web as well):
 - [searchMessage](#searchmessage) → `RaftSearchMessageRecipe`
 - [searchThread](#searchthread) → `RaftSearchThreadRecipe`
 - [searchTrigger](#searchtrigger) → `RaftSearchTriggerRecipe`
+- [webSelectionPanel](#webselectionpanel) → `RaftWebSelectionPanelRecipe`
+- [webMenuAction](#webmenuaction) → `RaftWebMenuActionRecipe`
+- [webSelectionRow](#webselectionrow) → `RaftWebSelectionRowRecipe`
 
 ## spinner
 
@@ -875,7 +878,7 @@ Dart: `RaftBadgeRecipe` · source: `src/components/badge/badge.tsx` (index.mjs:1
 | root | self | text-transform | none |
 | root | self | font-variant-numeric | tabular-nums |
 | root | self | **disabled** | color: token(foregroundDisabled); background-color: token(fillMuted); box-shadow: inset 0 0 0 0 token(stickerInk), 0 0 0 1.5 token(stickerEdge); opacity: 100%;… |
-| root | self | **enabled+hover** | background-image: linear-gradient(token(stickerPressed), token(stickerPressed)) |
+| root | self | **hover** | background-image: linear-gradient(token(stickerPressed), token(stickerPressed)) |
 | root | & svg | width | 13 |
 | root | & svg | height | 13 |
 | root | & svg | flex-shrink | 0 |
@@ -889,11 +892,11 @@ Dart: `RaftBadgeRecipe` · source: `src/components/badge/badge.tsx` (index.mjs:1
 | variant | slot | value |
 |---|---|---|
 | appearance=soft | root | height: 22; min-width: 0; font-weight: 600; color: token(foreground); background-color: token(fillMuted); border-radius: 6; box-shadow: —; ring: —; justify-con… |
-| appearance=outline | root | height: 22; min-width: 0; font-family: token(monoFont, "Geist Mono", ui-monospace, monospace); font-weight: 400; color: token(foregroundMuted); background-colo… |
+| appearance=outline | root | height: 22; min-width: 0; font-family: token(monoFont, ui-monospace, monospace); font-weight: 400; color: token(foregroundMuted); background-color: transparent… |
 | variant=primary | root | background-color: token(brand400) |
 | variant=information | root | background-color: token(info) |
 | variant=muted | root | background-color: token(inactive) |
-| variant=accent | root | font-family: token(monoFont, "Geist Mono", ui-monospace, monospace); background-color: token(attention400) |
+| variant=accent | root | font-family: token(monoFont, ui-monospace, monospace); background-color: token(attention400) |
 | variant=success | root | background-color: token(success) |
 | variant=warning | root | background-color: token(warning) |
 | variant=danger | root | background-color: token(danger) |
@@ -1215,7 +1218,7 @@ Dart: `RaftListRowRecipe` · source: `src/components/list-row/list-row.recipe.ts
 | description | self | flex | 1 |
 | description | self | text-overflow | ellipsis |
 | description | self | white-space | nowrap |
-| meta | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| meta | self | font-family | token(monoFont, ui-monospace, monospace) |
 | meta | self | font-size | 12 |
 | meta | self | font-weight | 400 |
 | meta | self | line-height | 16 |
@@ -1384,7 +1387,7 @@ Dart: `RaftAppRailRecipe` · source: `src/components/app-rail/app-rail.recipe.ts
 | itemBadge | self | min-width | 16 |
 | itemBadge | self | padding | right:4 left:4 |
 | itemBadge | self | inset | top:-4 right:-4 |
-| itemBadge | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| itemBadge | self | font-family | token(monoFont, ui-monospace, monospace) |
 | itemBadge | self | font-size | 10 |
 | itemBadge | self | font-weight | 700 |
 | itemBadge | self | line-height | 16 |
@@ -1421,7 +1424,7 @@ Dart: `RaftCopyableCodeRecipe` · source: `src/components/copyable-code/copyable
 | code | self | min-width | 0 |
 | code | self | min-height | 40 |
 | code | self | padding | top:9 right:12 bottom:9 left:12 |
-| code | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| code | self | font-family | token(monoFont, ui-monospace, monospace) |
 | code | self | font-size | 13 |
 | code | self | line-height | 20 |
 | code | self | color | token(foreground) |
@@ -1730,7 +1733,7 @@ Dart: `RaftSidebarMenuRecipe` · source: `src/components/sidebar/sidebar-menu.re
 | sidebarMenuAside | self | gap | 4 |
 | sidebarMenuAside | self | flex-shrink | 0 |
 | sidebarMenuAside | self | align-items | center |
-| sidebarMenuCount | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| sidebarMenuCount | self | font-family | token(monoFont, ui-monospace, monospace) |
 | sidebarMenuCount | self | font-size | 12 |
 | sidebarMenuCount | self | font-weight | 400 |
 | sidebarMenuCount | self | line-height | 16 |
@@ -1833,7 +1836,7 @@ Dart: `RaftSidebarItemRecipe` · source: `src/components/sidebar/sidebar-item.re
 | sidebarItemSubtitle | self | white-space | nowrap |
 | sidebarItemSubtitle | self | **group/sidebar-item:data-active** | color: token(stickerInk) |
 | sidebarItemMeta | self | margin | left:auto |
-| sidebarItemMeta | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| sidebarItemMeta | self | font-family | token(monoFont, ui-monospace, monospace) |
 | sidebarItemMeta | self | font-size | 12 |
 | sidebarItemMeta | self | font-weight | 400 |
 | sidebarItemMeta | self | line-height | 16 |
@@ -1883,7 +1886,7 @@ Dart: `RaftSidebarItemRecipe` · source: `src/components/sidebar/sidebar-item.re
 | sidebarItemCount | self | min-width | 20 |
 | sidebarItemCount | self | padding | top:0 right:6 bottom:0 left:6 |
 | sidebarItemCount | self | gap | 0 |
-| sidebarItemCount | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| sidebarItemCount | self | font-family | token(monoFont, ui-monospace, monospace) |
 | sidebarItemCount | self | font-size | 12 |
 | sidebarItemCount | self | font-weight | 700 |
 | sidebarItemCount | self | line-height | 16 |
@@ -1969,7 +1972,7 @@ Dart: `RaftSidebarSectionRecipe` · source: `src/components/sidebar/sidebar-sect
 | sidebarSectionTitle | self | overflow-y | hidden |
 | sidebarSectionTitle | self | text-overflow | ellipsis |
 | sidebarSectionTitle | self | white-space | nowrap |
-| sidebarSectionCount | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| sidebarSectionCount | self | font-family | token(monoFont, ui-monospace, monospace) |
 | sidebarSectionCount | self | font-size | 12 |
 | sidebarSectionCount | self | font-weight | 400 |
 | sidebarSectionCount | self | line-height | 16 |
@@ -2158,7 +2161,7 @@ Dart: `RaftKbdRecipe` · source: `src/components/kbd/kbd.tsx` (index.mjs:3699)
 | root | self | min-width | 16 |
 | root | self | padding | right:4 left:4 |
 | root | self | gap | 4 |
-| root | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| root | self | font-family | token(monoFont, ui-monospace, monospace) |
 | root | self | font-size | 12 |
 | root | self | font-weight | 400 |
 | root | self | line-height | 16 |
@@ -2322,7 +2325,7 @@ Dart: `RaftContextMenuRecipe` · source: `src/components/context-menu/context-me
 | shortcut | self | min-width | 0 |
 | shortcut | self | padding | 0 |
 | shortcut | self | margin | left:auto |
-| shortcut | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| shortcut | self | font-family | token(monoFont, ui-monospace, monospace) |
 | shortcut | self | font-size | 12 |
 | shortcut | self | font-weight | 400 |
 | shortcut | self | line-height | 16 |
@@ -2492,7 +2495,7 @@ Dart: `RaftDropdownMenuRecipe` · source: `src/components/dropdown-menu/dropdown
 | shortcut | self | min-width | 0 |
 | shortcut | self | padding | 0 |
 | shortcut | self | margin | left:auto |
-| shortcut | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| shortcut | self | font-family | token(monoFont, ui-monospace, monospace) |
 | shortcut | self | font-size | 12 |
 | shortcut | self | font-weight | 400 |
 | shortcut | self | line-height | 16 |
@@ -3124,7 +3127,7 @@ Dart: `RaftInputGroupRecipe` · source: `src/components/input-group/input-group.
 | addon | & ~ [data-slot=input-group-control] | padding | left:0 |
 | text | self | display | flex |
 | text | self | padding | right:2 left:12 |
-| text | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| text | self | font-family | token(monoFont, ui-monospace, monospace) |
 | text | self | font-size | 13 |
 | text | self | line-height | 20 |
 | text | self | color | token(foregroundHint) |
@@ -3209,7 +3212,7 @@ Dart: `RaftComboboxRecipe` · source: `src/components/combobox/combobox.tsx` (in
 | triggerCount | self | height | auto |
 | triggerCount | self | min-width | 0 |
 | triggerCount | self | padding | right:0 left:0 |
-| triggerCount | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| triggerCount | self | font-family | token(monoFont, ui-monospace, monospace) |
 | triggerCount | self | font-size | 12 |
 | triggerCount | self | font-weight | 700 |
 | triggerCount | self | line-height | 16 |
@@ -3872,7 +3875,7 @@ Dart: `RaftSegmentedControlRecipe` · source: `src/components/segmented-control/
 | label | self | overflow-y | hidden |
 | label | self | text-overflow | ellipsis |
 | label | self | white-space | nowrap |
-| count | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| count | self | font-family | token(monoFont, ui-monospace, monospace) |
 | count | self | font-size | 12 |
 | count | self | font-weight | 400 |
 | count | self | line-height | 16 |
@@ -4002,7 +4005,7 @@ Dart: `RaftTextareaCounterRecipe` · source: `src/components/textarea/textarea.t
 
 | slot | target | property | value |
 |---|---|---|---|
-| root | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| root | self | font-family | token(monoFont, ui-monospace, monospace) |
 | root | self | font-size | 12 |
 | root | self | line-height | 16 |
 | root | self | color | token(foregroundHint) |
@@ -4200,7 +4203,7 @@ Dart: `RaftCodeBlockRecipe` · source: `src/components/code-block/code-block.rec
 | header | self | height | — |
 | header | self | padding | right:4 left:12 |
 | header | self | gap | 8 |
-| header | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| header | self | font-family | token(monoFont, ui-monospace, monospace) |
 | header | self | font-size | 12 |
 | header | self | line-height | 16 |
 | header | self | color | token(foregroundHint) |
@@ -4209,7 +4212,7 @@ Dart: `RaftCodeBlockRecipe` · source: `src/components/code-block/code-block.rec
 | header | self | border-color | token(lineHairline) |
 | header | self | align-items | center |
 | title | self | min-width | 0 |
-| title | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| title | self | font-family | token(monoFont, ui-monospace, monospace) |
 | title | self | font-size | 12 |
 | title | self | line-height | 16 |
 | title | self | overflow-x | hidden |
@@ -4235,7 +4238,7 @@ Dart: `RaftCodeBlockRecipe` · source: `src/components/code-block/code-block.rec
 | body | self | position | relative |
 | body | self | min-width | 0 |
 | body | self | padding | top:8 right:12 bottom:8 left:12 |
-| body | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| body | self | font-family | token(monoFont, ui-monospace, monospace) |
 | body | self | font-size | 13 |
 | body | self | line-height | 20 |
 | body | self | color | token(foreground) |
@@ -4272,7 +4275,7 @@ Dart: `RaftInlineCodeRecipe` · source: `src/components/inline-code/inline-code.
 | slot | target | property | value |
 |---|---|---|---|
 | root | self | padding | top:1 right:4 bottom:1 left:4 |
-| root | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| root | self | font-family | token(monoFont, ui-monospace, monospace) |
 | root | self | font-size | 0.875em |
 | root | self | font-weight | 400 |
 | root | self | color | token(foreground) |
@@ -4436,7 +4439,7 @@ Dart: `RaftMessageItemRecipe` · source: `src/components/message-item/message-it
 | avatarSlot | & [data-slot=avatar][data-size=md] | height | 35 |
 | continuationTime | self | position | absolute |
 | continuationTime | self | inset | top:4 right:0 |
-| continuationTime | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| continuationTime | self | font-family | token(monoFont, ui-monospace, monospace) |
 | continuationTime | self | font-size | 12 |
 | continuationTime | self | line-height | 16 |
 | continuationTime | self | color | transparent [#00000000] |
@@ -4484,7 +4487,7 @@ Dart: `RaftMessageItemRecipe` · source: `src/components/message-item/message-it
 | meta | self | text-overflow | ellipsis |
 | meta | self | white-space | nowrap |
 | time | self | margin | left:auto |
-| time | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| time | self | font-family | token(monoFont, ui-monospace, monospace) |
 | time | self | font-size | 12 |
 | time | self | line-height | 16 |
 | time | self | color | token(foregroundHint) |
@@ -4613,7 +4616,7 @@ Dart: `RaftMessageFooterRecipe` · source: `src/components/message-item/message-
 | readReceipt | self | height | 22 |
 | readReceipt | self | margin | left:auto |
 | readReceipt | self | gap | 4 |
-| readReceipt | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| readReceipt | self | font-family | token(monoFont, ui-monospace, monospace) |
 | readReceipt | self | font-size | 12 |
 | readReceipt | self | line-height | 16 |
 | readReceipt | self | color | token(foregroundHint) |
@@ -4714,7 +4717,7 @@ Dart: `RaftMessageReactionRecipe` · source: `src/components/message-item/messag
 | glyph | & > svg | height | 13 |
 | glyph | & > svg | flex-shrink | 0 |
 | count | self | display | inline-block |
-| count | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| count | self | font-family | token(monoFont, ui-monospace, monospace) |
 | count | self | font-size | 12 |
 | count | self | font-weight | 700 |
 | count | self | line-height | 16 |
@@ -4978,7 +4981,7 @@ Dart: `RaftMessageSystemRecipe` · source: `src/components/system-message/system
 | systemRoot | self | min-width | 0 |
 | systemRoot | self | padding | top:12 right:16 bottom:12 left:16 |
 | systemRoot | self | gap | 8 |
-| systemRoot | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| systemRoot | self | font-family | token(monoFont, ui-monospace, monospace) |
 | systemRoot | self | font-size | 12 |
 | systemRoot | self | line-height | 16 |
 | systemRoot | self | color | token(foregroundHint) |
@@ -4997,7 +5000,7 @@ Dart: `RaftMessageSystemRecipe` · source: `src/components/system-message/system
 | systemRoot | ::after | border-color | token(lineHairline) |
 | systemRoot | ::after | content | "" |
 | systemRoot | ::after | flex | 1 |
-| systemTime | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| systemTime | self | font-family | token(monoFont, ui-monospace, monospace) |
 | systemTime | self | font-size | 12 |
 | systemTime | self | line-height | 16 |
 | systemTime | self | color | token(foregroundHint) |
@@ -5032,7 +5035,7 @@ Dart: `RaftMessageSystemRecipe` · source: `src/components/system-message/system
 | systemGroupDisclosure | self | max-width | 100% |
 | systemGroupDisclosure | self | padding | top:0 right:8 bottom:0 left:8 |
 | systemGroupDisclosure | self | gap | 4 |
-| systemGroupDisclosure | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| systemGroupDisclosure | self | font-family | token(monoFont, ui-monospace, monospace) |
 | systemGroupDisclosure | self | font-size | 12 |
 | systemGroupDisclosure | self | line-height | 16 |
 | systemGroupDisclosure | self | color | token(foregroundHint) |
@@ -5143,7 +5146,7 @@ Dart: `RaftMessageQuotedPreviewRecipe` · source: `src/components/message-quoted
 | authorMeta | self | text-overflow | ellipsis |
 | authorMeta | self | white-space | nowrap |
 | timestamp | self | margin | left:auto |
-| timestamp | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| timestamp | self | font-family | token(monoFont, ui-monospace, monospace) |
 | timestamp | self | font-size | 12 |
 | timestamp | self | line-height | 16 |
 | timestamp | self | color | token(foregroundHint) |
@@ -5165,7 +5168,7 @@ Dart: `RaftMessageQuotedPreviewRecipe` · source: `src/components/message-quoted
 | attachment | self | height | 22 |
 | attachment | self | padding | right:6 left:6 |
 | attachment | self | gap | 4 |
-| attachment | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| attachment | self | font-family | token(monoFont, ui-monospace, monospace) |
 | attachment | self | font-size | 12 |
 | attachment | self | line-height | 16 |
 | attachment | self | color | token(foregroundMuted) |
@@ -5241,7 +5244,7 @@ Dart: `RaftMessageRepliesRecipe` · source: `src/components/message-replies/mess
 | summary | & strong | height | 20 |
 | summary | & strong | min-width | 20 |
 | summary | & strong | padding | right:6 left:6 |
-| summary | & strong | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| summary | & strong | font-family | token(monoFont, ui-monospace, monospace) |
 | summary | & strong | font-size | 12 |
 | summary | & strong | font-weight | 700 |
 | summary | & strong | line-height | 16 |
@@ -5280,7 +5283,7 @@ Dart: `RaftMessageRepliesRecipe` · source: `src/components/message-replies/mess
 | content | self | text-overflow | ellipsis |
 | content | self | white-space | nowrap |
 | time | self | margin | left:auto |
-| time | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| time | self | font-family | token(monoFont, ui-monospace, monospace) |
 | time | self | font-size | 12 |
 | time | self | line-height | 16 |
 | time | self | color | token(foregroundHint) |
@@ -5456,7 +5459,7 @@ Dart: `RaftMessageActionCardContentRecipe` · source: `src/components/message-ac
 | scope | self | border-style | solid |
 | scope | self | border-color | token(lineHairline) |
 | scope | self | border-radius | 8 |
-| scopeName | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| scopeName | self | font-family | token(monoFont, ui-monospace, monospace) |
 | scopeName | self | font-size | 12 |
 | scopeName | self | font-weight | 400 |
 | scopeName | self | line-height | 16 |
@@ -5575,7 +5578,7 @@ Dart: `RaftMessageAttachmentRecipe` · source: `src/components/message-attachmen
 | meta | self | max-width | 100% |
 | meta | self | margin | top:auto |
 | meta | self | gap | 8 |
-| meta | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| meta | self | font-family | token(monoFont, ui-monospace, monospace) |
 | meta | self | font-size | 12 |
 | meta | self | line-height | 16 |
 | meta | self | color | token(foregroundHint) |
@@ -5598,7 +5601,7 @@ Dart: `RaftMessageAttachmentRecipe` · source: `src/components/message-attachmen
 | summary | self | display | inline-flex |
 | summary | self | padding | right:4 |
 | summary | self | margin | top:2 |
-| summary | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| summary | self | font-family | token(monoFont, ui-monospace, monospace) |
 | summary | self | font-size | 12 |
 | summary | self | line-height | 16 |
 | summary | self | color | token(foregroundHint) |
@@ -5839,7 +5842,7 @@ Dart: `RaftMessageForwardedBundleRecipe` · source: `src/components/message-forw
 | headerLabel | self | align-items | center |
 | headerLabel | & svg | width | 14 |
 | headerLabel | & svg | height | 14 |
-| headerCount | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| headerCount | self | font-family | token(monoFont, ui-monospace, monospace) |
 | headerCount | self | font-size | 12 |
 | headerCount | self | line-height | 16 |
 | headerCount | self | color | token(foregroundHint) |
@@ -5922,7 +5925,7 @@ Dart: `RaftMessageForwardedBundleItemRecipe` · source: `src/components/message-
 | meta | self | min-width | 0 |
 | meta | self | margin | bottom:2 |
 | meta | self | gap | 6 |
-| meta | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| meta | self | font-family | token(monoFont, ui-monospace, monospace) |
 | meta | self | font-size | 12 |
 | meta | self | line-height | 16 |
 | meta | self | color | token(foregroundHint) |
@@ -5960,7 +5963,7 @@ Dart: `RaftMessageForwardedBundleItemRecipe` · source: `src/components/message-
 | attachmentName | self | overflow-y | hidden |
 | attachmentName | self | text-overflow | ellipsis |
 | attachmentName | self | white-space | nowrap |
-| attachmentMeta | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| attachmentMeta | self | font-family | token(monoFont, ui-monospace, monospace) |
 | attachmentMeta | self | font-weight | 400 |
 | attachmentMeta | self | color | token(foregroundHint) |
 | attachmentMeta | self | flex-shrink | 0 |
@@ -6033,7 +6036,7 @@ Dart: `RaftProgressRecipe` · source: `src/components/progress/progress.tsx` (in
 | label | self | overflow-y | hidden |
 | label | self | text-overflow | ellipsis |
 | label | self | white-space | nowrap |
-| value | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| value | self | font-family | token(monoFont, ui-monospace, monospace) |
 | value | self | font-size | 12 |
 | value | self | line-height | 16 |
 | value | self | color | token(foregroundHint) |
@@ -6078,14 +6081,14 @@ Dart: `RaftMessageTranslationRecipe` · source: `src/components/message-translat
 | translationOriginal | self | margin | top:4 |
 | translationOriginal | self | font-style | normal |
 | translationOriginalLabel | self | margin | bottom:2 |
-| translationOriginalLabel | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| translationOriginalLabel | self | font-family | token(monoFont, ui-monospace, monospace) |
 | translationOriginalLabel | self | font-size | 12 |
 | translationOriginalLabel | self | line-height | 16 |
 | translationOriginalLabel | self | color | token(foregroundHint) |
 | translationStatus | self | display | inline-flex |
 | translationStatus | self | margin | top:4 |
 | translationStatus | self | gap | 6 |
-| translationStatus | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| translationStatus | self | font-family | token(monoFont, ui-monospace, monospace) |
 | translationStatus | self | font-size | 12 |
 | translationStatus | self | line-height | 16 |
 | translationStatus | self | color | token(foregroundHint) |
@@ -6095,7 +6098,7 @@ Dart: `RaftMessageTranslationRecipe` · source: `src/components/message-translat
 | translationFailedStatus | self | display | inline-flex |
 | translationFailedStatus | self | margin | top:4 |
 | translationFailedStatus | self | gap | 6 |
-| translationFailedStatus | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| translationFailedStatus | self | font-family | token(monoFont, ui-monospace, monospace) |
 | translationFailedStatus | self | font-size | 12 |
 | translationFailedStatus | self | line-height | 16 |
 | translationFailedStatus | self | color | token(warningStrong) |
@@ -6169,14 +6172,14 @@ Dart: `RaftMessageListRecipe` · source: `src/components/message-list/message-li
 | dateDividerRule | self | border-color | token(lineHairline) |
 | dateDividerRule | self | flex | 1 |
 | dateDividerChip | self | display | inline-flex |
-| dateDividerChip | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| dateDividerChip | self | font-family | token(monoFont, ui-monospace, monospace) |
 | dateDividerChip | self | font-size | 12 |
 | dateDividerChip | self | line-height | 16 |
 | dateDividerChip | self | color | token(foregroundHint) |
 | dateDividerChip | self | align-items | center |
 | dateDividerChip | self | white-space | nowrap |
 | notice | self | padding | bottom:8 |
-| notice | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| notice | self | font-family | token(monoFont, ui-monospace, monospace) |
 | notice | self | font-size | 12 |
 | notice | self | line-height | 16 |
 | notice | self | color | token(foregroundHint) |
@@ -6185,7 +6188,7 @@ Dart: `RaftMessageListRecipe` · source: `src/components/message-list/message-li
 | historyLimited | self | height | 22 |
 | historyLimited | self | padding | right:6 left:6 |
 | historyLimited | self | gap | 4 |
-| historyLimited | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| historyLimited | self | font-family | token(monoFont, ui-monospace, monospace) |
 | historyLimited | self | font-size | 12 |
 | historyLimited | self | line-height | 16 |
 | historyLimited | self | color | token(foregroundMuted) |
@@ -6331,7 +6334,7 @@ Dart: `RaftMonoRecipe` · source: `src/components/text/text.tsx` (index.mjs:1001
 | slot | target | property | value |
 |---|---|---|---|
 | base | self | margin | 0 |
-| base | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| base | self | font-family | token(monoFont, ui-monospace, monospace) |
 | base | self | font-size | 14 |
 | base | self | font-weight | 400 |
 | base | self | line-height | 20 |
@@ -6492,7 +6495,7 @@ Dart: `RaftFilePreviewRecipe` · source: `src/components/file-preview/file-previ
 | codeRowIndent | self | align-items | center |
 | codeTextRow | self | display | block |
 | codeTextRow | self | padding | left:12 |
-| codeGlyph | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| codeGlyph | self | font-family | token(monoFont, ui-monospace, monospace) |
 | codeGlyph | self | font-size | 4 |
 | codeGlyph | self | line-height | 1 |
 | codeGlyph | self | color | color-mix(in oklab, token(foreground) 30%, transparent) |
@@ -6516,7 +6519,7 @@ Dart: `RaftFilePreviewRecipe` · source: `src/components/file-preview/file-previ
 | badge | self | width | fit-content |
 | badge | self | padding | top:2 right:4 bottom:2 left:4 |
 | badge | self | inset | right:-6 bottom:2 |
-| badge | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| badge | self | font-family | token(monoFont, ui-monospace, monospace) |
 | badge | self | font-size | 10 |
 | badge | self | font-weight | 700 |
 | badge | self | line-height | 1 |
@@ -6635,7 +6638,7 @@ Dart: `RaftFilesRecipe` · source: `src/components/files/files.recipe.ts` (index
 | meta | self | min-width | 0 |
 | meta | self | margin | top:0 |
 | meta | self | gap | row:4 column:6 |
-| meta | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| meta | self | font-family | token(monoFont, ui-monospace, monospace) |
 | meta | self | font-size | 12 |
 | meta | self | line-height | 16 |
 | meta | self | color | token(foregroundHint) |
@@ -6807,7 +6810,7 @@ Dart: `RaftComposerAttachmentRecipe` · source: `src/components/composer/compose
 | attachmentTitle | self | white-space | nowrap |
 | attachmentMeta | self | display | block |
 | attachmentMeta | self | width | 100% |
-| attachmentMeta | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| attachmentMeta | self | font-family | token(monoFont, ui-monospace, monospace) |
 | attachmentMeta | self | font-size | 12 |
 | attachmentMeta | self | line-height | 16 |
 | attachmentMeta | self | color | token(foregroundHint) |
@@ -6820,7 +6823,7 @@ Dart: `RaftComposerAttachmentRecipe` · source: `src/components/composer/compose
 | attachmentUploadingOverlay | self | position | absolute |
 | attachmentUploadingOverlay | self | padding | right:4 left:4 |
 | attachmentUploadingOverlay | self | inset | 0 |
-| attachmentUploadingOverlay | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| attachmentUploadingOverlay | self | font-family | token(monoFont, ui-monospace, monospace) |
 | attachmentUploadingOverlay | self | font-size | 12 |
 | attachmentUploadingOverlay | self | font-weight | 700 |
 | attachmentUploadingOverlay | self | line-height | 16 |
@@ -7041,7 +7044,7 @@ Dart: `RaftComposerSuggestionListRecipe` · source: `src/components/composer/com
 | iconVariant=framed | icon | display: flex; width: 19; height: 19; color: token(foregroundMuted); background-color: token(fillMuted); border-radius: 4; align-items: center; justify-content… |
 | iconVariant=auxiliary | icon | width: 12; height: 12; margin: left:-4; color: token(foregroundHint) |
 | iconVariant=inline | icon | display: flex; width: 14; height: 14; color: token(foregroundHint); align-items: center; justify-content: center; & svg width: 14; & svg height: 14 |
-| metaVariant=code | meta | font-weight: —; flex: —; flex-basis: —; font-family: token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| metaVariant=code | meta | font-weight: —; flex: —; flex-basis: —; font-family: token(monoFont, ui-monospace, monospace) |
 
 ## composerRoot
 
@@ -7318,7 +7321,7 @@ Dart: `RaftNotificationCenterRecipe` · source: `src/components/notification-cen
 | title | self | line-height | 22 |
 | title | self | color | token(foreground) |
 | count | self | margin | left:auto |
-| count | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| count | self | font-family | token(monoFont, ui-monospace, monospace) |
 | count | self | font-size | 12 |
 | count | self | line-height | 16 |
 | count | self | color | token(foregroundHint) |
@@ -8195,7 +8198,7 @@ Dart: `RaftThreadPanelRecipe` · source: `src/components/thread-panel/thread-pan
 | searchTrailing | self | gap | 6 |
 | searchTrailing | self | flex-shrink | 0 |
 | searchTrailing | self | align-items | center |
-| searchCount | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| searchCount | self | font-family | token(monoFont, ui-monospace, monospace) |
 | searchCount | self | font-size | 12 |
 | searchCount | self | line-height | 16 |
 | searchCount | self | color | token(foregroundHint) |
@@ -8213,7 +8216,7 @@ Dart: `RaftThreadPanelRecipe` · source: `src/components/thread-panel/thread-pan
 | replySummary | self | padding | top:8 right:20 left:20 |
 | replyCount | self | padding | bottom:8 |
 | replyCount | self | margin | bottom:4 |
-| replyCount | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| replyCount | self | font-family | token(monoFont, ui-monospace, monospace) |
 | replyCount | self | font-size | 12 |
 | replyCount | self | line-height | 16 |
 | replyCount | self | color | token(foregroundHint) |
@@ -8319,7 +8322,7 @@ Dart: `RaftTaskBoardColumnRecipe` · source: `src/components/task-board/task-boa
 | badge | self | color | token(foregroundMuted) |
 | badge | self | align-items | center |
 | badge | & > svg | flex-shrink | 0 |
-| count | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| count | self | font-family | token(monoFont, ui-monospace, monospace) |
 | count | self | font-size | 12 |
 | count | self | font-weight | 400 |
 | count | self | line-height | 16 |
@@ -8439,9 +8442,9 @@ Dart: `RaftTaskCardStatusRecipe` · source: `src/components/task-card/task-card-
 | base | self | flex-shrink | 0 |
 | base | self | touch-action | manipulation |
 | base | self | align-items | center |
-| base | self | **active+button+enabled** | background-image: linear-gradient(token(fillPressed), token(fillPressed)); cursor: pointer |
+| base | self | **active+button** | background-image: linear-gradient(token(fillPressed), token(fillPressed)); cursor: pointer |
 | base | self | **button** | cursor: pointer |
-| base | self | **button+enabled+hover** | background-image: linear-gradient(token(fillPressed), token(fillPressed)); cursor: pointer |
+| base | self | **button+hover** | background-image: linear-gradient(token(fillPressed), token(fillPressed)); cursor: pointer |
 | base | self | **data-busy=true** | opacity: 60%; cursor: wait; pointer-events: none |
 | base | self | **data-busy=true+disabled** | opacity: 100%; cursor: wait; pointer-events: none |
 | base | self | **disabled** | opacity: 100%; cursor: default |
@@ -8499,7 +8502,7 @@ Dart: `RaftTaskCardRecipe` · source: `src/components/task-card/task-card.recipe
 | meta | self | flex-wrap | nowrap |
 | meta | self | align-items | center |
 | channel | self | min-width | 0 |
-| channel | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| channel | self | font-family | token(monoFont, ui-monospace, monospace) |
 | channel | self | font-size | 12 |
 | channel | self | font-weight | 400 |
 | channel | self | line-height | 16 |
@@ -8508,7 +8511,7 @@ Dart: `RaftTaskCardRecipe` · source: `src/components/task-card/task-card.recipe
 | channel | self | overflow-y | hidden |
 | channel | self | text-overflow | ellipsis |
 | channel | self | white-space | nowrap |
-| number | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| number | self | font-family | token(monoFont, ui-monospace, monospace) |
 | number | self | font-size | 12 |
 | number | self | font-weight | 400 |
 | number | self | line-height | 16 |
@@ -8517,7 +8520,7 @@ Dart: `RaftTaskCardRecipe` · source: `src/components/task-card/task-card.recipe
 | legacy | self | display | inline-flex |
 | legacy | self | height | 22 |
 | legacy | self | padding | top:0 right:6 bottom:0 left:6 |
-| legacy | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| legacy | self | font-family | token(monoFont, ui-monospace, monospace) |
 | legacy | self | font-size | 12 |
 | legacy | self | font-weight | 400 |
 | legacy | self | line-height | 16 |
@@ -8622,7 +8625,7 @@ Dart: `RaftTaskListSectionRecipe` · source: `src/components/task-list/task-list
 | badge | self | color | token(foregroundHint) |
 | badge | self | align-items | center |
 | badge | & > svg | flex-shrink | 0 |
-| count | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| count | self | font-family | token(monoFont, ui-monospace, monospace) |
 | count | self | font-size | 12 |
 | count | self | font-weight | 400 |
 | count | self | line-height | 16 |
@@ -9169,7 +9172,7 @@ Dart: `RaftInboxItemRecipe` · source: `src/components/inbox-item/inbox-item.rec
 | itemTrailing | ::after | content | "" |
 | itemTrailing | ::after | flex-shrink | 0 |
 | itemTrailing | ::after | **group/inbox-item:data-unread=true** | display: block |
-| itemTimestamp | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| itemTimestamp | self | font-family | token(monoFont, ui-monospace, monospace) |
 | itemTimestamp | self | font-size | 12 |
 | itemTimestamp | self | line-height | 16 |
 | itemTimestamp | self | color | token(foregroundHint) |
@@ -9410,7 +9413,7 @@ Dart: `RaftSearchMessageRecipe` · source: `src/components/search/search-message
 | messageHeader | self | display | flex |
 | messageHeader | self | min-width | 0 |
 | messageHeader | self | gap | 6 |
-| messageHeader | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| messageHeader | self | font-family | token(monoFont, ui-monospace, monospace) |
 | messageHeader | self | font-size | 12 |
 | messageHeader | self | line-height | 16 |
 | messageHeader | self | color | token(foregroundHint) |
@@ -9494,7 +9497,7 @@ Dart: `RaftSearchThreadRecipe` · source: `src/components/search/search-thread.r
 | threadMeta | self | display | flex |
 | threadMeta | self | margin | bottom:2 |
 | threadMeta | self | gap | 6 |
-| threadMeta | self | font-family | token(monoFont, "Geist Mono", ui-monospace, monospace) |
+| threadMeta | self | font-family | token(monoFont, ui-monospace, monospace) |
 | threadMeta | self | font-size | 12 |
 | threadMeta | self | font-weight | 400 |
 | threadMeta | self | line-height | 16 |
@@ -9569,4 +9572,160 @@ Dart: `RaftSearchTriggerRecipe` · source: `src/components/search/search-trigger
 | label | self | white-space | nowrap |
 | shortcut | self | margin | left:auto |
 | shortcut | self | flex-shrink | 0 |
+
+## webSelectionPanel
+
+Dart: `RaftWebSelectionPanelRecipe` · source: `Web src/components/ui/SelectionPopover.tsx sha256:8af0b00698de999e8ec3c1d79e9427e6aa1ccd7c1097cc4e5943ba3d9b1228c6` (index.mjs:1)
+· components: `SelectionPopoverSections`
+
+### Default
+
+| slot | target | property | value |
+|---|---|---|---|
+| root | self | color | token(foreground) |
+| root | self | background-color | token(layerPopover) |
+| root | self | border-radius | 10 |
+| root | self | box-shadow | 0 0 0 1 token(lineSeam), token(elevationFloat) |
+| root | self | ring | width:1 color:token(lineSeam) offsetWidth:— offsetColor:— |
+| header | self | display | flex |
+| header | self | padding | top:10 right:16 bottom:4 left:16 |
+| header | self | gap | 8 |
+| header | self | flex-shrink | 0 |
+| header | self | align-items | center |
+| header | self | justify-content | space-between |
+| list | self | min-height | 0 |
+| list | self | max-height | 256 |
+| list | self | padding | 6 |
+| list | self | overflow-y | auto |
+| empty | self | padding | top:8 right:10 bottom:8 left:10 |
+| empty | self | font-size | 14 |
+| empty | self | line-height | 20 |
+| empty | self | color | token(foregroundHint) |
+| title | self | font-size | 12 |
+| title | self | font-weight | 700 |
+| title | self | line-height | 16 |
+| title | self | color | token(foregroundHint) |
+| clear | self | font-size | 12 |
+| clear | self | font-weight | 600 |
+| clear | self | line-height | 16 |
+| clear | self | color | token(foreground) |
+| clear | self | border-radius | 2 |
+| clear | self | outline-style | none |
+| clear | self | text-decoration-line | underline |
+| clear | self | text-decoration-thickness | 1.5 |
+| clear | self | text-underline-offset | 3 |
+| clear | self | **focus-visible** | box-shadow: token(focusRing) |
+| search | self | display | flex |
+| search | self | height | 40 |
+| search | self | padding | right:12 left:12 |
+| search | self | gap | 8 |
+| search | self | color | token(foregroundHint) |
+| search | self | border-width | bottom:1 |
+| search | self | border-style | bottom:solid |
+| search | self | border-color | token(lineHairline) |
+| search | self | flex-shrink | 0 |
+| search | self | align-items | center |
+| search | self | **focus-within** | box-shadow: inset 0 0 0 2 token(foreground) |
+| input | self | height | 100% |
+| input | self | min-width | 0 |
+| input | self | font-size | 14 |
+| input | self | line-height | 20 |
+| input | self | color | token(foreground) |
+| input | self | background-color | transparent [#00000000] |
+| input | self | outline-style | none |
+| input | self | flex | 1 |
+| input | ::placeholder | color | token(foregroundHint) |
+| searchIcon | self | width | 16 |
+| searchIcon | self | height | 16 |
+| searchIcon | self | flex-shrink | 0 |
+
+## webMenuAction
+
+Dart: `RaftWebMenuActionRecipe` · source: `Web src/components/ui/MenuItem.tsx sha256:3cd601e7b3a45d7ec37cd5d88acedc4ee339d981789fa87ed791530cbbb14597` (index.mjs:1)
+· components: `MenuItem`
+
+### Default
+
+| slot | target | property | value |
+|---|---|---|---|
+| root | self | display | flex |
+| root | self | width | 100% |
+| root | self | min-height | 36 |
+| root | self | padding | top:6 right:10 bottom:6 left:10 |
+| root | self | gap | 10 |
+| root | self | font-family | token(sansFont, system-ui, sans-serif) |
+| root | self | font-size | 14 |
+| root | self | font-weight | 500 |
+| root | self | line-height | 20 |
+| root | self | color | token(foreground) |
+| root | self | border-radius | 8 |
+| root | self | outline-style | none |
+| root | self | transition-property | color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to |
+| root | self | transition-duration | 150ms |
+| root | self | transition-timing-function | cubic-bezier(0.4, 0, 0.2, 1) |
+| root | self | align-items | center |
+| root | self | text-align | left |
+| root | self | **disabled** | color: token(foregroundDisabled); cursor: not-allowed |
+| root | self | **focus-visible** | background-color: token(brandSoft) |
+| root | self | **height<=600** | min-height: 32; padding: top:4 right:10 bottom:4 left:10 |
+| root | self | **hover** | background-color: token(brandSoft) |
+| root | & > svg | flex-shrink | 0 |
+| root | & > svg:first-child | color | token(foregroundMuted) |
+| root | & > svg:first-child | **disabled** | color: token(foregroundDisabled) |
+
+## webSelectionRow
+
+Dart: `RaftWebSelectionRowRecipe` · source: `Web src/components/ui/SelectionPopover.tsx sha256:8af0b00698de999e8ec3c1d79e9427e6aa1ccd7c1097cc4e5943ba3d9b1228c6` (index.mjs:1)
+· components: `SelectionPopoverOptionRow`
+
+| axis | values | default |
+|---|---|---|
+| checked | true · false | false |
+| disabled | true · false | false |
+| italic | true · false | false |
+
+### Default (checked=false, disabled=false, italic=false)
+
+| slot | target | property | value |
+|---|---|---|---|
+| root | self | display | flex |
+| root | self | width | 100% |
+| root | self | height | 36 |
+| root | self | padding | right:10 left:10 |
+| root | self | gap | 8 |
+| root | self | font-size | 14 |
+| root | self | font-weight | 500 |
+| root | self | line-height | 20 |
+| root | self | color | token(foreground) |
+| root | self | border-radius | 8 |
+| root | self | outline-style | none |
+| root | self | overflow-x | hidden |
+| root | self | overflow-y | hidden |
+| root | self | align-items | center |
+| root | self | justify-content | space-between |
+| root | self | text-align | left |
+| root | self | **focus-visible** | background-color: token(brandSoft) |
+| root | self | **hover** | background-color: token(brandSoft) |
+| leading | self | display | flex |
+| leading | self | width | 20 |
+| leading | self | height | 20 |
+| leading | self | flex-shrink | 0 |
+| leading | self | align-items | center |
+| leading | self | justify-content | center |
+| label | self | overflow-x | hidden |
+| label | self | overflow-y | hidden |
+| label | self | text-overflow | ellipsis |
+| label | self | white-space | nowrap |
+| indicator | self | width | 16 |
+| indicator | self | height | 16 |
+| indicator | self | color | token(foreground) |
+| indicator | self | flex-shrink | 0 |
+
+### Variant deltas (one axis changed from the default)
+
+| variant | slot | value |
+|---|---|---|
+| checked=true | root | font-weight: 700 |
+| disabled=true | root | font-weight: —; color: token(foregroundDisabled); cursor: not-allowed; [focus-visible] (none); [hover] (none) |
+| italic=true | label | overflow-x: —; overflow-y: —; text-overflow: —; color: token(foregroundMuted) |
 

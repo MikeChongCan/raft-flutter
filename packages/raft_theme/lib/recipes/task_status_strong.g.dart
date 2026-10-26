@@ -88,11 +88,11 @@ abstract final class RaftTaskStatusStrongRecipe {
   /// Distinct class lists (indices into [raftRecipeUtilities]).
   static const List<List<int>> _lists = [
     [],
-    [1836],
-    [1834],
-    [1835],
-    [1833],
-    [1832],
+    [1846],
+    [1844],
+    [1845],
+    [1843],
+    [1842],
   ];
 
   /// Per combination (mixed radix over [axes]): class list per slot.

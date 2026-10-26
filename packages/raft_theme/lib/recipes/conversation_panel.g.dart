@@ -91,10 +91,10 @@ abstract final class RaftConversationPanelRecipe {
 
   /// Distinct class lists (indices into [raftRecipeUtilities]).
   static const List<List<int>> _lists = [
-    [959, 1189, 1457, 1473, 960, 961, 593, 1007, 1807],
-    [959, 1457, 1473, 960, 961, 593],
-    [1727, 621, 632, 593, 85, 84, 1363, 83],
-    [593],
+    [965, 1197, 1465, 1481, 966, 967, 595, 1015, 1816],
+    [965, 1465, 1481, 966, 967, 595],
+    [1735, 623, 634, 595, 85, 84, 1371, 83],
+    [595],
   ];
 
   /// Per combination (mixed radix over [axes]): class list per slot.

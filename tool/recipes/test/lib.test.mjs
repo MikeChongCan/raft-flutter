@@ -78,3 +78,10 @@ test('cascade: specificity, order, !important and state atoms', () => {
   assert.equal(atomMatches('width<768', { flags: new Set(), width: 500 }), true);
   assert.equal(atomMatches('width<768', { flags: new Set() }), false);
 });
+
+test('enabled controls match without an extra opt-in state flag', () => {
+  const enabled = analyzeSelector('.x:enabled:hover', '.x').atoms;
+  assert.deepEqual(enabled, ['not:disabled', 'hover']);
+  assert.equal(enabled.every((atom) => atomMatches(atom, { flags: new Set(['hover']) })), true);
+  assert.equal(enabled.every((atom) => atomMatches(atom, { flags: new Set(['hover', 'disabled']) })), false);
+});
