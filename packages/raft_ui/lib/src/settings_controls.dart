@@ -11,6 +11,8 @@ import 'tap_slop.dart';
 
 import 'design_primitives.dart' hide RaftPanelHeaderRecipe;
 import 'error_presentation.dart';
+import 'form_controls.dart' show RaftTextInput, RaftTextarea, RaftLegacyInput;
+import 'dialog_card.dart' show RaftTextSteps;
 import 'form_presentation.dart';
 import 'hover_region.dart';
 import 'icons.dart';
@@ -34,20 +36,6 @@ import 'tooltip.dart' show RaftTooltip;
 /// and type value comes from the generated raft-ui recipes
 /// (`buttonVariants`, `input`, `inputGroup`, `field`, `dialog`); callsite
 /// class overrides from the Web JSX are passed explicitly and cited.
-
-RaftRecipeStates _states(
-  RaftTokens t, {
-  bool hovered = false,
-  bool pressed = false,
-  bool disabled = false,
-  bool focused = false,
-}) => RaftRecipeStates({
-  if (hovered && !disabled) RaftRecipeStates.hover,
-  if (pressed && !disabled) RaftRecipeStates.active,
-  if (disabled) RaftRecipeStates.disabled,
-  if (focused) RaftRecipeStates.focus,
-  if (t.dark) RaftRecipeStates.dark,
-});
 
 TextStyle _slotText(RaftTokens t, RaftSlotStyle s, {TextStyle? base}) {
   final tokens = RaftRecipeTokens(t);
@@ -320,7 +308,7 @@ class RaftSettingsField extends StatelessWidget {
 }
 
 /// raft-ui `Input` (`input` recipe) with a callsite text size.
-class RaftRecipeInput extends StatefulWidget {
+class RaftRecipeInput extends StatelessWidget {
   const RaftRecipeInput({
     super.key,
     this.fieldKey,
@@ -390,110 +378,35 @@ class RaftRecipeInput extends StatefulWidget {
   /// Callsite padding override (`theme-brutal:p-2` on the account name).
   final EdgeInsets? padding;
   @override
-  State<RaftRecipeInput> createState() => _RaftRecipeInputState();
-}
-
-class _RaftRecipeInputState extends State<RaftRecipeInput> {
-  late final FocusNode own = FocusNode();
-  FocusNode get focus => widget.focusNode ?? own;
-  void _focusChanged() => setState(() {});
-  @override
-  void initState() {
-    super.initState();
-    focus.addListener(_focusChanged);
-  }
-
-  @override
-  void didUpdateWidget(RaftRecipeInput oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.focusNode != widget.focusNode) {
-      (oldWidget.focusNode ?? own).removeListener(_focusChanged);
-      focus.addListener(_focusChanged);
-    }
-  }
-
-  @override
-  void dispose() {
-    focus.removeListener(_focusChanged);
-    own.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final t = RaftTokens.of(context), tokens = RaftRecipeTokens(t);
-    final s = RaftInputRecipe.resolve(
-      theme: raftRecipeTheme(t),
-      states: _states(t, focused: focus.hasFocus, disabled: !widget.enabled),
-      tokens: tokens,
-    ).root;
-    // Callsite `text-sm`.
-    // raft-ui 0.7.0 `Input` text (`text-field`): Web callsites set no `text-sm`
-    // any more, so the Raft look keeps the recipe size and leading.
-    var text = widget.recipeText || !usesLegacyRecipes(tokens)
-        ? _slotText(t, s)
-        : _slotText(t, s).copyWith(fontSize: 14, height: 20 / 14);
-    if (widget.mono) {
-      text = text.copyWith(fontFamily: t.monoFont);
-    }
-    // A fixed box height is a minimum once the text is larger than the
-    // default: the field grows with the text it holds.
-    // A callsite height wins over the recipe's own (`h-11` in raft-ui 0.7.0,
-    // a line centred in a box with no vertical padding).
-    final boxHeight = widget.height ?? s.height;
-    final grows = boxHeight != null && RaftScaled.grows(context);
-    final field = Container(
-      height: grows ? null : boxHeight,
-      constraints: grows ? BoxConstraints(minHeight: boxHeight) : null,
-      alignment: boxHeight == null ? null : Alignment.centerLeft,
-      decoration: s.decoration(tokens),
-      padding: widget.padding ?? s.padding,
-      child: TextField(
-        contextMenuBuilder: RaftTextSelectionToolbar.editableText,
-        autofillHints: null,
-        key: widget.fieldKey,
-        controller: widget.controller,
-        focusNode: focus,
-        autofocus: widget.autofocus,
-        enabled: widget.enabled,
-        readOnly: widget.readOnly,
-        obscureText: widget.obscure,
-        enableSuggestions: !widget.obscure,
-        autocorrect: !widget.obscure,
-        keyboardType:
-            widget.keyboardType ??
-            (widget.numeric ? TextInputType.number : null),
-        inputFormatters: [
-          if (widget.numeric) FilteringTextInputFormatter.digitsOnly,
-          ...?widget.inputFormatters,
-          if (widget.maxLength != null)
-            LengthLimitingTextInputFormatter(widget.maxLength),
-        ],
-        textCapitalization: widget.upperCase
-            ? TextCapitalization.characters
-            : TextCapitalization.none,
-        style: text,
-        cursorColor: text.color ?? t.strong,
-        onChanged: widget.onChanged,
-        onSubmitted: widget.onSubmitted,
-        decoration: _bare(
-          hint: widget.placeholder,
-          hintStyle: text.copyWith(color: _placeholder(text.color ?? t.strong)),
-        ),
-      ),
-    );
-    // `disabled:opacity-*` lives on the recipe root; sets that dim through
-    // colours (raft-ui 0.7.0 `disabled:bg-fill-muted`) carry none.
-    final dim = s.opacity ?? (usesLegacyRecipes(tokens) ? .6 : null);
-    return widget.enabled || dim == null
-        ? field
-        : Opacity(opacity: dim, child: field);
-  }
+  Widget build(BuildContext context) => RaftTextInput(
+    fieldKey: fieldKey,
+    controller: controller,
+    hintText: placeholder,
+    onChanged: onChanged,
+    onSubmitted: onSubmitted,
+    mono: mono,
+    padding: padding,
+    focusNode: focusNode,
+    enabled: enabled,
+    numeric: numeric,
+    upperCase: upperCase,
+    height: height,
+    keyboardType: keyboardType,
+    inputFormatters: inputFormatters,
+    maxLength: maxLength,
+    obscureText: obscure,
+    readOnly: readOnly,
+    autofocus: autofocus,
+    // raft-ui 0.7.0 `Input` text: the Web callsites set no `text-sm` any more; the frozen looks keep it.
+    legacy: recipeText
+        ? RaftLegacyInput.settingsPlain
+        : RaftLegacyInput.settings,
+  );
 }
 
 /// raft-ui `Textarea` (`textarea` recipe) with the callsite `text-sm
 /// leading-relaxed` and a `min-h-*` box (MachineDetailPanel description).
-class RaftRecipeTextarea extends StatefulWidget {
+class RaftRecipeTextarea extends StatelessWidget {
   const RaftRecipeTextarea({
     super.key,
     this.fieldKey,
@@ -521,64 +434,19 @@ class RaftRecipeTextarea extends StatefulWidget {
   final int? maxLength;
   final bool autofocus;
   @override
-  State<RaftRecipeTextarea> createState() => _RaftRecipeTextareaState();
-}
-
-class _RaftRecipeTextareaState extends State<RaftRecipeTextarea> {
-  final focus = FocusNode();
-  @override
-  void initState() {
-    super.initState();
-    focus.addListener(() => setState(() {}));
-  }
-
-  @override
-  void dispose() {
-    focus.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final t = RaftTokens.of(context), tokens = RaftRecipeTokens(t);
-    final s = RaftTextareaRecipe.resolve(
-      theme: raftRecipeTheme(t),
-      states: _states(t, focused: focus.hasFocus),
-      tokens: tokens,
-    ).root;
-    // Callsite `text-sm leading-relaxed`.
-    final text = widget.recipeText
-        ? _slotText(t, s)
-        : _slotText(t, s).copyWith(fontSize: 14, height: widget.lineHeight);
-    return Container(
-      constraints: BoxConstraints(minHeight: widget.minHeight),
-      decoration: s.decoration(tokens),
-      padding: s.padding,
-      child: TextField(
-        contextMenuBuilder: RaftTextSelectionToolbar.editableText,
-        key: widget.fieldKey,
-        controller: widget.controller,
-        focusNode: focus,
-        autofocus: widget.autofocus,
-        style: text,
-        minLines: 1,
-        maxLines: null,
-        maxLength: widget.maxLength,
-        buildCounter: (
-          _, {
-          required currentLength,
-          required isFocused,
-          maxLength,
-        }) => null,
-        cursorColor: text.color ?? t.strong,
-        onChanged: widget.onChanged,
-        decoration: _bare(
-          hint: widget.placeholder,
-          hintStyle: text.copyWith(color: _placeholder(text.color ?? t.strong)),
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => RaftTextarea(
+    fieldKey: fieldKey,
+    controller: controller,
+    hintText: placeholder,
+    onChanged: onChanged,
+    maxLength: maxLength,
+    autofocus: autofocus,
+    minHeight: minHeight,
+    // Callsite `text-sm leading-relaxed` unless the recipe's own text is wanted.
+    textStep: recipeText ? null : RaftTextSteps.sm,
+    lineHeight: recipeText ? null : lineHeight,
+    legacy: RaftLegacyInput.settings,
+  );
 }
 
 /// SlugInput.tsx / PrefixedInput: raft-ui `InputGroup` with an

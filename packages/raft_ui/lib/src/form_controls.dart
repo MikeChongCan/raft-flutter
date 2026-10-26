@@ -1,6 +1,8 @@
 // Form primitives painted from raft-ui recipes: Field (label / description /
 // error), Input, Textarea + counter, InputGroup (prefixed / slug input), and
 // the Web client's legacy `.input-brutal` chrome (packages/web/src/index.css).
+import 'dart:math' as math;
+
 import 'text_selection_toolbar.dart';
 import 'hover_region.dart';
 
@@ -18,10 +20,16 @@ import 'recipes/recipe_runtime.dart';
 import 'recipes/recipe_router.dart' show resolveAuthoredClasses;
 import 'recipes/textarea.g.dart';
 import 'recipes/textarea_counter.g.dart';
+import 'recipes/token_binding.dart';
 import 'raft/css_box.dart';
 import 'raft/ui_tokens.dart';
 import 'theme.dart';
 import 'tokens/tokens.dart';
+import 'design_primitives.dart' show RaftFieldSurface, RaftTypography;
+import 'panel_layout.dart' show raftRecipeTheme;
+import 'text_scaling.dart' show RaftScaled;
+
+part 'form_controls_frozen.dart';
 
 /// Web `FormField` (thin adapter over raft-ui `Field`): label (+ required
 /// asterisk / optional marker), control, then error or hint.
@@ -203,6 +211,9 @@ class RaftField extends StatelessWidget {
   }
 }
 
+/// Tailwind spacing scale step (`--spacing: 0.25rem`): `gap-1` = 4px.
+const double _tw = 4;
+
 /// Text input chrome.
 enum RaftInputChrome {
   /// raft-ui `Input` recipe (default).
@@ -215,6 +226,25 @@ enum RaftInputChrome {
   /// `shadow-brutal`. Invalid adds the Web callsite classes
   /// `!border-brutal-red ring-2 ring-brutal-red/60`.
   legacy,
+}
+
+/// How the frozen Elegant and Brutal looks paint an input (the Raft look ignores it: every input is the `input`
+/// recipe there). One value per call-shape the pre-theme build drew differently; see `form_controls_frozen.dart`.
+enum RaftLegacyInput {
+  /// A form field (login, settings rows): the Raft tokens in a hand-built box.
+  field,
+
+  /// A dialog input: the theme's input decoration inside the shared field frame.
+  dialog,
+
+  /// Agent forms, the forward search and combobox inputs: the `input` recipe in a recipe box.
+  recipe,
+
+  /// Settings forms: the `input` recipe as a plain container with the callsite `text-sm`.
+  settings,
+
+  /// Settings forms without the callsite `text-sm`: the recipe's own text.
+  settingsPlain,
 }
 
 /// Single- or multi-line text input painted from the raft-ui `Input` recipe
@@ -242,11 +272,48 @@ class RaftTextInput extends StatefulWidget {
     this.semanticLabel,
     this.padding,
     this.style,
+    this.fieldKey,
+    this.leadingGlyph,
+    this.trailing,
+    this.onTap,
+    this.onKeyEvent,
+    this.height,
+    this.textStep,
+    this.mono = false,
+    this.numeric = false,
+    this.upperCase = false,
+    this.legacy = RaftLegacyInput.field,
   });
 
   final TextEditingController? controller;
   final String? initialValue, hintText, semanticLabel;
   final bool readOnly, enabled, invalid, obscureText, autofocus;
+
+  /// Key of the inner [TextField] (tests and focus lookups).
+  final Key? fieldKey;
+
+  /// A glyph at the start of the box: the Web's `pl-9` input with an absolutely placed
+  /// `left-3` icon (`size-3.5`, muted).
+  final RaftGlyph? leadingGlyph;
+
+  /// A widget at the end of the box, inside the border (a combobox chevron).
+  final Widget? trailing;
+  final VoidCallback? onTap;
+
+  /// Keys the input receives before it handles them itself.
+  final KeyEventResult Function(FocusNode node, KeyEvent event)? onKeyEvent;
+
+  /// Callsite `h-*` on the input: a fixed box height that grows with large text (null: the recipe's `h-11`).
+  final double? height;
+
+  /// Callsite type step on the input (`text-sm`, a [RaftTextSteps] value).
+  final (double, double)? textStep;
+
+  /// `font-mono`; [numeric] is `inputMode="numeric"` (digits only); [upperCase] capitalises typed text.
+  final bool mono, numeric, upperCase;
+
+  /// How the frozen Elegant and Brutal looks paint this input.
+  final RaftLegacyInput legacy;
 
   /// Callsite overrides layered on the recipe (e.g. `px-2 py-1`,
   /// `text-xs font-mono`).
@@ -321,106 +388,143 @@ class _RaftTextInputState extends State<RaftTextInput>
     super.dispose();
   }
 
-  /// raft-ui 0.7.1 `Input` (`inputRecipe`): `h-11 px-3 py-0 text-field rounded-control border-[1.5px] border-line-strong
-  /// bg-layer-card`, `data-invalid:border-danger-strong`, `focus:shadow-focus` and the disabled `fill-muted` /
-  /// `line-hairline` / `foreground-disabled` colours. [RaftTextInput.padding] / [RaftTextInput.style] are the
-  /// callsite overrides (a `padding` lets the height follow the content, as `h-11` is not applied there).
-  Widget _buildRaft(BuildContext context) {
-    final t = RaftTokens.of(context);
-    final ui = t.ui;
+  /// The Raft look: raft-ui `Input` painted from the generated `input` recipe
+  /// (`h-11 px-3 py-0`, `rounded-control border-[1.5px] border-line-strong
+  /// bg-layer-card`, `focus:shadow-focus`, `data-invalid`, `disabled`).
+  /// The callsite classes (`px-2 py-1`, `h-10`, `text-sm`, `font-mono`, `pl-9`) are the widget's
+  /// [RaftTextInput.padding], [RaftTextInput.height], [RaftTextInput.textStep], [RaftTextInput.mono],
+  /// [RaftTextInput.leadingGlyph].
+  Widget _buildRecipe(BuildContext context, RaftTokens t) {
+    final rt = t.recipeTokens;
     final focused = focus.hasFocus;
-    final disabled = !widget.enabled;
-    final disabledInk = raftChromeBlend(ui.foregroundDisabled, ui.fillMuted);
-    final textStyle = t
-        .scale(
-          RaftTypeScale.body,
-          color: disabled ? disabledInk : ui.foreground,
-        )
-        .merge(widget.style);
-    final placeholder = disabled ? disabledInk : ui.foregroundHint;
-    final field = TextField(
-      contextMenuBuilder: RaftTextSelectionToolbar.editableText,
-      controller: controller,
-      focusNode: focus,
-      readOnly: widget.readOnly,
-      enabled: widget.enabled,
-      obscureText: widget.obscureText,
-      keyboardType: widget.keyboardType,
-      textInputAction: widget.textInputAction,
-      onChanged: widget.onChanged,
-      onSubmitted: widget.onSubmitted,
-      autofocus: widget.autofocus,
-      autofillHints: widget.autofillHints,
-      inputFormatters: [
-        ...?widget.inputFormatters,
-        if (widget.maxLength != null)
-          LengthLimitingTextInputFormatter(widget.maxLength),
-      ],
-      style: textStyle,
-      strutStyle: StrutStyle.fromTextStyle(textStyle, forceStrutHeight: true),
-      cursorColor: textStyle.color,
-      decoration: _bare(
-        hintText: widget.hintText,
-        hintStyle: textStyle.copyWith(color: placeholder),
+    final s = RaftInputRecipe.resolve(
+      theme: t.recipeTheme,
+      states: t.recipeStates(
+        hovered: hovered,
+        disabled: !widget.enabled,
+        extra: [
+          if (focused) RaftRecipeStates.focus,
+          // Editable text inputs match :focus-visible even after pointer focus.
+          if (focused) RaftRecipeStates.focusVisible,
+          if (widget.invalid) 'data-invalid',
+        ],
       ),
-    );
-    final box = RaftCssBox(
-      radius: 8,
-      fill: disabled ? ui.fillMuted : ui.layerCard,
-      borderWidth: raftControlBorderPx(context, 1.5),
-      borderColor: disabled
-          ? raftChromeBlend(ui.lineHairline, ui.fillMuted)
-          : widget.invalid
-          ? ui['danger-strong']
-          : ui.lineStrong,
-      rings: [
-        if (focused && !disabled)
-          for (final layer in ui.focusRing.layers)
-            RaftRing(layer.spread, layer.color),
-      ],
-      height: widget.padding == null ? 44 : null,
-      padding: widget.padding ?? const EdgeInsets.symmetric(horizontal: 12),
-      // An `<input>` centres its line in a box taller than the line; a TextField only fills its own line.
-      alignment: Alignment.centerLeft,
+      tokens: rt,
+    ).root;
+    var textStyle = s.text(rt, base: DefaultTextStyle.of(context).style);
+    final step = widget.textStep;
+    if (step != null) {
+      textStyle = textStyle.copyWith(fontSize: step.$1, height: step.$2 / step.$1);
+    }
+    if (widget.mono) textStyle = textStyle.copyWith(fontFamily: t.monoFont);
+    textStyle = textStyle.merge(widget.style);
+    final placeholder =
+        s.target('::placeholder')?.color?.resolve(rt) ??
+        t.semantic.foregroundPlaceholder;
+    Widget field = _editable(textStyle, placeholder);
+    if (widget.onKeyEvent != null) {
+      field = Focus(
+        canRequestFocus: false,
+        onKeyEvent: widget.onKeyEvent,
+        child: field,
+      );
+    }
+    final trailing = widget.trailing;
+    if (trailing != null) {
+      field = Row(
+        children: [
+          Expanded(child: field),
+          const SizedBox(width: _tw * 2),
+          trailing,
+        ],
+      );
+    }
+    final content = s.padding.vertical == 0 || widget.padding != null;
+    final padding = widget.padding ??
+        (widget.leadingGlyph == null ? null : s.padding.copyWith(left: _tw * 9));
+    Widget box = RaftRecipeBox(
+      // A callsite padding lets the height follow the content (`h-11` is not applied there).
+      style: widget.padding == null
+          ? s
+          : s.copyWith(properties: {...s.properties}..remove('height')),
+      tokens: rt,
+      applyText: false,
+      growWithText: true,
+      height: widget.height,
+      padding: padding,
+      decorationOverride: (d) => raftSnapBorder(context, d),
+      alignment: content ? Alignment.centerLeft : null,
       child: SizedBox(width: double.infinity, child: field),
     );
+    final glyph = widget.leadingGlyph;
+    if (glyph != null) {
+      box = Stack(
+        alignment: Alignment.centerLeft,
+        children: [
+          box,
+          Positioned(
+            left: _tw * 3,
+            child: IgnorePointer(
+              child: RaftIcon(
+                glyph,
+                size: _tw * 3.5,
+                color: t.colors['foreground-muted'],
+              ),
+            ),
+          ),
+        ],
+      );
+    }
     return Semantics(label: widget.semanticLabel, child: hoverRegion(box));
   }
 
-  @override
-  Widget build(BuildContext context) {
-    if (widget.chrome == RaftInputChrome.recipe) return _buildRaft(context);
-    final t = RaftTokens.of(context);
+  Widget _editable(TextStyle textStyle, Color placeholder) => TextField(
+    contextMenuBuilder: RaftTextSelectionToolbar.editableText,
+    key: widget.fieldKey,
+    controller: controller,
+    focusNode: focus,
+    readOnly: widget.readOnly,
+    enabled: widget.enabled,
+    obscureText: widget.obscureText,
+    enableSuggestions: !widget.obscureText,
+    autocorrect: !widget.obscureText,
+    keyboardType:
+        widget.keyboardType ?? (widget.numeric ? TextInputType.number : null),
+    textInputAction: widget.textInputAction,
+    textCapitalization: widget.upperCase
+        ? TextCapitalization.characters
+        : TextCapitalization.none,
+    onChanged: widget.onChanged,
+    onSubmitted: widget.onSubmitted,
+    onTap: widget.onTap,
+    autofocus: widget.autofocus,
+    autofillHints: widget.autofillHints,
+    inputFormatters: [
+      if (widget.numeric) FilteringTextInputFormatter.digitsOnly,
+      ...?widget.inputFormatters,
+      if (widget.maxLength != null)
+        LengthLimitingTextInputFormatter(widget.maxLength),
+    ],
+    style: textStyle,
+    strutStyle: StrutStyle.fromTextStyle(textStyle, forceStrutHeight: true),
+    cursorColor: textStyle.color,
+    decoration: _bare(
+      hintText: widget.hintText,
+      hintStyle: textStyle.copyWith(color: placeholder),
+    ),
+  );
+
+  /// The Web's legacy `.input-brutal` chrome (explicit `chrome: legacy`; every look).
+  Widget _buildLegacyChrome(BuildContext context, RaftTokens t) {
     final rt = t.recipeTokens;
     final focused = focus.hasFocus;
     final base = DefaultTextStyle.of(context).style;
     late final RaftSlotStyle s;
-    final BoxDecoration? legacyDecoration;
+    final BoxDecoration legacyDecoration;
     late final TextStyle textStyle;
     late final Color placeholder;
     const padding = EdgeInsets.symmetric(horizontal: 12, vertical: 8);
-    if (widget.chrome == RaftInputChrome.recipe) {
-      legacyDecoration = null;
-      s = RaftInputRecipe.resolve(
-        theme: t.recipeTheme,
-        states: t.recipeStates(
-          hovered: hovered,
-          disabled: !widget.enabled,
-          extra: [
-            if (focused) RaftRecipeStates.focus,
-            // Editable text inputs match :focus-visible even after pointer
-            // focus; Source's autofocus Input also exposes its focus ring.
-            if (focused) RaftRecipeStates.focusVisible,
-            if (widget.invalid) 'data-invalid',
-          ],
-        ),
-        tokens: rt,
-      ).root;
-      textStyle = s.text(rt, base: base).merge(widget.style);
-      placeholder =
-          s.target('::placeholder')?.color?.resolve(rt) ??
-          t.semantic.foregroundPlaceholder;
-    } else {
+    {
       // Source index.css .input-brutal includes the complete shadow-raft-xs
       // (or focus shadow-raft-sm), including Elegant dark inset layers.
       // The product's hard Brutal shadow and explicit invalid ring remain
@@ -469,42 +573,13 @@ class _RaftTextInputState extends State<RaftTextInput>
         ],
       );
     }
-    final field = TextField(
-      contextMenuBuilder: RaftTextSelectionToolbar.editableText,
-      controller: controller,
-      focusNode: focus,
-      readOnly: widget.readOnly,
-      enabled: widget.enabled,
-      obscureText: widget.obscureText,
-      keyboardType: widget.keyboardType,
-      textInputAction: widget.textInputAction,
-      onChanged: widget.onChanged,
-      onSubmitted: widget.onSubmitted,
-      autofocus: widget.autofocus,
-      autofillHints: widget.autofillHints,
-      inputFormatters: [
-        ...?widget.inputFormatters,
-        if (widget.maxLength != null)
-          LengthLimitingTextInputFormatter(widget.maxLength),
-      ],
-      style: textStyle,
-      strutStyle: StrutStyle.fromTextStyle(textStyle, forceStrutHeight: true),
-      cursorColor: textStyle.color,
-      decoration: _bare(
-        hintText: widget.hintText,
-        hintStyle: textStyle.copyWith(color: placeholder),
-      ),
-    );
+    final field = _editable(textStyle, placeholder);
     final box = RaftRecipeBox(
       style: s,
       tokens: rt,
-      padding:
-          widget.padding ??
-          (widget.chrome == RaftInputChrome.legacy ? padding : null),
-      applyText: widget.chrome == RaftInputChrome.recipe,
-      decorationOverride: legacyDecoration == null
-          ? null
-          : (_) => legacyDecoration!,
+      padding: widget.padding ?? padding,
+      applyText: false,
+      decorationOverride: (_) => legacyDecoration,
       // An `<input>` centres its line in a box taller than the line (a fixed
       // `h-8` with no vertical padding); a TextField only fills its own line
       // and would sit at the top. With a loose height this is the field itself.
@@ -512,10 +587,28 @@ class _RaftTextInputState extends State<RaftTextInput>
     );
     return Semantics(label: widget.semanticLabel, child: hoverRegion(box));
   }
+
+  @override
+  Widget build(BuildContext context) {
+    final t = RaftTokens.of(context);
+    if (widget.chrome == RaftInputChrome.recipe) {
+      if (t.recipeSet == RaftRecipeSet.raft) return _buildRecipe(context, t);
+      return switch (widget.legacy) {
+        RaftLegacyInput.field => buildFrozenField(context, t),
+        RaftLegacyInput.dialog => buildFrozenDialog(context, t),
+        RaftLegacyInput.recipe => buildFrozenRecipe(context, t),
+        RaftLegacyInput.settings ||
+        RaftLegacyInput.settingsPlain => buildFrozenSettings(context, t),
+      };
+    }
+    return _buildLegacyChrome(context, t);
+  }
+
 }
 
 /// raft-ui `Textarea` (+ optional `TextareaCounter` is a separate widget).
-/// Height is `max(min-h-24, rows × line-height + padding + border)`.
+/// Height is `max(min-h-24, rows × line-height + padding + border)`; [minHeight] makes it an auto-growing
+/// field (`field-sizing-content`) with that `min-h-*` instead.
 class RaftTextarea extends StatefulWidget {
   const RaftTextarea({
     super.key,
@@ -532,6 +625,12 @@ class RaftTextarea extends StatefulWidget {
     this.semanticLabel,
     this.textStyle,
     this.fieldKey,
+    this.autofocus = false,
+    this.mono = false,
+    this.textStep,
+    this.lineHeight,
+    this.minHeight,
+    this.legacy = RaftLegacyInput.field,
   });
 
   /// Callsite type classes merged over the recipe text (`font-mono
@@ -543,9 +642,19 @@ class RaftTextarea extends StatefulWidget {
   final TextEditingController? controller;
   final String? initialValue, hintText, semanticLabel;
   final int rows;
-  final bool readOnly, enabled, invalid;
+  final bool readOnly, enabled, invalid, autofocus, mono;
   final ValueChanged<String>? onChanged;
   final FocusNode? focusNode;
+
+  /// Callsite type step (`text-sm`, a [RaftTextSteps] value) and `leading-*` (a line-height multiplier).
+  final (double, double)? textStep;
+  final double? lineHeight;
+
+  /// Callsite `min-h-*`: the box grows with its text from this height instead of holding [rows].
+  final double? minHeight;
+
+  /// How the frozen Elegant and Brutal looks paint this textarea.
+  final RaftLegacyInput legacy;
 
   /// Enforced limit (`maxLength`); the counter is [RaftTextareaCounter].
   final int? maxLength;
@@ -572,8 +681,22 @@ class _RaftTextareaState extends State<RaftTextarea>
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
+    final raft = t.recipeSet == RaftRecipeSet.raft;
+    if (!raft) {
+      switch (widget.legacy) {
+        case RaftLegacyInput.field:
+          break;
+        case RaftLegacyInput.dialog:
+          return buildFrozenDialog(context, t);
+        case RaftLegacyInput.recipe:
+          return buildFrozenRecipe(context, t);
+        case RaftLegacyInput.settings:
+        case RaftLegacyInput.settingsPlain:
+          return buildFrozenSettings(context, t);
+      }
+    }
     final rt = t.recipeTokens;
-    final s = RaftTextareaRecipe.resolve(
+    var s = RaftTextareaRecipe.resolve(
       theme: t.recipeTheme,
       states: t.recipeStates(
         hovered: hovered,
@@ -585,17 +708,35 @@ class _RaftTextareaState extends State<RaftTextarea>
       ),
       tokens: rt,
     ).root;
-    final style = s
-        .text(rt, base: DefaultTextStyle.of(context).style)
-        .merge(widget.textStyle);
+    final grows = widget.minHeight != null;
+    if (grows) {
+      s = s.copyWith(
+        properties: {
+          ...s.properties,
+          'min-height': CssNum(widget.minHeight!, 'px'),
+        },
+      );
+    }
+    var style = s.text(rt, base: DefaultTextStyle.of(context).style);
+    final step = widget.textStep;
+    if (step != null) {
+      style = style.copyWith(fontSize: step.$1, height: step.$2 / step.$1);
+    }
+    if (widget.lineHeight != null) {
+      style = style.copyWith(height: widget.lineHeight);
+    }
+    if (widget.mono) style = style.copyWith(fontFamily: t.monoFont);
+    style = style.merge(widget.textStyle);
     final line =
         (style.height ?? 1.5) *
         MediaQuery.textScalerOf(context).scale(style.fontSize ?? 14);
     final chrome = s.padding.vertical + s.borderWidth.vertical;
-    final height = [
-      s.minHeight ?? 0,
-      widget.rows * line + chrome,
-    ].reduce((a, b) => a > b ? a : b);
+    final height = grows
+        ? null
+        : [
+            s.minHeight ?? 0,
+            widget.rows * line + chrome,
+          ].reduce((a, b) => a > b ? a : b);
     return Semantics(
       label: widget.semanticLabel,
       child: hoverRegion(
@@ -606,6 +747,9 @@ class _RaftTextareaState extends State<RaftTextarea>
           // This expanding input owns its scaled row height. Keeping that
           // bound avoids an infinite editor in a scrolling form at large text.
           applyText: false,
+          decorationOverride: raft
+              ? (d) => raftSnapBorder(context, d)
+              : null,
           child: TextField(
             contextMenuBuilder: RaftTextSelectionToolbar.editableText,
             key: widget.fieldKey,
@@ -614,9 +758,11 @@ class _RaftTextareaState extends State<RaftTextarea>
             focusNode: focus,
             readOnly: widget.readOnly,
             enabled: widget.enabled,
+            autofocus: widget.autofocus,
             onChanged: widget.onChanged,
+            minLines: grows ? 1 : null,
             maxLines: null,
-            expands: true,
+            expands: !grows,
             textAlignVertical: TextAlignVertical.top,
             keyboardType: TextInputType.multiline,
             inputFormatters: [

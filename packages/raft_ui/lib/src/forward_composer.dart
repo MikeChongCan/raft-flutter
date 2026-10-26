@@ -14,14 +14,12 @@ import 'avatar_content.dart';
 import 'components.dart';
 import 'design_primitives.dart';
 import 'error_presentation.dart' show RaftErrorBanner;
+import 'form_controls.dart' show RaftTextInput, RaftLegacyInput;
 import 'icons.dart';
 import 'indicators.dart' show RaftCheckbox;
 import 'localization.dart';
 import 'message_body.dart';
 import 'mounted_avatar_recipe.dart';
-import 'recipes/input.g.dart';
-import 'recipes/recipe_runtime.dart';
-import 'recipe_surface.dart';
 import 'rich_card_tokens.dart';
 import 'system_inset.dart';
 import 'status_bar.dart';
@@ -663,7 +661,7 @@ class _RaftForwardTargetRowState extends State<RaftForwardTargetRow> {
 
 /// raft-ui `Input` with `pl-9 placeholder:text-foreground-placeholder` and the
 /// absolutely positioned 14px Search icon at `left-3`.
-class RaftForwardSearchInput extends StatefulWidget {
+class RaftForwardSearchInput extends StatelessWidget {
   const RaftForwardSearchInput({
     super.key,
     required this.controller,
@@ -676,100 +674,16 @@ class RaftForwardSearchInput extends StatefulWidget {
   final String placeholder;
   final ValueChanged<String> onChanged;
   @override
-  State<RaftForwardSearchInput> createState() => _RaftForwardSearchInputState();
-}
-
-class _RaftForwardSearchInputState extends State<RaftForwardSearchInput> {
-  @override
-  void initState() {
-    super.initState();
-    widget.focusNode.addListener(changed);
+  Widget build(BuildContext context) => RaftTextInput(
+    controller: controller,
+    focusNode: focusNode,
+    hintText: placeholder,
+    onChanged: onChanged,
     // `autoFocus`.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) widget.focusNode.requestFocus();
-    });
-  }
-
-  void changed() => setState(() {});
-
-  @override
-  void dispose() {
-    widget.focusNode.removeListener(changed);
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final t = RaftTokens.of(context);
-    final resolver = t.recipeTokens;
-    final focused = widget.focusNode.hasFocus;
-    // Same state set as RaftInput: the dark flag selects the `dark:` layers
-    // (inset shadow, ring opacity) and `autoFocus` exposes the focus ring.
-    final s = RaftInputRecipe.resolve(
-      theme: t.recipeTheme,
-      states: t.recipeStates(
-        extra: [
-          if (focused) RaftRecipeStates.focus,
-          if (focused) RaftRecipeStates.focusVisible,
-        ],
-      ),
-      tokens: resolver,
-    ).root;
-    final text = s
-        .textStyle(resolver)
-        .copyWith(
-          color: t.colors['foreground'],
-          leadingDistribution: TextLeadingDistribution.even,
-        );
-    final border = s.borderWidth;
-    return RaftRecipeBox(
-      style: s,
-      tokens: resolver,
-      padding: EdgeInsets.zero,
-      applyText: false,
-      child: Stack(
-        alignment: Alignment.centerLeft,
-        children: [
-          TextField(
-            contextMenuBuilder: RaftTextSelectionToolbar.editableText,
-            autofillHints: null,
-            controller: widget.controller,
-            focusNode: widget.focusNode,
-            onChanged: widget.onChanged,
-            style: text,
-            cursorColor: t.strong,
-            decoration: InputDecoration(
-              isCollapsed: true,
-              filled: false,
-              border: InputBorder.none,
-              enabledBorder: InputBorder.none,
-              focusedBorder: InputBorder.none,
-              hintText: widget.placeholder,
-              hintStyle: text.copyWith(
-                color: t.colors['foreground-placeholder'],
-              ),
-              contentPadding: EdgeInsets.fromLTRB(
-                36,
-                s.padding.top,
-                s.padding.right,
-                s.padding.bottom,
-              ),
-            ),
-          ),
-          Positioned(
-            left: 12 - border.left,
-            child: IgnorePointer(
-              child: RaftIcon(
-                RaftGlyph.search,
-                size: 14,
-                color: t.colors['foreground-muted'],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+    autofocus: true,
+    leadingGlyph: RaftGlyph.search,
+    legacy: RaftLegacyInput.recipe,
+  );
 }
 
 /// Share mode: the server switch. Web's forward page has no server picker (the

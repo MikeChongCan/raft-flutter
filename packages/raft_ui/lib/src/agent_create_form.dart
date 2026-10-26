@@ -15,7 +15,6 @@
 //
 // Values come from the recipes; the few Tailwind classes written directly in
 // Web JSX are cited next to the number that resolves them.
-import 'text_selection_toolbar.dart';
 
 import 'dart:math' as math;
 
@@ -30,6 +29,7 @@ import 'select_field.dart';
 import 'components.dart';
 import 'design_primitives.dart';
 import 'dismiss_scope.dart';
+import 'form_controls.dart' show RaftTextInput, RaftTextarea, RaftLegacyInput;
 import 'form_presentation.dart';
 import 'icons.dart';
 import 'indicators.dart' show RaftCheckbox, RaftCheckboxRecipeSize;
@@ -42,9 +42,7 @@ import 'recipes/banner.g.dart';
 import 'recipes/button_variants.g.dart';
 import 'recipes/card.g.dart';
 import 'recipes/field.g.dart' as field_recipe;
-import 'recipes/input.g.dart';
 import 'recipes/select.g.dart';
-import 'recipes/textarea.g.dart';
 import 'recipes/textarea_counter.g.dart';
 import 'theme.dart';
 
@@ -502,9 +500,9 @@ class RaftStableField extends StatelessWidget {
   }
 }
 
-/// raft-ui Input (or Textarea when [multiline]) rendered from the recipe:
-/// the editable text carries no Material decoration.
-class RaftAgentTextInput extends StatefulWidget {
+/// raft-ui Input (or Textarea when [multiline]) in the agent forms: the shared [RaftTextInput] /
+/// [RaftTextarea] with this form's call shape.
+class RaftAgentTextInput extends StatelessWidget {
   const RaftAgentTextInput({
     super.key,
     required this.controller,
@@ -539,153 +537,40 @@ class RaftAgentTextInput extends StatefulWidget {
 
   /// Keys the input receives before it handles them itself.
   final KeyEventResult Function(FocusNode node, KeyEvent event)? onKeyEvent;
-  @override
-  State<RaftAgentTextInput> createState() => _RaftAgentTextInputState();
-}
-
-class _RaftAgentTextInputState extends State<RaftAgentTextInput> {
-  late final ownFocus = FocusNode();
-  FocusNode get focus => widget.focusNode ?? ownFocus;
-  @override
-  void initState() {
-    super.initState();
-    focus.addListener(onFocus);
-  }
-
-  void onFocus() {
-    if (mounted) setState(() {});
-  }
-
-  @override
-  void dispose() {
-    focus.removeListener(onFocus);
-    ownFocus.dispose();
-    super.dispose();
-  }
-
-  Widget withKeys(Widget editor) => widget.onKeyEvent == null
-      ? editor
-      : Focus(
-          canRequestFocus: false,
-          onKeyEvent: widget.onKeyEvent,
-          child: editor,
-        );
 
   @override
   Widget build(BuildContext context) {
-    final t = RaftTokens.of(context);
-    final tokens = RaftRecipeTokens(t);
-    final states = _states(t, {
-      if (widget.invalid) 'data-invalid',
-      if (focus.hasFocus) RaftRecipeStates.focus,
-      if (focus.hasFocus) RaftRecipeStates.focusVisible,
-      if (!widget.enabled) RaftRecipeStates.disabled,
-    });
-    final root = widget.multiline
-        ? RaftTextareaRecipe.resolve(
-            theme: _theme(t),
-            states: states,
-            tokens: tokens,
-          ).root
-        : RaftInputRecipe.resolve(
-            theme: _theme(t),
-            states: states,
-            tokens: tokens,
-          ).root;
-    final style = root
-        .textStyle(tokens, currentColor: t.ink)
-        .copyWith(
-          color: root.color?.resolve(tokens) ?? t.ink,
-          leadingDistribution: TextLeadingDistribution.even,
-        );
-    // Tailwind preflight `::placeholder { color: color-mix(currentcolor 50%) }`
-    // unless the recipe styles it.
-    final placeholderColor =
-        root.target('::placeholder')?.color?.resolve(tokens) ??
-        style.color!.withValues(alpha: .5);
-    final lineHeight = (style.fontSize ?? 14) * (style.height ?? 1);
-    final pad = root.padding;
-    final border = root.borderWidth;
-    final minHeight = widget.multiline
-        ? [
-            root.minHeight ?? 0,
-            widget.rows * lineHeight + pad.vertical + border.vertical,
-          ].reduce((a, b) => a > b ? a : b)
-        : null;
-    final editor = TextField(
-      contextMenuBuilder: RaftTextSelectionToolbar.editableText,
-      autofillHints: null,
-      controller: widget.controller,
-      focusNode: focus,
-      readOnly: widget.readOnly,
-      enabled: widget.enabled,
-      obscureText: widget.obscure,
-      obscuringCharacter: '•',
-      maxLines: widget.multiline ? null : 1,
-      expands: widget.multiline,
-      maxLength: widget.maxLength,
-      // raft-ui 0.7.0's Input has no vertical padding (the box centres the
-      // line); the earlier recipes pad the line from the top.
-      textAlignVertical: widget.multiline || pad.vertical > 0
-          ? TextAlignVertical.top
-          : TextAlignVertical.center,
-      style: style,
-      cursorColor: style.color,
-      cursorWidth: 1,
-      onChanged: widget.onChanged,
-      onTap: widget.onTap,
-      // Bare editable text: every frame/border comes from the recipe box.
-      decoration: InputDecoration(
-        isCollapsed: true,
-        isDense: true,
-        filled: false,
-        contentPadding: EdgeInsets.zero,
-        border: InputBorder.none,
-        enabledBorder: InputBorder.none,
-        focusedBorder: InputBorder.none,
-        disabledBorder: InputBorder.none,
-        errorBorder: InputBorder.none,
-        focusedErrorBorder: InputBorder.none,
-        counterText: '',
-        hintText: widget.placeholder == null
-            ? null
-            : raftText(context, widget.placeholder!),
-        hintStyle: style.copyWith(color: placeholderColor),
-      ),
-      buildCounter: (
-        _, {
-        required currentLength,
-        required isFocused,
-        maxLength,
-      }) => null,
-    );
-    return Semantics(
-      label: widget.semanticLabel,
-      textField: true,
-      child: RaftRecipeBox(
-        style: root,
-        tokens: tokens,
-        height: widget.multiline
-            ? minHeight
-            : t.size('size.fieldInput', fallback: 38),
-        // The editor owns its typography, but single-line input still grows
-        // with its text. Multiline input uses the explicit rows-based box.
-        growWithText: !widget.multiline,
-        alignment: !widget.multiline && pad.vertical == 0
-            ? Alignment.centerLeft
-            : null,
-        applyText: false,
-        child: widget.trailing == null
-            ? withKeys(editor)
-            : Row(
-                children: [
-                  Expanded(child: withKeys(editor)),
-                  const SizedBox(width: 2 * _tw),
-                  widget.trailing!,
-                ],
-              ),
-      ),
-    );
+    final hint = placeholder == null ? null : raftText(context, placeholder!);
+    return multiline
+        ? RaftTextarea(
+            controller: controller,
+            hintText: hint,
+            invalid: invalid,
+            readOnly: readOnly,
+            enabled: enabled,
+            rows: rows,
+            maxLength: maxLength,
+            onChanged: onChanged,
+            semanticLabel: semanticLabel,
+            focusNode: focusNode,
+            legacy: RaftLegacyInput.recipe,
+          )
+        : RaftTextInput(
+            controller: controller,
+            hintText: hint,
+            invalid: invalid,
+            readOnly: readOnly,
+            enabled: enabled,
+            obscureText: obscure,
+            maxLength: maxLength,
+            onChanged: onChanged,
+            semanticLabel: semanticLabel,
+            focusNode: focusNode,
+            trailing: trailing,
+            onTap: onTap,
+            onKeyEvent: onKeyEvent,
+            legacy: RaftLegacyInput.recipe,
+          );
   }
 }
 

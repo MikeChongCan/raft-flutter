@@ -9,7 +9,7 @@
 // Values come from the generated recipes (package:raft_ui/recipes.dart) and
 // tokens; Tailwind classes written in the Web JSX are resolved in comments.
 import 'card.dart' show RaftCard;
-import 'text_selection_toolbar.dart';
+import 'form_controls.dart' show RaftTextInput, RaftTextarea, RaftLegacyInput;
 import 'hover_region.dart';
 
 import 'dart:math' as math;
@@ -1269,75 +1269,32 @@ class RaftDialogTextInput extends StatelessWidget {
   final Key? fieldKey;
   @override
   Widget build(BuildContext context) {
-    final t = RaftTokens.of(context);
-    final base = Theme.of(context).inputDecorationTheme.contentPadding;
-    final resolved = base?.resolve(Directionality.of(context));
-    final style =
-        ((enabled)
-                ? t.fieldStyle
-                : t.fieldStyle.copyWith(color: t.colors['foreground-disabled']))
-            .copyWith(
-              fontFamily: mono ? t.monoFont : null,
-              fontSize: mono ? 12 : null,
-              height: mono ? 16 / 12 : null,
-            );
-    // Above the default text size a multi-line field is a minimum height that
-    // grows with the text it holds (its box stays at least 96px tall), rather
-    // than a fixed 96px viewport onto it.
-    final growing = multiline && RaftScaled.grows(context);
-    var minLines = 1;
-    if (growing) {
-      final line =
-          MediaQuery.textScalerOf(context).scale(style.fontSize ?? 14) *
-          (style.height ?? 1.25);
-      final chrome = (resolved?.vertical ?? 24) + 2 * t.border;
-      minLines = math.max(1, ((96 - chrome) / line).ceil());
-    }
-    Widget field = TextField(
-      contextMenuBuilder: RaftTextSelectionToolbar.editableText,
-      autofillHints: null,
-      key: fieldKey,
-      controller: controller,
-      enabled: enabled,
-      readOnly: readOnly,
-      autofocus: autofocus,
-      obscureText: obscure,
-      // `disabled:` text: elegant foreground-disabled; brutal dims the whole
-      // Textarea (`disabled:opacity-60`, below), not the Input.
-      style: style,
-      minLines: growing ? minLines : (multiline ? null : 1),
-      maxLines: multiline ? null : 1,
-      expands: multiline && !growing,
-      textAlignVertical: multiline ? TextAlignVertical.top : null,
-      onSubmitted: onSubmitted,
-      decoration: InputDecoration(
-        hintText: placeholder == null ? null : raftText(context, placeholder!),
-        // `pl-9` replaces the input's left padding when a glyph leads.
-        contentPadding: leadingGlyph == null || resolved == null
-            ? null
-            : resolved.copyWith(left: resolved.left - 12 + 36),
-      ),
-    );
-    if (multiline && !growing) field = SizedBox(height: 96, child: field);
-    if (leadingGlyph != null) {
-      field = Stack(
-        alignment: Alignment.centerLeft,
-        children: [
-          field,
-          Positioned(
-            left: 12 + t.border, // left-3 inside the border box
-            child: IgnorePointer(
-              child: RaftIcon(
-                leadingGlyph!,
-                size: 14,
-                color: t.colors['foreground-muted'],
-              ),
-            ),
-          ),
-        ],
-      );
-    }
-    final surface = RaftFieldSurface(child: field);
-    return surface;
+    final hint = placeholder == null ? null : raftText(context, placeholder!);
+    return multiline
+        ? RaftTextarea(
+            controller: controller,
+            hintText: hint,
+            fieldKey: fieldKey,
+            autofocus: autofocus,
+            enabled: enabled,
+            readOnly: readOnly,
+            mono: mono,
+            textStep: mono ? RaftTextSteps.xs : null,
+            legacy: RaftLegacyInput.dialog,
+          )
+        : RaftTextInput(
+            controller: controller,
+            hintText: hint,
+            fieldKey: fieldKey,
+            autofocus: autofocus,
+            enabled: enabled,
+            readOnly: readOnly,
+            obscureText: obscure,
+            leadingGlyph: leadingGlyph,
+            onSubmitted: onSubmitted,
+            mono: mono,
+            textStep: mono ? RaftTextSteps.xs : null,
+            legacy: RaftLegacyInput.dialog,
+          );
   }
 }

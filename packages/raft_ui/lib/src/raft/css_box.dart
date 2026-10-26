@@ -22,6 +22,25 @@ double raftControlBorderPx(BuildContext context, double css) {
   return math.max(1.0, (css * dpr).floorToDouble()) / dpr;
 }
 
+/// [decoration] with every border side floored the way [raftControlBorderPx] floors a CSS width, for the
+/// generated recipes' `border-[1.5px]` (a recipe box paints the CSS number as it is).
+BoxDecoration raftSnapBorder(BuildContext context, BoxDecoration decoration) {
+  final border = decoration.border;
+  if (border is! Border) return decoration;
+  BorderSide snap(BorderSide side) =>
+      side.style == BorderStyle.none || side.width == 0
+      ? side
+      : side.copyWith(width: raftControlBorderPx(context, side.width));
+  return decoration.copyWith(
+    border: Border(
+      top: snap(border.top),
+      right: snap(border.right),
+      bottom: snap(border.bottom),
+      left: snap(border.left),
+    ),
+  );
+}
+
 /// One outer ring, `0 0 0 <spread>px <color>`.
 @immutable
 class RaftRing {
