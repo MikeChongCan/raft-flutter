@@ -9,7 +9,8 @@ import 'design_primitives.dart' hide RaftPanelHeaderRecipe;
 import 'dialog_card.dart';
 import 'icons.dart';
 import 'panel_layout.dart' show raftRecipeTheme;
-import 'recipe_surface.dart' show raftCssText, RaftSlotPaint;
+import 'recipe_surface.dart' show raftCssText, RaftRecipeBox, RaftSlotPaint;
+import 'raft/button.dart' show RaftButton, RaftButtonSize, RaftButtonVariant;
 import 'recipes/button_variants.g.dart';
 import 'recipes/copyable_code.g.dart';
 import 'recipes/recipe_runtime.dart';
@@ -53,6 +54,39 @@ class _RaftCopyableCodeState extends State<RaftCopyableCode> {
     });
   }
 
+  /// raft-ui 0.7 `CopyableCode`: the recipe's code box (13/20 Space Mono, 9 x 12
+  /// padding, 40px high, `layer-code` with a hairline and radius 8) and a ghost
+  /// `icon-md` action holding a 12px copy mark that becomes a check.
+  Widget _raft(
+    RaftTokens t,
+    RaftTokenResolver rt,
+    RaftCopyableCodeRecipeStyle s,
+  ) {
+    return Row(
+      children: [
+        Expanded(
+          child: RaftRecipeBox(
+            key: widget.codeKey,
+            style: s.code.withCssUsedBorderWidths(),
+            tokens: rt,
+            width: double.infinity,
+            child: Text(_breakAll(widget.command)),
+          ),
+        ),
+        SizedBox(width: s.root.columnGap ?? 8),
+        RaftButton(
+          label: '',
+          uiVariant: RaftButtonVariant.ghost,
+          uiSize: RaftButtonSize.iconMd,
+          glyph: copied ? RaftGlyph.check : RaftGlyph.copy,
+          glyphSize: 12,
+          tooltip: widget.copyLabel,
+          onPressed: copy,
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
@@ -63,6 +97,7 @@ class _RaftCopyableCodeState extends State<RaftCopyableCode> {
       states: RaftRecipeStates({if (t.dark) RaftRecipeStates.dark}),
       tokens: rt,
     );
+    if (t.recipeSet == RaftRecipeSet.raft) return _raft(t, rt, s);
     // Callsite `text-xs` (12/16) wins over the recipe's `leading-5` on the
     // brutal code box; elegant keeps `leading-5` on the inner span.
     final line = 20.0;
