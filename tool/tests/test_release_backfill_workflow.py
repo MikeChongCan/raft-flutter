@@ -51,6 +51,15 @@ class BackfillWorkflowTests(unittest.TestCase):
         self.assertNotIn('/dev/fuse', compatibility)
         self.assertIn('if: always()', compatibility)
 
+    def test_cleanup_status_is_recorded_after_upload_and_keeps_failed_jobs(self):
+        text = WORKFLOW.read_text()
+        build = text.split('\n  build:\n', 1)[1].split('\n  appimage-startup:\n', 1)[0]
+        upload = build.index('uses: actions/upload-artifact@v4')
+        marker = build.index('name: Record Linux delivery status')
+        self.assertLess(upload, marker)
+        self.assertIn("if: always() && inputs.platform == 'appimage'", build[marker:])
+        self.assertIn('"$RAFT_LINUX_RUNNER_FINISH_HOOK" "${{ job.status }}"', build[marker:])
+
 
 if __name__ == '__main__':
     unittest.main()

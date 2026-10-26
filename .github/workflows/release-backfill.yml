@@ -71,6 +71,9 @@ jobs:
           path: source/build/release/*
           if-no-files-found: error
           retention-days: 14
+      - name: Record Linux delivery status for post-job cleanup
+        if: always() && inputs.platform == 'appimage'
+        run: '"$RAFT_LINUX_RUNNER_FINISH_HOOK" "${{ job.status }}"'
 
   appimage-startup:
     needs: build
