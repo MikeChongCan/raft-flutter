@@ -24,19 +24,42 @@ import 'recipes/recipe_router.dart' show resolveAuthoredClasses;
 import 'recipes/textarea.g.dart';
 import 'recipes/textarea_counter.g.dart';
 import 'recipes/token_binding.dart';
+import 'label.dart';
 import 'raft/css_box.dart';
 import 'raft/ui_tokens.dart';
 import 'theme.dart';
 import 'tokens/tokens.dart';
 import 'design_primitives.dart'
     show RaftFieldSurface, RaftTypography, RaftIconButton, RaftControlVariant;
-import 'panel_layout.dart' show raftRecipeTheme;
+import 'panel_layout.dart' show raftRecipeTheme, RaftCssText;
+import 'dialog_card.dart'
+    show raftRecipeThemeOf, raftCssTextStyle, RaftTextSteps;
+import 'package:flutter/rendering.dart' show OverflowBoxFit;
 import 'text_scaling.dart' show RaftScaled;
 
 part 'form_controls_frozen.dart';
 
-/// Web `FormField` (thin adapter over raft-ui `Field`): label (+ required
-/// asterisk / optional marker), control, then error or hint.
+/// How the frozen Elegant and Brutal looks paint a field; see `form_controls_frozen.dart`.
+enum RaftLegacyField {
+  /// The shared form field (label, control, hint).
+  form,
+
+  /// A dialog's product `FormField`.
+  product,
+
+  /// The settings forms' compact field.
+  settings,
+
+  /// The agent forms' `StableField`.
+  stable,
+
+  /// The sign-in pages' field.
+  auth,
+}
+
+/// Web `FormField` over raft-ui `Field` / `FieldLabel` / `FieldDescription` / `FieldError`: the label (with the
+/// required `*` or `(optional)` marker), the control, then the error or the hint, in the `field` recipe's
+/// `gap-1.5` column. [compact] is `size="sm"`.
 class RaftField extends StatelessWidget {
   const RaftField({
     super.key,
@@ -49,6 +72,16 @@ class RaftField extends StatelessWidget {
     this.error,
     this.compact = false,
     this.labelAccessory,
+    this.labelAction,
+    this.counter,
+    this.reserveMessage = false,
+    this.belowControl = const [],
+    this.legacy = RaftLegacyField.form,
+    this.labelWeight,
+    this.family,
+    this.helperHint = false,
+    this.helperRecipe = false,
+    this.surface = true,
   });
 
   final String label;
@@ -57,159 +90,133 @@ class RaftField extends StatelessWidget {
   final String optionalLabel;
   final String? hint, error;
 
-  /// `size="compact"`: `text-xs` label.
+  /// `size="compact"`: the `sm` label step.
   final bool compact;
-  final Widget? labelAccessory;
 
-  /// raft-ui 0.7 `field` under the product `FormField`: `flex-col gap-1.5`, a
-  /// `leading-none` label (`text-footnote`, `text-caption` when compact) in
-  /// semibold muted ink, the asterisk and `(optional)` in hint ink after `ml-1`,
-  /// then a `text-caption` description or a semibold `danger-strong` error.
-  Widget _buildRaft(BuildContext context, RaftTokens t) {
-    final ui = t.ui;
-    final step = compact ? RaftTypeScale.caption : RaftTypeScale.footnote;
-    // `leading-none` loses to the size step's own line height (measured 18).
-    final labelStyle = t.scale(
-      step,
-      weight: FontWeight.w600,
-      color: ui.foregroundMuted,
-    );
-    final labelText = Text.rich(
-      TextSpan(
-        children: [
-          TextSpan(text: raftText(context, label)),
-          if (required) ...[
-            const WidgetSpan(child: SizedBox(width: 4)),
-            TextSpan(
-              text: '*',
-              style: TextStyle(color: ui.foregroundHint),
-            ),
-          ],
-          if (optional) ...[
-            const WidgetSpan(child: SizedBox(width: 4)),
-            TextSpan(
-              text: raftText(context, optionalLabel),
-              style: TextStyle(
-                fontWeight: FontWeight.w400,
-                color: ui.foregroundHint,
-              ),
-            ),
-          ],
-        ],
-      ),
-      style: labelStyle,
-    );
-    final message = error ?? hint;
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        labelAccessory == null
-            ? labelText
-            : Row(
-                children: [
-                  Flexible(child: labelText),
-                  const SizedBox(width: 4),
-                  labelAccessory!,
-                ],
-              ),
-        const SizedBox(height: 6),
-        child,
-        if (message != null) ...[
-          const SizedBox(height: 6),
-          Semantics(
-            liveRegion: error != null,
-            child: Text(
-              raftText(context, message),
-              style: error != null
-                  ? t.scale(
-                      RaftTypeScale.caption,
-                      weight: FontWeight.w600,
-                      color: ui['danger-strong'],
-                    )
-                  : t.scale(RaftTypeScale.caption, color: ui.foregroundHint),
-            ),
-          ),
-        ],
-      ],
-    );
-  }
+  /// A small control beside the label (`flex items-center gap-1`) and a secondary action pushed to its far end.
+  final Widget? labelAccessory, labelAction;
+
+  /// Persistent end-aligned text on the message row (a character counter), and whether that row keeps its height
+  /// when empty (`StableField`: nothing below moves when a hint or an error appears).
+  final String? counter;
+  final bool reserveMessage;
+
+  /// Nodes after the control, inside the field (status lines, inline retry actions).
+  final List<Widget> belowControl;
+
+  /// How the frozen looks paint this field and the knobs only they read (the Raft look draws the `field`
+  /// recipe for every one of them).
+  final RaftLegacyField legacy;
+  final FontWeight? labelWeight;
+  final String? family;
+  final bool helperHint, helperRecipe, surface;
 
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
-    if (t.option('field.layout', or: 'recipe') == 'raft') {
-      return _buildRaft(context, t);
+    if (t.recipeSet != RaftRecipeSet.raft) {
+      return switch (legacy) {
+        RaftLegacyField.form => buildFrozenForm(context),
+        RaftLegacyField.product => buildFrozenProduct(context),
+        RaftLegacyField.settings => buildFrozenSettings(context),
+        RaftLegacyField.stable => buildFrozenStable(context),
+        RaftLegacyField.auth => buildFrozenAuth(context),
+      };
     }
     final rt = t.recipeTokens;
     final states = t.recipeStates(
       extra: [if (error != null) 'group/field:data-invalid'],
     );
+    final size = compact
+        ? gen.RaftFieldRecipeSize.sm
+        : gen.RaftFieldRecipeSize.md;
     final f = gen.RaftFieldRecipe.resolve(
       theme: t.recipeTheme,
+      size: size,
       states: states,
       tokens: rt,
     );
     final l = RaftLabelRecipe.resolve(
       theme: t.recipeTheme,
+      size: compact ? RaftLabelRecipeSize.sm : RaftLabelRecipeSize.md,
       states: states,
       tokens: rt,
     );
     final base = DefaultTextStyle.of(context).style;
-    var labelStyle = f.label.text(rt, base: base);
-    // FormField label classes: `text-sm` / `text-xs` (decision 0002: no
-    // uppercase, so no tracking either).
-    labelStyle = labelStyle.copyWith(
-      fontSize: compact ? 12 : 14,
-      height: compact ? 16 / 12 : 20 / 14,
-    );
-    final sub = l.sub.text(rt, base: labelStyle);
-    final asterisk = l.asterisk.text(rt, base: labelStyle);
-    final gap = f.root.rowGap ?? 0;
+    final labelStyle = f.label.text(rt, base: base);
     final labelText = Text.rich(
-      TextSpan(
-        children: [
-          TextSpan(text: label),
-          if (required) ...[
-            const WidgetSpan(child: SizedBox(width: 4)),
-            TextSpan(text: '*', style: asterisk),
-          ],
-          if (optional) ...[
-            const WidgetSpan(child: SizedBox(width: 4)),
-            TextSpan(text: optionalLabel, style: sub),
-          ],
-        ],
+      raftLabelSpan(
+        context,
+        text: label,
+        style: labelStyle,
+        recipe: l,
+        tokens: rt,
+        required: required,
+        optional: optional,
+        optionalLabel: optionalLabel,
       ),
-      style: labelStyle,
     );
     final message = error ?? hint;
-    final messageSlot = error != null ? f.error : f.description;
+    final messageText = message == null
+        ? null
+        : Text(
+            raftText(context, message),
+            style: (error != null ? f.error : f.description).text(
+              rt,
+              base: base,
+            ),
+          );
+    final counterText = counter == null
+        ? null
+        : Text(
+            counter!,
+            style: RaftTextareaCounterRecipe.resolve(
+              theme: t.recipeTheme,
+              states: states,
+              tokens: rt,
+            ).root.text(rt, base: base),
+          );
+    Widget? messageRow;
+    if (reserveMessage || counterText != null) {
+      messageRow = ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: _tw * 4),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(child: messageText ?? const Text(' ')),
+            if (counterText != null) ...[
+              const SizedBox(width: _tw * 2),
+              counterText,
+            ],
+          ],
+        ),
+      );
+    } else {
+      messageRow = messageText;
+    }
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
+      spacing: f.root.rowGap ?? 0,
       children: [
-        // `mb-1 block` label (+ accessory row `mb-1 flex items-center gap-1`).
-        Padding(
-          padding: const EdgeInsets.only(bottom: 4),
-          child: labelAccessory == null
-              ? labelText
-              : Row(
-                  children: [
-                    Flexible(child: labelText),
-                    const SizedBox(width: 4),
-                    labelAccessory!,
-                  ],
-                ),
-        ),
-        SizedBox(height: gap),
-        child,
-        if (message != null) ...[
-          SizedBox(height: gap + 4), // gap + `mt-1`
-          Semantics(
-            liveRegion: error != null,
-            child: Text(message, style: messageSlot.text(rt, base: base)),
+        if (labelAccessory == null && labelAction == null)
+          labelText
+        else
+          Row(
+            spacing: _tw,
+            children: [
+              Flexible(child: labelText),
+              ?labelAccessory,
+              if (labelAction != null) ...[
+                const Spacer(),
+                labelAction!,
+              ],
+            ],
           ),
-        ],
+        child,
+        ...belowControl,
+        if (messageRow != null)
+          Semantics(liveRegion: error != null, child: messageRow),
       ],
     );
   }

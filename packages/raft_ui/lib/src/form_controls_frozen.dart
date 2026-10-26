@@ -834,3 +834,427 @@ extension _FrozenInputGroup on _RaftInputGroupState {
     );
   }
 }
+
+TextStyle _frozenAuthHelper(RaftTokens t, Color color) => RaftTypography.heading(
+  t,
+  size: 12,
+  line: 16,
+  weight: FontWeight.w400,
+).copyWith(color: color);
+
+extension _FrozenField on RaftField {
+  Widget buildFrozenForm(BuildContext context) {
+    final t = RaftTokens.of(context);
+    final rt = t.recipeTokens;
+    final states = t.recipeStates(
+      extra: [if (error != null) 'group/field:data-invalid'],
+    );
+    final f = gen.RaftFieldRecipe.resolve(
+      theme: t.recipeTheme,
+      states: states,
+      tokens: rt,
+    );
+    final l = RaftLabelRecipe.resolve(
+      theme: t.recipeTheme,
+      states: states,
+      tokens: rt,
+    );
+    final base = DefaultTextStyle.of(context).style;
+    var labelStyle = f.label.text(rt, base: base);
+    // FormField label classes: `text-sm` / `text-xs` (decision 0002: no
+    // uppercase, so no tracking either).
+    labelStyle = labelStyle.copyWith(
+      fontSize: compact ? 12 : 14,
+      height: compact ? 16 / 12 : 20 / 14,
+    );
+    final sub = l.sub.text(rt, base: labelStyle);
+    final asterisk = l.asterisk.text(rt, base: labelStyle);
+    final gap = f.root.rowGap ?? 0;
+    final labelText = Text.rich(
+      TextSpan(
+        children: [
+          TextSpan(text: label),
+          if (this.required) ...[
+            const WidgetSpan(child: SizedBox(width: 4)),
+            TextSpan(text: '*', style: asterisk),
+          ],
+          if (optional) ...[
+            const WidgetSpan(child: SizedBox(width: 4)),
+            TextSpan(text: optionalLabel, style: sub),
+          ],
+        ],
+      ),
+      style: labelStyle,
+    );
+    final message = error ?? hint;
+    final messageSlot = error != null ? f.error : f.description;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // `mb-1 block` label (+ accessory row `mb-1 flex items-center gap-1`).
+        Padding(
+          padding: const EdgeInsets.only(bottom: 4),
+          child: labelAccessory == null
+              ? labelText
+              : Row(
+                  children: [
+                    Flexible(child: labelText),
+                    const SizedBox(width: 4),
+                    labelAccessory!,
+                  ],
+                ),
+        ),
+        SizedBox(height: gap),
+        child,
+        if (message != null) ...[
+          SizedBox(height: gap + 4), // gap + `mt-1`
+          Semantics(
+            liveRegion: error != null,
+            child: Text(message, style: messageSlot.text(rt, base: base)),
+          ),
+        ],
+      ],
+    );
+  }
+  Widget buildFrozenProduct(BuildContext context) {
+    final t = RaftTokens.of(context);
+    final tokens = RaftRecipeTokens(t);
+    final field = gen.RaftFieldRecipe.resolve(
+      theme: raftRecipeThemeOf(t),
+      states: RaftRecipeStates({if (t.dark) RaftRecipeStates.dark}),
+      tokens: tokens,
+    );
+    final labelRecipe = RaftLabelRecipe.resolve(
+      theme: raftRecipeThemeOf(t),
+      tokens: tokens,
+    );
+    final labelBase = field.label.textStyle(tokens);
+    // v1.21.23 FormField is the raft-ui Field: the label is 13/18 600
+    // `foreground-field-label` and the field's own 6px gap separates label,
+    // control and help; the pre-theme looks keep the recipe label with `mb-1`
+    // (formField.label).
+    final web = t.option('formField.label', or: 'tokens') == 'tokens';
+    final labelSize = t.size('type.fieldLabel.size', fallback: 13);
+    final labelStyle = web
+        ? RaftTypography.body(
+            t,
+            size: labelSize,
+            line: t.size('type.fieldLabel.line', fallback: 18),
+            weight:
+                FontWeight.values[(t.size(
+                              'type.fieldLabel.weight',
+                              fallback: 600,
+                            ) /
+                            100 -
+                        1)
+                    .round()
+                    .clamp(0, 8)],
+            color: t.colors['foreground-field-label'],
+          ).copyWith(fontFamily: family ?? t.headingFont)
+        : raftCssTextStyle(
+            family: family ?? t.headingFont,
+            step: RaftTextSteps.sm,
+            weight: labelWeight ?? labelBase.fontWeight ?? FontWeight.w700,
+            color: labelBase.color,
+          );
+    final text = raftText(context, label);
+    final sub = labelRecipe.sub.textStyle(tokens);
+    // Field root `flex flex-col gap-1` (recipe row-gap) + the label's `mb-1`.
+    final gap = field.root.rowGap ?? 0;
+    final labelGap = web
+        ? t.size('space.fieldGap', fallback: 6)
+        : (4 + gap).toDouble();
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: EdgeInsets.only(bottom: labelGap),
+          child: Text.rich(
+            TextSpan(
+              children: [
+                TextSpan(text: text),
+                if (this.required)
+                  TextSpan(
+                    text: ' *',
+                    style: TextStyle(
+                      color: web
+                          ? t.colors['foreground-field-required']
+                          : labelRecipe.asterisk.color?.resolve(tokens),
+                    ),
+                  ),
+                if (optional)
+                  TextSpan(
+                    // LabelOptional keeps the source case (`normal-case`).
+                    text: ' ${raftText(context, '(optional)')}',
+                    style: TextStyle(
+                      color: sub.color,
+                      fontWeight: sub.fontWeight,
+                      letterSpacing: (sub.letterSpacing ?? 0),
+                    ),
+                  ),
+              ],
+            ),
+            style: labelStyle,
+          ),
+        ),
+        child,
+        if (error != null || hint != null)
+          Padding(
+            padding: EdgeInsets.only(top: labelGap),
+            child: RaftCssText(
+              error ?? hint!,
+              style: (error != null ? field.error : field.description)
+                  .textStyle(tokens)
+                  .copyWith(
+                    leadingDistribution: TextLeadingDistribution.even,
+                    fontFamily: family,
+                  ),
+            ),
+          ),
+      ],
+    );
+  }
+  Widget buildFrozenSettings(BuildContext context) {
+    final t = RaftTokens.of(context);
+    final f = gen.RaftFieldRecipe.resolve(
+      theme: raftRecipeTheme(t),
+      // `dark:text-foreground-hint` on the elegant label.
+      states: t.recipeStates(),
+      tokens: RaftRecipeTokens(t),
+    );
+    // v1.21.23 FormField size="compact" (the settings form treatment): the
+    // raft-ui label step `sm`, 12/16 600, in `foreground-field-label`. Size and
+    // line are the callsite `text-xs` of a57b9dab too (it replaces the recipe
+    // `text-sm` and drops `leading-none`); the weight is `type.fieldLabel.weight`
+    // and the colour the role in the Raft look (formField.label), the recipe's
+    // in the pre-theme looks.
+    final web = t.option('formField.label', or: 'tokens') == 'tokens';
+    var style = _frozenSlotText(t, f.label).copyWith(fontSize: 12, height: 16 / 12);
+    if (web) {
+      style = style.copyWith(
+        fontWeight: raftFontWeight(
+          t.size('type.fieldLabel.weight', fallback: 600),
+        ),
+        color: t.colors['foreground-field-label'],
+      );
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(raftText(context, label), style: style),
+        SizedBox(height: (f.root.rowGap ?? 4) + 4),
+        child,
+      ],
+    );
+  }
+  Widget buildFrozenStable(BuildContext context) {
+    final t = RaftTokens.of(context);
+    final tokens = RaftRecipeTokens(t);
+    final field = gen.RaftFieldRecipe.resolve(
+      theme: t.recipeTheme,
+      states: _frozenStates(t),
+      tokens: tokens,
+    );
+    final gap = t.size('space.fieldGap', fallback: field.root.rowGap ?? 0);
+    // LABEL_CLS = "text-sm font-bold text-foreground-strong"
+    final labelSize = t.size('type.fieldLabel.size', fallback: 14);
+    final labelStyle = field.label
+        .textStyle(tokens)
+        .copyWith(
+          fontSize: labelSize,
+          height: t.size('type.fieldLabel.line', fallback: 20) / labelSize,
+          fontWeight:
+              FontWeight.values[(t.size(
+                            'type.fieldLabel.weight',
+                            fallback: 700,
+                          ) /
+                          100 -
+                      1)
+                  .round()
+                  .clamp(0, 8)],
+          color: t.colors['foreground-field-label'],
+        );
+    final message = error ?? hint;
+    final messageStyle = TextStyle(
+      fontSize: 12, // text-xs
+      height: 16 / 12,
+      fontWeight: error != null ? FontWeight.w700 : null,
+      color: error != null ? t.colors['danger-strong'] : t.muted,
+    );
+    final counterRecipe = RaftTextareaCounterRecipe.resolve(
+      theme: t.recipeTheme,
+      tokens: tokens,
+    ).root;
+    final labelText = RaftCssText.rich(
+      TextSpan(
+        text: raftText(context, label),
+        children: [
+          if (this.required) ...[
+            const WidgetSpan(child: SizedBox(width: _tw)), // ml-1
+            TextSpan(
+              text: '*',
+              style: TextStyle(color: t.colors['foreground-field-required']),
+            ),
+          ],
+        ],
+      ),
+      style: labelStyle,
+    );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (labelAccessory != null)
+          Row(
+            children: [
+              labelText,
+              const SizedBox(width: 2 * _tw), // gap-2
+              const Spacer(),
+              SizedBox(
+                height:
+                    (32 -
+                            2 *
+                                t.size(
+                                  'space.fieldLabelAccessoryOutset',
+                                  fallback: 0,
+                                ))
+                        .clamp(0, double.infinity),
+                child: OverflowBox(
+                  fit: OverflowBoxFit.deferToChild,
+                  minHeight: 0,
+                  maxHeight: double.infinity,
+                  child: labelAccessory!,
+                ),
+              ),
+            ],
+          )
+        else
+          labelText,
+        SizedBox(height: gap),
+        child,
+        for (final below in belowControl) ...[SizedBox(height: gap), below],
+        SizedBox(height: gap),
+        Semantics(
+          liveRegion: error != null,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 4 * _tw), // min-h-4
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: RaftCssText(
+                    message == null ? ' ' : raftText(context, message),
+                    style: messageStyle,
+                  ),
+                ),
+                if (counter != null) ...[
+                  const SizedBox(width: 2 * _tw), // gap-2
+                  Text(
+                    counter!,
+                    style: messageStyle.copyWith(
+                      fontWeight: FontWeight.w400,
+                      // `font-mono tabular-nums text-foreground-muted
+                      // theme-brutal:text-black/50`
+                      fontFamily: counterRecipe.fontFamily ?? t.monoFont,
+                      fontFeatures: const [FontFeature.tabularFigures()],
+                      color: t.muted,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+  Widget buildFrozenAuth(BuildContext context) {
+    final t = RaftTokens.of(context);
+    final tokens = RaftRecipeTokens(t);
+    final style = gen.RaftFieldRecipe.resolve(
+      theme: t.recipeTheme,
+      // `dark:text-foreground-hint` on the elegant label (raft-ui field).
+      states: t.recipeStates(),
+      tokens: tokens,
+    );
+    // v1.21.23 FormField is the raft-ui Field: 13/18 600 `foreground-field-label`
+    // and the field's own 6px gap; the pre-theme looks keep the recipe label and
+    // `mb-1` (auth.fieldLabel).
+    final fieldTokens = t.option('auth.fieldLabel', or: 'tokens') == 'tokens';
+    final labelStyle = fieldTokens
+        ? style.label
+              .textStyle(tokens)
+              .copyWith(
+                fontSize: t.size('type.fieldLabel.size', fallback: 13),
+                height:
+                    t.size('type.fieldLabel.line', fallback: 18) /
+                    t.size('type.fieldLabel.size', fallback: 13),
+                fontWeight:
+                    FontWeight.values[(t.size(
+                                  'type.fieldLabel.weight',
+                                  fallback: 600,
+                                ) /
+                                100 -
+                            1)
+                        .round()
+                        .clamp(0, 8)],
+                color: t.colors['foreground-field-label'],
+              )
+        : style.label.textStyle(tokens);
+    final labelGap = fieldTokens
+        ? t.size('space.fieldGap', fallback: 6)
+        : (4 + (style.root.rowGap ?? 0)).toDouble();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (labelAction == null)
+          Text(label, style: labelStyle)
+        else
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // The label takes the free width (`ml-auto` on the action), so
+              // the action ends flush with the control below.
+              Expanded(child: Text(label, style: labelStyle)),
+              const SizedBox(width: 4), // gap-1
+              labelAction!,
+            ],
+          ),
+        SizedBox(height: labelGap),
+        surface ? RaftFieldSurface(child: child) : child,
+        // Field `gap` separates every direct child of the field.
+        if (hint != null) ...[
+          // Field gap (v1.21.23) / gap-1 + mt-1 (a57b9dab).
+          SizedBox(
+            height: fieldTokens
+                ? labelGap
+                : ((style.root.rowGap ?? 0) + 4).toDouble(),
+          ),
+          Text(
+            hint!,
+            style: helperRecipe
+                ? style.description.textStyle(tokens)
+                : _frozenAuthHelper(
+                    t,
+                    fieldTokens || helperHint
+                        ? t.semantic.foregroundHint
+                        : t.muted,
+                  ),
+          ),
+        ],
+        if (error != null) ...[
+          SizedBox(
+            height: fieldTokens
+                ? labelGap
+                : ((style.root.rowGap ?? 0) + 4).toDouble(),
+          ),
+          Semantics(
+            liveRegion: true,
+            child: Text(error!, style: style.error.textStyle(tokens)),
+          ),
+        ],
+      ],
+    );
+  }}

@@ -9,7 +9,8 @@
 // Values come from the generated recipes (package:raft_ui/recipes.dart) and
 // tokens; Tailwind classes written in the Web JSX are resolved in comments.
 import 'card.dart' show RaftCard;
-import 'form_controls.dart' show RaftTextInput, RaftTextarea, RaftLegacyInput;
+import 'form_controls.dart'
+    show RaftField, RaftLegacyField, RaftTextInput, RaftTextarea, RaftLegacyInput;
 import 'hover_region.dart';
 
 import 'dart:math' as math;
@@ -28,7 +29,6 @@ import 'design_primitives.dart';
 import 'dismiss_scope.dart';
 import 'icons.dart';
 import 'localization.dart';
-import 'panel_layout.dart' show RaftCssText;
 import 'recipe_surface.dart';
 import 'recipes/button_variants.g.dart';
 import 'recipes/card.g.dart';
@@ -38,8 +38,6 @@ import 'raft/button_colors.dart';
 import 'raft/button_surface.dart';
 import 'raft/ui_tokens.dart';
 import 'tokens/tokens.dart' show RaftTypeStyle;
-import 'recipes/field.g.dart' as field_recipe;
-import 'recipes/label.g.dart';
 import 'recipes/recipe_router.dart' show usesLegacyRecipes;
 import 'recipes/recipe_runtime.dart';
 import 'recipes/segmented_control.g.dart';
@@ -889,9 +887,8 @@ class _RaftDialogCardState extends State<RaftDialogCard> {
   }
 }
 
-/// Web `FormField` over raft-ui `Field`/`FieldLabel`/`LabelAsterisk`/
-/// `LabelOptional`: label `mb-1 block text-sm`, then [child], then an optional
-/// hint/error line.
+/// Web `FormField` over raft-ui `Field`/`FieldLabel`/`LabelAsterisk`/`LabelOptional` in the dialogs:
+/// the shared [RaftField] with this call shape.
 class RaftProductFormField extends StatelessWidget {
   const RaftProductFormField({
     super.key,
@@ -913,105 +910,17 @@ class RaftProductFormField extends StatelessWidget {
   /// Label / hint face when the host is not under `font-display` (a portal).
   final String? family;
   @override
-  Widget build(BuildContext context) {
-    final t = RaftTokens.of(context);
-    final tokens = RaftRecipeTokens(t);
-    final field = field_recipe.RaftFieldRecipe.resolve(
-      theme: raftRecipeThemeOf(t),
-      states: RaftRecipeStates({if (t.dark) RaftRecipeStates.dark}),
-      tokens: tokens,
-    );
-    final labelRecipe = RaftLabelRecipe.resolve(
-      theme: raftRecipeThemeOf(t),
-      tokens: tokens,
-    );
-    final labelBase = field.label.textStyle(tokens);
-    // v1.21.23 FormField is the raft-ui Field: the label is 13/18 600
-    // `foreground-field-label` and the field's own 6px gap separates label,
-    // control and help; the pre-theme looks keep the recipe label with `mb-1`
-    // (formField.label).
-    final web = t.option('formField.label', or: 'tokens') == 'tokens';
-    final labelSize = t.size('type.fieldLabel.size', fallback: 13);
-    final labelStyle = web
-        ? RaftTypography.body(
-            t,
-            size: labelSize,
-            line: t.size('type.fieldLabel.line', fallback: 18),
-            weight:
-                FontWeight.values[(t.size(
-                              'type.fieldLabel.weight',
-                              fallback: 600,
-                            ) /
-                            100 -
-                        1)
-                    .round()
-                    .clamp(0, 8)],
-            color: t.colors['foreground-field-label'],
-          ).copyWith(fontFamily: family ?? t.headingFont)
-        : raftCssTextStyle(
-            family: family ?? t.headingFont,
-            step: RaftTextSteps.sm,
-            weight: labelWeight ?? labelBase.fontWeight ?? FontWeight.w700,
-            color: labelBase.color,
-          );
-    final text = raftText(context, label);
-    final sub = labelRecipe.sub.textStyle(tokens);
-    // Field root `flex flex-col gap-1` (recipe row-gap) + the label's `mb-1`.
-    final gap = field.root.rowGap ?? 0;
-    final labelGap = web
-        ? t.size('space.fieldGap', fallback: 6)
-        : (4 + gap).toDouble();
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Padding(
-          padding: EdgeInsets.only(bottom: labelGap),
-          child: Text.rich(
-            TextSpan(
-              children: [
-                TextSpan(text: text),
-                if (required)
-                  TextSpan(
-                    text: ' *',
-                    style: TextStyle(
-                      color: web
-                          ? t.colors['foreground-field-required']
-                          : labelRecipe.asterisk.color?.resolve(tokens),
-                    ),
-                  ),
-                if (optional)
-                  TextSpan(
-                    // LabelOptional keeps the source case (`normal-case`).
-                    text: ' ${raftText(context, '(optional)')}',
-                    style: TextStyle(
-                      color: sub.color,
-                      fontWeight: sub.fontWeight,
-                      letterSpacing: (sub.letterSpacing ?? 0),
-                    ),
-                  ),
-              ],
-            ),
-            style: labelStyle,
-          ),
-        ),
-        child,
-        if (error != null || hint != null)
-          Padding(
-            padding: EdgeInsets.only(top: labelGap),
-            child: RaftCssText(
-              error ?? hint!,
-              style: (error != null ? field.error : field.description)
-                  .textStyle(tokens)
-                  .copyWith(
-                    leadingDistribution: TextLeadingDistribution.even,
-                    fontFamily: family,
-                  ),
-            ),
-          ),
-      ],
-    );
-  }
+  Widget build(BuildContext context) => RaftField(
+    label: label,
+    required: required,
+    optional: optional,
+    hint: hint,
+    error: error,
+    labelWeight: labelWeight,
+    family: family,
+    legacy: RaftLegacyField.product,
+    child: child,
+  );
 }
 
 /// Web `SectionEyebrow`: `text-xs font-bold text-foreground-muted` (sentence

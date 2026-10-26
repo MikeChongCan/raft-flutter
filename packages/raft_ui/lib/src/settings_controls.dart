@@ -1,4 +1,5 @@
 
+import 'form_controls.dart' show RaftField, RaftLegacyField;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -240,8 +241,7 @@ class _RaftSettingsRecipeButtonState extends State<RaftSettingsRecipeButton> {
   );
 }
 
-/// FormField.tsx `labelStyle="plain" size="compact"`: raft-ui `Field`
-/// (`flex flex-col gap-1`) with a FieldLabel `mb-1 block text-xs`.
+/// FormField.tsx `labelStyle="plain" size="compact"`: the settings forms' compact [RaftField].
 class RaftSettingsField extends StatelessWidget {
   const RaftSettingsField({
     super.key,
@@ -251,44 +251,12 @@ class RaftSettingsField extends StatelessWidget {
   final String label;
   final Widget child;
   @override
-  Widget build(BuildContext context) {
-    final t = RaftTokens.of(context);
-    final f = RaftFieldRecipe.resolve(
-      theme: raftRecipeTheme(t),
-      // `dark:text-foreground-hint` on the elegant label.
-      states: t.recipeStates(),
-      tokens: RaftRecipeTokens(t),
-    );
-    // v1.21.23 FormField size="compact" (the settings form treatment): the
-    // raft-ui label step `sm`, 12/16 600, in `foreground-field-label`. Size and
-    // line are the callsite `text-xs` of a57b9dab too (it replaces the recipe
-    // `text-sm` and drops `leading-none`); the weight is `type.fieldLabel.weight`
-    // and the colour the role in the Raft look (formField.label), the recipe's
-    // in the pre-theme looks.
-    final web = t.option('formField.label', or: 'tokens') == 'tokens';
-    var style = _slotText(t, f.label).copyWith(fontSize: 12, height: 16 / 12);
-    if (web) {
-      style = style.copyWith(
-        fontWeight: raftFontWeight(
-          t.size('type.fieldLabel.weight', fallback: 600),
-        ),
-        color: t.colors['foreground-field-label'],
-      );
-    }
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(raftText(context, label), style: style),
-        // `gap-1.5` between label and control; the frozen looks add 4px.
-        SizedBox(
-          height:
-              (f.root.rowGap ?? 4) +
-              (usesLegacyRecipes(RaftRecipeTokens(t)) ? 4 : 0),
-        ),
-        child,
-      ],
-    );
-  }
+  Widget build(BuildContext context) => RaftField(
+    label: label,
+    compact: true,
+    legacy: RaftLegacyField.settings,
+    child: child,
+  );
 }
 
 /// raft-ui `Input` (`input` recipe) with a callsite text size.

@@ -6,6 +6,7 @@
 // SegmentedControl, MessageReferenceChip, DropdownMenu, AlertDialog, Banner,
 // TextareaCounter). The app owns the store and the transport; every value
 // shown here arrives as data.
+import 'label.dart';
 import 'text_selection_toolbar.dart';
 import 'hover_region.dart';
 import 'indicators.dart' show RaftSkeleton;
@@ -132,19 +133,20 @@ class RaftFeedbackViewHeader extends StatelessWidget {
   }
 }
 
-/// `.hands-feedback-field-label`: 13px, weight 650.
+/// A feedback form's field label: the shared [RaftLabel] (`.hands-feedback-field-label` 13px / 600 in the
+/// frozen looks).
 class RaftFeedbackFieldLabel extends StatelessWidget {
   const RaftFeedbackFieldLabel(this.text, {super.key});
   final String text;
   @override
-  Widget build(BuildContext context) => Text(
-    raftText(context, text),
-    style: raftFeedbackText(
-      RaftTokens.of(context),
-      size: 13,
-      weight: FontWeight.w600,
-    ),
-  );
+  Widget build(BuildContext context) {
+    final t = RaftTokens.of(context);
+    if (t.recipeSet == RaftRecipeSet.raft) return RaftLabel(text);
+    return Text(
+      raftText(context, text),
+      style: raftFeedbackText(t, size: 13, weight: FontWeight.w600),
+    );
+  }
 }
 
 /// The feedback type `SegmentedControl` (Idea / Bug) with the

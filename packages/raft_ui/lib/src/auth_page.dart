@@ -1,6 +1,7 @@
 // Web auth/onboarding page pieces (packages/web/src/components/brand/
 // AuthBrandShell.tsx, components/auth/*). Presentation only: the app owns
 // state, validation and requests and passes fields/callbacks in.
+import 'form_controls.dart' show RaftField, RaftLegacyField;
 import 'dart:math' as math;
 
 import 'package:flutter/gestures.dart';
@@ -20,9 +21,7 @@ import 'onboarding_previews.dart';
 import 'page_tokens.dart';
 import 'recipes/button_variants.g.dart';
 import 'recipes/checkbox.g.dart';
-import 'recipes/field.g.dart' as field_recipe;
 import 'recipes/recipe_runtime.dart';
-import 'recipes/token_binding.dart';
 import 'status_bar.dart';
 import 'raft/ui_tokens.dart';
 import 'tokens/tokens.dart' show RaftTypeScale;
@@ -328,9 +327,7 @@ class RaftAuthIntro extends StatelessWidget {
   }
 }
 
-/// FormField labelStyle="plain" over raft-ui Field: label `mb-1 block text-sm`
-/// (field label recipe: 14/20, 700 brutal / 500 elegant, foreground), Field
-/// `gap-1` before the control.
+/// FormField over raft-ui Field in the sign-in pages: the shared [RaftField] with a `labelAction` and a helper.
 class RaftAuthField extends StatelessWidget {
   const RaftAuthField({
     super.key,
@@ -346,116 +343,32 @@ class RaftAuthField extends StatelessWidget {
   final String label;
   final Widget child;
 
-  /// FormField `labelAction` (Web v1.21.12): a secondary action pushed to the
-  /// far end of the label row (`ml-auto`), e.g. the sign-in form's "Forgot
-  /// password?" link. The row is `mb-1 flex items-center gap-1`.
+  /// FormField `labelAction` (Web v1.21.12): a secondary action pushed to the far end of the label row.
   final Widget? labelAction;
 
-  /// Helper `<p className="mt-1 text-xs …">` rendered after the control;
-  /// muted, or `text-foreground-hint` when [helperHint].
+  /// The help text after the control; [helperHint] / [helperRecipe] pick its frozen-look ink and type.
   final String? helper;
   final bool helperHint;
-
-  /// `FormField hint`: the raft-ui `FieldDescription` recipe text (no `text-xs`
-  /// override), e.g. the ServerSelector first-server form.
   final bool helperRecipe;
 
   /// FieldError `mt-1` (field recipe error slot).
   final String? error;
 
-  /// Wrap [child] in the shared field frame (false when the child draws its
-  /// own frame, e.g. an input group).
+  /// Wrap [child] in the shared field frame (false when the child draws its own frame).
   final bool surface;
 
   @override
-  Widget build(BuildContext context) {
-    final t = RaftTokens.of(context);
-    final tokens = RaftRecipeTokens(t);
-    final style = field_recipe.RaftFieldRecipe.resolve(
-      theme: RaftRecipeTheme.elegant,
-      // `dark:text-foreground-hint` on the elegant label (raft-ui field).
-      states: t.recipeStates(),
-      tokens: tokens,
-    );
-    // v1.21.23 FormField is the raft-ui Field: 13/18 600 `foreground-field-label`
-    // and the field's own 6px gap; the pre-theme looks keep the recipe label and
-    // `mb-1` (auth.fieldLabel).
-    final fieldTokens = t.option('auth.fieldLabel', or: 'tokens') == 'tokens';
-    final labelStyle = fieldTokens
-        ? style.label
-              .textStyle(tokens)
-              .copyWith(
-                fontSize: t.size('type.fieldLabel.size', fallback: 13),
-                height:
-                    t.size('type.fieldLabel.line', fallback: 18) /
-                    t.size('type.fieldLabel.size', fallback: 13),
-                fontWeight:
-                    FontWeight.values[(t.size(
-                                  'type.fieldLabel.weight',
-                                  fallback: 600,
-                                ) /
-                                100 -
-                            1)
-                        .round()
-                        .clamp(0, 8)],
-                color: t.colors['foreground-field-label'],
-              )
-        : style.label.textStyle(tokens);
-    final labelGap = fieldTokens
-        ? t.size('space.fieldGap', fallback: 6)
-        : (4 + (style.root.rowGap ?? 0)).toDouble();
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        if (labelAction == null)
-          Text(label, style: labelStyle)
-        else
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // The label takes the free width (`ml-auto` on the action), so
-              // the action ends flush with the control below.
-              Expanded(child: Text(label, style: labelStyle)),
-              const SizedBox(width: 4), // gap-1
-              labelAction!,
-            ],
-          ),
-        SizedBox(height: labelGap),
-        surface ? RaftFieldSurface(child: child) : child,
-        // Field `gap` separates every direct child of the field.
-        if (helper != null) ...[
-          // Field gap (v1.21.23) / gap-1 + mt-1 (a57b9dab).
-          SizedBox(
-            height: fieldTokens
-                ? labelGap
-                : ((style.root.rowGap ?? 0) + 4).toDouble(),
-          ),
-          Text(
-            helper!,
-            style: helperRecipe
-                ? style.description.textStyle(tokens)
-                : _helper(
-                    t,
-                    fieldTokens || helperHint
-                        ? t.semantic.foregroundHint
-                        : t.muted,
-                  ),
-          ),
-        ],
-        if (error != null) ...[
-          SizedBox(
-            height: fieldTokens
-                ? labelGap
-                : ((style.root.rowGap ?? 0) + 4).toDouble(),
-          ),
-          Semantics(
-            liveRegion: true,
-            child: Text(error!, style: style.error.textStyle(tokens)),
-          ),
-        ],
-      ],
-    );
-  }
+  Widget build(BuildContext context) => RaftField(
+    label: label,
+    hint: helper,
+    error: error,
+    labelAction: labelAction,
+    helperHint: helperHint,
+    helperRecipe: helperRecipe,
+    surface: surface,
+    legacy: RaftLegacyField.auth,
+    child: child,
+  );
 }
 
 /// Native-only secondary line under a waiting browser sign-in: "Browser didn't

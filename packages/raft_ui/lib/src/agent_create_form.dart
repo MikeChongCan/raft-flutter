@@ -16,11 +16,11 @@
 // Values come from the recipes; the few Tailwind classes written directly in
 // Web JSX are cited next to the number that resolves them.
 
+import 'form_controls.dart' show RaftTextInput, RaftTextarea, RaftLegacyInput, RaftField, RaftLegacyField;
 import 'dart:math' as math;
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart' show OverflowBoxFit;
 
 import 'system_inset.dart';
 import 'banner.dart' show RaftBanner;
@@ -29,7 +29,6 @@ import 'select_field.dart';
 import 'components.dart';
 import 'design_primitives.dart';
 import 'dismiss_scope.dart';
-import 'form_controls.dart' show RaftTextInput, RaftTextarea, RaftLegacyInput;
 import 'form_presentation.dart';
 import 'icons.dart';
 import 'indicators.dart' show RaftCheckbox, RaftCheckboxRecipeSize;
@@ -41,9 +40,7 @@ import 'recipes/token_binding.dart';
 import 'recipes/banner.g.dart';
 import 'recipes/button_variants.g.dart';
 import 'recipes/card.g.dart';
-import 'recipes/field.g.dart' as field_recipe;
 import 'recipes/select.g.dart';
-import 'recipes/textarea_counter.g.dart';
 import 'theme.dart';
 
 RaftRecipeTheme _theme(RaftTokens t) => RaftRecipeTheme.elegant;
@@ -354,9 +351,8 @@ class RaftAgentCloseButton extends StatelessWidget {
   }
 }
 
-/// StableField: label (+ asterisk) / control / belowControl / reserved
-/// message row. Children of the Field flex column are separated by the field
-/// recipe gap.
+/// StableField: label (+ asterisk) / control / belowControl / reserved message row, the agent forms'
+/// [RaftField] with a held-open message row.
 class RaftStableField extends StatelessWidget {
   const RaftStableField({
     super.key,
@@ -377,127 +373,18 @@ class RaftStableField extends StatelessWidget {
   final List<Widget> belowControl;
 
   @override
-  Widget build(BuildContext context) {
-    final t = RaftTokens.of(context);
-    final tokens = RaftRecipeTokens(t);
-    final field = field_recipe.RaftFieldRecipe.resolve(
-      theme: _theme(t),
-      states: _states(t),
-      tokens: tokens,
-    );
-    final gap = t.size('space.fieldGap', fallback: field.root.rowGap ?? 0);
-    // LABEL_CLS = "text-sm font-bold text-foreground-strong"
-    final labelSize = t.size('type.fieldLabel.size', fallback: 14);
-    final labelStyle = field.label
-        .textStyle(tokens)
-        .copyWith(
-          fontSize: labelSize,
-          height: t.size('type.fieldLabel.line', fallback: 20) / labelSize,
-          fontWeight:
-              FontWeight.values[(t.size(
-                            'type.fieldLabel.weight',
-                            fallback: 700,
-                          ) /
-                          100 -
-                      1)
-                  .round()
-                  .clamp(0, 8)],
-          color: t.colors['foreground-field-label'],
-        );
-    final message = error ?? hint;
-    final messageStyle = TextStyle(
-      fontSize: 12, // text-xs
-      height: 16 / 12,
-      fontWeight: error != null ? FontWeight.w700 : null,
-      color: error != null ? t.colors['danger-strong'] : t.muted,
-    );
-    final counterRecipe = RaftTextareaCounterRecipe.resolve(
-      theme: _theme(t),
-      tokens: tokens,
-    ).root;
-    final labelText = RaftCssText.rich(
-      TextSpan(
-        text: raftText(context, label),
-        children: [
-          if (required) ...[
-            const WidgetSpan(child: SizedBox(width: _tw)), // ml-1
-            TextSpan(
-              text: '*',
-              style: TextStyle(color: t.colors['foreground-field-required']),
-            ),
-          ],
-        ],
-      ),
-      style: labelStyle,
-    );
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        if (labelAccessory != null)
-          Row(
-            children: [
-              labelText,
-              const SizedBox(width: 2 * _tw), // gap-2
-              const Spacer(),
-              SizedBox(
-                height:
-                    (32 -
-                            2 *
-                                t.size(
-                                  'space.fieldLabelAccessoryOutset',
-                                  fallback: 0,
-                                ))
-                        .clamp(0, double.infinity),
-                child: OverflowBox(
-                  fit: OverflowBoxFit.deferToChild,
-                  minHeight: 0,
-                  maxHeight: double.infinity,
-                  child: labelAccessory!,
-                ),
-              ),
-            ],
-          )
-        else
-          labelText,
-        SizedBox(height: gap),
-        child,
-        for (final below in belowControl) ...[SizedBox(height: gap), below],
-        SizedBox(height: gap),
-        Semantics(
-          liveRegion: error != null,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: 4 * _tw), // min-h-4
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: RaftCssText(
-                    message == null ? ' ' : raftText(context, message),
-                    style: messageStyle,
-                  ),
-                ),
-                if (counter != null) ...[
-                  const SizedBox(width: 2 * _tw), // gap-2
-                  Text(
-                    counter!,
-                    style: messageStyle.copyWith(
-                      fontWeight: FontWeight.w400,
-                      // `font-mono tabular-nums text-foreground-muted
-                      // theme-brutal:text-black/50`
-                      fontFamily: counterRecipe.fontFamily ?? t.monoFont,
-                      fontFeatures: const [FontFeature.tabularFigures()],
-                      color: t.muted,
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
+  Widget build(BuildContext context) => RaftField(
+    label: label,
+    required: required,
+    hint: hint,
+    error: error,
+    counter: counter,
+    labelAccessory: labelAccessory,
+    belowControl: belowControl,
+    reserveMessage: true,
+    legacy: RaftLegacyField.stable,
+    child: child,
+  );
 }
 
 /// raft-ui Input (or Textarea when [multiline]) in the agent forms: the shared [RaftTextInput] /
