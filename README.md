@@ -112,3 +112,7 @@ Use `--dart-define=RAFT_ORIGIN=http://localhost:13041` to point a build at a loc
 | GitHub CI builds and version-tag releases (Windows first, expandable platform matrix)            | [docs/release-ci.md](docs/release-ci.md)                       |
 | Architecture                                                                                     | [docs/architecture.md](docs/architecture.md)                   |
 | Windows build, notification setup and verified limits                                            | [docs/windows-notifications.md](docs/windows-notifications.md) |
+
+## License
+
+Raft Flutter is released under the [MIT License](LICENSE). Bundled fonts and third-party components keep their own licenses; see [docs/licenses](docs/licenses).
