@@ -10,7 +10,6 @@
 /// rule is documented in docs/ds-migration.md ("Bypass rules").
 library;
 
-import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
 
@@ -169,7 +168,7 @@ String? bypassFamilyOf(Element? e, String name) {
 class BypassAuditVisitor extends AuditVisitorBase {
   BypassAuditVisitor(
     super.relativePath,
-    ResolvedUnitResult super.unit, {
+    super.unit, {
     this.wrapperAllow = const {},
   });
 
