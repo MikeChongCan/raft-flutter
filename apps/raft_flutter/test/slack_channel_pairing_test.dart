@@ -615,7 +615,7 @@ void main() {
         await t.tap(find.text('#launch').last);
         await t.pumpAndSettle();
         bridge.preflightPasses = false;
-        await t.tap(find.widgetWithText(RaftRecipeButton, 'Create Channel'));
+        await t.tap(find.widgetWithText(RaftButton, 'Create Channel'));
         await t.pumpAndSettle(const Duration(milliseconds: 100));
         expect(creates, 1);
         expect(
@@ -626,7 +626,7 @@ void main() {
         );
         expect(created, isNull, reason: 'the dialog stays open');
         bridge.preflightPasses = true;
-        await t.tap(find.widgetWithText(RaftRecipeButton, 'Create Channel'));
+        await t.tap(find.widgetWithText(RaftButton, 'Create Channel'));
         await t.pumpAndSettle(const Duration(milliseconds: 100));
         expect(creates, 1, reason: 'a retry never creates a second channel');
         expect(created?.id, 'c1');
