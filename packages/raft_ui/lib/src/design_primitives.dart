@@ -1031,7 +1031,8 @@ RaftSlotStyle _raftControlButtonStyle(
       'border-bottom-left-radius': CssNum(radius.bottomLeft.x, 'px'),
       'border-bottom-right-radius': CssNum(radius.bottomRight.x, 'px'),
       'box-shadow': CssList([
-        for (final s in shadows)
+        // Recipes return Flutter paint order; CSS lists the top layer first.
+        for (final s in shadows.reversed)
           CssSeq([
             CssNum(s.offset.dx, 'px'),
             CssNum(s.offset.dy, 'px'),

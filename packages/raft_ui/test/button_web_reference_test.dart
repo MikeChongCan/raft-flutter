@@ -206,6 +206,10 @@ void main() {
     testWidgets('real keyboard focus paints composer Send ring ($dark)', (
       t,
     ) async {
+      addTearDown(() async {
+        await t.pumpWidget(const SizedBox.shrink());
+        await t.pump();
+      });
       await t.pumpWidget(
         paintHost(
           raftTheme(dark: dark),
@@ -231,6 +235,9 @@ void main() {
       );
       expect(detector.focusNode!.hasFocus, isTrue);
       expect(await pixel(t, const Offset(9, 28)), isNot(idle));
+      final ring = RaftUiColors.of(dark).focusRing.layers;
+      expect(await pixel(t, const Offset(11, 28)), ring.first.color);
+      expect(await pixel(t, const Offset(9, 28)), ring.last.color);
     });
   }
 }
