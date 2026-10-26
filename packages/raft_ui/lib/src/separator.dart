@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart' show Divider, VerticalDivider;
+import 'package:flutter/material.dart' show DividerTheme, Theme;
 import 'package:flutter/widgets.dart';
 
 import 'localization.dart';
@@ -43,9 +43,7 @@ class RaftSeparator extends StatelessWidget {
     final t = RaftTokens.of(context);
     final vertical = axis == Axis.vertical;
     if (t.recipeSet != RaftRecipeSet.raft) {
-      final line = vertical
-          ? VerticalDivider(width: 1, thickness: thickness, color: color)
-          : Divider(height: 1, thickness: thickness, color: color);
+      final line = _frozenLine(context, vertical);
       return label == null || vertical
           ? line
           : _labeled(context, t, (_) => line);
@@ -81,6 +79,30 @@ class RaftSeparator extends StatelessWidget {
         applyText: false,
       ),
     );
+  }
+
+  /// Material's default thickness: a hairline, one device pixel.
+  static const _hairline = 0.0;
+
+  /// What `Divider(height: 1, ...)` / `VerticalDivider(width: 1, ...)` drew: a
+  /// 1px box with the line centred in it, the caller's colour or the ambient
+  /// divider colour, [thickness] or a hairline.
+  Widget _frozenLine(BuildContext context, bool vertical) {
+    final theme = DividerTheme.of(context);
+    final side = BorderSide(
+      color: color ?? theme.color ?? Theme.of(context).dividerColor,
+      width: thickness ?? theme.thickness ?? _hairline,
+    );
+    final line = Container(
+      width: vertical ? side.width : null,
+      height: vertical ? null : side.width,
+      decoration: BoxDecoration(
+        border: vertical ? Border(left: side) : Border(bottom: side),
+      ),
+    );
+    return vertical
+        ? SizedBox(width: 1, child: Center(child: line))
+        : SizedBox(height: 1, child: Center(child: line));
   }
 
   Widget _labeled(
