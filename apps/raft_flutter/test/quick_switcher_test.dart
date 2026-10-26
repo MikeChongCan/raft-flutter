@@ -208,7 +208,8 @@ void main() {
         expect(titles.indexOf('Cindy') < titles.indexOf('design'), isTrue);
         expect(titles, isNot(contains('general')));
         expect(find.byKey(const Key('quick-switcher-footer')), findsOneWidget);
-        expect(find.text('ESC'), findsOneWidget);
+        // The Web's `<Kbd>Esc</Kbd>`, in the case it is written in.
+        expect(find.text('Esc'), findsOneWidget);
         expect(t.takeException(), isNull);
       },
     );

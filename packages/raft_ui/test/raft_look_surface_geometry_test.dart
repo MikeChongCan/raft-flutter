@@ -103,7 +103,14 @@ void main() {
           final d = tester.widget<Container>(box).decoration! as BoxDecoration;
           expect(d.borderRadius, BorderRadius.circular(8));
           final border = d.border! as Border;
-          expect(border.top.width, 1.5);
+          // `border-[1.5px]`, floored to whole device pixels like every other control.
+          expect(
+            border.top.width,
+            raftControlBorderPx(
+              tester.element(find.byKey(const Key('field'))),
+              1.5,
+            ),
+          );
           expect(border.top.color, t.ui.lineStrong);
         },
       );
