@@ -106,9 +106,7 @@ Finder _email(String value) => find.byWidgetPredicate(
   (w) => w is Text && w.data?.replaceAll('\u200b', '') == value,
 );
 
-Finder get _spinner => find.byWidgetPredicate(
-  (w) => w is RaftSpinner,
-);
+Finder get _spinner => find.byWidgetPredicate((w) => w is RaftSpinner);
 
 void main() {
   late _Client client;

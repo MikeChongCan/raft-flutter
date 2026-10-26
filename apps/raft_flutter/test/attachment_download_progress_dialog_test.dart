@@ -10,7 +10,7 @@ void main() {
       'the download dialog shows a Raft progress bar that follows the value (dark=$dark)',
       (tester) async {
         final progress = ValueNotifier<double?>(null);
-      addTearDown(progress.dispose);
+        addTearDown(progress.dispose);
         var canceled = 0;
         await tester.pumpWidget(
           MaterialApp(

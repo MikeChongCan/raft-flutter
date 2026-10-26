@@ -98,10 +98,8 @@ Future<void> _leave(WidgetTester t) async {
   await t.pumpAndSettle();
 }
 
-Finder get _anySpinner => find.byWidgetPredicate(
-  (w) =>
-      w is RaftProgressBar || w is RaftSpinner,
-);
+Finder get _anySpinner =>
+    find.byWidgetPredicate((w) => w is RaftProgressBar || w is RaftSpinner);
 
 /// Release the gated responses and pump frame by frame until [done], checking
 /// that every rect in [rects] holds still and no loading state appears.
