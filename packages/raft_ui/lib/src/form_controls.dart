@@ -15,7 +15,10 @@ import 'recipe_surface.dart';
 import 'recipes/field.g.dart' as gen;
 import 'recipes/input.g.dart';
 import 'recipes/input_group.g.dart';
+import 'recipes/button_variants.g.dart';
+import 'recipes/kbd.g.dart';
 import 'recipes/label.g.dart';
+import 'kbd.dart';
 import 'recipes/recipe_runtime.dart';
 import 'recipes/recipe_router.dart' show resolveAuthoredClasses;
 import 'recipes/textarea.g.dart';
@@ -25,7 +28,8 @@ import 'raft/css_box.dart';
 import 'raft/ui_tokens.dart';
 import 'theme.dart';
 import 'tokens/tokens.dart';
-import 'design_primitives.dart' show RaftFieldSurface, RaftTypography;
+import 'design_primitives.dart'
+    show RaftFieldSurface, RaftTypography, RaftIconButton, RaftControlVariant;
 import 'panel_layout.dart' show raftRecipeTheme;
 import 'text_scaling.dart' show RaftScaled;
 
@@ -823,9 +827,327 @@ class RaftTextareaCounter extends StatelessWidget {
   }
 }
 
-/// raft-ui `InputGroup` with a leading text addon (`InputGroupAddon.Text`,
-/// variant `container`) and an `InputGroupInput` — Web `PrefixedInput`.
-class RaftPrefixedInput extends StatefulWidget {
+/// An `InputGroupAddon` of a [RaftInputGroup]: a text (`InputGroupAddon.Text`), an icon, or a control the
+/// group hosts without padding (the section emoji button).
+class RaftInputGroupAddon {
+  const RaftInputGroupAddon.text(String this.text) : glyph = null, child = null;
+  const RaftInputGroupAddon.icon(RaftGlyph this.glyph)
+    : text = null,
+      child = null;
+  const RaftInputGroupAddon.custom(Widget this.child)
+    : text = null,
+      glyph = null;
+  final String? text;
+  final RaftGlyph? glyph;
+  final Widget? child;
+}
+
+/// How the frozen Elegant and Brutal looks paint an input group; see `form_controls_frozen.dart`.
+enum RaftLegacyGroup {
+  /// A prefixed input (`SlugInput`, the section name field).
+  prefixed,
+
+  /// The settings forms' prefixed input.
+  settings,
+
+  /// The message search field.
+  search,
+}
+
+/// raft-ui `InputGroup`: one bordered box holding an optional leading addon, the control and an optional trailing
+/// addon, `InputGroupAddon` / `InputGroupAddon.Text` / `InputGroupInput` of the Web. [clearLabel] and [onClear]
+/// add the inline-end clear button while the field holds text, [kbd] the key hint after it.
+class RaftInputGroup extends StatefulWidget {
+  const RaftInputGroup({
+    super.key,
+    this.leading,
+    this.trailing,
+    this.variant = RaftInputGroupRecipeVariant.default_,
+    this.controller,
+    this.initialValue,
+    this.hintText,
+    this.readOnly = false,
+    this.enabled = true,
+    this.invalid = false,
+    this.onChanged,
+    this.onSubmitted,
+    this.focusNode,
+    this.inputFormatters,
+    this.semanticLabel,
+    this.autofocus = false,
+    this.maxLength,
+    this.controlWeight,
+    this.mono = false,
+    this.textColor,
+    this.backgroundColor,
+    this.borderColor,
+    this.flat = false,
+    this.clearLabel,
+    this.onClear,
+    this.kbd,
+    this.legacy = RaftLegacyGroup.prefixed,
+  });
+
+  final RaftInputGroupAddon? leading, trailing;
+
+  /// `variant="container"` addons are a muted block with a hairline seam (`SlugInput`); the default ones sit on
+  /// the group's own fill.
+  final RaftInputGroupRecipeVariant variant;
+  final TextEditingController? controller;
+  final String? initialValue, hintText, semanticLabel;
+  final bool readOnly, enabled, invalid, autofocus;
+  final ValueChanged<String>? onChanged, onSubmitted;
+  final FocusNode? focusNode;
+  final List<TextInputFormatter>? inputFormatters;
+  final int? maxLength;
+
+  /// The control's `font-bold` / `font-medium` class over the recipe weight; [mono] is `font-mono`.
+  final FontWeight? controlWeight;
+  final bool mono;
+
+  /// Callsite `text-*`, `bg-*`, `border-*` and `shadow-none` classes on the group.
+  final Color? textColor, backgroundColor, borderColor;
+  final bool flat;
+
+  /// The inline-end clear button (shown while there is text) and the `Kbd` hint after it.
+  final String? clearLabel, kbd;
+  final VoidCallback? onClear;
+
+  /// How the frozen Elegant and Brutal looks paint this group.
+  final RaftLegacyGroup legacy;
+
+  @override
+  State<RaftInputGroup> createState() => _RaftInputGroupState();
+}
+
+class _RaftInputGroupState extends State<RaftInputGroup>
+    with _FieldInteraction<RaftInputGroup> {
+  @override
+  FocusNode? get externalFocus => widget.focusNode;
+  TextEditingController? _ownedController;
+  TextEditingController get controller =>
+      widget.controller ??
+      (_ownedController ??= TextEditingController(text: widget.initialValue));
+
+  void _textChanged() {
+    if (mounted) setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.onClear != null) controller.addListener(_textChanged);
+  }
+
+  @override
+  void didUpdateWidget(covariant RaftInputGroup old) {
+    super.didUpdateWidget(old);
+    if (old.controller != widget.controller) {
+      (old.controller ?? _ownedController)?.removeListener(_textChanged);
+      if (widget.onClear != null) controller.addListener(_textChanged);
+    }
+  }
+
+  @override
+  void dispose() {
+    controller.removeListener(_textChanged);
+    _ownedController?.dispose();
+    super.dispose();
+  }
+
+  /// The Raft look: raft-ui `inputGroup` from the generated recipe (`h-11 overflow-hidden rounded-control
+  /// border-[1.5px] border-line-strong bg-layer-card`, `focus-within:shadow-focus`), its `addon` / `text` /
+  /// `control` slots, the default and `container` variants.
+  Widget _buildRecipe(BuildContext context, RaftTokens t) {
+    final rt = t.recipeTokens;
+    final focused = focus.hasFocus;
+    final disabled = !widget.enabled;
+    RaftInputGroupRecipeStyle resolve(RaftInputGroupRecipeAlign align) =>
+        RaftInputGroupRecipe.resolve(
+          theme: t.recipeTheme,
+          align: align,
+          variant: widget.variant,
+          states: t.recipeStates(
+            hovered: hovered,
+            disabled: disabled,
+            extra: [
+              if (focused) RaftRecipeStates.focusWithin,
+              if (widget.invalid)
+                'has:data-slot=input-group-control+data-invalid',
+              if (disabled) 'has:data-slot=input-group-control+disabled',
+            ],
+          ),
+          tokens: rt,
+        );
+    final start = resolve(RaftInputGroupRecipeAlign.inlineStart);
+    final end = resolve(RaftInputGroupRecipeAlign.inlineEnd);
+    final container = widget.variant == RaftInputGroupRecipeVariant.container;
+    // `[--ig-addon-fg]` / `[--ig-text-fg]` turn `foreground-disabled` on a disabled group.
+    final addonInk = disabled ? t.colors['foreground-disabled'] : null;
+    Widget box(RaftSlotStyle slot, Widget child, {EdgeInsets? padding}) =>
+        RaftRecipeBox(
+          style: slot,
+          tokens: rt,
+          alignment: Alignment.center,
+          padding: padding,
+          decorationOverride: (d) => raftSnapBorder(context, d),
+          child: child,
+        );
+    Widget addon(RaftInputGroupAddon a, RaftInputGroupRecipeStyle g) {
+      final child = a.child;
+      if (child != null) return box(g.addon, child, padding: EdgeInsets.zero);
+      final text = a.text;
+      if (text != null) {
+        final style = g.text.text(rt, base: DefaultTextStyle.of(context).style);
+        return ExcludeSemantics(
+          child: box(
+            g.text,
+            Text(text, style: style.copyWith(color: addonInk)),
+          ),
+        );
+      }
+      final svg = g.addon.target("& > svg:not([class*='size-'])");
+      return ExcludeSemantics(
+        child: box(
+          g.addon,
+          RaftIcon(
+            a.glyph!,
+            size: svg?.width ?? 18,
+            color: addonInk ?? g.addon.color?.resolve(rt),
+          ),
+        ),
+      );
+    }
+
+    final actions = <Widget>[
+      if (widget.onClear != null && controller.text.isNotEmpty)
+        _clearButton(t, rt),
+      if (widget.kbd != null) RaftKbd(widget.kbd!),
+    ];
+    final trailing = widget.trailing;
+    final control = start.control;
+    final defaultStart = widget.leading != null && !container;
+    final defaultEnd = (trailing != null || actions.isNotEmpty) && !container;
+    var padding = control.padding;
+    if (defaultStart) padding = padding.copyWith(left: 0);
+    if (defaultEnd) padding = padding.copyWith(right: 0);
+    var style = control
+        .text(rt, base: DefaultTextStyle.of(context).style)
+        .copyWith(
+          fontWeight: widget.controlWeight,
+          fontFamily: widget.mono ? t.monoFont : null,
+        );
+    if (widget.textColor != null) style = style.copyWith(color: widget.textColor);
+    final placeholder =
+        control.target('::placeholder')?.color?.resolve(rt) ??
+        t.semantic.foregroundPlaceholder;
+    final field = TextField(
+      contextMenuBuilder: RaftTextSelectionToolbar.editableText,
+      autofillHints: null,
+      autofocus: widget.autofocus,
+      controller: controller,
+      focusNode: focus,
+      readOnly: widget.readOnly,
+      enabled: widget.enabled,
+      enableInteractiveSelection: !widget.readOnly,
+      showCursor: !widget.readOnly,
+      onChanged: widget.onChanged,
+      onSubmitted: widget.onSubmitted,
+      inputFormatters: [
+        ...?widget.inputFormatters,
+        if (widget.maxLength != null)
+          LengthLimitingTextInputFormatter(widget.maxLength),
+      ],
+      style: style,
+      strutStyle: StrutStyle.fromTextStyle(style, forceStrutHeight: true),
+      cursorColor: style.color,
+      decoration: _bare(
+        hintText: widget.hintText,
+        hintStyle: style.copyWith(color: placeholder),
+      ),
+    );
+    final box0 = RaftRecipeBox(
+      style: start.root,
+      tokens: rt,
+      width: double.infinity,
+      clip: true,
+      decorationOverride: (d) {
+        d = raftSnapBorder(context, d);
+        final border = d.border;
+        return d.copyWith(
+          color: widget.backgroundColor ?? d.color,
+          // A caller's border override is the read-only group's frame: `border-line-hairline` in raft-ui 0.7.0.
+          border: widget.borderColor == null || border is! Border
+              ? border
+              : Border.all(color: t.ui.lineHairline, width: border.top.width),
+          boxShadow: widget.flat ? const [] : d.boxShadow,
+        );
+      },
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (widget.leading != null) addon(widget.leading!, start),
+            Expanded(
+              child: Padding(
+                padding: padding,
+                child: Align(alignment: Alignment.centerLeft, child: field),
+              ),
+            ),
+            if (trailing != null || actions.isNotEmpty)
+              box(
+                end.addon,
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  spacing: end.addon.columnGap ?? 0,
+                  children: [
+                    ?trailing?.child,
+                    ...actions,
+                  ],
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+    return Semantics(label: widget.semanticLabel, child: hoverRegion(box0));
+  }
+
+  /// `Button variant="ghost" size="icon-sm"` with the X: the recipe's square and its `svg` size.
+  Widget _clearButton(RaftTokens t, RaftTokenResolver rt) {
+    final size = RaftButtonRecipe.resolve(
+      theme: t.recipeTheme,
+      variant: RaftButtonRecipeVariant.ghost,
+      size: RaftButtonRecipeSize.iconSm,
+      tokens: rt,
+    ).root;
+    final square = size.width ?? 28;
+    return RaftIconButton(
+      glyph: RaftGlyph.x,
+      glyphSize: size.target("& svg:not([class*='size-'])")?.width,
+      visualSize: square,
+      minimumTargetSize: square,
+      tooltip: widget.clearLabel,
+      variant: RaftControlVariant.ghost,
+      onPressed: widget.onClear,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final t = RaftTokens.of(context);
+    if (t.recipeSet == RaftRecipeSet.raft) return _buildRecipe(context, t);
+    return switch (widget.legacy) {
+      RaftLegacyGroup.prefixed => buildFrozenPrefixed(context, t),
+      RaftLegacyGroup.settings => buildFrozenSettings(context, t),
+      RaftLegacyGroup.search => buildFrozenSearch(context, t),
+    };
+  }
+}
+
+/// `PrefixedInput` of the Web: an [RaftInputGroup] with a leading text addon (`InputGroupAddon.Text
+/// variant="container"`), an icon addon or a hosted control.
+class RaftPrefixedInput extends StatelessWidget {
   const RaftPrefixedInput({
     super.key,
     required this.prefix,
@@ -848,15 +1170,13 @@ class RaftPrefixedInput extends StatefulWidget {
     this.maxLength,
   });
 
-  /// `InputGroupAddon` holding a 14px icon (`<Search size={14} />`) with the
-  /// recipe's addon padding and colour, instead of the text [prefix].
+  /// `InputGroupAddon` holding an icon (`<Search size={14} />`) instead of the text [prefix].
   final RaftGlyph? leadingIcon;
 
   /// The control's `font-bold` / `font-medium` class over the recipe weight.
   final FontWeight? controlWeight;
 
-  /// `InputGroupAddon className="p-0"` holding a control (the section emoji
-  /// button) instead of the text [prefix].
+  /// `InputGroupAddon className="p-0"` holding a control (the section emoji button) instead of the text [prefix].
   final Widget? leading;
   final RaftInputGroupRecipeVariant variant;
   final int? maxLength;
@@ -872,263 +1192,29 @@ class RaftPrefixedInput extends StatefulWidget {
   final List<TextInputFormatter>? inputFormatters;
 
   @override
-  State<RaftPrefixedInput> createState() => _RaftPrefixedInputState();
-}
-
-class _RaftPrefixedInputState extends State<RaftPrefixedInput>
-    with _FieldInteraction<RaftPrefixedInput> {
-  @override
-  FocusNode? get externalFocus => widget.focusNode;
-  TextEditingController? _ownedController;
-  TextEditingController get controller =>
-      widget.controller ??
-      (_ownedController ??= TextEditingController(text: widget.initialValue));
-
-  @override
-  void dispose() {
-    _ownedController?.dispose();
-    super.dispose();
-  }
-
-  /// raft-ui 0.7 `inputGroup` (`h-11 overflow-hidden rounded-control
-  /// border-[1.5px] border-line-strong bg-layer-card`, `focus-within:shadow-focus`)
-  /// with a `container` addon (`fill-muted`, `border-r border-line-hairline`,
-  /// `px-3`, `font-mono text-mono-code` hint ink) and the field type step.
-  Widget _buildRaft(BuildContext context, RaftTokens t) {
-    final ui = t.ui;
-    final focused = focus.hasFocus;
-    final disabled = !widget.enabled;
-    final radius = t.size('radius.control', fallback: 8);
-    final border = raftControlBorderPx(context, 1.5);
-    final rule = raftControlBorderPx(context, 1);
-    final borderColor = disabled
-        ? ui.lineHairline
-        : widget.invalid
-        ? ui['danger-strong']
-        : ui.lineStrong;
-    final addonInk = disabled ? ui.foregroundDisabled : ui.foregroundHint;
-    final addonStyle = t.scale(
-      RaftTypeScale.monoCode,
-      mono: true,
-      color: addonInk,
-    );
-    final field = t.fieldStyle.copyWith(
-      fontWeight: widget.controlWeight,
-      color: disabled ? ui.foregroundDisabled : ui.foreground,
-    );
-    final Widget addon = widget.leading != null
-        ? widget.leading!
-        : widget.leadingIcon != null
-        ? ExcludeSemantics(
-            child: RaftIcon(widget.leadingIcon!, size: 14, color: addonInk),
-          )
-        : ExcludeSemantics(child: Text(widget.prefix, style: addonStyle));
-    return Semantics(
-      label: widget.semanticLabel,
-      child: hoverRegion(
-        Container(
-          height: 44,
-          width: double.infinity,
-          clipBehavior: Clip.antiAlias,
-          decoration: BoxDecoration(
-            color: disabled ? ui.fillMuted : ui.layerCard,
-            borderRadius: BorderRadius.circular(radius),
-            border: Border.all(color: borderColor, width: border),
-            boxShadow: focused && !disabled ? t.focusShadows : null,
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Container(
-                padding: widget.leading != null
-                    ? EdgeInsets.zero
-                    : const EdgeInsets.symmetric(horizontal: 12),
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: ui.fillMuted,
-                  border: Border(
-                    right: BorderSide(color: ui.lineHairline, width: rule),
-                  ),
-                ),
-                child: addon,
-              ),
-              Expanded(
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    left: widget.leadingIcon == null ? 12 : 0,
-                    right: 12,
-                  ),
-                  child: Center(
-                    child: TextField(
-                      contextMenuBuilder: RaftTextSelectionToolbar.editableText,
-                      autofillHints: null,
-                      autofocus: widget.autofocus,
-                      controller: controller,
-                      focusNode: focus,
-                      readOnly: widget.readOnly,
-                      enabled: widget.enabled,
-                      onChanged: widget.onChanged,
-                      onSubmitted: widget.onSubmitted,
-                      inputFormatters: widget.inputFormatters,
-                      maxLength: widget.maxLength,
-                      buildCounter: widget.maxLength == null
-                          ? null
-                          : (
-                              _, {
-                              required currentLength,
-                              required isFocused,
-                              maxLength,
-                            }) => null,
-                      style: field,
-                      strutStyle: StrutStyle.fromTextStyle(
-                        field,
-                        forceStrutHeight: true,
-                      ),
-                      cursorColor: field.color,
-                      decoration: _bare(
-                        hintText: widget.hintText,
-                        hintStyle: field.copyWith(
-                          color: disabled
-                              ? ui.foregroundDisabled
-                              : ui.foregroundHint,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final t = RaftTokens.of(context);
-    if (t.option('inputGroup.style', or: 'recipe') == 'raft') {
-      return _buildRaft(context, t);
-    }
-    final rt = t.recipeTokens;
-    final focused = focus.hasFocus;
-    final g = RaftInputGroupRecipe.resolve(
-      theme: t.recipeTheme,
-      variant: widget.variant,
-      states: t.recipeStates(
-        hovered: hovered,
-        extra: [
-          if (focused) 'has:data-slot=input-group-control+focus',
-          // An editable text input always matches :focus-visible.
-          if (focused) 'has:data-slot=input-group-control+focus-visible',
-          if (focused)
-            'group/input-group:has:data-slot=input-group-control+focus',
-          if (!widget.enabled) 'has:data-slot=input-group-control+disabled',
-          if (!widget.enabled)
-            'group/input-group:has:data-slot=input-group-control+disabled',
-          if (widget.invalid) 'has:data-slot=input-group-control+data-invalid',
-        ],
-      ),
-      tokens: rt,
-    );
-    final base = DefaultTextStyle.of(context).style;
-    final control = g.control
-        .text(rt, base: base)
-        .copyWith(fontWeight: widget.controlWeight);
-    return Semantics(
-      label: widget.semanticLabel,
-      child: hoverRegion(
-        RaftRecipeBox(
-          style: g.root,
-          tokens: rt,
-          width: double.infinity,
-          clip: true,
-          child: IntrinsicHeight(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                if (widget.leading != null)
-                  RaftRecipeBox(
-                    style: g.addon,
-                    tokens: rt,
-                    padding: EdgeInsets.zero,
-                    alignment: Alignment.center,
-                    child: widget.leading!,
-                  )
-                else if (widget.leadingIcon != null)
-                  ExcludeSemantics(
-                    child: RaftRecipeBox(
-                      style: g.addon,
-                      tokens: rt,
-                      alignment: Alignment.center,
-                      child: RaftIcon(widget.leadingIcon!, size: 14),
-                    ),
-                  )
-                else
-                  ExcludeSemantics(
-                    child: RaftRecipeBox(
-                      style: g.text,
-                      tokens: rt,
-                      alignment: Alignment.center,
-                      child: Text(widget.prefix),
-                    ),
-                  ),
-                Expanded(
-                  child: Padding(
-                    // `& ~ [data-slot=input-group-control]` after an icon
-                    // addon: `padding-left: 0`.
-                    padding: widget.leadingIcon == null
-                        ? g.control.padding
-                        : g.control.padding.copyWith(left: 0),
-                    child: TextField(
-                      contextMenuBuilder: RaftTextSelectionToolbar.editableText,
-                      autofillHints: null,
-                      autofocus: widget.autofocus,
-                      controller: controller,
-                      focusNode: focus,
-                      readOnly: widget.readOnly,
-                      enabled: widget.enabled,
-                      onChanged: widget.onChanged,
-                      onSubmitted: widget.onSubmitted,
-                      inputFormatters: widget.inputFormatters,
-                      maxLength: widget.maxLength,
-                      buildCounter: widget.maxLength == null
-                          ? null
-                          : (
-                              _, {
-                              required currentLength,
-                              required isFocused,
-                              maxLength,
-                            }) => null,
-                      style: control,
-                      strutStyle: StrutStyle.fromTextStyle(
-                        control,
-                        forceStrutHeight: true,
-                      ),
-                      cursorColor: control.color,
-                      decoration: _bare(
-                        hintText: widget.hintText,
-                        hintStyle: control.copyWith(
-                          // InputGroupInput `placeholder:text-foreground-placeholder`
-                          // (brutal black/40) when the recipe names none.
-                          color:
-                              g.control
-                                  .target('::placeholder')
-                                  ?.color
-                                  ?.resolve(rt) ??
-                              t.semantic.foregroundPlaceholder,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => RaftInputGroup(
+    leading: leading != null
+        ? RaftInputGroupAddon.custom(leading!)
+        : leadingIcon != null
+        ? RaftInputGroupAddon.icon(leadingIcon!)
+        : RaftInputGroupAddon.text(prefix),
+    variant: variant,
+    controller: controller,
+    initialValue: initialValue,
+    hintText: hintText,
+    readOnly: readOnly,
+    enabled: enabled,
+    invalid: invalid,
+    onChanged: onChanged,
+    onSubmitted: onSubmitted,
+    focusNode: focusNode,
+    inputFormatters: inputFormatters,
+    semanticLabel: semanticLabel,
+    autofocus: autofocus,
+    maxLength: maxLength,
+    controlWeight: controlWeight,
+    legacy: RaftLegacyGroup.prefixed,
+  );
 }
 
 /// Web `SlugInput`: [RaftPrefixedInput] with the `/` prefix.

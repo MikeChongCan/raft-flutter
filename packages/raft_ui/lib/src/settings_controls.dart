@@ -1,4 +1,3 @@
-import 'text_selection_toolbar.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +10,14 @@ import 'tap_slop.dart';
 
 import 'design_primitives.dart' hide RaftPanelHeaderRecipe;
 import 'error_presentation.dart';
-import 'form_controls.dart' show RaftTextInput, RaftTextarea, RaftLegacyInput;
+import 'form_controls.dart'
+    show
+        RaftTextInput,
+        RaftTextarea,
+        RaftLegacyInput,
+        RaftInputGroup,
+        RaftInputGroupAddon,
+        RaftLegacyGroup;
 import 'dialog_card.dart' show RaftTextSteps;
 import 'form_presentation.dart';
 import 'hover_region.dart';
@@ -21,7 +27,6 @@ import 'localization.dart';
 import 'overlays/dialog.dart' show showRaftDialog;
 import 'panel_layout.dart' show RaftCssText;
 import 'recipe_surface.dart';
-import 'raft/ui_tokens.dart' show RaftTokensUi;
 import 'recipes/recipe_router.dart' show usesLegacyRecipes;
 import 'recipes/recipe_runtime.dart';
 import 'recipes/recipes.g.dart';
@@ -50,27 +55,6 @@ TextStyle _slotText(RaftTokens t, RaftSlotStyle s, {TextStyle? base}) {
       .merge(style)
       .copyWith(fontVariations: const [], fontFamilyFallback: t.fontFallback);
 }
-
-/// Tailwind preflight `::placeholder { color: color-mix(in oklab,
-/// currentcolor 50%, transparent) }`.
-Color _placeholder(Color current) => current.withValues(alpha: current.a * .5);
-
-/// A borderless, padding-free field decoration: the recipe container owns
-/// border, fill and padding (the app theme's input decoration must not apply).
-InputDecoration _bare({String? hint, TextStyle? hintStyle}) => InputDecoration(
-  isCollapsed: true,
-  isDense: true,
-  filled: false,
-  contentPadding: EdgeInsets.zero,
-  border: InputBorder.none,
-  enabledBorder: InputBorder.none,
-  focusedBorder: InputBorder.none,
-  disabledBorder: InputBorder.none,
-  errorBorder: InputBorder.none,
-  focusedErrorBorder: InputBorder.none,
-  hintText: hint,
-  hintStyle: hintStyle,
-);
 
 /// raft-ui `Button` rendered from `RaftButtonRecipe`.
 class RaftSettingsRecipeButton extends StatefulWidget {
@@ -514,98 +498,22 @@ class _RaftSettingsPrefixedInputState extends State<RaftSettingsPrefixedInput> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final t = RaftTokens.of(context), tokens = RaftRecipeTokens(t);
-    final g = RaftInputGroupRecipe.resolve(
-      theme: raftRecipeTheme(t),
-      variant: RaftInputGroupRecipeVariant.container,
-      states: RaftRecipeStates({
-        if (focus.hasFocus) 'has:data-slot=input-group-control+focus',
-        if (t.dark) RaftRecipeStates.dark,
-      }),
-      tokens: tokens,
-    );
-    final root = g.root.decoration(tokens);
-    final border = root.border as Border?;
-    // The read-only field is `border-line-hairline` in raft-ui 0.7.0 (the frozen
-    // looks pass `line-muted`).
-    final rootBorderColor = widget.rootBorderColor == null
-        ? null
-        : usesLegacyRecipes(tokens)
-        ? widget.rootBorderColor
-        : t.ui.lineHairline;
-    final decoration = root.copyWith(
-      color: widget.rootColor ?? root.color,
-      border: rootBorderColor == null || border == null
-          ? border
-          : Border.all(color: rootBorderColor, width: border.top.width),
-      boxShadow: widget.flat ? const [] : root.boxShadow,
-    );
-    final addonDecoration = g.text.decoration(tokens);
-    final addonBorder = addonDecoration.border as Border?;
-    final prefixStyle = _slotText(t, g.text);
-    var text = _slotText(
-      t,
-      g.control,
-    ).copyWith(color: widget.textColor ?? t.strong);
-    if (widget.mono) text = text.copyWith(fontFamily: t.monoFont);
-    // `h-11` (raft-ui 0.7.0): a fixed box; the frozen set sizes to content.
-    final groupHeight = g.root.height;
-    final groupGrows = groupHeight != null && RaftScaled.grows(context);
-    return Container(
-      height: groupGrows ? null : groupHeight,
-      constraints: groupGrows ? BoxConstraints(minHeight: groupHeight) : null,
-      decoration: decoration,
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-              padding: g.text.padding,
-              alignment: Alignment.center,
-              decoration: addonDecoration.copyWith(
-                border: rootBorderColor == null || addonBorder == null
-                    ? addonBorder
-                    : Border(
-                        right: addonBorder.right.copyWith(
-                          color: rootBorderColor,
-                        ),
-                      ),
-              ),
-              child: Text(widget.prefix, style: prefixStyle),
-            ),
-            Expanded(
-              child: Padding(
-                padding: g.control.padding,
-                child: Center(
-                  // `h-full py-0`: the line is centred in the group's `h-11`.
-                  child: TextField(
-                    contextMenuBuilder: RaftTextSelectionToolbar.editableText,
-                    autofillHints: null,
-                    controller: controller,
-                    focusNode: focus,
-                    autofocus: widget.autofocus,
-                    readOnly: widget.readOnly,
-                    enableInteractiveSelection: !widget.readOnly,
-                    showCursor: !widget.readOnly,
-                    onChanged: widget.onChanged,
-                    style: text,
-                    cursorColor: t.strong,
-                    decoration: _bare(
-                      hint: widget.placeholder,
-                      hintStyle: text.copyWith(
-                        color: _placeholder(text.color ?? t.strong),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => RaftInputGroup(
+    leading: RaftInputGroupAddon.text(widget.prefix),
+    variant: RaftInputGroupRecipeVariant.container,
+    controller: controller,
+    focusNode: focus,
+    hintText: widget.placeholder,
+    readOnly: widget.readOnly,
+    autofocus: widget.autofocus,
+    mono: widget.mono,
+    onChanged: widget.onChanged,
+    backgroundColor: widget.rootColor,
+    borderColor: widget.rootBorderColor,
+    textColor: widget.textColor,
+    flat: widget.flat,
+    legacy: RaftLegacyGroup.settings,
+  );
 }
 
 /// Inline identifier surface used by confirmation copy. The consumer owns the

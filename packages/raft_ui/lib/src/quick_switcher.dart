@@ -7,12 +7,13 @@ import 'indicators.dart';
 import 'page_recipes.dart';
 import 'popover_surface.dart';
 import 'recipe_surface.dart';
-import 'recipes/kbd.g.dart';
 import 'recipes/search.g.dart' as gen;
+import 'recipes/recipe_runtime.dart' show RaftRecipeSet;
 import 'recipes/search_entity.g.dart';
 import 'dialog_card.dart';
 import 'search_input.dart';
 import 'search_result_surface.dart';
+import 'kbd.dart';
 import 'theme.dart';
 
 /// Presentation of the Cmd/Ctrl+K quick switcher (Source SearchOverlay.tsx and
@@ -49,28 +50,6 @@ class RaftQuickSwitcherLayer extends StatelessWidget {
   @override
   Widget build(BuildContext context) =>
       Material(type: MaterialType.transparency, child: child);
-}
-
-/// A key cap such as the arrows and Return of the footer and the row hint.
-class RaftKeyCap extends StatelessWidget {
-  const RaftKeyCap(this.glyph, {super.key});
-  final String glyph;
-  @override
-  Widget build(BuildContext context) {
-    final t = RaftTokens.of(context), rt = t.recipeTokens;
-    final root = RaftKbdRecipe.resolve(
-      theme: t.recipeTheme,
-      states: t.recipeStates(),
-      tokens: rt,
-    ).root;
-    return ExcludeSemantics(
-      child: RaftRecipeBox(
-        style: root,
-        tokens: rt,
-        child: Text(glyph, style: root.textStyle(rt)),
-      ),
-    );
-  }
 }
 
 /// Fixed-size floating card: the field is the header, the body scrolls, the
@@ -155,11 +134,11 @@ class RaftQuickSwitcherFrame extends StatelessWidget {
                     key: const Key('quick-switcher-footer'),
                     spacing: 4,
                     children: [
-                      const RaftKeyCap('↑'),
-                      const RaftKeyCap('↓'),
+                      const RaftKbd('↑'),
+                      const RaftKbd('↓'),
                       Text(selectLabel, style: hint),
                       const SizedBox(width: 12),
-                      const RaftKeyCap('↵'),
+                      const RaftKbd('↵'),
                       Text(openLabel, style: hint),
                     ],
                   ),
@@ -190,21 +169,22 @@ class RaftQuickSwitcherField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
+    final search = RaftSearchInput(
+      key: const Key('quick-switcher-input'),
+      controller: controller,
+      focusNode: focusNode,
+      hint: hint,
+      clearLabel: clearLabel,
+      showEscape: true,
+      onClear: onClear,
+    );
+    // The Web's search field carries its own icon (an InputGroup addon).
+    if (t.recipeSet == RaftRecipeSet.raft) return search;
     return Row(
       spacing: 8,
       children: [
         RaftIcon(RaftGlyph.search, size: 16, color: t.muted),
-        Expanded(
-          child: RaftSearchInput(
-            key: const Key('quick-switcher-input'),
-            controller: controller,
-            focusNode: focusNode,
-            hint: hint,
-            clearLabel: clearLabel,
-            showEscape: true,
-            onClear: onClear,
-          ),
-        ),
+        Expanded(child: search),
       ],
     );
   }
@@ -445,7 +425,7 @@ class RaftQuickSwitcherRow extends StatelessWidget {
               ],
             ),
           ),
-          if (alwaysHint || returnHint && selected) const RaftKeyCap('↵'),
+          if (alwaysHint || returnHint && selected) const RaftKbd('↵'),
         ],
       ),
     );

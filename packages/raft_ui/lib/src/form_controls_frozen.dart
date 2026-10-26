@@ -516,3 +516,321 @@ extension _FrozenTextarea on _RaftTextareaState {
     );
   }
 }
+
+extension _FrozenInputGroup on _RaftInputGroupState {
+  /// `PrefixedInput`: the `inputGroup` recipe (container addon) in a recipe box.
+  Widget buildFrozenPrefixed(BuildContext context, RaftTokens t) {
+    final rt = t.recipeTokens;
+    final focused = focus.hasFocus;
+    final lead = widget.leading!;
+    final g = RaftInputGroupRecipe.resolve(
+      theme: t.recipeTheme,
+      variant: widget.variant,
+      states: t.recipeStates(
+        hovered: hovered,
+        extra: [
+          if (focused) 'has:data-slot=input-group-control+focus',
+          // An editable text input always matches :focus-visible.
+          if (focused) 'has:data-slot=input-group-control+focus-visible',
+          if (focused)
+            'group/input-group:has:data-slot=input-group-control+focus',
+          if (!widget.enabled) 'has:data-slot=input-group-control+disabled',
+          if (!widget.enabled)
+            'group/input-group:has:data-slot=input-group-control+disabled',
+          if (widget.invalid) 'has:data-slot=input-group-control+data-invalid',
+        ],
+      ),
+      tokens: rt,
+    );
+    final base = DefaultTextStyle.of(context).style;
+    final control = g.control
+        .text(rt, base: base)
+        .copyWith(fontWeight: widget.controlWeight);
+    return Semantics(
+      label: widget.semanticLabel,
+      child: hoverRegion(
+        RaftRecipeBox(
+          style: g.root,
+          tokens: rt,
+          width: double.infinity,
+          clip: true,
+          child: IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (lead.child != null)
+                  RaftRecipeBox(
+                    style: g.addon,
+                    tokens: rt,
+                    padding: EdgeInsets.zero,
+                    alignment: Alignment.center,
+                    child: lead.child!,
+                  )
+                else if (lead.glyph != null)
+                  ExcludeSemantics(
+                    child: RaftRecipeBox(
+                      style: g.addon,
+                      tokens: rt,
+                      alignment: Alignment.center,
+                      child: RaftIcon(lead.glyph!, size: 14),
+                    ),
+                  )
+                else
+                  ExcludeSemantics(
+                    child: RaftRecipeBox(
+                      style: g.text,
+                      tokens: rt,
+                      alignment: Alignment.center,
+                      child: Text(lead.text!),
+                    ),
+                  ),
+                Expanded(
+                  child: Padding(
+                    // `& ~ [data-slot=input-group-control]` after an icon addon: `padding-left: 0`.
+                    padding: lead.glyph == null
+                        ? g.control.padding
+                        : g.control.padding.copyWith(left: 0),
+                    child: TextField(
+                      contextMenuBuilder: RaftTextSelectionToolbar.editableText,
+                      autofillHints: null,
+                      autofocus: widget.autofocus,
+                      controller: controller,
+                      focusNode: focus,
+                      readOnly: widget.readOnly,
+                      enabled: widget.enabled,
+                      onChanged: widget.onChanged,
+                      onSubmitted: widget.onSubmitted,
+                      inputFormatters: widget.inputFormatters,
+                      maxLength: widget.maxLength,
+                      buildCounter: widget.maxLength == null
+                          ? null
+                          : (
+                              _, {
+                              required currentLength,
+                              required isFocused,
+                              maxLength,
+                            }) => null,
+                      style: control,
+                      strutStyle: StrutStyle.fromTextStyle(
+                        control,
+                        forceStrutHeight: true,
+                      ),
+                      cursorColor: control.color,
+                      decoration: _bare(
+                        hintText: widget.hintText,
+                        hintStyle: control.copyWith(
+                          // InputGroupInput `placeholder:text-foreground-placeholder` (brutal black/40) when the
+                          // recipe names none.
+                          color:
+                              g.control
+                                  .target('::placeholder')
+                                  ?.color
+                                  ?.resolve(rt) ??
+                              t.semantic.foregroundPlaceholder,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Settings forms' prefixed input: the `inputGroup` recipe as plain containers with the callsite overrides.
+  Widget buildFrozenSettings(BuildContext context, RaftTokens t) {
+    final tokens = RaftRecipeTokens(t);
+    final g = RaftInputGroupRecipe.resolve(
+      theme: raftRecipeTheme(t),
+      variant: RaftInputGroupRecipeVariant.container,
+      states: RaftRecipeStates({
+        if (focus.hasFocus) 'has:data-slot=input-group-control+focus',
+        if (t.dark) RaftRecipeStates.dark,
+      }),
+      tokens: tokens,
+    );
+    final root = g.root.decoration(tokens);
+    final border = root.border as Border?;
+    final decoration = root.copyWith(
+      color: widget.backgroundColor ?? root.color,
+      border: widget.borderColor == null || border == null
+          ? border
+          : Border.all(color: widget.borderColor!, width: border.top.width),
+      boxShadow: widget.flat ? const [] : root.boxShadow,
+    );
+    final addonDecoration = g.text.decoration(tokens);
+    final addonBorder = addonDecoration.border as Border?;
+    final prefixStyle = _frozenSlotText(t, g.text);
+    var text = _frozenSlotText(
+      t,
+      g.control,
+    ).copyWith(color: widget.textColor ?? t.strong);
+    if (widget.mono) text = text.copyWith(fontFamily: t.monoFont);
+    return Container(
+      decoration: decoration,
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(
+              padding: g.text.padding,
+              alignment: Alignment.center,
+              decoration: addonDecoration.copyWith(
+                border: widget.borderColor == null || addonBorder == null
+                    ? addonBorder
+                    : Border(
+                        right: addonBorder.right.copyWith(
+                          color: widget.borderColor,
+                        ),
+                      ),
+              ),
+              child: Text(widget.leading!.text!, style: prefixStyle),
+            ),
+            Expanded(
+              child: Padding(
+                padding: g.control.padding,
+                child: TextField(
+                  contextMenuBuilder: RaftTextSelectionToolbar.editableText,
+                  autofillHints: null,
+                  controller: controller,
+                  focusNode: focus,
+                  autofocus: widget.autofocus,
+                  readOnly: widget.readOnly,
+                  enableInteractiveSelection: !widget.readOnly,
+                  showCursor: !widget.readOnly,
+                  onChanged: widget.onChanged,
+                  style: text,
+                  cursorColor: t.strong,
+                  decoration: _bare(
+                    hintText: widget.hintText,
+                    hintStyle: text.copyWith(
+                      color: _frozenPlaceholder(text.color ?? t.strong),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// The message search field: the default `inputGroup` with an inline-end clear button and an `ESC` key hint.
+  Widget buildFrozenSearch(BuildContext context, RaftTokens t) {
+    final rt = t.recipeTokens;
+    final focused = focus.hasFocus;
+    final g = RaftInputGroupRecipe.resolve(
+      theme: t.recipeTheme,
+      align: RaftInputGroupRecipeAlign.inlineEnd,
+      tokens: rt,
+      states: t.recipeStates(
+        hovered: hovered,
+        extra: [
+          if (focused) ...[
+            'has:data-slot=input-group-control+focus',
+            'has:data-slot=input-group-control+focus-visible',
+            'group/input-group:has:data-slot=input-group-control+focus',
+          ],
+        ],
+      ),
+    );
+    final kbd = RaftKbdRecipe.resolve(
+      theme: t.recipeTheme,
+      states: t.recipeStates(),
+      tokens: rt,
+    ).root;
+    final style = g.control.text(rt, base: DefaultTextStyle.of(context).style);
+    return hoverRegion(
+      RaftRecipeBox(
+        style: g.root,
+        tokens: rt,
+        width: double.infinity,
+        clip: true,
+        child: Row(
+          children: [
+            if (t.option('listGroup.frame', or: 'framed') == 'plain')
+              const Padding(
+                padding: EdgeInsets.only(left: 12),
+                child: RaftIcon(RaftGlyph.search, size: 16),
+              ),
+            Expanded(
+              child: Padding(
+                padding: g.control.padding,
+                child: TextField(
+                  contextMenuBuilder: RaftTextSelectionToolbar.editableText,
+                  autofillHints: null,
+                  controller: controller,
+                  focusNode: focus,
+                  onChanged: widget.onChanged,
+                  onSubmitted: widget.onSubmitted,
+                  style: style,
+                  strutStyle: StrutStyle.fromTextStyle(
+                    style,
+                    forceStrutHeight: true,
+                  ),
+                  cursorColor: style.color,
+                  decoration: InputDecoration(
+                    isCollapsed: true,
+                    isDense: true,
+                    filled: false,
+                    contentPadding: EdgeInsets.zero,
+                    border: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    disabledBorder: InputBorder.none,
+                    errorBorder: InputBorder.none,
+                    focusedErrorBorder: InputBorder.none,
+                    hintText: widget.hintText,
+                    hintStyle: style.copyWith(
+                      color:
+                          g.control
+                              .target('::placeholder')
+                              ?.color
+                              ?.resolve(rt) ??
+                          t.semantic.foregroundPlaceholder,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            RaftRecipeBox(
+              style: g.addon,
+              tokens: rt,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                spacing: g.addon.columnGap ?? 8,
+                children: [
+                  if (widget.onClear != null && controller.text.isNotEmpty)
+                    RaftIconButton(
+                      glyph: RaftGlyph.x,
+                      glyphSize: 12,
+                      visualSize: 24,
+                      minimumTargetSize: 24,
+                      tooltip: widget.clearLabel,
+                      variant: RaftControlVariant.ghost,
+                      onPressed: widget.onClear,
+                    ),
+                  if (widget.kbd != null)
+                    RaftRecipeBox(
+                      style: kbd,
+                      tokens: rt,
+                      child: Text(
+                        widget.kbd!.toUpperCase(),
+                        style: kbd
+                            .textStyle(rt)
+                            .copyWith(fontWeight: FontWeight.w700),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
