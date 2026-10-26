@@ -9,7 +9,8 @@ import 'message_row_recipe.dart' show RaftMessageSizeTier;
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart' show defaultTargetPlatform, listEquals;
+import 'package:flutter/foundation.dart'
+    show compute, defaultTargetPlatform, kIsWeb, listEquals;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show SelectedContent;
@@ -75,6 +76,8 @@ import 'message_semantics.dart';
 import 'selected_text_quote.dart';
 import 'theme.dart';
 import 'tooltip.dart' show RaftTooltip;
+
+part 'message_body_preparation.dart';
 
 /// Inputs of the reference pass that change its output. Task closures
 /// are reduced to their answers for the numbers this text can reference.

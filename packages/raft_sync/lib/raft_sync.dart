@@ -41,6 +41,8 @@ class MessageLedger {
   BigInt watermark = BigInt.zero;
   final Map<String, Map<String, Map<String, dynamic>>> _channels = {};
   final Map<String, List<Map<String, dynamic>>> _sorted = {};
+  final _sortDirty = <String, Set<String>>{};
+  final _sortSequences = Expando<BigInt>();
   final Map<String, DateTime?> _latestCreatedAt = {};
   final _releasedLatest = <String, (String, DateTime)>{};
   final List<MessageLedgerChange> _changes = [];
@@ -69,6 +71,7 @@ class MessageLedger {
     watermark = BigInt.zero;
     _channels.clear();
     _sorted.clear();
+    _sortDirty.clear();
     _latestCreatedAt.clear();
     _releasedLatest.clear();
     _changes.clear();
@@ -137,19 +140,43 @@ class MessageLedger {
     if (start > 0) _changes.removeRange(0, start);
   }
 
+  BigInt _orderSequence(Map<String, dynamic> row) =>
+      _sortSequences[row] ??= _seq(row);
+
+  int _compareRows(Map<String, dynamic> a, Map<String, dynamic> b) {
+    final order = _orderSequence(a).compareTo(_orderSequence(b));
+    return order != 0
+        ? order
+        : (a['id'] as String).compareTo(b['id'] as String);
+  }
+
   List<Map<String, dynamic>> messages(String channelId) {
-    final sorted = _sorted[channelId] ??= () {
-      final list =
-          (_channels[channelId]?.values.toList() ?? <Map<String, dynamic>>[]);
-      final seqs = {for (final m in list) m: _seq(m)};
-      list.sort((a, b) {
-        final order = seqs[a]!.compareTo(seqs[b]!);
-        return order != 0
-            ? order
-            : (a['id'] as String).compareTo(b['id'] as String);
-      });
-      return list;
-    }();
+    var sorted = _sorted[channelId];
+    final dirty = _sortDirty.remove(channelId);
+    if (sorted == null) {
+      sorted =
+          _channels[channelId]?.values.toList() ?? <Map<String, dynamic>>[];
+      sorted.sort(_compareRows);
+      _sorted[channelId] = sorted;
+    } else if (dirty != null && dirty.isNotEmpty) {
+      // Sort only changed versions, then merge with the retained order. A
+      // fifty-row page must not reparse and sort the entire loaded history.
+      final changed = <Map<String, dynamic>>[
+        for (final id in dirty)
+          if (_channels[channelId]?[id] case final row?) row,
+      ]..sort(_compareRows);
+      final next = <Map<String, dynamic>>[];
+      var at = 0;
+      for (final row in sorted) {
+        if (dirty.contains(row['id'])) continue;
+        while (at < changed.length && _compareRows(changed[at], row) < 0) {
+          next.add(changed[at++]);
+        }
+        next.add(row);
+      }
+      next.addAll(changed.skip(at));
+      _sorted[channelId] = sorted = next;
+    }
     // Callers own the returned list; the cached order stays private.
     return List.of(sorted);
   }
@@ -192,7 +219,12 @@ class MessageLedger {
     bool clearChannel = false,
   }) {
     revision++;
-    _sorted.remove(channelId);
+    if (clearChannel || messageId == null) {
+      _sorted.remove(channelId);
+      _sortDirty.remove(channelId);
+    } else if (_sorted.containsKey(channelId)) {
+      _sortDirty.putIfAbsent(channelId, () => {}).add(messageId);
+    }
     _latestCreatedAt.remove(channelId);
     _remember(
       MessageLedgerChange(
@@ -284,6 +316,7 @@ class MessageLedger {
     rows.removeWhere((id, _) => ids.contains(id));
     if (rows.isEmpty) _channels.remove(channelId);
     _sorted.remove(channelId);
+    _sortDirty.remove(channelId);
     revision++;
     for (final id in removed) {
       _remember(

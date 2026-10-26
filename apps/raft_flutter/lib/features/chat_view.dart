@@ -15,6 +15,7 @@ import 'mobile_route_gate.dart';
 import 'message_type_scale.dart';
 export 'mobile_route_gate.dart' show MobileChatDirectRead;
 import 'message_timeline.dart';
+import 'timeline_boundary_change.dart';
 import 'chat_timeline_presentation.dart';
 import 'history_reading_anchor.dart';
 import 'thread_unread_jump.dart';
@@ -166,63 +167,34 @@ class _RaftChatViewState extends PhonePageState<RaftChatView> {
   int bindingRevision = 0;
   int selectionCaptureTicket = 0;
   ModalRoute<dynamic>? preparationRoute;
-  late final bodyPreparation = MessagePreparation(
-    isIdle: () =>
-        mounted &&
-        presentationActive &&
-        w.presentationActive &&
-        messagePreparationRouteIsIdle(preparationRoute) &&
-        RaftFontWarmUp.isIdle,
-  );
-  Object? bodyPreparationInputs;
-
+  Object get bodyScope =>
+      (workspaceAuthority(w), bindingRevision, listRevision);
   void scheduleBodyPreparation(BuildContext context) {
     if (kDebugMode || !presentationActive) return;
-    final tokens = RaftTokens.of(context);
-    final fontSize = messagePreferenceDisplaySize(
+    final scope = bodyScope;
+    timelineKeys.bodies.schedule(
       context,
-      PersonalPresentationScope.bodyFontSize(
-        context,
-        w.client.user?.string('preferredMessageBodyFontSize'),
-      ),
-    );
-    final inputs = (
-      workspaceAuthority(w),
-      bindingRevision,
-      listRevision,
-      referenceDirectory.references,
-      taskProjection.byMessage,
-      tokens,
-      fontSize,
-    );
-    if (bodyPreparationInputs == inputs) return;
-    bodyPreparationInputs = inputs;
-    final window = rows;
-    final nearest = widget.thread ? window : window.reversed;
-    bodyPreparation.replace(
-      nearest
-          .take(64)
-          .map(
-            (message) => () {
-              if (bodyPreparationInputs != inputs ||
-                  workspaceAuthority(w) != inputs.$1 ||
-                  bindingRevision != inputs.$2 ||
-                  listRevision != inputs.$3) {
-                return;
-              }
-              final translation = w.services.translations.present(message);
-              if (translation.skeleton) return;
-              MessagePresentation(
-                controller: w,
-                message: message,
-                content: translation.translatedContent,
-                taskByNumber: taskProjection.taskByNumber,
-                directoryReferences: referenceDirectory.references,
-                fontSize: fontSize,
-                onExternalLink: link,
-              ).prepareCache(tokens);
-            },
-          ),
+      workspace: w,
+      rows: rows,
+      thread: widget.thread,
+      scope: scope,
+      revision: windowRevision,
+      taskRevision: taskProjection.byMessage,
+      references: referenceDirectory.references,
+      taskByNumber: taskProjection.taskByNumber,
+      onLink: link,
+      current: () =>
+          mounted &&
+          presentationActive &&
+          w.presentationActive &&
+          messagePreparationRouteIsIdle(preparationRoute) &&
+          bodyScope == scope,
+      idle: () =>
+          mounted &&
+          presentationActive &&
+          w.presentationActive &&
+          messagePreparationRouteIsIdle(preparationRoute) &&
+          RaftFontWarmUp.isIdle,
     );
   }
 
@@ -374,8 +346,7 @@ class _RaftChatViewState extends PhonePageState<RaftChatView> {
       ++presentationRevision;
       if (!active) {
         closeReactionPicker();
-        bodyPreparation.cancel();
-        bodyPreparationInputs = null;
+        timelineKeys.bodies.cancel();
       }
       if (active) sync();
     }
@@ -455,7 +426,7 @@ class _RaftChatViewState extends PhonePageState<RaftChatView> {
   }
 
   final focusAnchors = <String, GlobalKey>{};
-  Future<void> updates = Future.value();
+  Future<void> get updates => timelineKeys.updates;
   WorkspaceController get w => widget.controller;
   WorkspaceMessages get _messages => w.messageDomain;
 
@@ -554,6 +525,7 @@ class _RaftChatViewState extends PhonePageState<RaftChatView> {
     if (scopeChanged) {
       closeReactionPicker();
       bindingRevision++;
+      timelineKeys.bodies.cancel();
       // The mobile shell reuses this State when replacing its full-screen
       // thread with the channel. Every controller/role-bound model must follow
       // the new widget, even when no controller event follows that layout.
@@ -989,7 +961,7 @@ class _RaftChatViewState extends PhonePageState<RaftChatView> {
     searchInput.dispose();
     searchFocus.dispose();
     copiedSelectionTimer?.cancel();
-    bodyPreparation.dispose();
+    timelineKeys.bodies.dispose();
     highlightTimer?.cancel();
     selectionToast.dispose();
     widget.selectionHandle?.update(false, null);
@@ -1083,18 +1055,32 @@ class _RaftChatViewState extends PhonePageState<RaftChatView> {
   /// identity pass (no per-row search or encoding). Returns whether it changed.
   bool applyWindow(List<chat.Message> projected) {
     final current = adapter.messages;
+    final boundary = TimelineBoundaryChange.between(current, projected);
+    if (boundary != null) {
+      if (boundary.before == 0 && boundary.after == 0) return false;
+      if (boundary.before > 0) {
+        timelineKeys.bodies.incoming(
+          projected.take(boundary.before).toList().reversed.map(source),
+          bodyScope,
+        );
+      }
+      adapter.setMessages(projected, animated: false);
+      ++windowRevision;
+      if (boundary.after > 0) {
+        if (projected.last.authorId == w.client.user?.id) {
+          showLatest();
+        } else if (atBottom) {
+          viewport.followEnd();
+        }
+      }
+      if (mounted) super.setState(() {});
+      return true;
+    }
     final wanted = {for (final m in projected) m.id};
     // The window owns ordering, including an optimistic row's confirmed
     // server sequence. Keep row identity and reading anchors, not stale order.
     final next = projected;
-    var same = current.length == next.length;
-    for (var i = 0; same && i < next.length; i++) {
-      final a = current[i], b = next[i];
-      same =
-          identical(a, b) ||
-          (a.id == b.id && identical(a.metadata, b.metadata));
-    }
-    if (same) return false;
+    if (current.isEmpty && next.isEmpty) return false;
     final previousLast = current.lastOrNull?.id;
     if (!atBottom &&
             insertsBetweenRetainedRows(
@@ -1145,27 +1131,21 @@ class _RaftChatViewState extends PhonePageState<RaftChatView> {
         RouteTransitionGate.defer(preparationRoute, sync)) {
       return;
     }
-    if (reactionPicker != null && pickerAuthority != workspaceAuthority(w)) {
-      closeReactionPicker();
-    }
-    // Web useTranslationBatch: the panel loads the server's translation
-    // settings once per server.
-    w.services.translations.ensureSettings();
-    // Upload drafts and composer authority are independent of the chat
-    // adapter's message diff. Rebuild them on this view's own listener even
-    // when an adaptive/setup parent retains the same child instance. A hidden
-    // retained page (another section or route in front) is not painted, and
-    // becoming active again calls sync() once more, so it does not rebuild its
-    // composer and chrome on every notification while a transition plays.
-    if (mounted && presentationActive) super.setState(() {});
-    final revision = bindingRevision, controller = w, thread = widget.thread;
-    bool currentBinding() =>
-        mounted &&
-        revision == bindingRevision &&
-        identical(controller, w) &&
-        thread == widget.thread;
-    updates = updates.then((_) async {
-      if (!currentBinding()) return;
+    // Chrome/highlights must invalidate this frame, including timer events.
+    // Flutter coalesces these marks; only message projection work is queued.
+    if (presentationActive) super.setState(() {});
+    timelineKeys.synchronize(() {
+      if (!mounted ||
+          MobileRouteGate.paused(context, w) ||
+          RouteTransitionGate.defer(preparationRoute, sync)) {
+        return;
+      }
+      if (reactionPicker != null && pickerAuthority != workspaceAuthority(w)) {
+        closeReactionPicker();
+      }
+      // Web useTranslationBatch: the panel loads the server's translation
+      // settings once per server.
+      w.services.translations.ensureSettings();
       final id = widget.thread ? w.threadChannelId : w.channel?.id;
       final presented = rows;
       for (final row in presented) {

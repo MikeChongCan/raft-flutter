@@ -16,6 +16,10 @@ class RaftLruCache<K, V> {
 
   int get length => _entries.length;
 
+  /// Reads a prepared value without changing recency or lookup statistics.
+  V? peek(K key) => _entries[key];
+  bool containsKey(K key) => _entries.containsKey(key);
+
   V putIfAbsent(K key, V Function() compute) {
     if (_entries.containsKey(key)) {
       hits++;

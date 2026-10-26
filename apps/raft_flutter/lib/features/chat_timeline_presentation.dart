@@ -10,11 +10,24 @@ import '../data/personal_presentation.dart';
 import '../data/workspace_controller.dart';
 import 'saved_sidebar_entry.dart';
 import 'timeline_row_reuse.dart';
+import 'chat_body_preparation.dart';
 
 /// Mounted timeline keys and the revision of local row-affecting UI state.
 /// Workspace notifications can repaint chrome without invalidating message
 /// subtrees; actual message versions are compared by their lazy row elements.
 class ChatTimelinePresentation {
+  final bodies = ChatBodyPreparation();
+  bool _syncQueued = false;
+  Future<void> updates = Future.value();
+  Future<void> synchronize(VoidCallback apply) {
+    if (_syncQueued) return updates;
+    _syncQueued = true;
+    return updates = updates.then((_) {
+      _syncQueued = false;
+      apply();
+    });
+  }
+
   final _keys = <int, GlobalKey>{};
   Object _rows = Object();
 

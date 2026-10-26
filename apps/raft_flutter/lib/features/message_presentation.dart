@@ -409,6 +409,25 @@ class MessagePresentation extends StatelessWidget {
         (taskByNumber == null ? null : (n) => taskByNumber!(n) != null),
   );
 
+  /// Resolves local references before sending pure parser inputs to a worker.
+  RaftMessageBodyRequest bodyRequest(RaftTokens tokens) =>
+      RaftMessageBodyRequest(
+        content: text,
+        tokens: tokens,
+        references: references,
+        fontSize: fontSize,
+        taskHref: localAuthority
+            ? (n) => Uri(
+                scheme: 'raft-ref',
+                host: 'task',
+                pathSegments: ['$n'],
+              ).toString()
+            : null,
+        knownTaskNumber:
+            knownTaskNumber ??
+            (taskByNumber == null ? null : (n) => taskByNumber!(n) != null),
+      );
+
   Future<void> open(BuildContext context, String href) async {
     final uri = Uri.tryParse(href);
     if (uri != null && ['computer', 'app'].contains(uri.scheme)) {

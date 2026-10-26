@@ -9,6 +9,8 @@ import 'package:flutter_chat_core/flutter_chat_core.dart' as chat;
 import 'message_preparation.dart';
 import 'timeline_scrollbar.dart';
 import 'timeline_row_reuse.dart';
+import 'timeline_boundary_change.dart';
+import 'timeline_extents.dart';
 
 /// A two-sided message timeline: older history grows away from a fixed
 /// center, so loading it never moves the rows on screen.
@@ -46,6 +48,8 @@ class RaftMessageTimeline extends StatefulWidget {
   });
 
   final RaftTimelineScrollController controller;
+
+  /// Immutable version snapshot; replace the list when its membership changes.
   final List<chat.Message> messages;
   final int centerIndex;
 
@@ -108,7 +112,7 @@ class _RaftMessageTimelineState extends State<RaftMessageTimeline>
   final _timelineFocus = FocusNode(debugLabel: 'timeline', skipTraversal: true);
   RaftMessageTimeline? listsOwner;
   Widget? historyList, forwardList;
-  _TimelineExtentIndex? extentIndex;
+  TimelineExtentIndex? extentIndex;
   List<chat.Message>? extentRows;
   Object? extentRevision;
   late final nearbyPreparation = MessagePreparation(
@@ -562,7 +566,7 @@ class _RaftMessageTimelineState extends State<RaftMessageTimeline>
     );
   }
 
-  _TimelineExtentIndex? prepareExtents(
+  TimelineExtentIndex? prepareExtents(
     List<chat.Message> messages,
     double Function(int)? estimate,
   ) {
@@ -576,21 +580,27 @@ class _RaftMessageTimelineState extends State<RaftMessageTimeline>
         widget.extentRevision == extentRevision &&
         previous != null &&
         index != null;
-    if (reuse &&
-        previous.length == messages.length &&
-        Iterable.generate(messages.length)
-            .every((i) => identical(previous[i], messages[i]))) {
+    final change = reuse
+        ? TimelineBoundaryChange.between(previous, messages)
+        : null;
+    if (change != null) {
+      index!.prepend(change.before, estimate);
+      index.append(
+        change.after,
+        (i) => estimate(messages.length - change.after + i),
+      );
+      extentRows = messages;
       return index;
     }
     final heights = Map<chat.Message, double>.identity();
     if (reuse) {
       for (var i = 0; i < previous.length; i++) {
-        heights[previous[i]] = index.values[i];
+        heights[previous[i]] = index.valueAt(i);
       }
     }
-    extentRows = List.of(messages);
+    extentRows = messages;
     extentRevision = widget.extentRevision;
-    return extentIndex = _TimelineExtentIndex(
+    return extentIndex = TimelineExtentIndex(
       messages.length,
       (i) => heights[messages[i]] ?? estimate(i),
     );
@@ -1301,41 +1311,6 @@ class _EstimatingChildDelegate extends SliverChildBuilderDelegate {
     if (remaining == null) return null;
     return trailingScrollOffset + remaining(lastIndex + 1);
   }
-}
-
-// Fenwick sums retain measured variable row heights with O(log n) updates and
-// range queries. Both sides of the center share the same message index.
-class _TimelineExtentIndex {
-  _TimelineExtentIndex(int count, double Function(int) estimate)
-    : values = Float64List(count),
-      tree = Float64List(count + 1) {
-    for (var i = 0; i < count; i++) {
-      final value = estimate(i);
-      values[i] = value;
-      tree[i + 1] += value;
-      final parent = i + 1 + ((i + 1) & -(i + 1));
-      if (parent < tree.length) tree[parent] += tree[i + 1];
-    }
-  }
-  final Float64List values, tree;
-  void update(int index, double height) {
-    final delta = height - values[index];
-    if (delta == 0) return;
-    values[index] = height;
-    for (var i = index + 1; i < tree.length; i += i & -i) {
-      tree[i] += delta;
-    }
-  }
-
-  double prefix(int end) {
-    var value = 0.0;
-    for (var i = end; i > 0; i -= i & -i) {
-      value += tree[i];
-    }
-    return value;
-  }
-
-  double sum(int start, int end) => prefix(end) - prefix(start);
 }
 
 class _TimelineExtentRecorder extends SingleChildRenderObjectWidget {
