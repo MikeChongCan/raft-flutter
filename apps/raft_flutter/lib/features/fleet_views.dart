@@ -518,7 +518,7 @@ class _FleetViewState extends State<FleetView> {
         ),
       Expanded(
         child: loading && rows.isEmpty
-            ? Center(child: CircularProgressIndicator())
+            ? const Center(child: RaftSpinner())
             : rows.isEmpty
             ? RaftEmptyState(
                 title: raftText(
@@ -537,19 +537,9 @@ class _FleetViewState extends State<FleetView> {
                         rows[index]['displayName'],
                         rows[index]['name'],
                       );
-                  return ListTile(
+                  return RaftListRow(
                     key: ValueKey('fleet-${row['id']}'),
-                    leading: widget.computers
-                        ? const RaftIcon(RaftGlyph.monitor, size: 20)
-                        : RaftAvatar(name: name),
-                    title: Text(name),
-                    subtitle: Text(
-                      widget.computers
-                          ? '${row['status'] ?? 'Offline'} · ${row['hostname'] ?? row['os'] ?? ''}'
-                          : '${row['external'] == true ? 'External' : row['runtime'] ?? ''} · ${raftText(context, agentDisplayText(agentRowAmbientDisplay(row)))}',
-                    ),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () async {
+                    onPressed: () async {
                       if (!current(captured)) return;
                       if (widget.onOpenDetail != null) {
                         widget.onOpenDetail!(Map.of(row));
@@ -567,6 +557,22 @@ class _FleetViewState extends State<FleetView> {
                         ),
                       );
                     },
+                    children: [
+                      widget.computers
+                          ? const RaftListRowIcon(RaftGlyph.monitor)
+                          : RaftAvatar(name: name),
+                      RaftListRowBody(
+                        children: [
+                          RaftListRowTitle(name),
+                          RaftListRowDescription(
+                            widget.computers
+                                ? '${row['status'] ?? 'Offline'} · ${row['hostname'] ?? row['os'] ?? ''}'
+                                : '${row['external'] == true ? 'External' : row['runtime'] ?? ''} · ${raftText(context, agentDisplayText(agentRowAmbientDisplay(row)))}',
+                          ),
+                        ],
+                      ),
+                      const RaftListRowChevron(),
+                    ],
                   );
                 },
               ),
@@ -1830,7 +1836,7 @@ class _FleetInspectionState extends State<FleetInspection> {
       ],
     ),
     body: loading
-        ? Center(child: CircularProgressIndicator())
+        ? const Center(child: RaftSpinner())
         : error != null && shownDir != dir
         ? Center(
             child: Padding(
@@ -1855,34 +1861,43 @@ class _FleetInspectionState extends State<FleetInspection> {
                   child: RaftErrorBanner(error!),
                 ),
               if (dir.isNotEmpty)
-                ListTile(
-                  title: Text(raftText(context, 'Root folder')),
-                  leading: const Icon(Icons.arrow_upward),
-                  onTap: () {
+                RaftListRow(
+                  onPressed: () {
                     dir = '';
                     load();
                   },
+                  children: [
+                    const RaftListRowIcon(RaftGlyph.arrowUp),
+                    RaftListRowBody(
+                      children: [RaftListRowTitle('Root folder')],
+                    ),
+                  ],
                 ),
               for (final row in rows)
-                ListTile(
-                  title: Text(
-                    '${row['name'] ?? row['agentName'] ?? row['directoryName'] ?? row['activity'] ?? row['eventType'] ?? 'Entry'}',
-                  ),
-                  subtitle: Text(
-                    '${row['detail'] ?? row['message'] ?? row['description'] ?? row['createdAt'] ?? row['status'] ?? ''}',
-                  ),
-                  leading: widget.kind == 'workspace-files'
-                      ? RaftIcon(
-                          row['type'] == 'directory' ||
-                                  row['isDirectory'] == true
-                              ? RaftGlyph.folderClosed
-                              : RaftGlyph.fileText,
-                          size: 14,
-                        )
-                      : null,
-                  onTap: widget.kind == 'workspace-files'
+                RaftListRow(
+                  interactive: widget.kind == 'workspace-files',
+                  onPressed: widget.kind == 'workspace-files'
                       ? () => openFile(row)
                       : null,
+                  children: [
+                    if (widget.kind == 'workspace-files')
+                      RaftListRowIcon(
+                        row['type'] == 'directory' || row['isDirectory'] == true
+                            ? RaftGlyph.folderClosed
+                            : RaftGlyph.fileText,
+                      ),
+                    RaftListRowBody(
+                      children: [
+                        RaftListRowTitle(
+                          '${row['name'] ?? row['agentName'] ?? row['directoryName'] ?? row['activity'] ?? row['eventType'] ?? 'Entry'}',
+                        ),
+                        RaftListRowDescription(
+                          '${row['detail'] ?? row['message'] ?? row['description'] ?? row['createdAt'] ?? row['status'] ?? ''}',
+                          wrap: true,
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
             ],
           ),

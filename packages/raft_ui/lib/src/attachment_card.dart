@@ -7,6 +7,9 @@ import 'package:flutter/material.dart';
 import 'theme.dart';
 import 'icons.dart';
 import 'design_primitives.dart';
+import 'indicators.dart' show RaftProgressBar;
+import 'recipes/progress.g.dart' show RaftProgressRecipeSize;
+import 'recipes/spinner.g.dart' show RaftSpinnerRecipeSize;
 import 'attachment_lightbox.dart' show RaftFileTypeBadge;
 import 'attachment_tokens.dart';
 import 'attachment_transfer.dart';
@@ -308,8 +311,8 @@ class RaftAttachmentCard extends StatelessWidget {
                                 : null) ??
                             Center(
                               child: busy
-                                  ? const CircularProgressIndicator(
-                                      strokeWidth: 2,
+                                  ? const RaftSpinner(
+                                      recipeSize: RaftSpinnerRecipeSize.md,
                                     )
                                   : Text(
                                       error ?? filename,
@@ -359,7 +362,8 @@ class RaftAttachmentCard extends StatelessWidget {
                 ),
                 child: content,
               ),
-            if (busy && !exportMode) const LinearProgressIndicator(),
+            if (busy && !exportMode)
+              const RaftProgressBar(size: RaftProgressRecipeSize.sm),
             if (downloadFailed && !busy && !exportMode)
               const RaftTransferBar(failed: true),
             if (!exportMode && busy && onCancel != null)

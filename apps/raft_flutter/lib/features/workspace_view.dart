@@ -1454,7 +1454,7 @@ class _WorkspaceViewState extends State<WorkspaceView>
       // Mobile home keeps the sidebar mounted while the lists load and shows
       // SidebarRowsSkeleton rows (Sidebar.tsx channelsLoading), not a spinner.
       Widget content = w.loading && w.server == null
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: RaftSpinner())
           : route == 'settings'
           ? settings()
           : w.server == null

@@ -663,7 +663,7 @@ void main() {
         await tester.pumpWidget(mountedView());
         // Cold first visit: neutral reserved box, no spinner, no image yet.
         expect(find.byType(Image), findsNothing);
-        expect(find.byType(CircularProgressIndicator), findsNothing);
+        expect(find.byType(RaftSpinner), findsNothing);
         expect(
           tester
               .widget<RaftAttachmentCard>(find.byType(RaftAttachmentCard))
@@ -683,7 +683,7 @@ void main() {
         await tester.pumpWidget(mountedView());
         expect(find.byType(Image), findsOneWidget);
         expect(tester.widget<Image>(find.byType(Image)).image, same(provider));
-        expect(find.byType(CircularProgressIndicator), findsNothing);
+        expect(find.byType(RaftSpinner), findsNothing);
         expect(
           tester
               .widget<RaftAttachmentCard>(find.byType(RaftAttachmentCard))
@@ -694,7 +694,7 @@ void main() {
         for (var i = 0; i < 3; i++) {
           await tester.pump(const Duration(milliseconds: 16));
           expect(tester.getRect(find.byType(RaftAttachmentCard)), settled);
-          expect(find.byType(CircularProgressIndicator), findsNothing);
+          expect(find.byType(RaftSpinner), findsNothing);
           expect(
             tester
                 .widget<RaftAttachmentCard>(find.byType(RaftAttachmentCard))

@@ -220,7 +220,7 @@ void main() {
         }
       });
       await tester.pumpWidget(view(w, files));
-      expect(find.byType(CircularProgressIndicator), findsNothing);
+      expect(find.byType(RaftSpinner), findsNothing);
       expect(card(tester).previewPending, isTrue);
       final reserved = tester.getRect(find.byType(RaftAttachmentCard));
       expect(reserved.size, const Size(384, 288));
@@ -322,7 +322,7 @@ void main() {
       final files = _Files(original);
       await tester.pumpWidget(view(w, files));
       final reserved = tester.getRect(find.byType(RaftAttachmentCard));
-      expect(find.byType(CircularProgressIndicator), findsNothing);
+      expect(find.byType(RaftSpinner), findsNothing);
       final frames = await waitPreview(tester);
       expect(tester.getRect(find.byType(RaftAttachmentCard)), reserved);
       expect(files.downloads, 0);

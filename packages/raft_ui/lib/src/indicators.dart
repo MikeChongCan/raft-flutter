@@ -134,9 +134,10 @@ class RaftCheckbox extends StatelessWidget {
 /// Web `ProgressBar` (product labels over raft-ui `Progress`): optional
 /// label / percent row (`mb-1 flex justify-between text-xs font-mono
 /// text-foreground-muted theme-brutal:text-black/60`) and the recipe track +
-/// indicator. Indeterminate renders the `w-1/2` stripe; its
-/// Indeterminate motion remains a Flutter gap: Source defines 1.4s brutal
-/// and 1.6s elegant keyframes; this widget currently renders a static stripe.
+/// indicator. Indeterminate ([value] null) renders the `w-1/2` stripe; in the
+/// Raft look it runs raft-ui's `raft-progress-indeterminate` sweep (1.4s,
+/// `ease-in-out`; 2.4s with reduced motion, as `progress.tsx` slows it). The
+/// frozen Elegant and Brutal looks keep the static stripe they always drew.
 class RaftProgressBar extends StatelessWidget {
   const RaftProgressBar({
     super.key,
@@ -186,17 +187,20 @@ class RaftProgressBar extends StatelessWidget {
         borderRadius: radius,
         child: Align(
           alignment: Alignment.centerLeft,
-          child: FractionallySizedBox(
-            widthFactor: indeterminate ? .5 : pct / 100,
-            heightFactor: 1,
-            child: DecoratedBox(
-              decoration: BoxDecoration(color: fill, borderRadius: radius),
-              position: DecorationPosition.background,
+          child: _wrapSweep(
+            indeterminate,
+            FractionallySizedBox(
+              widthFactor: indeterminate ? .5 : pct / 100,
+              heightFactor: 1,
               child: DecoratedBox(
-                position: DecorationPosition.foreground,
-                decoration: BoxDecoration(
-                  borderRadius: radius,
-                  border: Border.all(color: ui.stickerInk, width: ring),
+                decoration: BoxDecoration(color: fill, borderRadius: radius),
+                position: DecorationPosition.background,
+                child: DecoratedBox(
+                  position: DecorationPosition.foreground,
+                  decoration: BoxDecoration(
+                    borderRadius: radius,
+                    border: Border.all(color: ui.stickerInk, width: ring),
+                  ),
                 ),
               ),
             ),
@@ -245,14 +249,18 @@ class RaftProgressBar extends StatelessWidget {
     );
   }
 
+  /// The Raft look's indeterminate stripe sweeps; a determinate bar is as is.
+  static Widget _wrapSweep(bool indeterminate, Widget stripe) =>
+      indeterminate ? _IndeterminateSweep(child: stripe) : stripe;
+
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
+    final raft = t.option('progress.style', or: 'recipe') == 'raft';
     // The label row is where the Raft bar differs; a bare track keeps the
     // recipe box (the usage cards size their rows around it, see
     // text_scale_audit runtimeUsageCardPreview).
-    if (t.option('progress.style', or: 'recipe') == 'raft' &&
-        (label != null || showPercent)) {
+    if (raft && (label != null || showPercent)) {
       return _buildRaft(context, t);
     }
     final rt = t.recipeTokens;
@@ -294,11 +302,19 @@ class RaftProgressBar extends StatelessWidget {
       clip: !(t.dark && !indeterminate),
       child: Align(
         alignment: Alignment.centerLeft,
-        child: FractionallySizedBox(
-          widthFactor: indeterminate ? .5 : pct / 100,
-          heightFactor: 1,
-          child: indicator,
-        ),
+        child: raft && indeterminate
+            ? _IndeterminateSweep(
+                child: FractionallySizedBox(
+                  widthFactor: .5,
+                  heightFactor: 1,
+                  child: indicator,
+                ),
+              )
+            : FractionallySizedBox(
+                widthFactor: indeterminate ? .5 : pct / 100,
+                heightFactor: 1,
+                child: indicator,
+              ),
       ),
     );
     final bar = Semantics(
@@ -334,6 +350,74 @@ class RaftProgressBar extends StatelessWidget {
       children: [header, const SizedBox(height: 4), bar],
     );
   }
+}
+
+/// raft-ui `@keyframes raft-progress-indeterminate` on the half-width stripe:
+/// `translateX(-65%) scaleX(.35)` to `(70%) (.6)` to `(185%) (.35)` of its own
+/// width, origin left, `ease-in-out` per leg, 1.4s per loop (2.4s with reduced
+/// motion). The track clips it (the stripe paints outside its own box).
+class _IndeterminateSweep extends StatefulWidget {
+  const _IndeterminateSweep({required this.child});
+  final Widget child;
+
+  @override
+  State<_IndeterminateSweep> createState() => _IndeterminateSweepState();
+}
+
+class _IndeterminateSweepState extends State<_IndeterminateSweep>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _loop = AnimationController(vsync: this);
+  Duration? _period;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final period = Duration(
+      milliseconds: MediaQuery.disableAnimationsOf(context) ? 2400 : 1400,
+    );
+    if (_period == period) return;
+    _period = period;
+    _loop.duration = period;
+    // ignore: raft_lints/avoid_unreviewed_idle_work -- Loop driven by an AnimationController whose vsync is this State, so TickerMode (hidden routes, offstage tabs, folded panels) mutes it and it is disposed with the widget; reduced motion only slows it, as raft-ui does.
+    _loop.repeat();
+  }
+
+  @override
+  void dispose() {
+    _loop.dispose();
+    super.dispose();
+  }
+
+  static const _ease = Curves.easeInOut;
+
+  @override
+  Widget build(BuildContext context) => RepaintBoundary(
+    child: AnimatedBuilder(
+      animation: _loop,
+      child: widget.child,
+      builder: (context, child) {
+        final v = _loop.value;
+        final leg = v < .5;
+        final k = _ease.transform(leg ? v * 2 : (v - .5) * 2);
+        final from = leg ? -.65 : .70, to = leg ? .70 : 1.85;
+        final scaleFrom = leg ? .35 : .6, scaleTo = leg ? .6 : .35;
+        final shift = from + (to - from) * k;
+        final scale = scaleFrom + (scaleTo - scaleFrom) * k;
+        return LayoutBuilder(
+          builder: (context, box) => Transform(
+            key: const ValueKey('progress-indeterminate-sweep'),
+            alignment: Alignment.centerLeft,
+            transform: Matrix4.translationValues(
+              shift * box.maxWidth * .5,
+              0,
+              0,
+            )..scaleByDouble(scale, 1, 1, 1),
+            child: child,
+          ),
+        );
+      },
+    ),
+  );
 }
 
 enum RaftSkeletonVariant {

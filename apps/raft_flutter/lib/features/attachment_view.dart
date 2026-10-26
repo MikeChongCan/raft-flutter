@@ -60,7 +60,10 @@ DialogRoute<void> attachmentDownloadProgressRoute({
     title: Text('Downloading $name'),
     content: ValueListenableBuilder<double?>(
       valueListenable: progress,
-      builder: (_, value, _) => LinearProgressIndicator(value: value),
+      builder: (_, value, _) => SizedBox(
+        width: 240,
+        child: RaftProgressBar(value: value == null ? null : value * 100),
+      ),
     ),
     actions: [TextButton(onPressed: onCancel, child: const Text('Cancel'))],
   ),

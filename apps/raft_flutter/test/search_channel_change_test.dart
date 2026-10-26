@@ -129,7 +129,7 @@ void main() {
       expect(state.query.text, 'body');
       expect(state.advanced.timeRange, '7d');
       expect(identical(state.rows, rows), isTrue);
-      expect(find.byType(CircularProgressIndicator), findsNothing);
+      expect(find.byType(RaftSpinner), findsNothing);
       expect(results(tester).pixels, 600);
       // Source search results do not depend on the channel directory.
       expect(w.searches, hasLength(searches));

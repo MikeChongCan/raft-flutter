@@ -720,7 +720,7 @@ void main() {
     await t.pumpAndSettle();
     expect(find.byType(RaftComposer), findsOneWidget);
     expect(find.text('Loading messages…'), findsOneWidget);
-    expect(find.byType(CircularProgressIndicator), findsNothing);
+    expect(find.byType(RaftSpinner), findsNothing);
     final compose = t.state(find.byType(RaftComposer));
     w.messageDomain.state.channelLoading = false;
     w.notifyListeners();

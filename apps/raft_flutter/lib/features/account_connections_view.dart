@@ -440,28 +440,35 @@ class _AccountConnectionsState extends ManagementState<AccountConnectionsView> {
             final canUnlink =
                 passwordStateKnown &&
                 (passwordConfigured || identities.length > 1);
-            return ListTile(
-              title: Text('${provider['label'] ?? id}'),
-              subtitle: Text(
-                identity == null
-                    ? raftText(context, 'Not connected')
-                    : '${identity['providerEmail'] ?? ''}',
-              ),
-              trailing: identity == null
-                  ? (provider['enabled'] == true &&
-                            passwordStateKnown &&
-                            !loading
-                        ? action(
-                            'Connect',
-                            () => connect(id, sourceAuthority: sourceScope),
-                          )
-                        : null)
-                  : action(
-                      'Disconnect',
-                      canUnlink
-                          ? () => disconnect(id, sourceAuthority: sourceScope)
-                          : null,
+            return RaftListRow(
+              interactive: false,
+              children: [
+                RaftListRowBody(
+                  children: [
+                    RaftListRowTitle('${provider['label'] ?? id}'),
+                    RaftListRowDescription(
+                      identity == null
+                          ? raftText(context, 'Not connected')
+                          : '${identity['providerEmail'] ?? ''}',
                     ),
+                  ],
+                ),
+                ?(identity == null
+                    ? (provider['enabled'] == true &&
+                              passwordStateKnown &&
+                              !loading
+                          ? action(
+                              'Connect',
+                              () => connect(id, sourceAuthority: sourceScope),
+                            )
+                          : null)
+                    : action(
+                        'Disconnect',
+                        canUnlink
+                            ? () => disconnect(id, sourceAuthority: sourceScope)
+                            : null,
+                      )),
+              ],
             );
           },
         ),

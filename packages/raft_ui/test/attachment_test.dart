@@ -125,7 +125,7 @@ void main() {
       );
       await tester.pumpWidget(card(null));
       final pending = tester.getRect(find.byType(RaftAttachmentCard));
-      expect(find.byType(CircularProgressIndicator), findsNothing);
+      expect(find.byType(RaftSpinner), findsNothing);
       expect(find.text('photo.jpg'), findsNothing);
       expect(pending.size, const Size(384, 288));
       await tester.pumpWidget(card(const ColoredBox(color: Colors.black)));
@@ -158,7 +158,7 @@ void main() {
     expect(find.text('2.0 KB'), findsNothing);
     expect(find.byType(TextButton), findsNothing);
     expect(find.byType(IconButton), findsNothing);
-    expect(find.byType(LinearProgressIndicator), findsNothing);
+    expect(find.byType(RaftProgressBar), findsNothing);
   });
   testWidgets(
     'pending file blocks send but keeps drafting and picker available',

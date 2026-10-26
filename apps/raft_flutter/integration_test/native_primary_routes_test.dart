@@ -447,7 +447,7 @@ void main() {
         }
         await until(() => find.byType(RaftComposer).evaluate().isNotEmpty);
         expect(w.messageDomain.state.channelLoading, isTrue);
-        expect(find.byType(CircularProgressIndicator), findsNothing);
+        expect(find.byType(RaftSpinner), findsNothing);
         await capture('loading-before-ack');
         client.loading!.complete();
         if (selection != null) await selection;

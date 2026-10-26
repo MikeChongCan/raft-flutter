@@ -623,7 +623,7 @@ class _MembersViewState extends State<MembersView> {
         ),
       Expanded(
         child: loading
-            ? Center(child: CircularProgressIndicator())
+            ? const Center(child: RaftSpinner())
             : ListView(
                 padding: raftScrollPadding(context, const EdgeInsets.all(24)),
                 children: [
@@ -648,54 +648,59 @@ class _MembersViewState extends State<MembersView> {
                   if (error != null)
                     RaftLoadError(error!, onRetry: load, expand: false),
                   for (final member in members)
-                    ListTile(
-                      leading: RaftAvatar(name: humanDisplayName(member)),
-                      title: Text(humanDisplayName(member)),
-                      subtitle: Text(
-                        '${member['role']} · ${member['email'] ?? ''}',
-                      ),
-                      onTap: () => profile(member),
-                      trailing:
-                          w.can('changeMemberRoles') || w.can('removeMembers')
-                          ? RaftTooltip(
-                              message: raftText(context, 'Member Actions'),
-                              child: PopupMenuButton<String>(
-                                onSelected: (role) => change(member, role),
-                                itemBuilder: (_) => [
-                                  if (w.can('changeMemberRoles')) ...[
-                                    for (final role
-                                        in w.server!.string('role') == 'owner'
-                                            ? [
-                                                'owner',
-                                                'admin',
-                                                'member',
-                                                'guest',
-                                              ]
-                                            : ['member', 'guest'])
-                                      PopupMenuItem(
-                                        value: role,
-                                        child: Text(
-                                          raftFormat(context, 'Make {role}', {
-                                            'role': raftText(
-                                              context,
-                                              '${role[0].toUpperCase()}${role.substring(1)}',
-                                            ),
-                                          }),
-                                        ),
-                                      ),
-                                  ],
-                                  if (w.can('removeMembers') &&
-                                      member['userId'] != w.client.user!.id)
+                    RaftListRow(
+                      onPressed: () => profile(member),
+                      children: [
+                        RaftAvatar(name: humanDisplayName(member)),
+                        RaftListRowBody(
+                          children: [
+                            RaftListRowTitle(humanDisplayName(member)),
+                            RaftListRowDescription(
+                              '${member['role']} · ${member['email'] ?? ''}',
+                            ),
+                          ],
+                        ),
+                        if (w.can('changeMemberRoles') ||
+                            w.can('removeMembers'))
+                          RaftTooltip(
+                            message: raftText(context, 'Member Actions'),
+                            child: PopupMenuButton<String>(
+                              onSelected: (role) => change(member, role),
+                              itemBuilder: (_) => [
+                                if (w.can('changeMemberRoles')) ...[
+                                  for (final role
+                                      in w.server!.string('role') == 'owner'
+                                          ? [
+                                              'owner',
+                                              'admin',
+                                              'member',
+                                              'guest',
+                                            ]
+                                          : ['member', 'guest'])
                                     PopupMenuItem(
-                                      value: 'remove',
+                                      value: role,
                                       child: Text(
-                                        raftText(context, 'Remove Member'),
+                                        raftFormat(context, 'Make {role}', {
+                                          'role': raftText(
+                                            context,
+                                            '${role[0].toUpperCase()}${role.substring(1)}',
+                                          ),
+                                        }),
                                       ),
                                     ),
                                 ],
-                              ),
-                            )
-                          : null,
+                                if (w.can('removeMembers') &&
+                                    member['userId'] != w.client.user!.id)
+                                  PopupMenuItem(
+                                    value: 'remove',
+                                    child: Text(
+                                      raftText(context, 'Remove Member'),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                      ],
                     ),
                 ],
               ),

@@ -158,7 +158,7 @@ class _AgentScopesViewState extends State<AgentScopesView> {
       title: raftText(context, 'Agent permissions'),
     ),
     body: loading
-        ? Center(child: CircularProgressIndicator())
+        ? const Center(child: RaftSpinner())
         : error != null && !loaded
         ? RaftLoadError(
             error!,

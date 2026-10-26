@@ -107,7 +107,7 @@ Finder _email(String value) => find.byWidgetPredicate(
 );
 
 Finder get _spinner => find.byWidgetPredicate(
-  (w) => w is CircularProgressIndicator || w is RaftSpinner,
+  (w) => w is RaftSpinner,
 );
 
 void main() {

@@ -24,7 +24,7 @@ class ChannelConversionProgress extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (status == 'running' || status == 'pending')
-                const LinearProgressIndicator(),
+                const RaftProgressBar(),
               Text(
                 raftText(
                   context,

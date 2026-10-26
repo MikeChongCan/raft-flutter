@@ -76,7 +76,7 @@ void main() {
   );
   // TasksPanel loading is Web's SkeletonRow cards (no spinner).
   final spinner = find.byWidgetPredicate(
-    (w) => w is CircularProgressIndicator || w is RaftSkeletonRow,
+    (w) => w is RaftSpinner || w is RaftSkeletonRow,
   );
 
   testWidgets(

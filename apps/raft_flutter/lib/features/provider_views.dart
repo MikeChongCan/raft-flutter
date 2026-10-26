@@ -245,26 +245,33 @@ class _ProviderConnectionsState
                   else if (managementRows(data['agents']).isEmpty)
                     const Text('No agents use this connection.'),
                   for (final a in managementRows(data?['agents']))
-                    ListTile(
-                      title: Text(humanDisplayName(a)),
-                      subtitle: Text(
-                        '${runtimeLabelWithStatus(context, '${a['runtime'] ?? ''}')} · ${a['status']}${a['computerName'] == null ? '' : ' · ${a['computerName']}'}',
-                      ),
-                      trailing: a['deleted'] == true
-                          ? RaftTooltip(
-                              message: 'Detach Deleted Agent',
-                              child: IconButton(
-                                icon: const RaftIcon(
-                                  RaftGlyph.link2Off,
-                                  size: 15,
-                                ),
-                                onPressed: () {
-                                  detachId = a['id'];
-                                  Navigator.pop(context);
-                                },
+                    RaftListRow(
+                      interactive: false,
+                      children: [
+                        RaftListRowBody(
+                          children: [
+                            RaftListRowTitle(humanDisplayName(a)),
+                            RaftListRowDescription(
+                              '${runtimeLabelWithStatus(context, '${a['runtime'] ?? ''}')} · ${a['status']}${a['computerName'] == null ? '' : ' · ${a['computerName']}'}',
+                              wrap: true,
+                            ),
+                          ],
+                        ),
+                        if (a['deleted'] == true)
+                          RaftTooltip(
+                            message: 'Detach Deleted Agent',
+                            child: IconButton(
+                              icon: const RaftIcon(
+                                RaftGlyph.link2Off,
+                                size: 15,
                               ),
-                            )
-                          : null,
+                              onPressed: () {
+                                detachId = a['id'];
+                                Navigator.pop(context);
+                              },
+                            ),
+                          ),
+                      ],
                     ),
                 ],
               ),
@@ -533,17 +540,24 @@ class _ProviderConnectionsState
                       raftText(context, 'No completed verification receipts.'),
                     ),
                   for (final r in receipts ?? const <Map<String, dynamic>>[])
-                    ListTile(
-                      leading: Icon(
-                        r['outcome'] == 'success'
-                            ? Icons.verified_outlined
-                            : Icons.error_outline,
-                      ),
-                      title: Text('${r['model']} · ${r['outcome']}'),
-                      subtitle: Text(
-                        '${r['verifiedAt']}\nComputer ${r['computerId']} · ${r['runtime']}\n${r['category'] ?? ''}${r['latencyMs'] == null ? '' : ' · ${r['latencyMs']} ms'}\nConfiguration ${r['configVersion']} · Credential version ${r['credentialVersion']}',
-                      ),
-                      isThreeLine: true,
+                    RaftListRow(
+                      interactive: false,
+                      children: [
+                        RaftListRowIcon(
+                          r['outcome'] == 'success'
+                              ? RaftGlyph.circleCheck
+                              : RaftGlyph.circleAlert,
+                        ),
+                        RaftListRowBody(
+                          children: [
+                            RaftListRowTitle('${r['model']} · ${r['outcome']}'),
+                            RaftListRowDescription(
+                              '${r['verifiedAt']}\nComputer ${r['computerId']} · ${r['runtime']}\n${r['category'] ?? ''}${r['latencyMs'] == null ? '' : ' · ${r['latencyMs']} ms'}\nConfiguration ${r['configVersion']} · Credential version ${r['credentialVersion']}',
+                              wrap: true,
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                 ],
               ),

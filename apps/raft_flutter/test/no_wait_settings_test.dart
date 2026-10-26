@@ -167,7 +167,7 @@ void main() {
       findsOneWidget,
     );
     expect(find.text('Cindy', skipOffstage: false), findsWidgets);
-    expect(find.byType(LinearProgressIndicator), findsNothing);
+    expect(find.byType(RaftProgressBar), findsNothing);
   });
 
   group('provider dialogs open before their data arrives', () {

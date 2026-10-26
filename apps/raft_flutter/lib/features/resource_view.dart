@@ -2729,7 +2729,7 @@ class _ResourceViewState extends State<ResourceView> {
               ? const RaftActivityLoadingList()
               : widget.section == 'tasks'
               ? const RaftTaskLoadingList()
-              : Center(child: CircularProgressIndicator())
+              : const Center(child: RaftSpinner())
         : searchHomeNow
         ? searchHome(scope)
         : widget.section == 'search'

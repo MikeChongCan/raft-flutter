@@ -190,7 +190,7 @@ Finder shown(String text) => find.textContaining(
 
 Finder get skeleton => find.byWidgetPredicate(
   (widget) =>
-      widget is RaftActivityLoadingList || widget is CircularProgressIndicator,
+      widget is RaftActivityLoadingList || widget is RaftSpinner,
 );
 
 ScrollableState activityScroll(WidgetTester tester) => tester.state(

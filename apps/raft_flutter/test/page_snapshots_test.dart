@@ -100,9 +100,7 @@ Future<void> _leave(WidgetTester t) async {
 
 Finder get _anySpinner => find.byWidgetPredicate(
   (w) =>
-      w is LinearProgressIndicator ||
-      w is CircularProgressIndicator ||
-      w is RaftSpinner,
+      w is RaftProgressBar || w is RaftSpinner,
 );
 
 /// Release the gated responses and pump frame by frame until [done], checking

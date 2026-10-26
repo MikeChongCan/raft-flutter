@@ -98,7 +98,7 @@ void main() {
     home: const Scaffold(body: SizedBox.expand()),
   );
   List lane(dynamic state, String status) => state.lanes[status] as List;
-  final spinner = find.byType(CircularProgressIndicator);
+  final spinner = find.byType(RaftSpinner);
   ServerTaskWindow? window() {
     final slot = w.resourceSnapshots.serverPage(serverTasksPage);
     return slot is ServerTaskWindow ? slot : null;

@@ -1972,7 +1972,7 @@ void main() {
         final created = createdRows.singleWhere((row) => row['name'] == name) as Map;
         final directoryRow = computers && mobileViewport(tester)
             ? find.descendant(of: find.byKey(const Key('fleet-directory')),
-                matching: find.widgetWithText(ListTile, name))
+                matching: find.widgetWithText(RaftListRow, name))
             : find.byKey(ValueKey('desktop-directory-${computers ? 'computer' : 'agent'}-${created['id']}'));
         await until(tester, () => directoryRow.evaluate().isNotEmpty);
         await tester.ensureVisible(directoryRow);
@@ -1989,7 +1989,7 @@ void main() {
         Future<void> detailAction(String title) async {
           final action = find.descendant(
             of: find.byKey(const Key('fleet-detail')),
-            matching: find.widgetWithText(ListTile, title),
+            matching: find.widgetWithText(RaftListRow, title),
           );
           tester.state<ScrollableState>(detailScroll).position.jumpTo(0);
           await tester.pumpAndSettle();
@@ -2125,7 +2125,7 @@ void main() {
           await tester.pumpAndSettle();
           await until(
             tester,
-            () => find.byType(CircularProgressIndicator).evaluate().isEmpty,
+            () => find.byType(RaftSpinner).evaluate().isEmpty,
           );
           // Native pointer diagnosis confirms the eyebrow reads in title case.
           expect(find.text('Activity Diagnostics'), findsOneWidget);

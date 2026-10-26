@@ -171,7 +171,10 @@ class _ConversionSectionState
     final result = managementMap(
       await w.client.post(
         '/feature-flags/evaluate',
-        data: featureFlagEvaluateBody(keys: [channelConversionFlag], serverId: w.server?.id),
+        data: featureFlagEvaluateBody(
+          keys: [channelConversionFlag],
+          serverId: w.server?.id,
+        ),
       ),
     );
     return managementRows(result['evaluations'])
@@ -491,7 +494,7 @@ class _ConversionSectionState
             ),
           ),
           if (pending != null) ...[
-            const LinearProgressIndicator(),
+            const RaftProgressBar(),
             Text(
               raftText(
                 context,
@@ -505,15 +508,19 @@ class _ConversionSectionState
           if (uploads.isNotEmpty) ...[
             Text(raftText(context, 'Uploads still in progress')),
             for (final upload in uploads)
-              ListTile(
-                title: Text('${upload['filename']}'),
-                subtitle: Text(
-                  '${raftText(context, upload['state'] == 'verifying' ? 'Verifying upload' : 'Upload pending')} · ${upload['sizeBytes']} B',
-                ),
-                trailing: action(
-                  'Cancel Upload',
-                  guard(() => cancelUpload(upload)),
-                ),
+              RaftListRow(
+                interactive: false,
+                children: [
+                  RaftListRowBody(
+                    children: [
+                      RaftListRowTitle('${upload['filename']}'),
+                      RaftListRowDescription(
+                        '${raftText(context, upload['state'] == 'verifying' ? 'Verifying upload' : 'Upload pending')} · ${upload['sizeBytes']} B',
+                      ),
+                    ],
+                  ),
+                  action('Cancel Upload', guard(() => cancelUpload(upload))),
+                ],
               ),
             action('Return to Channel', guard(openChannel)),
           ],

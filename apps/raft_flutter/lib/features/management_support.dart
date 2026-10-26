@@ -562,7 +562,7 @@ abstract class ManagementState<T extends StatefulWidget> extends State<T>
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: RaftErrorBanner(error!, small: true),
         ),
-      if (loading) const LinearProgressIndicator(),
+      if (loading) const RaftProgressBar(),
       Expanded(
         child: ListView(
           key: PageStorageKey((widget.runtimeType, title)),

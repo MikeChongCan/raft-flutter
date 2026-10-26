@@ -138,7 +138,7 @@ void main() {
         surface: find.text(text),
         open: (c) => push(c, FleetView(controller: w, computers: computers)),
       );
-      expect(find.byType(CircularProgressIndicator), findsNothing);
+      expect(find.byType(RaftSpinner), findsNothing);
       await systemBack(t);
     }
   });
@@ -176,7 +176,7 @@ void main() {
       surface: find.text('Bob'),
       open: (c) => push(c, MembersView(controller: w)),
     );
-    expect(find.byType(CircularProgressIndicator), findsNothing);
+    expect(find.byType(RaftSpinner), findsNothing);
     api.hangAll = true;
     await t.tap(
       find

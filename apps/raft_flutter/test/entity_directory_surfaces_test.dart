@@ -154,7 +154,7 @@ void main() {
         await t.pump(const Duration(milliseconds: 16));
         expect(_rows(t, rows), first, reason: '${event.name} frame $frame');
         expect(find.text('Loading profile…'), findsNothing);
-        expect(find.byType(CircularProgressIndicator), findsNothing);
+        expect(find.byType(RaftSpinner), findsNothing);
       }
     }
     await t.pump(const Duration(milliseconds: 400));
@@ -200,12 +200,12 @@ void main() {
       (t) async {
         await setUpWorkspace(t);
         final reads = w.paths.length;
-        final rows = find.byType(ListTile);
+        final rows = find.byType(RaftListRow);
         for (var visit = 0; visit < 2; visit++) {
           await t.pumpWidget(
             host(FleetView(controller: w, computers: computers)),
           );
-          expect(find.byType(CircularProgressIndicator), findsNothing);
+          expect(find.byType(RaftSpinner), findsNothing);
           expect(
             find.byKey(ValueKey('fleet-${computers ? 'c' : 'a'}')),
             findsOneWidget,
@@ -237,7 +237,7 @@ void main() {
       );
       await t.pump();
       expect(find.textContaining('offline · build-host'), findsOneWidget);
-      expect(find.byType(CircularProgressIndicator), findsNothing);
+      expect(find.byType(RaftSpinner), findsNothing);
       expect(w.paths.length, reads);
       await t.pump(const Duration(milliseconds: 200));
       // Source machineStatus recovery: machines and agents, never members.
@@ -245,7 +245,7 @@ void main() {
         w.paths.sublist(reads),
         unorderedEquals(['/servers/s/machines', '/agents']),
       );
-      expect(find.byType(CircularProgressIndicator), findsNothing);
+      expect(find.byType(RaftSpinner), findsNothing);
       expect(t.takeException(), isNull);
     },
   );
