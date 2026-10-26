@@ -179,7 +179,7 @@ class ChromeOracle(unittest.TestCase):
     def test_recipe_opaque_literals_equal_chrome_bytes(self):
         literals = self.oracle['literals']
         compared = 0
-        for path in sorted(gen.RECIPES_DIR.glob('*.g.dart')):
+        for path in gen.recipe_files():
             for argb, src in re.findall(r"CssColor\(0x([0-9A-Fa-f]{8}), '([^']+)'", path.read_text()):
                 v = int(argb, 16)
                 if v >> 24 != 255:

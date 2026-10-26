@@ -1562,6 +1562,12 @@ ORACLE_SCOPES = (('brutal', {'theme': 'brutal'}), ('elegantLight', {'theme': 'el
 RECIPES_DIR = ROOT / 'packages/raft_theme/lib/recipes'
 
 
+def recipe_files():
+    """Generated recipes of both sets: the Raft set and the frozen legacy set
+    (recipes/legacy/) that the Elegant and Brutal looks still read."""
+    return sorted([*RECIPES_DIR.glob('*.g.dart'), *(RECIPES_DIR / 'legacy').glob('*.g.dart')])
+
+
 def oracle_css(m: Model):
     """The cascade the Web app ships, as plain CSS a browser can load: Tailwind
     @theme variables (emitted on :root like Tailwind does), foundation.css,
@@ -1576,7 +1582,7 @@ def oracle_css(m: Model):
 def recipe_literals():
     """Literal colour sources the recipe generator converted (tool/recipes)."""
     found = set()
-    for path in sorted(RECIPES_DIR.glob('*.g.dart')):
+    for path in recipe_files():
         found.update(re.findall(r"CssColor\(0x[0-9A-Fa-f]{8}, '([^']+)'\)", path.read_text()))
     return sorted(found)
 
