@@ -165,12 +165,7 @@ class _DesignFieldsState extends State<_DesignFields> {
       children: [
         const Text('Name'),
         const SizedBox(height: 4),
-        const RaftFieldSurface(
-          child: TextField(
-            autofillHints: null,
-            decoration: InputDecoration(hintText: 'Server name'),
-          ),
-        ),
+        const RaftTextInput(hintText: 'Server name'),
         const SizedBox(height: 16),
         const Text('Channel'),
         RaftSelectField<String>(
@@ -285,32 +280,15 @@ Widget sourceInputsPreview() => Padding(
     children: [
       Text('Name'),
       SizedBox(height: 4),
-      RaftFieldSurface(
-        child: TextField(
-          autofillHints: null,
-          decoration: InputDecoration(hintText: 'Server name'),
-        ),
-      ),
+      RaftTextInput(hintText: 'Server name'),
       SizedBox(height: 16),
       Text('Email'),
       SizedBox(height: 4),
-      RaftFieldSurface(
-        child: TextFormField(
-          autofillHints: null,
-          initialValue: 'hello@example.invalid',
-          readOnly: true,
-        ),
-      ),
+      RaftTextInput(initialValue: 'hello@example.invalid', readOnly: true),
       SizedBox(height: 16),
       Text('Disabled'),
       SizedBox(height: 4),
-      RaftFieldSurface(
-        child: TextField(
-          autofillHints: null,
-          enabled: false,
-          decoration: InputDecoration(hintText: 'Unavailable'),
-        ),
-      ),
+      RaftTextInput(enabled: false, hintText: 'Unavailable'),
     ],
   ),
 );

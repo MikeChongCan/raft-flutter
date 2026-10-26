@@ -1,4 +1,4 @@
-import 'text_selection_toolbar.dart';
+import 'form_controls.dart' show RaftBareInput;
 
 import 'dart:ui' show SemanticsRole;
 
@@ -315,9 +315,7 @@ class _RaftComboboxPanelState extends State<RaftComboboxPanel> {
                     alignment: r.input.padding.vertical == 0
                         ? Alignment.centerLeft
                         : null,
-                    child: TextField(
-                      contextMenuBuilder: RaftTextSelectionToolbar.editableText,
-                      autofillHints: null,
+                    child: RaftBareInput(
                       controller: query,
                       focusNode: inputFocus,
                       autofocus: widget.autofocus,
@@ -328,20 +326,10 @@ class _RaftComboboxPanelState extends State<RaftComboboxPanel> {
                           ? TextAlignVertical.center
                           : null,
                       onChanged: (_) => setState(() => highlighted = -1),
-                      decoration: InputDecoration(
-                        isCollapsed: true,
-                        isDense: true,
-                        filled: false,
-                        contentPadding: EdgeInsets.zero,
-                        border: InputBorder.none,
-                        enabledBorder: InputBorder.none,
-                        focusedBorder: InputBorder.none,
-                        disabledBorder: InputBorder.none,
-                        hintText: raftText(context, 'Search...'),
-                        hintStyle: input.copyWith(
-                          color: t.colors['foreground-placeholder']!.withValues(
-                            alpha: .7,
-                          ),
+                      hintText: raftText(context, 'Search...'),
+                      hintStyle: input.copyWith(
+                        color: t.colors['foreground-placeholder']!.withValues(
+                          alpha: .7,
                         ),
                       ),
                     ),

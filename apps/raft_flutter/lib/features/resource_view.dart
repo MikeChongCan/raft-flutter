@@ -2478,19 +2478,16 @@ class _ResourceViewState extends State<ResourceView> {
               children: [
                 if (['search', 'saved'].contains(widget.section))
                   Expanded(
-                    child: TextField(
-                      contextMenuBuilder: RaftTextSelectionToolbar.editableText,
-                      autofillHints: null,
+                    child: RaftTextInput(
                       controller: query,
-                      decoration: InputDecoration(
-                        hintText: raftText(
-                          context,
-                          widget.section == 'search'
-                              ? 'Search messages'
-                              : 'Filter saved messages',
-                        ),
-                        prefixIcon: const RaftIcon(RaftGlyph.search),
+                      hintText: raftText(
+                        context,
+                        widget.section == 'search'
+                            ? 'Search messages'
+                            : 'Filter saved messages',
                       ),
+                      leadingGlyph: RaftGlyph.search,
+                      legacy: RaftLegacyInput.themed,
                       onSubmitted: (_) => load(),
                     ),
                   )
@@ -4546,14 +4543,11 @@ class _ResourceViewState extends State<ResourceView> {
           if (widget.section == 'activity')
             SizedBox(
               width: 220,
-              child: TextField(
-                contextMenuBuilder: RaftTextSelectionToolbar.editableText,
-                autofillHints: null,
+              child: RaftTextInput(
                 controller: query,
-                decoration: InputDecoration(
-                  hintText: raftText(context, 'Filter Activity'),
-                  prefixIcon: const RaftIcon(RaftGlyph.search),
-                ),
+                hintText: raftText(context, 'Filter Activity'),
+                leadingGlyph: RaftGlyph.search,
+                legacy: RaftLegacyInput.themed,
                 onSubmitted: (_) {
                   if (accepts(scope)) load();
                 },

@@ -24,6 +24,8 @@ import 'recipes/recipe_router.dart' show resolveAuthoredClasses;
 import 'recipes/textarea.g.dart';
 import 'recipes/textarea_counter.g.dart';
 import 'recipes/token_binding.dart';
+import 'auth_page.dart'
+    show RaftAuthHandleGroup, raftAuthGroupedInputDecoration;
 import 'label.dart';
 import 'raft/css_box.dart';
 import 'raft/ui_tokens.dart';
@@ -34,7 +36,9 @@ import 'design_primitives.dart'
 import 'panel_layout.dart' show raftRecipeTheme, RaftCssText;
 import 'dialog_card.dart'
     show raftRecipeThemeOf, raftCssTextStyle, RaftTextSteps;
+
 import 'package:flutter/rendering.dart' show OverflowBoxFit;
+
 import 'text_scaling.dart' show RaftScaled;
 
 part 'form_controls_frozen.dart';
@@ -207,10 +211,7 @@ class RaftField extends StatelessWidget {
             children: [
               Flexible(child: labelText),
               ?labelAccessory,
-              if (labelAction != null) ...[
-                const Spacer(),
-                labelAction!,
-              ],
+              if (labelAction != null) ...[const Spacer(), labelAction!],
             ],
           ),
         child,
@@ -256,6 +257,10 @@ enum RaftLegacyInput {
 
   /// Settings forms without the callsite `text-sm`: the recipe's own text.
   settingsPlain,
+
+  /// The theme's Material input decoration as it is, with the callsite [RaftTextInput.style] and a glyph as the
+  /// decoration's prefix icon (inside an enclosing field frame where the page draws one).
+  themed,
 }
 
 /// Single- or multi-line text input painted from the raft-ui `Input` recipe
@@ -406,6 +411,27 @@ class _RaftTextInputState extends State<RaftTextInput>
   /// [RaftTextInput.padding], [RaftTextInput.height], [RaftTextInput.textStep], [RaftTextInput.mono],
   /// [RaftTextInput.leadingGlyph].
   Widget _buildRecipe(BuildContext context, RaftTokens t) {
+    final glyph = widget.leadingGlyph;
+    // A field with a leading icon is the Web's `InputGroup` with an icon addon.
+    if (glyph != null) {
+      return RaftInputGroup(
+        leading: RaftInputGroupAddon.icon(glyph),
+        controller: controller,
+        hintText: widget.hintText,
+        readOnly: widget.readOnly,
+        enabled: widget.enabled,
+        invalid: widget.invalid,
+        onChanged: widget.onChanged,
+        onSubmitted: widget.onSubmitted,
+        focusNode: focus,
+        inputFormatters: widget.inputFormatters,
+        semanticLabel: widget.semanticLabel,
+        autofocus: widget.autofocus,
+        maxLength: widget.maxLength,
+        mono: widget.mono,
+        fieldKey: widget.fieldKey,
+      );
+    }
     final rt = t.recipeTokens;
     final focused = focus.hasFocus;
     final s = RaftInputRecipe.resolve(
@@ -425,7 +451,10 @@ class _RaftTextInputState extends State<RaftTextInput>
     var textStyle = s.text(rt, base: DefaultTextStyle.of(context).style);
     final step = widget.textStep;
     if (step != null) {
-      textStyle = textStyle.copyWith(fontSize: step.$1, height: step.$2 / step.$1);
+      textStyle = textStyle.copyWith(
+        fontSize: step.$1,
+        height: step.$2 / step.$1,
+      );
     }
     if (widget.mono) textStyle = textStyle.copyWith(fontFamily: t.monoFont);
     textStyle = textStyle.merge(widget.style);
@@ -451,9 +480,7 @@ class _RaftTextInputState extends State<RaftTextInput>
       );
     }
     final content = s.padding.vertical == 0 || widget.padding != null;
-    final padding = widget.padding ??
-        (widget.leadingGlyph == null ? null : s.padding.copyWith(left: _tw * 9));
-    Widget box = RaftRecipeBox(
+    final box = RaftRecipeBox(
       // A callsite padding lets the height follow the content (`h-11` is not applied there).
       style: widget.padding == null
           ? s
@@ -462,30 +489,11 @@ class _RaftTextInputState extends State<RaftTextInput>
       applyText: false,
       growWithText: true,
       height: widget.height,
-      padding: padding,
+      padding: widget.padding,
       decorationOverride: (d) => raftSnapBorder(context, d),
       alignment: content ? Alignment.centerLeft : null,
       child: SizedBox(width: double.infinity, child: field),
     );
-    final glyph = widget.leadingGlyph;
-    if (glyph != null) {
-      box = Stack(
-        alignment: Alignment.centerLeft,
-        children: [
-          box,
-          Positioned(
-            left: _tw * 3,
-            child: IgnorePointer(
-              child: RaftIcon(
-                glyph,
-                size: _tw * 3.5,
-                color: t.colors['foreground-muted'],
-              ),
-            ),
-          ),
-        ],
-      );
-    }
     return Semantics(label: widget.semanticLabel, child: hoverRegion(box));
   }
 
@@ -610,11 +618,11 @@ class _RaftTextInputState extends State<RaftTextInput>
         RaftLegacyInput.recipe => buildFrozenRecipe(context, t),
         RaftLegacyInput.settings ||
         RaftLegacyInput.settingsPlain => buildFrozenSettings(context, t),
+        RaftLegacyInput.themed => buildFrozenThemed(context, t),
       };
     }
     return _buildLegacyChrome(context, t);
   }
-
 }
 
 /// raft-ui `Textarea` (+ optional `TextareaCounter` is a separate widget).
@@ -704,6 +712,8 @@ class _RaftTextareaState extends State<RaftTextarea>
         case RaftLegacyInput.settings:
         case RaftLegacyInput.settingsPlain:
           return buildFrozenSettings(context, t);
+        case RaftLegacyInput.themed:
+          break;
       }
     }
     final rt = t.recipeTokens;
@@ -758,9 +768,7 @@ class _RaftTextareaState extends State<RaftTextarea>
           // This expanding input owns its scaled row height. Keeping that
           // bound avoids an infinite editor in a scrolling form at large text.
           applyText: false,
-          decorationOverride: raft
-              ? (d) => raftSnapBorder(context, d)
-              : null,
+          decorationOverride: raft ? (d) => raftSnapBorder(context, d) : null,
           child: TextField(
             contextMenuBuilder: RaftTextSelectionToolbar.editableText,
             key: widget.fieldKey,
@@ -859,6 +867,9 @@ enum RaftLegacyGroup {
 
   /// The message search field.
   search,
+
+  /// The sign-in pages' username group: an `@` block and a borderless Material field in a hand-built frame.
+  handle,
 }
 
 /// raft-ui `InputGroup`: one bordered box holding an optional leading addon, the control and an optional trailing
@@ -893,6 +904,7 @@ class RaftInputGroup extends StatefulWidget {
     this.onClear,
     this.kbd,
     this.legacy = RaftLegacyGroup.prefixed,
+    this.fieldKey,
   });
 
   final RaftInputGroupAddon? leading, trailing;
@@ -922,6 +934,9 @@ class RaftInputGroup extends StatefulWidget {
 
   /// How the frozen Elegant and Brutal looks paint this group.
   final RaftLegacyGroup legacy;
+
+  /// Key of the inner [TextField] (tests and focus lookups).
+  final Key? fieldKey;
 
   @override
   State<RaftInputGroup> createState() => _RaftInputGroupState();
@@ -1044,13 +1059,15 @@ class _RaftInputGroupState extends State<RaftInputGroup>
           fontWeight: widget.controlWeight,
           fontFamily: widget.mono ? t.monoFont : null,
         );
-    if (widget.textColor != null) style = style.copyWith(color: widget.textColor);
+    if (widget.textColor != null)
+      style = style.copyWith(color: widget.textColor);
     final placeholder =
         control.target('::placeholder')?.color?.resolve(rt) ??
         t.semantic.foregroundPlaceholder;
     final field = TextField(
       contextMenuBuilder: RaftTextSelectionToolbar.editableText,
       autofillHints: null,
+      key: widget.fieldKey,
       autofocus: widget.autofocus,
       controller: controller,
       focusNode: focus,
@@ -1107,10 +1124,7 @@ class _RaftInputGroupState extends State<RaftInputGroup>
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   spacing: end.addon.columnGap ?? 0,
-                  children: [
-                    ?trailing?.child,
-                    ...actions,
-                  ],
+                  children: [?trailing?.child, ...actions],
                 ),
               ),
           ],
@@ -1148,6 +1162,7 @@ class _RaftInputGroupState extends State<RaftInputGroup>
       RaftLegacyGroup.prefixed => buildFrozenPrefixed(context, t),
       RaftLegacyGroup.settings => buildFrozenSettings(context, t),
       RaftLegacyGroup.search => buildFrozenSearch(context, t),
+      RaftLegacyGroup.handle => buildFrozenHandle(context, t),
     };
   }
 }
@@ -1255,6 +1270,57 @@ class RaftSlugInput extends StatelessWidget {
     onChanged: onChanged,
     onSubmitted: onSubmitted,
     semanticLabel: semanticLabel,
+  );
+}
+
+/// The editable text of an input that sits inside chrome another component draws (a finder box, a combobox's
+/// input group, a popover's search row, the emoji picker's header): a text field with no border, fill or padding
+/// of its own, the Raft text selection toolbar and none of the theme's input decoration.
+class RaftBareInput extends StatelessWidget {
+  const RaftBareInput({
+    super.key,
+    required this.style,
+    required this.hintStyle,
+    this.fieldKey,
+    this.controller,
+    this.focusNode,
+    this.hintText,
+    this.cursorColor,
+    this.autofocus = false,
+    this.enabled = true,
+    this.textAlignVertical,
+    this.onChanged,
+    this.onSubmitted,
+    this.onTapOutside,
+  });
+
+  final Key? fieldKey;
+  final TextEditingController? controller;
+  final FocusNode? focusNode;
+  final String? hintText;
+  final TextStyle style, hintStyle;
+  final Color? cursorColor;
+  final bool autofocus, enabled;
+  final TextAlignVertical? textAlignVertical;
+  final ValueChanged<String>? onChanged, onSubmitted;
+  final VoidCallback? onTapOutside;
+
+  @override
+  Widget build(BuildContext context) => TextField(
+    contextMenuBuilder: RaftTextSelectionToolbar.editableText,
+    autofillHints: null,
+    key: fieldKey,
+    controller: controller,
+    focusNode: focusNode,
+    autofocus: autofocus,
+    enabled: enabled,
+    textAlignVertical: textAlignVertical,
+    style: style,
+    cursorColor: cursorColor,
+    onChanged: onChanged,
+    onSubmitted: onSubmitted,
+    onTapOutside: onTapOutside == null ? null : (_) => onTapOutside!(),
+    decoration: _bare(hintText: hintText, hintStyle: hintStyle),
   );
 }
 

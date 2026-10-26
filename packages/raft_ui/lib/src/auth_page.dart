@@ -1,7 +1,15 @@
 // Web auth/onboarding page pieces (packages/web/src/components/brand/
 // AuthBrandShell.tsx, components/auth/*). Presentation only: the app owns
 // state, validation and requests and passes fields/callbacks in.
-import 'form_controls.dart' show RaftField, RaftLegacyField;
+import 'form_controls.dart'
+    show
+        RaftField,
+        RaftLegacyField,
+        RaftInputGroup,
+        RaftInputGroupAddon,
+        RaftLegacyGroup;
+import 'recipes/input_group.g.dart' show RaftInputGroupRecipeVariant;
+
 import 'dart:math' as math;
 
 import 'package:flutter/gestures.dart';
@@ -1902,6 +1910,36 @@ class RaftAuthNote extends StatelessWidget {
       ).copyWith(color: t.muted),
     );
   }
+}
+
+/// AccountIdentitySetupPage's username: an [RaftInputGroup] with the fixed `@` as a container addon; the frozen
+/// looks keep the [RaftAuthHandleGroup] frame.
+class RaftAuthHandleInput extends StatelessWidget {
+  const RaftAuthHandleInput({
+    super.key,
+    this.fieldKey,
+    this.controller,
+    this.focusNode,
+    this.hintText,
+    this.onChanged,
+  });
+  final Key? fieldKey;
+  final TextEditingController? controller;
+  final FocusNode? focusNode;
+  final String? hintText;
+  final ValueChanged<String>? onChanged;
+
+  @override
+  Widget build(BuildContext context) => RaftInputGroup(
+    leading: const RaftInputGroupAddon.text('@'),
+    variant: RaftInputGroupRecipeVariant.container,
+    fieldKey: fieldKey,
+    controller: controller,
+    focusNode: focusNode,
+    hintText: hintText,
+    onChanged: onChanged,
+    legacy: RaftLegacyGroup.handle,
+  );
 }
 
 /// InputDecoration for an input inside [RaftAuthHandleGroup]: `border-0

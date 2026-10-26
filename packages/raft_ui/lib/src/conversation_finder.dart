@@ -1,3 +1,5 @@
+import 'form_controls.dart' show RaftBareInput;
+
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -6,7 +8,6 @@ import 'design_primitives.dart';
 import 'icons.dart';
 import 'raft/css_box.dart';
 import 'text_scaling.dart';
-import 'text_selection_toolbar.dart';
 import 'theme.dart';
 
 /// Web SidebarConversationFinder chrome (the DS Search field `.rf-search` at
@@ -96,27 +97,17 @@ class RaftConversationFinderField extends StatelessWidget {
                   textField: true,
                   child: Focus(
                     onKeyEvent: onKeyEvent,
-                    child: TextField(
-                      key: inputKey,
+                    child: RaftBareInput(
+                      fieldKey: inputKey,
                       controller: controller,
                       focusNode: focusNode,
                       style: style,
                       cursorColor: style.color,
-                      contextMenuBuilder: RaftTextSelectionToolbar.editableText,
-                      decoration: InputDecoration(
-                        isCollapsed: true,
-                        isDense: true,
-                        filled: false,
-                        contentPadding: EdgeInsets.zero,
-                        border: InputBorder.none,
-                        enabledBorder: InputBorder.none,
-                        focusedBorder: InputBorder.none,
-                        hintText: hint,
-                        hintStyle: style.copyWith(
-                          color: t.colors['foreground-hint'],
-                        ),
+                      hintText: hint,
+                      hintStyle: style.copyWith(
+                        color: t.colors['foreground-hint'],
                       ),
-                      onTapOutside: (_) => onTapOutside(),
+                      onTapOutside: onTapOutside,
                     ),
                   ),
                 ),

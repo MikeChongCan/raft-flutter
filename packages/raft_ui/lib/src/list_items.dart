@@ -1409,17 +1409,15 @@ class _RaftSearchRowState extends State<_RaftSearchRow> {
           RaftIcon(RaftGlyph.search, size: 16, color: ui.foregroundHint),
           const SizedBox(width: 8),
           Expanded(
-            child: TextField(
+            child: RaftBareInput(
               controller: widget.controller,
               focusNode: node,
               autofocus: true,
               onChanged: widget.onChanged,
               style: style,
               cursorColor: ui.foreground,
-              decoration: InputDecoration.collapsed(
-                hintText: widget.placeholder,
-                hintStyle: style.copyWith(color: ui.foregroundHint),
-              ),
+              hintText: widget.placeholder,
+              hintStyle: style.copyWith(color: ui.foregroundHint),
             ),
           ),
         ],

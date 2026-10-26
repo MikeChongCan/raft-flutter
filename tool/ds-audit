@@ -61,12 +61,11 @@ BYPASS_SCOPES = [SCOPE, CONTRACT_SCOPE]
 _UI = 'packages/raft_ui/lib/src/'
 BYPASS_ALLOWLIST = {
     _UI + 'form_controls.dart': {
-        'text_field': 'implements RaftTextInput, RaftTextarea, RaftPrefixedInput and RaftSlugInput on TextField'},
+        'text_field': 'implements RaftTextInput, RaftTextarea, RaftInputGroup and RaftBareInput on TextField'},
+    _UI + 'form_controls_frozen.dart': {
+        'text_field': 'the frozen Elegant and Brutal paint of the same inputs (part of form_controls.dart; delete with the legacy looks)'},
     _UI + 'dialog_card.dart': {
-        'dialog': 'showRaftModal is the Raft dialog route host',
-        'text_field': 'RaftDialogTextInput is the dialog input wrapper'},
-    _UI + 'search_input.dart': {
-        'text_field': 'RaftSearchInput is the Raft search field wrapper'},
+        'dialog': 'showRaftModal is the Raft dialog route host'},
     _UI + 'tooltip.dart': {
         'tooltip': 'RaftTooltip extends Tooltip',
         'overlay': 'RaftTooltip renders its own popup'},
@@ -90,7 +89,7 @@ BYPASS_USE = {
     'bypass.progress': 'RaftSpinner / RaftProgressBar',
     'bypass.refresh': 'RaftPullToRefresh',
     'bypass.divider': 'the Raft separator (RaftSeparatorRecipe) or a RaftMenuEntry.separator()',
-    'bypass.text_field': 'RaftTextInput / RaftTextarea / RaftPrefixedInput / RaftSlugInput / RaftDialogTextInput',
+    'bypass.text_field': 'RaftTextInput / RaftTextarea / RaftInputGroup (RaftPrefixedInput, RaftSearchInput) / RaftBareInput',
     'bypass.picker': 'a Raft picker (RaftPickerTriggerButton + RaftAnchoredPopup); there is no Raft date picker yet',
     'bypass.snackbar': 'showRaftToast / RaftToast',
     'bypass.overlay': 'RaftAnchoredPopup / RaftPopoverSurface / showRaftToast / RaftTooltip',

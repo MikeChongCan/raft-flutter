@@ -36,10 +36,7 @@ class _GlyphPreview extends StatelessWidget {
           children: [
             Text('Settings', style: theme.textTheme.titleMedium),
             Text('骨 直 令 遍 返 中文 日本語 한국어', style: theme.textTheme.bodyMedium),
-            TextField(
-              style: theme.extension<RaftTokens>()!.fieldStyle,
-              decoration: const InputDecoration(labelText: 'Message'),
-            ),
+            const RaftTextInput(hintText: 'Message'),
           ],
         ),
       ),

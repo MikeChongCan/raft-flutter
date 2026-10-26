@@ -65,6 +65,7 @@ extension _FrozenTextInput on _RaftTextInputState {
                 : t.fieldStyle.copyWith(color: t.colors['foreground-disabled']))
             .copyWith(
               fontFamily: widget.mono ? t.monoFont : null,
+              // ds-allow: frozen Elegant/Brutal type size (a57b9dab), not a Raft token
               fontSize: widget.mono ? 12 : null,
               height: widget.mono ? 16 / 12 : null,
             );
@@ -111,11 +112,36 @@ extension _FrozenTextInput on _RaftTextInputState {
     return RaftFieldSurface(child: field);
   }
 
+  /// The theme's Material input decoration as it is: [RaftTextInput.style] and a prefix icon, no frame of its own.
+  Widget buildFrozenThemed(BuildContext context, RaftTokens t) => TextField(
+    contextMenuBuilder: RaftTextSelectionToolbar.editableText,
+    autofillHints: null,
+    key: widget.fieldKey,
+    controller: controller,
+    focusNode: focus,
+    autofocus: widget.autofocus,
+    enabled: widget.enabled,
+    readOnly: widget.readOnly,
+    obscureText: widget.obscureText,
+    keyboardType: widget.keyboardType,
+    textInputAction: widget.textInputAction,
+    style: widget.style,
+    onChanged: widget.onChanged,
+    onSubmitted: widget.onSubmitted,
+    decoration: InputDecoration(
+      hintText: widget.hintText,
+      prefixIcon: widget.leadingGlyph == null
+          ? null
+          : RaftIcon(widget.leadingGlyph!),
+    ),
+  );
+
   /// Agent forms, the forward dialog's search and the combobox input: the `input` recipe in a recipe box.
   Widget buildFrozenRecipe(BuildContext context, RaftTokens t) {
     final tokens = RaftRecipeTokens(t);
     final focused = focus.hasFocus;
-    if (widget.leadingGlyph != null) return _frozenRecipeGlyph(t, tokens, focused);
+    if (widget.leadingGlyph != null)
+      return _frozenRecipeGlyph(t, tokens, focused);
     final states = _frozenStates(t, {
       if (widget.invalid) 'data-invalid',
       if (focused) RaftRecipeStates.focus,
@@ -173,8 +199,12 @@ extension _FrozenTextInput on _RaftTextInputState {
         hintText: widget.hintText,
         hintStyle: style.copyWith(color: placeholderColor),
       ),
-      buildCounter:
-          (_, {required currentLength, required isFocused, maxLength}) => null,
+      buildCounter: (
+        _, {
+        required currentLength,
+        required isFocused,
+        maxLength,
+      }) => null,
     );
     if (widget.onKeyEvent != null) {
       editor = Focus(
@@ -208,7 +238,11 @@ extension _FrozenTextInput on _RaftTextInputState {
   }
 
   /// `Input` with `pl-9` and the absolutely placed 14px icon at `left-3` (the forward dialog's search).
-  Widget _frozenRecipeGlyph(RaftTokens t, RaftTokenResolver resolver, bool focused) {
+  Widget _frozenRecipeGlyph(
+    RaftTokens t,
+    RaftTokenResolver resolver,
+    bool focused,
+  ) {
     // Same state set as RaftInput: the dark flag selects the `dark:` layers and `autoFocus` exposes the focus ring.
     final s = RaftInputRecipe.resolve(
       theme: t.recipeTheme,
@@ -292,6 +326,7 @@ extension _FrozenTextInput on _RaftTextInputState {
     // Callsite `text-sm`.
     var text = widget.legacy == RaftLegacyInput.settingsPlain
         ? _frozenSlotText(t, s)
+        // ds-allow: frozen Elegant/Brutal type size (a57b9dab), not a Raft token
         : _frozenSlotText(t, s).copyWith(fontSize: 14, height: 20 / 14);
     if (widget.mono) text = text.copyWith(fontFamily: t.monoFont);
     // A fixed box height is a minimum once the text is larger than the default: the field grows with its text.
@@ -356,6 +391,7 @@ extension _FrozenTextarea on _RaftTextareaState {
                 : t.fieldStyle.copyWith(color: t.colors['foreground-disabled']))
             .copyWith(
               fontFamily: widget.mono ? t.monoFont : null,
+              // ds-allow: frozen Elegant/Brutal type size (a57b9dab), not a Raft token
               fontSize: widget.mono ? 12 : null,
               height: widget.mono ? 16 / 12 : null,
             );
@@ -451,8 +487,12 @@ extension _FrozenTextarea on _RaftTextareaState {
         hintText: widget.hintText,
         hintStyle: style.copyWith(color: placeholderColor),
       ),
-      buildCounter:
-          (_, {required currentLength, required isFocused, maxLength}) => null,
+      buildCounter: (
+        _, {
+        required currentLength,
+        required isFocused,
+        maxLength,
+      }) => null,
     );
     return Semantics(
       label: widget.semanticLabel,
@@ -486,6 +526,7 @@ extension _FrozenTextarea on _RaftTextareaState {
         : _frozenSlotText(
             t,
             s,
+            // ds-allow: frozen Elegant/Brutal type size (a57b9dab), not a Raft token
           ).copyWith(fontSize: 14, height: widget.lineHeight ?? 1.625);
     return Container(
       constraints: BoxConstraints(minHeight: widget.minHeight ?? 64),
@@ -501,9 +542,12 @@ extension _FrozenTextarea on _RaftTextareaState {
         minLines: 1,
         maxLines: null,
         maxLength: widget.maxLength,
-        buildCounter:
-            (_, {required currentLength, required isFocused, maxLength}) =>
-                null,
+        buildCounter: (
+          _, {
+          required currentLength,
+          required isFocused,
+          maxLength,
+        }) => null,
         cursorColor: text.color ?? t.strong,
         onChanged: widget.onChanged,
         decoration: _bare(
@@ -719,6 +763,21 @@ extension _FrozenInputGroup on _RaftInputGroupState {
     );
   }
 
+  /// The sign-in pages' username group.
+  Widget buildFrozenHandle(BuildContext context, RaftTokens t) =>
+      RaftAuthHandleGroup(
+        child: TextField(
+          contextMenuBuilder: RaftTextSelectionToolbar.editableText,
+          key: widget.fieldKey,
+          controller: controller,
+          focusNode: focus,
+          style: t.fieldStyle,
+          autofillHints: null,
+          decoration: raftAuthGroupedInputDecoration(hintText: widget.hintText),
+          onChanged: widget.onChanged,
+        ),
+      );
+
   /// The message search field: the default `inputGroup` with an inline-end clear button and an `ESC` key hint.
   Widget buildFrozenSearch(BuildContext context, RaftTokens t) {
     final rt = t.recipeTokens;
@@ -835,12 +894,13 @@ extension _FrozenInputGroup on _RaftInputGroupState {
   }
 }
 
-TextStyle _frozenAuthHelper(RaftTokens t, Color color) => RaftTypography.heading(
-  t,
-  size: 12,
-  line: 16,
-  weight: FontWeight.w400,
-).copyWith(color: color);
+TextStyle _frozenAuthHelper(RaftTokens t, Color color) =>
+    RaftTypography.heading(
+      t,
+      size: 12,
+      line: 16,
+      weight: FontWeight.w400,
+    ).copyWith(color: color);
 
 extension _FrozenField on RaftField {
   Widget buildFrozenForm(BuildContext context) {
@@ -864,6 +924,7 @@ extension _FrozenField on RaftField {
     // FormField label classes: `text-sm` / `text-xs` (decision 0002: no
     // uppercase, so no tracking either).
     labelStyle = labelStyle.copyWith(
+      // ds-allow: frozen Elegant/Brutal type size (a57b9dab), not a Raft token
       fontSize: compact ? 12 : 14,
       height: compact ? 16 / 12 : 20 / 14,
     );
@@ -917,6 +978,7 @@ extension _FrozenField on RaftField {
       ],
     );
   }
+
   Widget buildFrozenProduct(BuildContext context) {
     final t = RaftTokens.of(context);
     final tokens = RaftRecipeTokens(t);
@@ -1016,6 +1078,7 @@ extension _FrozenField on RaftField {
       ],
     );
   }
+
   Widget buildFrozenSettings(BuildContext context) {
     final t = RaftTokens.of(context);
     final f = gen.RaftFieldRecipe.resolve(
@@ -1031,7 +1094,11 @@ extension _FrozenField on RaftField {
     // and the colour the role in the Raft look (formField.label), the recipe's
     // in the pre-theme looks.
     final web = t.option('formField.label', or: 'tokens') == 'tokens';
-    var style = _frozenSlotText(t, f.label).copyWith(fontSize: 12, height: 16 / 12);
+    var style = _frozenSlotText(
+      t,
+      f.label,
+      // ds-allow: frozen Elegant/Brutal type size (a57b9dab), not a Raft token
+    ).copyWith(fontSize: 12, height: 16 / 12);
     if (web) {
       style = style.copyWith(
         fontWeight: raftFontWeight(
@@ -1049,6 +1116,7 @@ extension _FrozenField on RaftField {
       ],
     );
   }
+
   Widget buildFrozenStable(BuildContext context) {
     final t = RaftTokens.of(context);
     final tokens = RaftRecipeTokens(t);
@@ -1078,6 +1146,7 @@ extension _FrozenField on RaftField {
         );
     final message = error ?? hint;
     final messageStyle = TextStyle(
+      // ds-allow: frozen Elegant/Brutal type size (a57b9dab), not a Raft token
       fontSize: 12, // text-xs
       height: 16 / 12,
       fontWeight: error != null ? FontWeight.w700 : null,
@@ -1170,6 +1239,7 @@ extension _FrozenField on RaftField {
       ],
     );
   }
+
   Widget buildFrozenAuth(BuildContext context) {
     final t = RaftTokens.of(context);
     final tokens = RaftRecipeTokens(t);
@@ -1187,6 +1257,7 @@ extension _FrozenField on RaftField {
         ? style.label
               .textStyle(tokens)
               .copyWith(
+                // ds-allow: frozen Elegant/Brutal type size (a57b9dab), not a Raft token
                 fontSize: t.size('type.fieldLabel.size', fallback: 13),
                 height:
                     t.size('type.fieldLabel.line', fallback: 18) /
@@ -1257,4 +1328,5 @@ extension _FrozenField on RaftField {
         ],
       ],
     );
-  }}
+  }
+}

@@ -422,30 +422,23 @@ class _OnboardingState extends State<AccountOnboardingView>
                   helper: tr(
                     "Your unique name for @mentions and links. It can't be changed later.",
                   ),
-                  child: RaftAuthHandleGroup(
-                    child: TextFormField(
-                      contextMenuBuilder: RaftTextSelectionToolbar.editableText,
-                      key: const Key('onboarding-username'),
-                      controller: username,
-                      focusNode: usernameFocus,
-                      style: t.fieldStyle,
-                      autofillHints: null,
-                      decoration: raftAuthGroupedInputDecoration(
-                        hintText: tr('alexchen'),
-                      ),
-                      onChanged: (value) {
-                        final next = value.replaceFirst(RegExp(r'^@+'), '');
-                        if (next != value) username.text = next;
-                        setState(() {
-                          handleError = null;
-                          // Mirror into the display name until edited.
-                          if (!displayNameEdited) {
-                            displayName.text = next;
-                            displayNameError = null;
-                          }
-                        });
-                      },
-                    ),
+                  child: RaftAuthHandleInput(
+                    fieldKey: const Key('onboarding-username'),
+                    controller: username,
+                    focusNode: usernameFocus,
+                    hintText: tr('alexchen'),
+                    onChanged: (value) {
+                      final next = value.replaceFirst(RegExp(r'^@+'), '');
+                      if (next != value) username.text = next;
+                      setState(() {
+                        handleError = null;
+                        // Mirror into the display name until edited.
+                        if (!displayNameEdited) {
+                          displayName.text = next;
+                          displayNameError = null;
+                        }
+                      });
+                    },
                   ),
                 ),
                 RaftAuthField(
@@ -455,13 +448,12 @@ class _OnboardingState extends State<AccountOnboardingView>
                     'How your name appears in messages. Change this anytime.',
                   ),
                   helperHint: true,
-                  child: TextFormField(
-                    contextMenuBuilder: RaftTextSelectionToolbar.editableText,
-                    key: const Key('onboarding-display-name'),
+                  child: RaftTextInput(
+                    fieldKey: const Key('onboarding-display-name'),
                     controller: displayName,
                     style: t.fieldStyle,
-                    autofillHints: null,
-                    decoration: InputDecoration(hintText: tr('Alex Chen')),
+                    hintText: tr('Alex Chen'),
+                    legacy: RaftLegacyInput.themed,
                     onChanged: (_) => setState(() {
                       displayNameEdited = true;
                       displayNameError = null;
