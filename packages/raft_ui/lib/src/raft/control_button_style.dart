@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../design_primitives.dart';
+import '../theme.dart';
 import '../recipes/recipe_runtime.dart';
 
 /// Existing composed-control recipes become explicit class overrides on the
@@ -11,7 +12,16 @@ RaftSlotStyle raftControlButtonStyle(
   RaftInteractionState state,
   RaftSlotStyle root,
 ) {
-  final recipe = control.recipe!;
+  final recipe =
+      control.recipe ??
+      RaftControlRecipe(
+        RaftTokens.of(context),
+        variant: control.variant,
+        kind: control.kind,
+        selected: control.selected,
+        visualHeight: control.visualHeight,
+        highContrast: MediaQuery.highContrastOf(context),
+      );
   CssColor color(Color c) => CssColor(c.toARGB32(), null, c);
   final radius = recipe.radius.resolve(Directionality.of(context));
   final border = recipe.side(hovered: state.hovered);

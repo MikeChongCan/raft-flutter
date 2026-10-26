@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'control_typography.dart';
 import 'recipe_surface.dart';
 import 'recipes/message_text_selection_toolbar.g.dart';
+import 'recipes/recipe_runtime.dart';
 import 'theme.dart';
 
 /// Raft's Android selection menu skin, using Flutter's original toolbar layout.
@@ -103,6 +104,31 @@ class RaftTextSelectionToolbar extends StatelessWidget {
           for (var i = 0; i < buttonItems.length; i++)
             RaftButton.text(
               focusOnPointer: false,
+              padding: TextSelectionToolbarTextButton.getPadding(
+                i,
+                buttonItems.length,
+              ).resolve(Directionality.of(context)),
+              styleBuilder: (context, state, root) {
+                final states = <WidgetState>{
+                  if (state.hovered) WidgetState.hovered,
+                  if (state.pressed) WidgetState.pressed,
+                  if (state.focusVisible) WidgetState.focused,
+                  if (!state.enabled) WidgetState.disabled,
+                };
+                final button = recipe(states).button;
+                final text = labelStyle(states);
+                return button.copyWith(
+                  properties: {
+                    ...button.properties,
+                    'font-family': CssString(text.fontFamily!),
+                    'font-size': CssNum(text.fontSize!, 'px'),
+                    if (text.height != null)
+                      'line-height': CssNum(text.height!),
+                    if (text.fontWeight != null)
+                      'font-weight': CssNum(text.fontWeight!.value.toDouble()),
+                  },
+                );
+              },
               onPressed: buttonItems[i].onPressed,
               legacyStyle: ButtonStyle(
                 // The same geometry as TextSelectionToolbarTextButton.

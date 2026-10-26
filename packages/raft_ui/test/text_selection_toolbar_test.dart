@@ -366,7 +366,16 @@ void main() {
         disabled.getSemanticsData().hasAction(SemanticsAction.tap),
         isFalse,
       );
-      final focus = Focus.of(tester.element(find.text('Copy selection')));
+      final focus = tester
+          .widget<FocusableActionDetector>(
+            find
+                .ancestor(
+                  of: find.text('Copy selection'),
+                  matching: find.byType(FocusableActionDetector),
+                )
+                .first,
+          )
+          .focusNode!;
       focus.requestFocus();
       await tester.pump();
       await tester.sendKeyEvent(LogicalKeyboardKey.enter);

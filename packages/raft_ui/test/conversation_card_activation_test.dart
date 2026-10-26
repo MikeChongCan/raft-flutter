@@ -53,16 +53,16 @@ void main() {
         expect(activation, [1, 2, 1]);
         await tester.sendKeyEvent(LogicalKeyboardKey.tab);
         await tester.pump();
-        // Focus the row's actual InkWell rather than invoking its callback.
-        final ink = tester.element(
+        // Focus the row's real input rather than invoking its callback.
+        final input = tester.widget<FocusableActionDetector>(
           find
               .descendant(
                 of: find.byType(RaftConversationCard),
-                matching: find.byType(InkWell),
+                matching: find.byType(FocusableActionDetector),
               )
               .first,
         );
-        Focus.of(ink).requestFocus();
+        input.focusNode!.requestFocus();
         await tester.pump();
         await tester.sendKeyEvent(LogicalKeyboardKey.enter);
         expect(activation, [1, 2, 1, 1]);
@@ -71,7 +71,9 @@ void main() {
         expect(nested, 1);
         expect(activation, hasLength(count));
         expect(
-          tester.getSemantics(find.byType(RaftConversationCard)).label,
+          tester
+              .getSemantics(find.bySemanticsLabel(RegExp('Open conversation')))
+              .label,
           contains('Open conversation'),
         );
         expect(tester.takeException(), isNull);
@@ -191,7 +193,9 @@ void main() {
         SemanticsActionEvent(
           type: SemanticsAction.tap,
           viewId: tester.view.viewId,
-          nodeId: tester.getSemantics(find.byType(RaftConversationCard)).id,
+          nodeId: tester
+              .getSemantics(find.bySemanticsLabel('Pointer override'))
+              .id,
         ),
       );
       expect(activation, [1, 1]);

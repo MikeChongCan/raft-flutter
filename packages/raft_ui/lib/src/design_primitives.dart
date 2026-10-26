@@ -865,6 +865,7 @@ class RaftControl extends StatelessWidget {
     String? label,
     RaftGlyph? glyph,
     RaftGlyph? trailingGlyph,
+    RaftButtonVariant? uiVariant,
     bool useComponentRecipe = true,
   }) {
     final tab =
@@ -879,6 +880,8 @@ class RaftControl extends StatelessWidget {
         focusOnPointer: focusOnPointer,
         tooltip: tooltip,
         semanticLabel: semanticLabel,
+        semanticContainer: false,
+        expandTouchTarget: false,
         button: !tab,
         checked: tab ? selected : null,
         inMutuallyExclusiveGroup: tab,
@@ -890,15 +893,17 @@ class RaftControl extends StatelessWidget {
     final square = visualWidth != null && visualWidth == visualHeight;
     return RaftButton(
       label: label ?? '',
-      child: label == null && glyph == null ? child : null,
+      child: label == null && glyph == null
+          ? (busy && child is RaftSpinner ? const SizedBox() : child)
+          : null,
       glyph: glyph,
       trailingGlyph: trailingGlyph,
       onPressed: onPressed,
       busy: busy,
       variant: variant,
-      uiVariant: kind == RaftControlKind.textLink
-          ? RaftButtonVariant.link
-          : null,
+      uiVariant:
+          uiVariant ??
+          (kind == RaftControlKind.textLink ? RaftButtonVariant.link : null),
       uiSize: kind == RaftControlKind.textLink
           ? RaftButtonSize.inline
           : square
@@ -913,6 +918,9 @@ class RaftControl extends StatelessWidget {
       visualHeight: visualHeight,
       visualWidth: square ? null : visualWidth,
       minimumTargetSize: minimumTargetSize,
+      layoutTouchTarget: true,
+      semanticContainer: false,
+      expandTouchTarget: false,
       focusNode: focusNode,
       focusOnPointer: focusOnPointer,
       tooltip: tooltip,
@@ -920,7 +928,7 @@ class RaftControl extends StatelessWidget {
       toggled: kind == RaftControlKind.savedAction ? selected : null,
       inertWhenDisabled: inertWhenDisabled,
       padding: padding?.resolve(TextDirection.ltr),
-      styleBuilder: recipe == null
+      styleBuilder: recipe == null && !flexibleHeight
           ? null
           : (context, state, root) {
               final tokens = RaftTokens.of(context);
@@ -1161,6 +1169,7 @@ class RaftIconButton extends StatelessWidget {
     this.minimumTargetSize,
     this.glyphSize,
     this.variant = RaftControlVariant.ghost,
+    this.uiVariant,
     this.shadow = true,
     this.busy = false,
     this.semanticLabel,
@@ -1176,6 +1185,10 @@ class RaftIconButton extends StatelessWidget {
   final double? minimumTargetSize;
   final double? glyphSize;
   final RaftControlVariant variant;
+
+  /// Source Button variant, including the frame's 36px / 20px icon role.
+  /// Legacy looks keep the frozen [variant] painter.
+  final RaftButtonVariant? uiVariant;
   final bool busy, shadow;
   @override
   Widget build(BuildContext context) {
@@ -1211,7 +1224,7 @@ class RaftIconButton extends StatelessWidget {
       child: busy
           ? RaftSpinner(size: glyphSize)
           : RaftIcon(glyph, size: glyphSize ?? (visualSize <= 28 ? 14 : 16)),
-    ).asButton(glyph: glyph, useComponentRecipe: false);
+    ).asButton(glyph: glyph, uiVariant: uiVariant, useComponentRecipe: false);
     final label = tooltip;
     // An icon button is fixed chrome: at large text sizes a long press shows
     // its icon and label large (Large Content Viewer).
@@ -3030,6 +3043,7 @@ class RaftInteractive extends StatefulWidget {
     this.onLongPress,
     this.onSecondaryTapDown,
     this.semanticContainer,
+    this.expandTouchTarget = true,
     this.cancelOutsideRelease = false,
     this.busy = false,
     this.focusNode,
@@ -3063,6 +3077,7 @@ class RaftInteractive extends StatefulWidget {
   final GestureTapDownCallback? onSecondaryTapDown;
   final bool? semanticContainer;
   final bool busy, focusOnPointer, button, cancelOutsideRelease;
+  final bool expandTouchTarget;
   final bool? selected, checked, toggled;
   final bool inMutuallyExclusiveGroup, inertWhenDisabled;
   final FocusNode? focusNode;
@@ -3261,7 +3276,7 @@ class _RaftInteractiveState extends State<RaftInteractive>
     }
     // The expander must surround the tooltip's render boxes too; otherwise
     // those 32px boxes reject pointers before the expanded target sees them.
-    if (touch) {
+    if (touch && widget.expandTouchTarget) {
       result = RaftTouchTarget(child: result);
     }
     return result;

@@ -14,6 +14,7 @@ import 'package:raft_ui/app_icon_previews.dart';
 import 'package:raft_ui/attachment_comments_previews.dart';
 import 'package:raft_ui/attachment_previews.dart';
 import 'package:raft_ui/banner_previews.dart';
+import 'package:raft_ui/button_previews.dart';
 import 'package:raft_ui/basic_component_previews.dart';
 import 'package:raft_ui/channel_header_previews.dart';
 import 'package:raft_ui/channel_management_previews.dart';
@@ -102,6 +103,19 @@ final auditSurfaces = <AuditSurface>[
     'Dialog surface and backdrop',
     dialogSurfacePreview,
     Size(390, 240),
+    representative: true,
+  ),
+  AuditSurface(
+    'buttonVariantsPreview',
+    'Button variants',
+    buttonVariantsPreview,
+    Size(980, 640),
+  ),
+  AuditSurface(
+    'buttonCompactPreview',
+    'Button compact and input',
+    buttonCompactPreview,
+    Size(390, 844),
     representative: true,
   ),
   AuditSurface(

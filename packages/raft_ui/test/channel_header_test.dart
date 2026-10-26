@@ -91,9 +91,9 @@ void main() {
         await mount(enabled: true);
         final button = find.byType(RaftPanelIconButton);
         final rect = t.getRect(button);
-        // raft-ui 0.7.0 PanelAction `md:h-8 md:min-w-8` (the view is 800 wide).
-        expect(rect.size, const Size(32, 32));
-        await t.tapAt(Offset(rect.center.dx, rect.bottom + 6));
+        // Touch input keeps the 44px PanelAction even on a wide viewport.
+        expect(rect.size, const Size(44, 44));
+        await t.tapAt(rect.center + const Offset(0, 23));
         await t.pump();
         expect(searches, 1);
         await t.sendKeyEvent(LogicalKeyboardKey.tab);

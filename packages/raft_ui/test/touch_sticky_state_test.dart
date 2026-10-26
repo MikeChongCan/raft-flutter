@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_ui/raft_ui.dart';
 
+import 'control_paint.dart';
+
 /// Touch-only phones must never keep a desktop-style selected / hover look
 /// after the finger has left. These cases drive real touch gestures.
 void main() {
@@ -102,14 +104,6 @@ void main() {
     expect(selecting(tester, const Key('first')), before);
   });
 
-  /// The control's pressed look: the elegant theme scales it on press.
-  double controlScale(WidgetTester tester, Finder control) {
-    final box = find
-        .descendant(of: control, matching: find.byType(AnimatedContainer))
-        .first;
-    return tester.widget<AnimatedContainer>(box).transform?.storage[0] ?? 1;
-  }
-
   testWidgets('control pressed look ends when a scroll takes the touch', (
     tester,
   ) async {
@@ -131,15 +125,17 @@ void main() {
       ),
     );
     final control = find.byKey(const Key('control'));
-    final idle = controlScale(tester, control);
+    final idle = controlDecoration(tester, control).color;
     final finger = await tester.startGesture(tester.getCenter(control));
-    await tester.pump(const Duration(milliseconds: 300));
-    expect(controlScale(tester, control), isNot(idle));
+    await tester.pump(kPressTimeout);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(controlDecoration(tester, control).color, isNot(idle));
     await finger.moveBy(const Offset(0, -80));
     await tester.pump(const Duration(milliseconds: 300));
     await finger.up();
     await tester.pumpAndSettle();
-    expect(controlScale(tester, control), idle);
+    expect(controlDecoration(tester, control).color, idle);
   });
 
   testWidgets('a finger crossing a message row never gives it the hover fill', (

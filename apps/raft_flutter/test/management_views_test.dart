@@ -686,11 +686,11 @@ void main() {
       await tester.pumpWidget(host(AccountConnectionsView(controller: w)));
       await tester.pumpAndSettle();
       expect(find.text('Google'), findsOneWidget);
-      final disconnect = tester.widget<TextButton>(
+      final disconnect = tester.widget<RaftButton>(
         find
             .ancestor(
               of: find.text('Disconnect'),
-              matching: find.byWidgetPredicate((w) => w is TextButton),
+              matching: find.byType(RaftButton),
             )
             .first,
       );

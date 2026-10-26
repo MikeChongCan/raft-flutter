@@ -9,6 +9,8 @@ import 'package:raft_ui/raft_ui.dart';
 import 'package:raft_ui/src/tap_slop.dart';
 import 'package:raft_ui/test_themes.dart';
 
+import 'control_paint.dart';
+
 const _button = Key('small-icon');
 
 Widget _host({
@@ -73,16 +75,14 @@ void main() {
                 _host(id: id, dark: dark, density: density, onPressed: () {}),
               );
               await t.pumpAndSettle();
+              final visual = id == raftThemePackId ? 32.0 : 24.0;
               final expected =
                   density == RaftDensity.touch && id != raftThemePackId
                   ? 48.0
-                  : 24.0;
+                  : visual;
               expect(t.getSize(find.byKey(_button)), Size.square(expected));
-              final paint = find.descendant(
-                of: find.byKey(_button),
-                matching: find.byType(AnimatedContainer),
-              );
-              expect(t.getSize(paint), const Size.square(24));
+              final paint = controlFace(find.byKey(_button));
+              expect(t.getSize(paint), Size.square(visual));
               final buttons = <SemanticsNode>[];
               void collect(SemanticsNode node) {
                 if (node.flagsCollection.isButton) buttons.add(node);
@@ -96,7 +96,7 @@ void main() {
               expect(buttons, hasLength(1));
               expect(
                 buttons.single.rect.size,
-                Size.square(density == RaftDensity.touch ? 48 : 24),
+                Size.square(density == RaftDensity.touch ? 48 : visual),
               );
             }
           } finally {
@@ -151,7 +151,11 @@ void main() {
           await t.pumpWidget(_host(id: id, minimum: minimum, onPressed: () {}));
           expect(
             t.getSize(find.byKey(_button)),
-            Size.square(minimum < 24 ? 24 : minimum),
+            Size.square(
+              minimum < (id == raftThemePackId ? 32 : 24)
+                  ? (id == raftThemePackId ? 32 : 24)
+                  : minimum,
+            ),
           );
         }
         for (final visual in [28.0, 32.0]) {

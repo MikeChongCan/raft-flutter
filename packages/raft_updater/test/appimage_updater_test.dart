@@ -383,11 +383,13 @@ void main() {
   });
 
   test('restart waits for this process, uses the host environment and quits', () async {
+    // Exercise the real host tools, including GNU chmod on non-Linux hosts.
+    final hostPath = Platform.environment['PATH'] ?? '/usr/bin:/bin';
     final u = updater(
       environment: {
-        'PATH': '/appimage/bin:/usr/bin:/bin',
+        'PATH': '/appimage/bin:$hostPath',
         'RAFT_APPIMAGE_HOST_PATH_SET': 'x',
-        'RAFT_APPIMAGE_HOST_PATH': '/usr/bin:/bin',
+        'RAFT_APPIMAGE_HOST_PATH': hostPath,
         'RAFT_APPIMAGE_HOST_LD_LIBRARY_PATH_SET': '',
         'RAFT_APPIMAGE_HOST_LD_LIBRARY_PATH': '',
         'LD_LIBRARY_PATH': '/appimage/lib',
@@ -404,9 +406,9 @@ void main() {
     final launcher = updater(
       quit: () async => quit++,
       environment: {
-        'PATH': '/appimage/bin:/usr/bin:/bin',
+        'PATH': '/appimage/bin:$hostPath',
         'RAFT_APPIMAGE_HOST_PATH_SET': 'x',
-        'RAFT_APPIMAGE_HOST_PATH': '/usr/bin:/bin',
+        'RAFT_APPIMAGE_HOST_PATH': hostPath,
         'RAFT_APPIMAGE_HOST_LD_LIBRARY_PATH_SET': '',
         'LD_LIBRARY_PATH': '/appimage/lib',
         'APPIMAGE': installed.path,
@@ -441,9 +443,9 @@ void main() {
       quit: () async => quit++,
       processId: old.pid,
       environment: {
-        'PATH': '/appimage/bin:/usr/bin:/bin',
+        'PATH': '/appimage/bin:$hostPath',
         'RAFT_APPIMAGE_HOST_PATH_SET': 'x',
-        'RAFT_APPIMAGE_HOST_PATH': '/usr/bin:/bin',
+        'RAFT_APPIMAGE_HOST_PATH': hostPath,
         'RAFT_APPIMAGE_HOST_LD_LIBRARY_PATH_SET': '',
         'LD_LIBRARY_PATH': '/appimage/lib',
         'APPIMAGE': installed.path,
@@ -468,10 +470,11 @@ void main() {
     for (var i = 0; i < 100 && !marker.existsSync(); i++) {
       await Future<void>.delayed(const Duration(milliseconds: 100));
     }
-    expect(marker.readAsStringSync(), '/usr/bin:/bin|unset|unset');
+    expect(marker.readAsStringSync(), '$hostPath|unset|unset');
   });
 
   test('restart keeps --appimage-extract-and-run for an AppImage started without FUSE', () async {
+    final hostPath = Platform.environment['PATH'] ?? '/usr/bin:/bin';
     final marker = File('${directory.path}.args');
     addTearDown(() {
       if (marker.existsSync()) marker.deleteSync();
@@ -493,7 +496,7 @@ void main() {
       final u = updater(
         processId: old.pid,
         environment: {
-          'PATH': '/usr/bin:/bin',
+          'PATH': hostPath,
           'APPDIR': appDir,
           'MARKER': marker.path,
         },

@@ -295,6 +295,8 @@ void main() {
           tester.getSemantics(find.byKey(const ValueKey('attachment-retry'))),
           matchesSemantics(
             isButton: true,
+            hasEnabledState: true,
+            isEnabled: true,
             isFocusable: true,
             hasTapAction: true,
             hasFocusAction: true,

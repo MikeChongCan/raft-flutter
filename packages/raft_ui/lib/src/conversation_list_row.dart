@@ -177,148 +177,144 @@ class _RaftConversationListRowState extends State<RaftConversationListRow> {
           child: Listener(
             behavior: HitTestBehavior.translucent,
             onPointerDown: (e) => lastPointer = e.position,
-            child: Semantics(
-              button: true,
-              selected: widget.selected,
-              label: widget.semanticLabel,
-              child: Material(
-                color: fill,
-                child: RaftListRowAction(
-                  onTapDown:
-                      widget.onActivate == null &&
-                          widget.onPointerActivate == null
-                      ? null
-                      : (details) {
-                          pendingTapTime = SchedulerBinding
-                              .instance
-                              .currentSystemFrameTimeStamp;
-                          pendingTapPosition = details.globalPosition;
-                        },
-                  onTapCancel: () {
-                    pendingTapTime = null;
-                    pendingTapPosition = null;
-                  },
-                  onPressed: deliverActivation,
-                  focusNode: focusNode,
-                  onLongPress: widget.onContextMenu == null
-                      ? null
-                      : () => openContextMenu(lastPointer ?? Offset.zero),
-                  onSecondaryTapDown: widget.onContextMenu == null
-                      ? null
-                      : (details) => openContextMenu(details.globalPosition),
-                  child: Stack(
-                    children: [
-                      if (widget.separator)
-                        Positioned(
-                          left: 64,
-                          right: 0,
-                          top: 0,
-                          height: 1,
-                          child: ColoredBox(color: t.colors['line-hairline']!),
-                        ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
-                        child: Row(
-                          children: [
-                            widget.leading,
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: DefaultTextStyle.merge(
-                                          style:
-                                              RaftConversationListRow.titleStyle(
-                                                t,
-                                                widget.strong,
-                                              ),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          child: widget.title,
-                                        ),
-                                      ),
-                                      for (final badge
-                                          in widget.titleTrailing) ...[
-                                        const SizedBox(width: 8),
-                                        badge,
-                                      ],
-                                      if (widget.timestamp != null) ...[
-                                        const SizedBox(width: 8),
-                                        AnimatedOpacity(
-                                          opacity: showAction ? 0 : 1,
-                                          duration: fade,
-                                          child: DefaultTextStyle.merge(
-                                            style:
-                                                RaftConversationListRow.timestampStyle(
-                                                  t,
-                                                ),
-                                            child: widget.timestamp!,
-                                          ),
-                                        ),
-                                      ],
-                                    ],
-                                  ),
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: DefaultTextStyle.merge(
-                                          style:
-                                              RaftConversationListRow.bodyStyle(
-                                                t,
-                                                widget.strong,
-                                              ),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          child: widget.body,
-                                        ),
-                                      ),
-                                      for (final mark
-                                          in widget.bodyTrailing) ...[
-                                        const SizedBox(width: 8),
-                                        AnimatedOpacity(
-                                          opacity: showAction ? 0 : 1,
-                                          duration: fade,
-                                          child: mark,
-                                        ),
-                                      ],
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
+            child: Material(
+              color: fill,
+              child: RaftListRowAction(
+                selected: widget.selected,
+                semanticLabel: widget.semanticLabel,
+                onTapDown:
+                    widget.onActivate == null &&
+                        widget.onPointerActivate == null
+                    ? null
+                    : (details) {
+                        pendingTapTime = SchedulerBinding
+                            .instance
+                            .currentSystemFrameTimeStamp;
+                        pendingTapPosition = details.globalPosition;
+                      },
+                onTapCancel: () {
+                  pendingTapTime = null;
+                  pendingTapPosition = null;
+                },
+                onPressed: deliverActivation,
+                focusNode: focusNode,
+                onLongPress: widget.onContextMenu == null
+                    ? null
+                    : () => openContextMenu(lastPointer ?? Offset.zero),
+                onSecondaryTapDown: widget.onContextMenu == null
+                    ? null
+                    : (details) => openContextMenu(details.globalPosition),
+                child: Stack(
+                  children: [
+                    if (widget.separator)
+                      Positioned(
+                        left: 64,
+                        right: 0,
+                        top: 0,
+                        height: 1,
+                        child: ColoredBox(color: t.colors['line-hairline']!),
                       ),
-                      if (widget.action != null)
-                        Positioned(
-                          right: 12,
-                          top: 0,
-                          bottom: 0,
-                          child: Center(
-                            child: ExcludeSemantics(
-                              excluding: !showAction,
-                              child: IgnorePointer(
-                                ignoring: !showAction,
-                                child: AnimatedOpacity(
-                                  opacity: showAction ? 1 : 0,
-                                  duration: fade,
-                                  child: widget.action,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      child: Row(
+                        children: [
+                          widget.leading,
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: DefaultTextStyle.merge(
+                                        style:
+                                            RaftConversationListRow.titleStyle(
+                                              t,
+                                              widget.strong,
+                                            ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        child: widget.title,
+                                      ),
+                                    ),
+                                    for (final badge
+                                        in widget.titleTrailing) ...[
+                                      const SizedBox(width: 8),
+                                      badge,
+                                    ],
+                                    if (widget.timestamp != null) ...[
+                                      const SizedBox(width: 8),
+                                      AnimatedOpacity(
+                                        opacity: showAction ? 0 : 1,
+                                        duration: fade,
+                                        child: DefaultTextStyle.merge(
+                                          style:
+                                              RaftConversationListRow.timestampStyle(
+                                                t,
+                                              ),
+                                          child: widget.timestamp!,
+                                        ),
+                                      ),
+                                    ],
+                                  ],
                                 ),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: DefaultTextStyle.merge(
+                                        style:
+                                            RaftConversationListRow.bodyStyle(
+                                              t,
+                                              widget.strong,
+                                            ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        child: widget.body,
+                                      ),
+                                    ),
+                                    for (final mark in widget.bodyTrailing) ...[
+                                      const SizedBox(width: 8),
+                                      AnimatedOpacity(
+                                        opacity: showAction ? 0 : 1,
+                                        duration: fade,
+                                        child: mark,
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (widget.action != null)
+                      Positioned(
+                        right: 12,
+                        top: 0,
+                        bottom: 0,
+                        child: Center(
+                          child: ExcludeSemantics(
+                            excluding: !showAction,
+                            child: IgnorePointer(
+                              ignoring: !showAction,
+                              child: AnimatedOpacity(
+                                opacity: showAction ? 1 : 0,
+                                duration: fade,
+                                child: widget.action,
                               ),
                             ),
                           ),
                         ),
-                    ],
-                  ),
-                  decorate: false,
+                      ),
+                  ],
                 ),
+                decorate: false,
               ),
             ),
           ),

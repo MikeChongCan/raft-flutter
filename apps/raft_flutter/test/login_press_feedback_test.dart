@@ -81,6 +81,7 @@ void main() {
         final target = find_();
         final idle = _look(t, target);
         final g = await t.startGesture(t.getCenter(target));
+        await t.pump();
         await t.pump(const Duration(milliseconds: 400));
         final pressed = _look(t, target);
         await g.up();

@@ -34,7 +34,7 @@ void main() {
     );
     expect(t.takeException(), isNull);
     expect(find.byKey(const ValueKey('field-first')), findsNothing);
-    await t.tap(find.byType(RaftButton));
+    await t.tap(find.widgetWithText(RaftButton, 'Save'));
     await t.pump();
     expect(t.takeException(), isNull);
     expect(submitted, {'second': 'b', 'third': 'x'});

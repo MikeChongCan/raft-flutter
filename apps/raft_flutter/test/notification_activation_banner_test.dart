@@ -323,7 +323,7 @@ void main() {
       await turn(t);
       expect(find.text('Enabling…'), findsOneWidget);
       expect(p.requests, 1);
-      final button = t.widget<RaftButton>(find.byType(RaftButton));
+      final button = t.widget<RaftButton>(find.widgetWithText(RaftButton, 'Enabling…'));
       expect(button.onPressed, isNull);
       p.prompt!.complete(false);
       await turn(t);

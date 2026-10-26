@@ -4,6 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_ui/raft_ui.dart';
 import 'package:raft_ui/test_themes.dart';
 
+import 'control_paint.dart';
+
 void main() {
   for (final dark in raftThemeMatrix([false, true], full: true)) {
     testWidgets(
@@ -78,15 +80,14 @@ void main() {
       tester.getCenter(find.byType(RaftPickerTriggerButton)),
     );
     await tester.pump(const Duration(milliseconds: 110));
-    final surface = tester.widget<AnimatedContainer>(
-      find.byType(AnimatedContainer),
-    );
-    expect(surface.transform!.storage[12], 0);
-    expect(surface.transform!.storage[13], 0);
+    final control = find.byType(RaftPickerTriggerButton);
+    final transform = controlTransform(tester, control);
+    expect(transform.storage[12], 0);
+    expect(transform.storage[13], 0);
     // Controls cast no drop shadow; the only layer is the 1px hairline ring
     // that stands in for the outline border.
     for (final shadow
-        in (surface.decoration! as BoxDecoration).boxShadow ?? const []) {
+        in controlDecoration(tester, control).boxShadow ?? const []) {
       expect(shadow.offset, Offset.zero);
       expect(shadow.blurRadius, 0);
     }

@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_ui/raft_ui.dart';
+
+import 'control_paint.dart';
+
 import 'package:raft_ui/test_themes.dart';
 
 void main() {
@@ -175,15 +178,11 @@ void main() {
           0,
         ]),
       );
-      final container = tester.widget<AnimatedContainer>(
-        find.descendant(
-          of: find.byType(RaftControl),
-          matching: find.byType(AnimatedContainer),
-        ),
-      );
-      expect(container.transform!.storage[12], 0);
-      expect(container.transform!.storage[13], 0);
-      expect((container.decoration! as BoxDecoration).boxShadow, isEmpty);
+      final control = find.byType(RaftControl);
+      final transform = controlTransform(tester, control);
+      expect(transform.storage[12], 0);
+      expect(transform.storage[13], 0);
+      expect(controlDecoration(tester, control).boxShadow ?? const [], isEmpty);
       await mouse.moveTo(const Offset(500, 300));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 110));
@@ -269,9 +268,7 @@ void main() {
           RaftMessageTaskStatus.inProgress,
         ).chipHeight,
       );
-      final paint = tester.getSize(
-        find.descendant(of: control, matching: find.byType(AnimatedContainer)),
-      );
+      final paint = tester.getSize(controlFace(control));
       expect(paint.height, tester.getSize(control).height);
       final slot = tester.getRect(control);
       await tester.tapAt(Offset(slot.center.dx, slot.bottom - 1));

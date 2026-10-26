@@ -16,8 +16,10 @@ import '../text_scaling.dart' show RaftScaled;
 import '../raft_underline.dart';
 import 'legacy_button_surface.dart';
 import 'button_color_transition.dart';
+import 'button_colors.dart';
 import 'legacy_material_button_surface.dart';
 import '../theme.dart';
+import '../control_typography.dart';
 import '../tokens/tokens.dart';
 export 'button_colors.dart';
 
@@ -295,6 +297,9 @@ class RaftButton extends StatelessWidget {
     this.physicalHeight,
     this.visualWidth,
     this.minimumTargetSize,
+    this.layoutTouchTarget = false,
+    this.expandTouchTarget = true,
+    this.semanticContainer,
     this.metricsKey,
     this.expand = false,
     this.focusNode,
@@ -341,6 +346,9 @@ class RaftButton extends StatelessWidget {
     VoidCallback? onPressed,
     FocusNode? focusNode,
     ButtonStyle? legacyStyle,
+    EdgeInsets? padding,
+    RaftSlotStyle Function(BuildContext, RaftInteractionState, RaftSlotStyle)?
+    styleBuilder,
     bool focusOnPointer = true,
   }) : this(
          key: key,
@@ -351,7 +359,12 @@ class RaftButton extends StatelessWidget {
          focusOnPointer: focusOnPointer,
          uiVariant: RaftButtonVariant.ghost,
          legacyKind: RaftLegacyButtonKind.text,
+         layoutTouchTarget: true,
+         expandTouchTarget: false,
+         semanticContainer: false,
          legacyStyle: legacyStyle,
+         padding: padding,
+         styleBuilder: styleBuilder,
          autoHeight: true,
        );
 
@@ -371,6 +384,9 @@ class RaftButton extends StatelessWidget {
          focusNode: focusNode,
          uiVariant: RaftButtonVariant.outline,
          legacyKind: RaftLegacyButtonKind.outlined,
+         layoutTouchTarget: true,
+         expandTouchTarget: false,
+         semanticContainer: false,
          legacyStyle: legacyStyle,
        );
 
@@ -390,6 +406,9 @@ class RaftButton extends StatelessWidget {
          uiVariant: RaftButtonVariant.ghost,
          uiSize: RaftButtonSize.iconMd,
          legacyKind: RaftLegacyButtonKind.icon,
+         layoutTouchTarget: true,
+         expandTouchTarget: false,
+         semanticContainer: false,
          legacyStyle: legacyStyle,
          legacyConstraints: constraints,
          legacyPadding: padding,
@@ -415,6 +434,8 @@ class RaftButton extends StatelessWidget {
   final double visualHeight;
   final double? physicalHeight, visualWidth, minimumTargetSize;
   final String? metricsKey;
+  final bool layoutTouchTarget, expandTouchTarget;
+  final bool? semanticContainer;
   final FocusNode? focusNode;
   final bool focusOnPointer, focusRing;
   final String? tooltip, semanticLabel;
@@ -500,6 +521,8 @@ class RaftButton extends StatelessWidget {
       liveRegion: busy,
       button: button,
       semanticRole: semanticRole,
+      semanticContainer: semanticContainer,
+      expandTouchTarget: expandTouchTarget,
       selected: selected,
       checked: checked,
       toggled: toggled,
@@ -580,6 +603,29 @@ class RaftButton extends StatelessWidget {
     );
     var root = styleBuilder?.call(context, state, recipeRoot) ?? recipeRoot;
     root = raftUniformOverlay(root, tokens);
+    // Theme-authored variant colour roles remain independent of the source's
+    // motion and edge axes. The built-in look uses the generated overlay.
+    if (t.option('button.hoverSurface', or: 'overlay') == 'variant') {
+      final colors = RaftButtonColors.themed(
+        t,
+        resolvedVariant,
+        disabled: inactive,
+        overlay: state.hovered || state.pressed,
+        iconSize: resolvedSize.isIcon,
+        highContrast: MediaQuery.highContrastOf(context),
+      );
+      CssColor value(Color c) => CssColor(c.toARGB32(), null, c);
+      root = root.copyWith(
+        properties: {
+          ...root.properties,
+          'background-color': value(colors.fill),
+          'background-image': const CssKeyword('none'),
+          'color': value(colors.foreground),
+          for (final side in ['top', 'right', 'bottom', 'left'])
+            'border-$side-color': value(colors.border),
+        },
+      );
+    }
     final profile = metricsKey == null
         ? null
         : RaftButtonMetrics.of(
@@ -587,14 +633,27 @@ class RaftButton extends StatelessWidget {
             resolvedVariant,
             t,
           ).forComponent(t, metricsKey);
+    // Migrated icon actions keep the product's explicit box overrides (for
+    // example an avatar trigger); the Button size still supplies its recipe.
+    final fixedHeight =
+        physicalHeight ??
+        (legacyConstraints?.hasBoundedHeight == true
+            ? legacyConstraints!.maxHeight
+            : null);
+    final fixedWidth =
+        visualWidth ??
+        (legacyConstraints?.hasBoundedWidth == true
+            ? legacyConstraints!.maxWidth
+            : null);
     final overrides = <String, CssValue>{
       if (autoHeight) ...{
         'height': const CssKeyword('auto'),
         'min-height': CssNum(root.height ?? 0, 'px'),
       },
-      if (physicalHeight != null || profile != null)
-        'height': CssNum(physicalHeight ?? profile!.height, 'px'),
-      if (visualWidth != null) 'width': CssNum(visualWidth!, 'px'),
+      if (resolvedSize != RaftButtonSize.inline &&
+          (fixedHeight != null || profile != null))
+        'height': CssNum(fixedHeight ?? profile!.height, 'px'),
+      if (fixedWidth != null) 'width': CssNum(fixedWidth, 'px'),
       if (profile != null) ...{
         'padding-left': CssNum(profile.paddingX, 'px'),
         'padding-right': CssNum(profile.paddingX, 'px'),
@@ -620,7 +679,6 @@ class RaftButton extends StatelessWidget {
         state,
         accessibleLabel,
         animated,
-        slots,
         profile,
       ),
     );
@@ -631,14 +689,16 @@ class RaftButton extends StatelessWidget {
     RaftInteractionState state,
     String? accessibleLabel,
     RaftSlotStyle root,
-    Map<String, RaftSlotStyle> slots,
     RaftButtonMetrics? profile,
   ) {
     final t = RaftTokens.of(context);
     final tokens = t.recipeTokens;
     final inactive = disabled || !state.enabled;
     final inherited = DefaultTextStyle.of(context).style;
-    final style = root.text(tokens, base: inherited);
+    var style = root
+        .text(tokens, base: inherited)
+        .copyWith(fontFamilyFallback: t.fontFallback, locale: t.textLocale);
+    style = RaftControlTypography.of(context, style);
     final ink = style.color ?? t.ink;
     final svg = root.target("& svg:not([class*='size-'])");
     final extent =
@@ -703,29 +763,23 @@ class RaftButton extends StatelessWidget {
     );
     // The source content slot stays in layout while its loading indicator
     // overlays it; no state-dependent width/height or live duplicate label.
-    content = RaftRecipeBox(
-      style:
-          slots['content'] ??
-          RaftSlotStyle(const {}, const {}, const [], tokens),
-      tokens: tokens,
-      child: Visibility.maintain(visible: !busy, child: content),
-    );
+    // The source content slot only provides inline-flex, inherited gap and
+    // loading visibility. Row + Visibility implement those declarations
+    // without another text/opacity/transform layer overriding the control.
+    content = Visibility.maintain(visible: !busy, child: content);
     content = Stack(
       alignment: Alignment.center,
       children: [
         content,
         if (busy)
           Positioned.fill(
-            child: RaftRecipeBox(
-              style:
-                  slots['loadingIndicator'] ??
-                  RaftSlotStyle(const {}, const {}, const [], tokens),
-              tokens: tokens,
-              alignment: Alignment.center,
-              child: Semantics(
-                label: raftText(context, loadingLabel),
-                liveRegion: true,
-                child: const ExcludeSemantics(child: RaftSpinner()),
+            child: IgnorePointer(
+              child: Center(
+                child: Semantics(
+                  label: raftText(context, loadingLabel),
+                  liveRegion: true,
+                  child: const ExcludeSemantics(child: RaftSpinner()),
+                ),
               ),
             ),
           ),
@@ -735,26 +789,32 @@ class RaftButton extends StatelessWidget {
     Widget surface = RaftRecipeBox(
       style: root,
       tokens: tokens,
-      controlLabel: true,
+      applyText: false,
+      applyOpacity: root.opacity != null && root.opacity != 1,
       overflowCenter: true,
       growWithText: true,
       opacityCompositing: opacityCompositing,
       width: expand ? double.infinity : null,
-      padding: padding,
-      child: IconTheme.merge(
-        data: IconThemeData(size: extent),
-        child: content,
+      padding: padding ?? legacyPadding?.resolve(Directionality.of(context)),
+      child: DefaultTextStyle(
+        style: style,
+        child: IconTheme.merge(
+          data: IconThemeData(size: extent, color: ink),
+          child: content,
+        ),
       ),
     );
     if (inactive && !busy && disabledOpacity != null) {
       surface = Opacity(opacity: disabledOpacity!, child: surface);
     }
-    if (minimumTargetSize != null)
+    final target =
+        minimumTargetSize ??
+        (layoutTouchTarget && RaftDensityScope.of(context) == RaftDensity.touch
+            ? RaftMetrics.touchTarget
+            : null);
+    if (target != null)
       surface = ConstrainedBox(
-        constraints: BoxConstraints(
-          minWidth: minimumTargetSize!,
-          minHeight: minimumTargetSize!,
-        ),
+        constraints: BoxConstraints(minWidth: target, minHeight: target),
         child: Center(widthFactor: 1, heightFactor: 1, child: surface),
       );
     return surface;

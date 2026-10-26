@@ -15,7 +15,8 @@ class RaftListRowAction extends StatelessWidget {
     required this.child,
     this.onPressed,
     this.focusNode,
-    this.selected = false,
+    this.selected,
+    this.semanticLabel,
     this.decorate = true,
     this.onTapDown,
     this.onTapCancel,
@@ -25,7 +26,9 @@ class RaftListRowAction extends StatelessWidget {
   final Widget child;
   final VoidCallback? onPressed;
   final FocusNode? focusNode;
-  final bool selected, decorate;
+  final bool? selected;
+  final bool decorate;
+  final String? semanticLabel;
   final GestureTapDownCallback? onTapDown, onSecondaryTapDown;
   final GestureTapCancelCallback? onTapCancel;
   final GestureLongPressCallback? onLongPress;
@@ -35,7 +38,9 @@ class RaftListRowAction extends StatelessWidget {
     onPressed: onPressed,
     focusNode: focusNode,
     selected: selected,
-    semanticContainer: false,
+    semanticLabel: semanticLabel,
+    semanticContainer: true,
+    expandTouchTarget: false,
     onTapDown: onTapDown,
     onTapCancel: onTapCancel,
     onLongPress: onLongPress,
@@ -52,7 +57,7 @@ class RaftListRowAction extends StatelessWidget {
             pressed: state.pressed,
             focusVisible: state.focusVisible,
             disabled: !state.enabled,
-            extra: [if (selected) 'data-selected=true'],
+            extra: [if (selected == true) 'data-selected=true'],
           ),
           tokens: tokens.recipeTokens,
         ).root;
@@ -74,6 +79,9 @@ class RaftListRowAction extends StatelessWidget {
           builder: (context, style) => RaftRecipeBox(
             style: style,
             tokens: tokens.recipeTokens,
+            applyText: false,
+            applyOpacity: false,
+            applyTransform: false,
             child: child,
           ),
         );

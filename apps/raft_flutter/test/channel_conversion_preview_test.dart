@@ -30,12 +30,32 @@ void main() {
                 .any((s) => s.properties.liveRegion == true),
             isTrue,
           );
-          Focus.of(t.element(find.text('Retry Conversion'))).requestFocus();
+          t
+              .widget<FocusableActionDetector>(
+                find
+                    .descendant(
+                      of: find.widgetWithText(RaftButton, 'Retry Conversion'),
+                      matching: find.byType(FocusableActionDetector),
+                    )
+                    .first,
+              )
+              .focusNode!
+              .requestFocus();
           await t.pump();
           await t.sendKeyEvent(LogicalKeyboardKey.enter);
           await t.pump();
           expect(find.text('Preparing conversion'), findsOneWidget);
-          Focus.of(t.element(find.text('Cancel Conversion'))).requestFocus();
+          t
+              .widget<FocusableActionDetector>(
+                find
+                    .descendant(
+                      of: find.widgetWithText(RaftButton, 'Cancel Conversion'),
+                      matching: find.byType(FocusableActionDetector),
+                    )
+                    .first,
+              )
+              .focusNode!
+              .requestFocus();
           await t.pump();
           await t.sendKeyEvent(LogicalKeyboardKey.enter);
           await t.pump();

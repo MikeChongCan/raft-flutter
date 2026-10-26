@@ -1120,32 +1120,43 @@ class RaftPanelIconButton extends StatelessWidget {
     );
   }
 
-  Widget _button(BuildContext context) => RaftButton(
-    glyph: icon == null ? glyph : null,
-    iconBuilder: icon,
-    uiVariant: RaftButtonVariant.ghost,
-    uiSize: RaftInteraction.of(context).touch
-        ? RaftButtonSize.iconLg
-        : RaftButtonSize.iconMd,
-    onPressed: onPressed,
-    onKeyboardActivate: onKeyboardActivate,
-    focusNode: focusNode,
-    semanticLabel: tooltip,
-    tooltip: tooltip,
-    legacyBuilder: _paintLegacy,
-    surfaceBuilder: (context, surface) {
-      if (usesLegacyRecipes(RaftTokens.of(context).recipeTokens))
-        return surface;
-      Widget button = RaftBlinkSnap(child: surface);
-      if (anchorLink != null)
-        button = CompositedTransformTarget(
-          key: anchorKey,
-          link: anchorLink!,
-          child: button,
-        );
-      return button;
-    },
-  );
+  Widget _button(BuildContext context) {
+    final t = RaftTokens.of(context);
+    final touch = RaftInteraction.of(context).touch;
+    final size = touch ? RaftButtonSize.iconLg : RaftButtonSize.iconMd;
+    final source = RaftButtonMetrics.of(size, RaftButtonVariant.ghost, t);
+    final extent = t.size(
+      'size.control.${touch ? 'lg' : 'md'}',
+      fallback: source.height,
+    );
+    return RaftButton(
+      glyph: icon == null ? glyph : null,
+      iconBuilder: icon,
+      uiVariant: RaftButtonVariant.ghost,
+      uiSize: size,
+      physicalHeight: extent,
+      visualWidth: extent,
+      glyphSize: t.size('size.buttonGlyph.${size.name}', fallback: source.icon),
+      onPressed: onPressed,
+      onKeyboardActivate: onKeyboardActivate,
+      focusNode: focusNode,
+      semanticLabel: tooltip,
+      tooltip: tooltip,
+      legacyBuilder: _paintLegacy,
+      surfaceBuilder: (context, surface) {
+        if (usesLegacyRecipes(RaftTokens.of(context).recipeTokens))
+          return surface;
+        Widget button = RaftBlinkSnap(child: surface);
+        if (anchorLink != null)
+          button = CompositedTransformTarget(
+            key: anchorKey,
+            link: anchorLink!,
+            child: button,
+          );
+        return button;
+      },
+    );
+  }
 
   Widget _paintLegacy(BuildContext context, RaftInteractionState state) {
     final t = RaftTokens.of(context);

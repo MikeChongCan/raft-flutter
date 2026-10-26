@@ -298,28 +298,23 @@ class RaftAttachmentCard extends StatelessWidget {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    Semantics(
-                      label: '${raftText(context, 'Preview')} $filename',
-                      button: !exportMode,
-                      child: RaftListRowAction(
-                        onPressed: exportMode ? null : onOpen,
-                        child:
-                            preview ??
-                            (previewPending && error == null ||
-                                    error != null && onRetry != null
-                                ? const RaftTransferPlaceholder()
-                                : null) ??
-                            Center(
-                              child: busy
-                                  ? const RaftSpinner(
-                                      recipeSize: RaftSpinnerRecipeSize.md,
-                                    )
-                                  : Text(
-                                      error ?? filename,
-                                      style: recipe.title,
-                                    ),
-                            ),
-                      ),
+                    RaftListRowAction(
+                      semanticLabel:
+                          '${raftText(context, 'Preview')} $filename',
+                      onPressed: exportMode ? null : onOpen,
+                      child:
+                          preview ??
+                          (previewPending && error == null ||
+                                  error != null && onRetry != null
+                              ? const RaftTransferPlaceholder()
+                              : null) ??
+                          Center(
+                            child: busy
+                                ? const RaftSpinner(
+                                    recipeSize: RaftSpinnerRecipeSize.md,
+                                  )
+                                : Text(error ?? filename, style: recipe.title),
+                          ),
                     ),
                     if (!exportMode &&
                         preview == null &&

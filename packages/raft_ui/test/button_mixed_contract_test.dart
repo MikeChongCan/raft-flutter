@@ -72,9 +72,11 @@ void main() {
         mouse = await t.createGesture(kind: PointerDeviceKind.mouse);
         await mouse.addPointer(location: const Offset(1, 1));
         await mouse.moveTo(rect.center);
+        await t.pump();
         await t.pump(const Duration(milliseconds: 200));
         expect(fill(t), const Color(0xff8800aa));
         await mouse.down(rect.center);
+        await t.pump();
         await t.pump(const Duration(milliseconds: 200));
         expect(fill(t), const Color(0xff8800aa));
         expect(

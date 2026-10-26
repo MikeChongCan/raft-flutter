@@ -385,74 +385,71 @@ class _RaftConversationCardState extends State<RaftConversationCard> {
           child: Listener(
             behavior: HitTestBehavior.translucent,
             onPointerDown: (e) => lastPointer = e.position,
-            child: Semantics(
-              button: true,
-              selected: selected,
-              label: widget.semanticLabel,
-              child: surface(
-                RaftListRowAction(
-                  onTapDown: // InkWell.onDoubleTap would delay the first onTap before the
-                      // consumer sees it. Count successful primary
-                      // taps without installing a double-tap recognizer instead.
-                      widget.onActivate == null &&
-                          widget.onPointerActivate == null
-                      ? null
-                      : (details) {
-                          pendingTapTime = SchedulerBinding
-                              .instance
-                              .currentSystemFrameTimeStamp;
-                          pendingTapPosition = details.globalPosition;
-                        },
-                  onTapCancel: () {
-                    pendingTapTime = null;
-                    pendingTapPosition = null;
-                  },
-                  onPressed: deliverActivation,
-                  focusNode: focusNode,
-                  onLongPress: widget.onContextMenu == null
-                      ? null
-                      : () => openContextMenu(lastPointer ?? Offset.zero),
-                  onSecondaryTapDown: widget.onContextMenu == null
-                      ? null
-                      : (details) => openContextMenu(details.globalPosition),
-                  child: Padding(
-                    // RecipeBox includes its CSS border in Container padding;
-                    // the Saved Material shape only paints the border.
-                    padding: recipe.contentInset.add(
-                      EdgeInsets.all(widget.saved ? recipe.border.width : 0),
-                    ),
-                    child: Stack(
-                      children: [
-                        widget.child,
-                        if (widget.actions != null)
-                          Positioned(
-                            right: 0,
-                            top: 0,
-                            child: ExcludeSemantics(
-                              excluding: !showActions,
-                              child: IgnorePointer(
-                                ignoring: !showActions,
-                                child: AnimatedOpacity(
-                                  opacity: showActions ? 1 : 0,
-                                  duration:
-                                      MediaQuery.disableAnimationsOf(context)
-                                      ? Duration.zero
-                                      : RaftConversationCardRecipe.actionFade,
-                                  child: Material(
-                                    color: selected
-                                        ? recipe.selectedFill(recipe.background)
-                                        : recipe.background,
-                                    child: widget.actions!,
-                                  ),
+            child: surface(
+              RaftListRowAction(
+                selected: selected,
+                semanticLabel: widget.semanticLabel,
+                onTapDown: // InkWell.onDoubleTap would delay the first onTap before the
+                    // consumer sees it. Count successful primary
+                    // taps without installing a double-tap recognizer instead.
+                    widget.onActivate == null &&
+                        widget.onPointerActivate == null
+                    ? null
+                    : (details) {
+                        pendingTapTime = SchedulerBinding
+                            .instance
+                            .currentSystemFrameTimeStamp;
+                        pendingTapPosition = details.globalPosition;
+                      },
+                onTapCancel: () {
+                  pendingTapTime = null;
+                  pendingTapPosition = null;
+                },
+                onPressed: deliverActivation,
+                focusNode: focusNode,
+                onLongPress: widget.onContextMenu == null
+                    ? null
+                    : () => openContextMenu(lastPointer ?? Offset.zero),
+                onSecondaryTapDown: widget.onContextMenu == null
+                    ? null
+                    : (details) => openContextMenu(details.globalPosition),
+                child: Padding(
+                  // RecipeBox includes its CSS border in Container padding;
+                  // the Saved Material shape only paints the border.
+                  padding: recipe.contentInset.add(
+                    EdgeInsets.all(widget.saved ? recipe.border.width : 0),
+                  ),
+                  child: Stack(
+                    children: [
+                      widget.child,
+                      if (widget.actions != null)
+                        Positioned(
+                          right: 0,
+                          top: 0,
+                          child: ExcludeSemantics(
+                            excluding: !showActions,
+                            child: IgnorePointer(
+                              ignoring: !showActions,
+                              child: AnimatedOpacity(
+                                opacity: showActions ? 1 : 0,
+                                duration:
+                                    MediaQuery.disableAnimationsOf(context)
+                                    ? Duration.zero
+                                    : RaftConversationCardRecipe.actionFade,
+                                child: Material(
+                                  color: selected
+                                      ? recipe.selectedFill(recipe.background)
+                                      : recipe.background,
+                                  child: widget.actions!,
                                 ),
                               ),
                             ),
                           ),
-                      ],
-                    ),
+                        ),
+                    ],
                   ),
-                  decorate: false,
                 ),
+                decorate: false,
               ),
             ),
           ),

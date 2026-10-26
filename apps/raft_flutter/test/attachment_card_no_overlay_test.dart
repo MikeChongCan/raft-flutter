@@ -132,7 +132,7 @@ void main() {
               final card = find.byType(RaftAttachmentCard);
               bool cardFocused() =>
                   FocusManager.instance.primaryFocus?.context
-                      ?.findAncestorWidgetOfExactType<TextButton>() !=
+                      ?.findAncestorWidgetOfExactType<RaftListRowAction>() !=
                   null;
               void expectNoIcons() {
                 expect(find.byTooltip('Share ${kind.name}'), findsNothing);

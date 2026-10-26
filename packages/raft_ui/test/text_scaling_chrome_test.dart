@@ -193,7 +193,7 @@ void main() {
           onPressed: () => pressed++,
         ),
       );
-      final g = await t.startGesture(t.getCenter(find.byType(RaftControl)));
+      final g = await t.startGesture(t.getCenter(find.byType(RaftIconButton)));
       await t.pump(const Duration(milliseconds: 700));
       expect(
         find.descendant(of: viewer, matching: find.text('Search')),
@@ -219,7 +219,7 @@ void main() {
           onPressed: () => pressed++,
         ),
       );
-      await t.tap(find.byType(RaftControl));
+      await t.tap(find.byType(RaftIconButton));
       await t.pump(const Duration(milliseconds: 700));
       expect(pressed, 1);
       expect(viewer, findsNothing);

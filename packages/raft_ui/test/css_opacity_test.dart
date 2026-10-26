@@ -60,7 +60,7 @@ void main() {
       // Pinned raft-ui 0.7.0 Button: disabled:bg-fill-muted and opacity-100
       // also apply to the native composer Submit. Keep exact sampled bytes.
       final cindy = tester.getTopLeft(find.byType(RaftButton).first);
-      final dialog = tester.getTopLeft(find.byType(RaftButton).last);
+      final dialog = tester.getTopLeft(find.widgetWithText(RaftButton, 'Create Agent'));
       final send = tester.getTopLeft(find.byType(RaftComposerAction));
       expect(
         await pixel(tester, dialog + const Offset(12, 12)),

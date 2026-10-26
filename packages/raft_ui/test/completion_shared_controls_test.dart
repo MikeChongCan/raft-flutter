@@ -144,7 +144,7 @@ void main() {
     );
     final icons = tester.widgetList<RaftIcon>(find.byType(RaftIcon)).toList();
     expect(icons.map((i) => i.glyph), [RaftGlyph.hash, RaftGlyph.chevronDown]);
-    expect(icons.last.size, 12);
+    expect(icons.last.size, 16);
     await tester.tap(find.text('Channel'));
     expect(selected, 1);
     await tester.pumpWidget(const SizedBox.shrink());

@@ -420,15 +420,14 @@ class RaftImageTransferOverlay extends StatelessWidget {
               right: 0,
               bottom: 0,
               height: retryBand,
-              child: Semantics(
-                button: true,
-                label: raftText(context, 'Download failed · tap to retry'),
-                // InkWell: focusable, Enter / Space retry.
-                child: RaftListRowAction(
-                  key: const ValueKey('attachment-retry'),
-                  onPressed: onRetry,
-                  child: const SizedBox.expand(),
+              child: RaftListRowAction(
+                semanticLabel: raftText(
+                  context,
+                  'Download failed · tap to retry',
                 ),
+                key: const ValueKey('attachment-retry'),
+                onPressed: onRetry,
+                child: const SizedBox.expand(),
               ),
             ),
         ],

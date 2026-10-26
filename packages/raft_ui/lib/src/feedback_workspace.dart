@@ -442,9 +442,11 @@ class _RaftFeedbackComposerState extends State<RaftFeedbackComposer> {
                     onPressed: attachmentsFull ? null : widget.onAttachFile,
                   ),
                   if (widget.newFeedback)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: _Counter(length: widget.controller.text.length),
+                    Flexible(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: _Counter(length: widget.controller.text.length),
+                      ),
                     ),
                 ],
               ),

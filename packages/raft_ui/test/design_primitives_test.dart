@@ -199,6 +199,7 @@ void main() {
         await mouse.addPointer(location: Offset.zero);
         await mouse.moveTo(tester.getCenter(target));
         await tester.pump();
+        await tester.pump(const Duration(milliseconds: 100));
         // variant=accent (pink sticker) hover: one sticker-pressed overlay over the resting fill.
         final hovered = buttonDecoration(tester, target);
         expect(hovered.color, raftChromeBlend(ui.stickerPressed, ui.attention));

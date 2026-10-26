@@ -40,6 +40,27 @@ final aliases = <String, Widget Function(VoidCallback?)>{
 };
 
 void main() {
+  testWidgets('an equivalent Button rebuild schedules no colour animation', (
+    t,
+  ) async {
+    late StateSetter rebuild;
+    await t.pumpWidget(
+      host(
+        StatefulBuilder(
+          builder: (context, setState) {
+            rebuild = setState;
+            return RaftButton(label: 'Stable', onPressed: () {});
+          },
+        ),
+      ),
+    );
+    await t.pumpAndSettle();
+    rebuild(() {});
+    await t.pump();
+    expect(t.binding.hasScheduledFrame, isFalse);
+    await t.pumpWidget(const SizedBox());
+  });
+
   for (final look in [
     (elegantThemePackId, false),
     (elegantThemePackId, true),

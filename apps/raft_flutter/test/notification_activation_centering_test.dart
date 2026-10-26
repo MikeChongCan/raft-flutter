@@ -62,7 +62,12 @@ void main() {
             final banner = t.getRect(
               find.byKey(const ValueKey('notification-activation-banner')),
             );
-            final button = t.getRect(find.byType(RaftButton));
+            final button = t.getRect(
+              find.widgetWithText(
+                RaftButton,
+                chinese ? '开启通知' : 'Enable Notifications',
+              ),
+            );
             final label = t.getRect(
               find.text(chinese ? '开启通知' : 'Enable Notifications'),
             );
