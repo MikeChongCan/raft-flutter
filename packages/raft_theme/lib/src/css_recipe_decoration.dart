@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/painting.dart';
 
 import 'outer_shadow_painter.dart';
@@ -31,29 +33,42 @@ class RaftRecipeDecoration extends BoxDecoration {
     super.gradient,
     super.backgroundBlendMode,
     super.shape,
+    this.cssGeometry = false,
   });
 
-  factory RaftRecipeDecoration.from(BoxDecoration d) => RaftRecipeDecoration(
-    color: d.color,
-    image: d.image,
-    border: d.border,
-    borderRadius: d.borderRadius,
-    boxShadow: d.boxShadow,
-    gradient: d.gradient,
-    backgroundBlendMode: d.backgroundBlendMode,
-    shape: d.shape,
-  );
+  /// The Raft look's CSS geometry (raft-ui 0.7.0): `overflow: hidden` clips to the
+  /// padding box, and sharp ring layers are one anti-aliased path. Off for the
+  /// frozen Elegant and Brutal looks, whose pixels do not change.
+  final bool cssGeometry;
+
+  factory RaftRecipeDecoration.from(BoxDecoration d, {bool? cssGeometry}) =>
+      RaftRecipeDecoration(
+        cssGeometry:
+            cssGeometry ?? (d is RaftRecipeDecoration && d.cssGeometry),
+        color: d.color,
+        image: d.image,
+        border: d.border,
+        borderRadius: d.borderRadius,
+        boxShadow: d.boxShadow,
+        gradient: d.gradient,
+        backgroundBlendMode: d.backgroundBlendMode,
+        shape: d.shape,
+      );
 
   @override
   BoxDecoration? lerpFrom(Decoration? a, double t) {
     final value = super.lerpFrom(a, t);
-    return value == null ? null : RaftRecipeDecoration.from(value);
+    return value == null
+        ? null
+        : RaftRecipeDecoration.from(value, cssGeometry: cssGeometry);
   }
 
   @override
   BoxDecoration? lerpTo(Decoration? b, double t) {
     final value = super.lerpTo(b, t);
-    return value == null ? null : RaftRecipeDecoration.from(value);
+    return value == null
+        ? null
+        : RaftRecipeDecoration.from(value, cssGeometry: cssGeometry);
   }
 
   @override
@@ -67,6 +82,7 @@ class RaftRecipeDecoration extends BoxDecoration {
     BlendMode? backgroundBlendMode,
     BoxShape? shape,
   }) => RaftRecipeDecoration.from(
+    cssGeometry: cssGeometry,
     super.copyWith(
       color: color,
       image: image,
@@ -92,9 +108,35 @@ class RaftRecipeDecoration extends BoxDecoration {
     shape: shape,
   );
 
+  /// CSS `overflow: hidden` clips to the padding box: the border box inset by
+  /// the border, each corner radius reduced by the border on its sides. A clip
+  /// to the border box would let a child's fill paint over the border along the
+  /// rounded corners (the border looks cut off at the arc).
   @override
-  Path getClipPath(Rect rect, TextDirection direction) =>
-      forBox(rect, direction).getClipPath(rect, direction);
+  Path getClipPath(Rect rect, TextDirection direction) {
+    final box = forBox(rect, direction);
+    final radius = box.borderRadius?.resolve(direction);
+    final width = border?.dimensions.resolve(direction) ?? EdgeInsets.zero;
+    if (!cssGeometry ||
+        shape == BoxShape.circle ||
+        radius == null ||
+        width == EdgeInsets.zero) {
+      return box.getClipPath(rect, direction);
+    }
+    Radius shrink(Radius r, double x, double y) =>
+        // ds-allow: the padding-box radius is the border radius minus the border
+        Radius.elliptical(math.max(0, r.x - x), math.max(0, r.y - y));
+    return Path()..addRRect(
+      RRect.fromRectAndCorners(
+        width.deflateRect(rect),
+        topLeft: shrink(radius.topLeft, width.left, width.top),
+        topRight: shrink(radius.topRight, width.right, width.top),
+        bottomLeft: shrink(radius.bottomLeft, width.left, width.bottom),
+        bottomRight: shrink(radius.bottomRight, width.right, width.bottom),
+      ),
+    );
+  }
+
   @override
   bool hitTest(Size size, Offset position, {TextDirection? textDirection}) =>
       forBox(
@@ -136,6 +178,7 @@ class _RaftRecipePainter extends BoxPainter {
         shadows,
         radius,
         circle: decoration.shape == BoxShape.circle,
+        cssGeometry: decoration.cssGeometry,
       ).paint(canvas, configuration.size!);
       canvas.restore();
     }

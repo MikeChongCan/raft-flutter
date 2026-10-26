@@ -40,6 +40,7 @@ import 'raft/ui_tokens.dart';
 import 'tokens/tokens.dart' show RaftTypeStyle;
 import 'recipes/field.g.dart' as field_recipe;
 import 'recipes/label.g.dart';
+import 'recipes/recipe_router.dart' show usesLegacyRecipes;
 import 'recipes/recipe_runtime.dart';
 import 'recipes/segmented_control.g.dart';
 import 'recipes/token_binding.dart';
@@ -1155,23 +1156,31 @@ class RaftRecipeSegmentedControl<T> extends StatelessWidget {
       theme: raftRecipeThemeOf(t),
       tokens: RaftRecipeTokens(t),
     ).root;
+    // raft-ui 0.7.0: the items sit in a muted track (`rounded-[11px]
+    // bg-fill-muted p-[3px]`); the frozen looks have no track.
+    final tokens = RaftRecipeTokens(t);
+    final track = !usesLegacyRecipes(tokens);
     return Semantics(
       label: label,
       container: true,
       child: _FillWhenWrapped(
-        child: Wrap(
-          spacing: root.columnGap ?? 0,
-          runSpacing: root.rowGap ?? 0,
-          children: [
-            for (final (v, glyph, text) in items)
-              _RecipeSegment(
-                checked: v == value,
-                glyph: glyph,
-                label: raftText(context, text),
-                count: counts[v],
-                onTap: onChanged == null ? null : () => onChanged!(v),
-              ),
-          ],
+        child: Container(
+          padding: track ? root.padding : null,
+          decoration: track ? root.decoration(tokens) : null,
+          child: Wrap(
+            spacing: root.columnGap ?? 0,
+            runSpacing: root.rowGap ?? 0,
+            children: [
+              for (final (v, glyph, text) in items)
+                _RecipeSegment(
+                  checked: v == value,
+                  glyph: glyph,
+                  label: raftText(context, text),
+                  count: counts[v],
+                  onTap: onChanged == null ? null : () => onChanged!(v),
+                ),
+            ],
+          ),
         ),
       ),
     );

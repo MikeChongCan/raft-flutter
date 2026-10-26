@@ -1099,8 +1099,13 @@ class RaftAdminDateTimeField extends StatelessWidget {
             .text(tokens, base: DefaultTextStyle.of(context).style)
             .copyWith(fontSize: 14, height: 20 / 14);
         return Container(
+          height: s.height,
+          constraints: s.minHeight == null
+              ? null
+              : BoxConstraints(minHeight: s.minHeight!),
           decoration: s.decoration(tokens),
           padding: s.padding,
+          alignment: s.height == null ? null : Alignment.centerLeft,
           child: Row(
             children: [
               Expanded(

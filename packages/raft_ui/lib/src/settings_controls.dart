@@ -19,6 +19,7 @@ import 'localization.dart';
 import 'overlays/dialog.dart' show showRaftDialog;
 import 'panel_layout.dart' show RaftCssText;
 import 'recipe_surface.dart';
+import 'recipes/recipe_router.dart' show usesLegacyRecipes;
 import 'recipes/recipe_runtime.dart';
 import 'recipes/recipes.g.dart';
 import 'recipes/token_binding.dart';
@@ -429,11 +430,14 @@ class _RaftRecipeInputState extends State<RaftRecipeInput> {
     }
     // A fixed box height is a minimum once the text is larger than the
     // default: the field grows with the text it holds.
-    final grows = widget.height != null && RaftScaled.grows(context);
+    // A callsite height wins over the recipe's own (`h-11` in raft-ui 0.7.0,
+    // a line centred in a box with no vertical padding).
+    final boxHeight = widget.height ?? s.height;
+    final grows = boxHeight != null && RaftScaled.grows(context);
     final field = Container(
-      height: grows ? null : widget.height,
-      constraints: grows ? BoxConstraints(minHeight: widget.height!) : null,
-      alignment: widget.height == null ? null : Alignment.centerLeft,
+      height: grows ? null : boxHeight,
+      constraints: grows ? BoxConstraints(minHeight: boxHeight) : null,
+      alignment: boxHeight == null ? null : Alignment.centerLeft,
       decoration: s.decoration(tokens),
       padding: widget.padding ?? s.padding,
       child: TextField(
@@ -470,10 +474,12 @@ class _RaftRecipeInputState extends State<RaftRecipeInput> {
         ),
       ),
     );
-    // `disabled:opacity-*` lives on the recipe root.
-    return widget.enabled
+    // `disabled:opacity-*` lives on the recipe root; sets that dim through
+    // colours (raft-ui 0.7.0 `disabled:bg-fill-muted`) carry none.
+    final dim = s.opacity ?? (usesLegacyRecipes(tokens) ? .6 : null);
+    return widget.enabled || dim == null
         ? field
-        : Opacity(opacity: s.opacity ?? .6, child: field);
+        : Opacity(opacity: dim, child: field);
   }
 }
 
@@ -660,7 +666,12 @@ class _RaftSettingsPrefixedInputState extends State<RaftSettingsPrefixedInput> {
       g.control,
     ).copyWith(color: widget.textColor ?? t.strong);
     if (widget.mono) text = text.copyWith(fontFamily: t.monoFont);
+    // `h-11` (raft-ui 0.7.0): a fixed box; the frozen set sizes to content.
+    final groupHeight = g.root.height;
+    final groupGrows = groupHeight != null && RaftScaled.grows(context);
     return Container(
+      height: groupGrows ? null : groupHeight,
+      constraints: groupGrows ? BoxConstraints(minHeight: groupHeight) : null,
       decoration: decoration,
       child: IntrinsicHeight(
         child: Row(

@@ -359,7 +359,9 @@ class RaftRecipeBox extends StatelessWidget {
     if (controlLabel) textStyle = RaftControlTypography.of(context, textStyle);
     final current = textStyle.color;
     final layers = style.cssShadows(tokens, currentColor: current);
+    final cssGeometry = tokens.recipeSet == RaftRecipeSet.raft;
     BoxDecoration decoration = RaftRecipeDecoration(
+      cssGeometry: cssGeometry,
       color: style.backgroundColor?.resolve(tokens, currentColor: current),
       border: style.border(tokens, currentColor: current),
       borderRadius: style.borderRadius,
@@ -381,6 +383,7 @@ class RaftRecipeBox extends StatelessWidget {
     // background must not reveal them), unlike Flutter's BoxDecoration.
     final outerShadows = decoration.boxShadow ?? const <BoxShadow>[];
     decoration = RaftRecipeDecoration(
+      cssGeometry: cssGeometry,
       color: decoration.color,
       border: decoration.border,
       borderRadius: decoration.borderRadius,
@@ -457,6 +460,7 @@ class RaftRecipeBox extends StatelessWidget {
           decoration.borderRadius?.resolve(TextDirection.ltr) ??
               BorderRadius.zero,
           circle: decoration.shape == BoxShape.circle,
+          cssGeometry: cssGeometry,
         ),
         child: box,
       );

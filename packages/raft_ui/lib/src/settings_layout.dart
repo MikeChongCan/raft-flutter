@@ -3,7 +3,8 @@ import 'space.dart';
 export 'space.dart';
 import 'panel_layout.dart'
     show RaftCssText, RaftPanelAction, RaftPanelHeaderBar, raftRecipeTheme;
-import 'recipe_surface.dart' show RaftLayeredDecoration, RaftOuterShadowPainter;
+import 'recipe_surface.dart'
+    show RaftLayeredDecoration, RaftOuterShadowPainter, RaftRecipeBinding;
 export 'panel_layout.dart' show raftRecipeTheme;
 
 import 'package:flutter/material.dart';
@@ -14,6 +15,7 @@ import 'control_typography.dart';
 import 'icons.dart';
 import 'indicators.dart';
 import 'localization.dart';
+import 'recipes/recipe_router.dart' show usesLegacyRecipes;
 import 'recipes/recipe_runtime.dart';
 import 'recipes/recipes.g.dart';
 import 'recipes/token_binding.dart';
@@ -599,16 +601,24 @@ class RaftSettingsCard extends StatelessWidget {
     horizontal: 16,
     vertical: 12,
   );
-  static BoxDecoration decoration(RaftTokens t) => BoxDecoration(
-    // Web's settings Card is `bg-layer-card`; a pack without
-    // `layer-settings-card` keeps the a57b9dab `bg-layer-panel`.
-    color: t.colors['layer-settings-card'] ?? t.panel,
-    borderRadius: BorderRadius.circular(
-      t.size('radius.settingsCard', fallback: 0),
-    ),
-    border: Border.all(color: t.colors['line-muted']!, width: 1),
-    boxShadow: t.themeShadows.sm.outer,
-  );
+  static BoxDecoration decoration(RaftTokens t) {
+    final decoration = BoxDecoration(
+      // Web's settings Card is `bg-layer-card`; a pack without
+      // `layer-settings-card` keeps the a57b9dab `bg-layer-panel`.
+      color: t.colors['layer-settings-card'] ?? t.panel,
+      borderRadius: BorderRadius.circular(
+        t.size('radius.settingsCard', fallback: 0),
+      ),
+      border: Border.all(color: t.colors['line-muted']!, width: 1),
+      boxShadow: t.themeShadows.sm.outer,
+    );
+    // The Raft look paints CSS geometry (padding-box clip, concentric rings);
+    // the frozen looks keep the plain decoration.
+    return usesLegacyRecipes(t.recipeTokens)
+        ? decoration
+        : RaftRecipeDecoration.from(decoration, cssGeometry: true);
+  }
+
   @override
   Widget build(BuildContext context) =>
       box(RaftTokens.of(context), padding: padding, child: child);
@@ -644,6 +654,11 @@ class RaftSettingsCard extends StatelessWidget {
         alignment: minHeight == null ? null : AlignmentDirectional.centerStart,
         padding: padding,
         decoration: base,
+        // `overflow-hidden` on the Card: a child's fill follows the rounded
+        // padding box and never covers the border (the frozen looks do not clip).
+        clipBehavior: usesLegacyRecipes(t.recipeTokens)
+            ? Clip.none
+            : Clip.antiAlias,
         child: child,
       );
     }

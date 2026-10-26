@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'css_recipe_decoration.dart' show RaftRecipeDecoration;
+import 'recipes/recipe_router.dart' show usesLegacyRecipes;
 import 'design_primitives.dart';
 import 'tap_slop.dart';
 import 'icons.dart';
@@ -70,24 +72,37 @@ class RaftComposerRecipe {
         : (width * devicePixelRatio).floorToDouble() / devicePixelRatio;
   }
 
-  BoxDecoration shellDecoration({required bool focused}) => BoxDecoration(
-    color: tokens.colors['layer-composer-shell'] ?? tokens.panel,
-    borderRadius: BorderRadius.circular(shellRadius),
-    border: bordered
-        ? Border.all(color: tokens.colors['line-composer']!, width: shellStroke)
-        : null,
-    // Named pack layers are CSS top-first; BoxDecoration paints bottom-first.
-    // Legacy packs encode their original paint order explicitly as data.
-    boxShadow: [
-      for (final layer
-          in tokens
-              .shadowLayers(
-                focused ? 'shadow.composerFocus' : 'shadow.composerIdle',
-              )
-              .reversed)
-        if (!layer.inset) layer.toBoxShadow(),
-    ],
-  );
+  /// The Raft look paints a [RaftRecipeDecoration]: its focus ring (`0 0 0 2px gap,
+  /// 0 0 0 4px ink`) grows the corner radius with each spread (`radius + spread`,
+  /// concentric with the border). A plain [BoxDecoration] inflates only the rect
+  /// and keeps the radius, which pinches the gap at the corners. The frozen looks
+  /// keep their original [BoxDecoration].
+  BoxDecoration shellDecoration({required bool focused}) {
+    final decoration = BoxDecoration(
+      color: tokens.colors['layer-composer-shell'] ?? tokens.panel,
+      borderRadius: BorderRadius.circular(shellRadius),
+      border: bordered
+          ? Border.all(
+              color: tokens.colors['line-composer']!,
+              width: shellStroke,
+            )
+          : null,
+      // Named pack layers are CSS top-first; BoxDecoration paints bottom-first.
+      // Legacy packs encode their original paint order explicitly as data.
+      boxShadow: [
+        for (final layer
+            in tokens
+                .shadowLayers(
+                  focused ? 'shadow.composerFocus' : 'shadow.composerIdle',
+                )
+                .reversed)
+          if (!layer.inset) layer.toBoxShadow(),
+      ],
+    );
+    return usesLegacyRecipes(tokens.recipeTokens)
+        ? decoration
+        : RaftRecipeDecoration.from(decoration, cssGeometry: true);
+  }
 
   double get editorMinimum => desktop
       ? tokens.size('size.composerEditorMinimumDesktop', fallback: 24)

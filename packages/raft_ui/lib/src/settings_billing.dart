@@ -16,7 +16,8 @@ import 'recipes/button_variants.g.dart'
     show RaftButtonRecipeSize, RaftButtonRecipeVariant;
 import 'recipes/card.g.dart';
 import 'recipes/progress.g.dart';
-import 'recipes/recipe_router.dart' show resolveRecipeClasses;
+import 'recipes/recipe_router.dart'
+    show resolveRecipeClasses, usesLegacyRecipes;
 import 'recipes/skeleton.g.dart';
 import 'recipes/status.g.dart';
 import 'settings_controls.dart';
@@ -778,6 +779,10 @@ class _PlanCard extends StatelessWidget {
       child: Container(
         key: const ValueKey('billing-current-plan-card'),
         decoration: RaftSettingsCard.decoration(t),
+        // `overflow-hidden`: the header fill stops at the rounded padding box.
+        clipBehavior: usesLegacyRecipes(t.recipeTokens)
+            ? Clip.none
+            : Clip.antiAlias,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [

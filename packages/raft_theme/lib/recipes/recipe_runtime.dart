@@ -1525,6 +1525,7 @@ class RaftSlotStyle {
 
   BoxDecoration decoration(RaftTokenResolver tokens, {Color? currentColor}) =>
       RaftRecipeDecoration(
+        cssGeometry: tokens.recipeSet == RaftRecipeSet.raft,
         color: backgroundColor?.resolve(tokens, currentColor: currentColor),
         border: border(tokens, currentColor: currentColor),
         borderRadius: borderRadius,
