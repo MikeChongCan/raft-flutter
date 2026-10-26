@@ -126,7 +126,6 @@ const raftChineseLateAdditions = <String, String>{
   "Make public": "设为公开",
   "Uninstall {name}?": "卸载 {name}？",
   "Upload image": "上传图片",
-  "AI Providers": "AI Provider",
   "Test connection": "测试连接",
   "Delete {name}? This removes it from every Agent runtime and usage view.":
       "删除 {name}？这会将它从所有 Agent 运行时和使用记录视图中移除。",
