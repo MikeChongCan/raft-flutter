@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui' as ui;
 
-import 'package:flutter/painting.dart' show imageCache;
 import 'package:flutter/rendering.dart' show debugDisableShadows;
 import 'package:flutter/services.dart'
     show MethodChannel, MissingPluginException;
@@ -12,9 +11,9 @@ import 'package:raft_flutter/platform/video_frame_probe.dart'
     show VideoFrameProbe;
 import 'package:raft_flutter/data/source_time_formatter.dart'
     show initializeSourceTimeFormatting;
-import 'package:raft_ui/raft_ui.dart' show RaftHotImages, RaftImageBytes;
 
 import '../../../tool/testing/matrix_leaks.dart';
+import 'support/release_test_images.dart';
 
 /// Wraps the codecs `PaintingBinding.instantiateImageCodecWithSize` hands to
 /// every `ImageProvider` (Image widgets, `precacheImage`, `MemoryImage` ...).
@@ -111,16 +110,7 @@ void _enableLeakTracking() {
   LeakTesting.enable();
   // The shared image cache keeps decoded images (and their handles) after a
   // test ends; they are not leaks of the test, so empty it before the report.
-  tearDown(() {
-    // Avatars are held by RaftHotImages beyond the widget tree (that is its
-    // job); release them with the cache.
-    RaftHotImages.instance.releaseAll();
-    RaftImageBytes.instance = RaftImageBytes();
-    RaftImageBytes.resetClient();
-    imageCache
-      ..clear()
-      ..clearLiveImages();
-  });
+  tearDown(releaseTestImages);
   // `RAFT_LEAK_STACKS=1` adds the creation stack to every report.
   if (Platform.environment['RAFT_LEAK_STACKS'] == '1') {
     LeakTesting.settings = LeakTesting.settings.withCreationStackTrace();
