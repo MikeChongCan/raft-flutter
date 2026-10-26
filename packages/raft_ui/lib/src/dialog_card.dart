@@ -24,7 +24,6 @@ import 'package:flutter/rendering.dart';
 
 import 'control_typography.dart';
 import 'design_primitives.dart';
-import 'error_presentation.dart' show RaftErrorBanner;
 import 'dismiss_scope.dart';
 import 'icons.dart';
 import 'localization.dart';
@@ -1419,10 +1418,4 @@ class RaftDialogTextInput extends StatelessWidget {
     final surface = RaftFieldSurface(child: field);
     return surface;
   }
-}
-
-/// Web `Banner intent="warning" className="font-bold"` (the dialog error row).
-/// Kept as the name the channel dialogs use; it is [RaftErrorBanner].
-class RaftWarningBanner extends RaftErrorBanner {
-  const RaftWarningBanner(super.message, {super.key, super.small});
 }

@@ -23,6 +23,7 @@ import 'settings_controls.dart' show RaftSettingsRecipeButton;
 import 'status_bar.dart';
 import 'text_scaling.dart' show RaftScaled;
 import 'page_tokens.dart';
+import 'error_presentation.dart' show RaftErrorBanner;
 import 'theme.dart';
 
 /// The drawer popup of `OverflowSheet`: `inset-y-0 right-0 h-dvh w-full
@@ -1041,7 +1042,7 @@ class RaftOverflowNotice extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Padding(
     padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-    child: RaftWarningBanner(message),
+    child: RaftErrorBanner(message),
   );
 }
 
@@ -1071,6 +1072,6 @@ class RaftOverflowFormError extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Padding(
     padding: const EdgeInsets.only(bottom: 20),
-    child: RaftWarningBanner(message),
+    child: RaftErrorBanner(message),
   );
 }

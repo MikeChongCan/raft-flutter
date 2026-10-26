@@ -1,3 +1,4 @@
+import 'agent_create_form.dart' show RaftAgentInlineText;
 import 'hover_region.dart';
 import 'banner_recipe.dart';
 
@@ -39,7 +40,22 @@ class RaftBanner extends StatelessWidget {
     this.descriptionTailWeight,
     this.textAlign,
     this.footer,
+    this.linkAction,
+    this.backgroundColor,
+    this.foregroundColor,
+    this.actionForeground,
   });
+
+  /// The description as CSS text (even leading) that may end in a link action
+  /// (`Button variant="link" size="inline"`: a word in the line that happens to
+  /// be clickable), set after the text in the link button's weight and colour.
+  /// A null `label` is no link; a null `onPressed` shows it disabled.
+  final ({String? label, VoidCallback? onPressed})? linkAction;
+
+  /// Call-site `bg-*` / `text-*` classes on the Banner (a dark-only warning
+  /// tint, say); null keeps the recipe. [actionForeground] colours the
+  /// [linkAction].
+  final Color? backgroundColor, foregroundColor, actionForeground;
 
   /// An inline underlined link after the description copy, 4px (`ml-1`) from
   /// it: Web HistoryLimitBanner's `<button className="ml-1 underline">`.
@@ -127,6 +143,9 @@ class RaftBanner extends StatelessWidget {
       child: RaftRecipeBox(
         style: recipe.root,
         tokens: tokens,
+        decorationOverride: backgroundColor == null
+            ? null
+            : (d) => d.copyWith(color: backgroundColor),
         child: _withLeading(
           context,
           recipe,
@@ -145,7 +164,9 @@ class RaftBanner extends StatelessWidget {
                   ),
                   child: Text(
                     raftText(context, title!),
-                    style: recipe.title.text(tokens, base: base),
+                    style: recipe.title
+                        .text(tokens, base: base)
+                        .copyWith(color: foregroundColor),
                   ),
                 ),
               if (descriptionBuilder != null)
@@ -166,6 +187,8 @@ class RaftBanner extends StatelessWidget {
                   ),
                   style: recipe.description.text(tokens, base: base),
                 )
+              else if (linkAction != null)
+                _linkDescription(context, recipe, tokens, base)
               else if (descriptionTail != null)
                 _TailedDescription(
                   text: raftText(context, description),
@@ -202,6 +225,28 @@ class RaftBanner extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _linkDescription(
+    BuildContext context,
+    RaftBannerRecipeStyle recipe,
+    RaftTokenResolver tokens,
+    TextStyle base,
+  ) {
+    final text = recipe.description.text(tokens, base: base);
+    final color = foregroundColor ?? text.color;
+    return RaftAgentInlineText(
+      description,
+      action: linkAction!.label,
+      onAction: linkAction!.onPressed,
+      style: text.copyWith(color: color),
+      actionForeground:
+          actionForeground ??
+          recipe.description
+              .target('& button')
+              ?.color
+              ?.resolve(tokens, currentColor: color),
     );
   }
 

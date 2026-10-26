@@ -16,6 +16,7 @@ import 'panel_layout.dart' show RaftPanelHeaderBar;
 import 'recipes/button_variants.g.dart';
 import 'switch.dart';
 import 'page_tokens.dart';
+import 'error_presentation.dart' show RaftErrorBanner;
 import 'theme.dart';
 
 /// One `py-3` preference row: title `text-sm font-medium`, description
@@ -233,7 +234,7 @@ class RaftChannelSettingsSheet extends StatelessWidget {
         ],
       ],
       if (error != null) ...[
-        RaftWarningBanner(error!),
+        RaftErrorBanner(error!),
         const SizedBox(height: 20),
       ],
       ?lead,

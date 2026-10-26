@@ -92,6 +92,7 @@ export 'src/archived_agents_section.dart';
 export 'src/agent_archive_dialog.dart';
 export 'src/profile_link.dart';
 export 'src/runtime_error_banner.dart';
+export 'src/panel_notice.dart';
 export 'src/public_page_mark.dart';
 export 'src/chinese_community_page.dart';
 export 'src/setup_resume_bar.dart';

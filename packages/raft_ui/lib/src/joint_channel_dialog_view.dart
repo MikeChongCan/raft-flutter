@@ -15,6 +15,7 @@ import 'form_controls.dart';
 import 'icons.dart';
 import 'localization.dart';
 import 'recipes/button_variants.g.dart';
+import 'error_presentation.dart' show RaftErrorBanner;
 import 'theme.dart';
 
 /// One `JointInviteDraft`: a target server slug and the invited people text.
@@ -140,7 +141,7 @@ class RaftCreateJointChannelDialogView extends StatelessWidget {
             ],
             if (error != null) ...[
               onViewBilling == null
-                  ? RaftWarningBanner(
+                  ? RaftErrorBanner(
                       error!,
                       key: const ValueKey('joint-create-error'),
                     )

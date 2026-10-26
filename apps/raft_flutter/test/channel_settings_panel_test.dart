@@ -436,7 +436,7 @@ void main() {
       await confirm(t, 'Archive Channel');
       expect(find.byType(RaftOverflowSheet), findsOneWidget);
       expect(_id('channel-settings-confirm-dialog'), findsNothing);
-      expect(find.byType(RaftWarningBanner), findsOneWidget);
+      expect(find.byType(RaftErrorBanner), findsOneWidget);
     });
 
     testWidgets('visibility PATCHes the opposite visibility', (t) async {

@@ -14,6 +14,7 @@ import 'dialog_card.dart';
 import 'icons.dart';
 import 'localization.dart';
 import 'recipes/button_variants.g.dart';
+import 'error_presentation.dart' show RaftErrorBanner;
 import 'theme.dart';
 
 /// One candidate row: [avatar] (adapter-built, `members-row`), [name],
@@ -147,7 +148,7 @@ class RaftAddMembersDialogView extends StatelessWidget {
             if (error != null)
               Padding(
                 padding: const EdgeInsets.only(bottom: 12),
-                child: RaftWarningBanner(error!, small: true),
+                child: RaftErrorBanner(error!, small: true),
               ),
             if (nothingToAdd)
               Container(

@@ -24,6 +24,7 @@ import 'recipes/button_variants.g.dart';
 import 'system_inset.dart';
 import 'text_scaling.dart' show RaftScaled;
 import 'status_bar.dart';
+import 'error_presentation.dart' show RaftErrorBanner;
 import 'theme.dart';
 import 'tooltip.dart';
 
@@ -252,7 +253,7 @@ class RaftChannelMembersModal extends StatelessWidget {
           children: [
             header,
             if (error != null) ...[
-              RaftWarningBanner(error!),
+              RaftErrorBanner(error!),
               const SizedBox(height: 12),
             ],
             if (addView) ..._addView(context, t) else _roster(context, t),
@@ -1032,7 +1033,7 @@ class _MembersPageState extends State<_MembersPage> {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             if (m.error != null) ...[
-                              RaftWarningBanner(m.error!),
+                              RaftErrorBanner(m.error!),
                               const SizedBox(height: 12),
                             ],
                             ...m._addView(context, t, fill: true),
@@ -1075,7 +1076,7 @@ class _MembersPageState extends State<_MembersPage> {
           // `m-3 shrink-0 font-bold`
           Padding(
             padding: const EdgeInsets.all(12),
-            child: RaftWarningBanner(m.error!),
+            child: RaftErrorBanner(m.error!),
           ),
         Container(
           // `shrink-0 border-b border-line-muted px-4 py-3`

@@ -24,7 +24,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show OverflowBoxFit;
 
 import 'system_inset.dart';
-import 'banner_recipe.dart';
+import 'banner.dart' show RaftBanner;
 import 'select_field.dart';
 
 import 'components.dart';
@@ -797,7 +797,8 @@ class RaftAgentSelect<T> extends StatelessWidget {
 /// Banner `status` axis.
 enum RaftAgentBannerStatus { warning, info, destructive, success }
 
-/// raft-ui Banner (status + optional title, description spans).
+/// raft-ui Banner (status + optional title, description with an inline
+/// action): the agent dialogs' call shape over [RaftBanner].
 class RaftAgentBanner extends StatelessWidget {
   const RaftAgentBanner({
     super.key,
@@ -819,79 +820,23 @@ class RaftAgentBanner extends StatelessWidget {
   final String description;
   final VoidCallback? onAction;
   @override
-  Widget build(BuildContext context) {
-    final t = RaftTokens.of(context);
-    final tokens = RaftRecipeTokens(t);
-    final source = RaftBannerRecipe.resolve(
-      theme: _theme(t),
-      status: switch (status) {
-        RaftAgentBannerStatus.warning => RaftBannerRecipeStatus.warning,
-        RaftAgentBannerStatus.info => RaftBannerRecipeStatus.info,
-        RaftAgentBannerStatus.destructive => RaftBannerRecipeStatus.destructive,
-        RaftAgentBannerStatus.success => RaftBannerRecipeStatus.success,
-      },
-      states: _states(t, {
-        'group/banner:data-status=${status.name}',
-        if (title != null)
-          'has:>data-slot=banner-description+has:>data-slot=banner-title',
-      }),
-      tokens: tokens,
-    );
-    final b = raftBannerSlots(
-      t,
-      source,
-      RaftBannerRecipeSize.md,
-      switch (status) {
-        RaftAgentBannerStatus.warning => RaftBannerRecipeStatus.warning,
-        RaftAgentBannerStatus.info => RaftBannerRecipeStatus.info,
-        RaftAgentBannerStatus.destructive => RaftBannerRecipeStatus.destructive,
-        RaftAgentBannerStatus.success => RaftBannerRecipeStatus.success,
-      },
-    );
-    final descriptionText = b.description.text(
-      tokens,
-      base: b.root.text(tokens),
-    );
-    final descriptionColor = foregroundColor ?? descriptionText.color;
-    return Semantics(
-      container: true,
-      child: RaftRecipeBox(
-        style: b.root,
-        tokens: tokens,
-        decorationOverride: backgroundColor == null
-            ? null
-            : (d) => d.copyWith(color: backgroundColor),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (title != null)
-              Padding(
-                padding: b.title.margin,
-                child: Text(
-                  raftText(context, title!),
-                  style: b.title
-                      .text(tokens, base: b.root.text(tokens))
-                      .copyWith(color: foregroundColor),
-                ),
-              ),
-            RaftAgentInlineText(
-              description,
-              action: action,
-              onAction: onAction,
-              style: descriptionText.copyWith(color: descriptionColor),
-              actionForeground:
-                  actionForeground ??
-                  b.description
-                      .target('& button')
-                      ?.color
-                      ?.resolve(tokens, currentColor: descriptionColor),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => RaftBanner(
+    status: switch (status) {
+      RaftAgentBannerStatus.warning => RaftBannerRecipeStatus.warning,
+      RaftAgentBannerStatus.info => RaftBannerRecipeStatus.info,
+      RaftAgentBannerStatus.destructive => RaftBannerRecipeStatus.destructive,
+      RaftAgentBannerStatus.success => RaftBannerRecipeStatus.success,
+    },
+    live: false,
+    title: title,
+    description: description,
+    // The frozen looks never put a gap under these titles.
+    titleGap: RaftTokens.of(context).recipeSet == RaftRecipeSet.raft ? null : 0,
+    linkAction: (label: action, onPressed: onAction),
+    backgroundColor: backgroundColor,
+    foregroundColor: foregroundColor,
+    actionForeground: actionForeground,
+  );
 }
 
 /// A sentence ending in an inline action — `Button variant="link"

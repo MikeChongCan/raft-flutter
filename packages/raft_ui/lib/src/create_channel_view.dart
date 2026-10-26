@@ -16,6 +16,7 @@ import 'recipe_surface.dart';
 import 'recipes/banner.g.dart';
 import 'recipes/button_variants.g.dart';
 import 'separator.dart';
+import 'error_presentation.dart' show RaftErrorBanner;
 import 'theme.dart';
 
 /// One selectable picker row: stable [key], [label], optional
@@ -82,7 +83,7 @@ class RaftCreateChannelDialogView extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (error != null) ...[RaftWarningBanner(error!), gap],
+            if (error != null) ...[RaftErrorBanner(error!), gap],
             if (notice != null) ...[notice!, gap],
             RaftProductFormField(
               label: 'Name',

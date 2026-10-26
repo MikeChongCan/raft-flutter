@@ -4,11 +4,12 @@
 // logs" link. Presentation only: the app owns the text, the copy and the jump.
 import 'package:flutter/material.dart';
 
-import 'agent_profile.dart' show RaftActivityDot, RaftPanelText;
+import 'agent_profile.dart' show RaftActivityDot;
 import 'design_primitives.dart' show RaftTypography;
 import 'icons.dart';
 import 'localization.dart';
 import 'panel_layout.dart' show RaftCssText, RaftInlineIconButton;
+import 'panel_notice.dart';
 import 'theme.dart';
 import 'tooltip.dart';
 
@@ -43,70 +44,46 @@ class RaftRuntimeErrorBanner extends StatelessWidget {
       weight: FontWeight.w600,
       color: t.strong,
     ).copyWith(decoration: TextDecoration.underline);
-    return Semantics(
-      liveRegion: true,
-      container: true,
-      child: Container(
-        key: const ValueKey('runtime-error-banner'),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-        decoration: BoxDecoration(
-          color: t.colors['warning-soft'],
-          border: Border(
-            bottom: BorderSide(color: t.colors['line-muted']!, width: 1),
-          ),
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              // ignore: raft_lints/off_grid_spacing -- Web `mt-[5px]`: centres the light on the first 20px line
-              padding: const EdgeInsets.only(top: 5),
-              child: RaftActivityDot(
-                color: t.product.brutalOrange,
-                small: true,
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: RaftTooltip(
-                message: message,
-                child: RaftCssText(
-                  message,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: RaftPanelText.value(t),
-                ),
-              ),
-            ),
-            if (onCopy != null) ...[
-              const SizedBox(width: 8),
-              RaftInlineIconButton(
-                key: const ValueKey('runtime-error-copy'),
-                glyph: copied ? RaftGlyph.check : RaftGlyph.copy,
-                size: 14,
-                tooltip: raftText(context, copied ? 'Copied' : 'Copy info'),
-                onPressed: onCopy,
-              ),
-            ],
-            if (onViewLogs != null) ...[
-              const SizedBox(width: 8),
-              GestureDetector(
-                key: const ValueKey('runtime-error-view-logs'),
-                behavior: HitTestBehavior.opaque,
-                onTap: onViewLogs,
-                child: Semantics(
-                  button: true,
-                  child: RaftCssText(
-                    raftText(context, 'View logs'),
-                    maxLines: 1,
-                    style: link,
-                  ),
-                ),
-              ),
-            ],
-          ],
+    return RaftPanelNotice(
+      key: const ValueKey('runtime-error-banner'),
+      leading: Padding(
+        // ignore: raft_lints/off_grid_spacing -- Web `mt-[5px]`: centres the light on the first 20px line
+        padding: const EdgeInsets.only(top: 5),
+        child: RaftActivityDot(color: t.product.brutalOrange, small: true),
+      ),
+      content: (context, style) => RaftTooltip(
+        message: message,
+        child: RaftCssText(
+          message,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: style,
         ),
       ),
+      actions: [
+        if (onCopy != null)
+          RaftInlineIconButton(
+            key: const ValueKey('runtime-error-copy'),
+            glyph: copied ? RaftGlyph.check : RaftGlyph.copy,
+            size: 14,
+            tooltip: raftText(context, copied ? 'Copied' : 'Copy info'),
+            onPressed: onCopy,
+          ),
+        if (onViewLogs != null)
+          GestureDetector(
+            key: const ValueKey('runtime-error-view-logs'),
+            behavior: HitTestBehavior.opaque,
+            onTap: onViewLogs,
+            child: Semantics(
+              button: true,
+              child: RaftCssText(
+                raftText(context, 'View logs'),
+                maxLines: 1,
+                style: link,
+              ),
+            ),
+          ),
+      ],
     );
   }
 }
