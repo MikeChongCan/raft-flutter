@@ -67,7 +67,9 @@ void main() {
           );
           expect(
             tester.widget<Text>(find.text('Status')).style!.fontFamily,
-            'InheritedDisplay',
+            // raft-ui 0.7.0's Badge sets the heading family itself instead of
+            // inheriting the mounted shell's.
+            raftTheme(dark: dark).extension<RaftTokens>()!.headingFont,
           );
           await tester.sendKeyEvent(LogicalKeyboardKey.tab);
           await tester.pump();

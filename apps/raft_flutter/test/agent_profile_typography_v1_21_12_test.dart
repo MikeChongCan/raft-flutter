@@ -77,7 +77,7 @@ void main() {
     expect(styleOf(tester, 'Mac').color, t.colors['foreground-muted']);
   });
 
-  testWidgets('elegant detail-block name is PanelTitle: 17 semibold muted', (
+  testWidgets('elegant detail-block name is PanelTitle: 17 bold muted', (
     tester,
   ) async {
     final t = await host(
@@ -86,7 +86,10 @@ void main() {
     );
     final name = styleOf(tester, 'Product UX Designer');
     expect(name.fontSize, 17);
-    expect(name.fontWeight, FontWeight.w600);
+    expect(
+      name.fontWeight,
+      FontWeight.w700,
+    ); // raft-ui 0.7.0 PanelTitle is bold
     expect(name.color, t.colors['foreground-muted']);
     final handle = styleOf(tester, '@pux');
     expect(handle.fontSize, 15);
@@ -94,7 +97,7 @@ void main() {
     expect(handle.color, t.colors['foreground-placeholder']);
   });
 
-  testWidgets('dark detail-block name keeps its 17px semibold muted role', (
+  testWidgets('dark detail-block name keeps its 17px bold muted role', (
     tester,
   ) async {
     final t = await host(
@@ -104,7 +107,10 @@ void main() {
     );
     final name = styleOf(tester, 'Product UX Designer');
     expect(name.fontSize, 17);
-    expect(name.fontWeight, FontWeight.w600);
+    expect(
+      name.fontWeight,
+      FontWeight.w700,
+    ); // raft-ui 0.7.0 PanelTitle is bold
     expect(name.color, t.colors['foreground-muted']);
     expect(styleOf(tester, '@pux').fontSize, 15);
   });

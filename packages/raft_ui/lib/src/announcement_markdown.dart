@@ -427,7 +427,8 @@ class _MarkdownBlocks {
           leadingDistribution: TextLeadingDistribution.even,
           fontFamilyFallback: parent.fontFamilyFallback,
         );
-    final size = style.fontSize ?? 14;
+    // raft-ui 0.7.0's InlineCode sets no size or line height: it follows the text.
+    final size = style.fontSize ?? parent.fontSize ?? 14;
     return WidgetSpan(
       alignment: PlaceholderAlignment.baseline,
       baseline: TextBaseline.alphabetic,
@@ -450,7 +451,8 @@ class _MarkdownBlocks {
               fontSize: MediaQuery.textScalerOf(context).scale(size),
             );
             final (ascent, descent) = raftCssContentMetrics(scaled);
-            final box = scaled.fontSize! * (scaled.height ?? 1);
+            final box =
+                scaled.fontSize! * (scaled.height ?? parent.height ?? 1);
             return SizedBox(
               height: box,
               child: Baseline(

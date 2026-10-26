@@ -44,8 +44,8 @@ void main() {
     expect(copy, findsOneWidget);
     expect(
       DefaultTextStyle.of(tester.element(copy)).style.fontWeight,
-      // Raft menu items are medium (the Brutal skin used semibold).
-      FontWeight.w500,
+      // raft-ui 0.7.0 menu rows are bold 13px (0.6 sets them to w700).
+      FontWeight.w700,
     );
     await tester.tap(copy);
     await tester.pumpAndSettle();
@@ -154,7 +154,10 @@ void main() {
           final rect = tester.getRect(share);
           expect(rect.left, greaterThanOrEqualTo(8));
           expect(rect.right, lessThanOrEqualTo(312));
-          expect(rect.bottom, lessThanOrEqualTo(472));
+          expect(
+            rect.bottom,
+            lessThanOrEqualTo(473),
+          ); // 13px rows in raft-ui 0.7.0
           await tester.tap(share);
           expect(actions, [0, 4]);
           expect(
@@ -448,7 +451,7 @@ void main() {
           .style;
       expect(style.decoration, TextDecoration.none);
       expect(style.fontFamily, theme.extension<RaftTokens>()!.bodyFont);
-      expect(style.fontSize, 12);
+      expect(style.fontSize, 13); // raft-ui 0.7.0 menu rows
     },
   );
   testWidgets(

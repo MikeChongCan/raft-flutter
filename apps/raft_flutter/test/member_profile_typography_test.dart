@@ -87,8 +87,9 @@ void main() {
       matching: find.byType(RaftCssText),
     );
     expect(tester.getRect(name).top, 20);
-    // PanelTitle uses 17px / 1.25; its 22.5px row still reserves the handle below.
-    expect(tester.getRect(name).height, 21.25);
+    // raft-ui 0.7.0 PanelTitle: a 22px row (17px, 1.3) that still reserves the
+    // handle below.
+    expect(tester.getRect(name).height, 22);
     expect(tester.getRect(handle).top, 42.5);
   });
 

@@ -385,7 +385,8 @@ void main() {
       'Settings root and detail retain separate scroll positions ${dark ? 'dark' : 'light'}',
       (tester) async {
         SharedPreferences.setMockInitialValues({});
-        tester.view.physicalSize = const Size(390, 560);
+        // 0.7.0 settings rows are shorter; keep the list taller than the viewport.
+        tester.view.physicalSize = const Size(390, 420);
         tester.view.devicePixelRatio = 1;
         addTearDown(tester.view.reset);
         final c = _Client()..selectServer('s');

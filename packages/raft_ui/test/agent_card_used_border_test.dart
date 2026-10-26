@@ -52,7 +52,7 @@ void main() {
           states: t.recipeStates(),
           tokens: resolver,
         ).root;
-        final specifiedWidth = 0.5;
+        final specifiedWidth = 1.0; // raft-ui 0.7.0 Card: 1px hairline
         final usedWidth = 1.0;
         expect(specified.borderWidth, EdgeInsets.all(specifiedWidth));
 

@@ -59,7 +59,7 @@ void main() {
         await t.pumpAndSettle();
         expect(
           t.getRect(find.byKey(const Key('server-switcher-menu'))),
-          Rect.fromLTWH(8, 59, 374, 167),
+          Rect.fromLTWH(8, 59, 374, 171),
         );
         expect(FocusManager.instance.primaryFocus!.skipTraversal, isTrue);
         await t.sendKeyEvent(LogicalKeyboardKey.tab);
@@ -218,7 +218,7 @@ void main() {
         await t.tap(find.byKey(const Key('rail-workspace')));
         await t.pumpAndSettle();
         final menu = find.byKey(const Key('server-switcher-menu'));
-        expect(t.getRect(menu), Rect.fromLTWH(64, 4, 256, 167));
+        expect(t.getRect(menu), Rect.fromLTWH(64, 4, 256, 171));
         expect(find.text('88'), findsNothing);
         expect(FocusManager.instance.primaryFocus!.skipTraversal, isTrue);
         final invite = find.byWidgetPredicate(

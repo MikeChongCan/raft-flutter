@@ -174,7 +174,9 @@ void main() {
           find.byType(RaftAgentInlineText),
         );
         expect(ordinary.style!.color, isNot(tokens.muted));
-        expect(ordinary.actionForeground, ordinary.style!.color);
+        // raft-ui 0.7.0's banner no longer recolours its description button, so
+        // the inline action keeps the link colour instead of inheriting the text.
+        expect(ordinary.actionForeground, isNull);
         await tester.pumpWidget(warning(true));
         await tester.pumpAndSettle();
         final explicit = tester.widget<RaftAgentInlineText>(

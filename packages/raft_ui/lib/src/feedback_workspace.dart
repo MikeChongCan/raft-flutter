@@ -891,7 +891,9 @@ class _RaftFeedbackMessageState extends State<RaftFeedbackMessage> {
           applyText: false,
           child: ConstrainedBox(
             constraints: BoxConstraints(
-              minHeight: (root.minHeight ?? 48) - root.padding.vertical,
+              minHeight: ((root.minHeight ?? 48) - root.padding.vertical)
+                  .clamp(0, double.infinity)
+                  .toDouble(),
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,

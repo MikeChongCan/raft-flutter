@@ -9,6 +9,8 @@ import 'package:flutter/material.dart';
 
 import '../raft_ui.dart';
 
+import 'package:raft_theme/recipes.dart' show RaftRecipeSet;
+
 class RaftAddComputerConnection {
   const RaftAddComputerConnection({
     required this.hostname,
@@ -529,7 +531,11 @@ class _RaftComputerCommandGuideState extends State<RaftComputerCommandGuide> {
     final windows = platform == 'windows';
     // Tailwind `sm` (640px viewport); a guide in a host too narrow for the
     // heading beside the platform control stacks them instead of overflowing.
-    final narrow = MediaQuery.sizeOf(context).width < 640 || available < 380;
+    // The 0.7.0 segmented control is wider (12px item padding, 14px semibold), so
+    // the Raft look stacks earlier; the frozen looks keep 380.
+    final stackBelow = t.recipeSet == RaftRecipeSet.legacy ? 380 : 560;
+    final narrow =
+        MediaQuery.sizeOf(context).width < 640 || available < stackBelow;
     final heading = Row(
       mainAxisSize: MainAxisSize.min,
       children: [

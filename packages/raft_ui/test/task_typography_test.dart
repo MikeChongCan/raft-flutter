@@ -168,7 +168,7 @@ void main() {
     expect(tester.getSize(number).height, 16);
     // Updated body/mono-meta scale and 22px status, at 358px in the host raster.
     // Pixel comparison remains separate; this is not a browser-height assertion.
-    expect(tester.getSize(find.byType(RaftTaskCard)).height, 109);
+    expect(tester.getSize(find.byType(RaftTaskCard)).height, 113);
     expect(tester.takeException(), isNull);
   });
 }

@@ -624,7 +624,11 @@ class _RaftAgentTextInputState extends State<RaftAgentTextInput> {
       maxLines: widget.multiline ? null : 1,
       expands: widget.multiline,
       maxLength: widget.maxLength,
-      textAlignVertical: TextAlignVertical.top,
+      // raft-ui 0.7.0's Input has no vertical padding (the box centres the
+      // line); the earlier recipes pad the line from the top.
+      textAlignVertical: widget.multiline || pad.vertical > 0
+          ? TextAlignVertical.top
+          : TextAlignVertical.center,
       style: style,
       cursorColor: style.color,
       cursorWidth: 1,
@@ -667,6 +671,9 @@ class _RaftAgentTextInputState extends State<RaftAgentTextInput> {
         // The editor owns its typography, but single-line input still grows
         // with its text. Multiline input uses the explicit rows-based box.
         growWithText: !widget.multiline,
+        alignment: !widget.multiline && pad.vertical == 0
+            ? Alignment.centerLeft
+            : null,
         applyText: false,
         child: widget.trailing == null
             ? withKeys(editor)

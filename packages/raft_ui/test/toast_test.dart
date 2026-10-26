@@ -101,7 +101,11 @@ void main() {
         expect(title.style!.fontSize, 14);
         expect(title.style!.height, 20 / 14);
         expect(title.style!.fontWeight, FontWeight.w400);
-        final tokens = RaftTokens.theme(dark: dark);
+        // The app theme above is Elegant, so the recipe set is Elegant's too.
+        final tokens = RaftTokens.theme(
+          dark: dark,
+          pack: packForThemeId(elegantThemePackId),
+        );
         final root = t.widget<RaftRecipeBox>(
           find
               .descendant(of: toast, matching: find.byType(RaftRecipeBox))

@@ -312,6 +312,9 @@ class _RaftComboboxPanelState extends State<RaftComboboxPanel> {
                   child: RaftRecipeBox(
                     style: r.input,
                     tokens: tokens,
+                    alignment: r.input.padding.vertical == 0
+                        ? Alignment.centerLeft
+                        : null,
                     child: TextField(
                       contextMenuBuilder: RaftTextSelectionToolbar.editableText,
                       autofillHints: null,
@@ -320,6 +323,10 @@ class _RaftComboboxPanelState extends State<RaftComboboxPanel> {
                       autofocus: widget.autofocus,
                       enabled: widget.enabled,
                       style: input,
+                      // A recipe without vertical padding centres the line in its box.
+                      textAlignVertical: r.input.padding.vertical == 0
+                          ? TextAlignVertical.center
+                          : null,
                       onChanged: (_) => setState(() => highlighted = -1),
                       decoration: InputDecoration(
                         isCollapsed: true,
