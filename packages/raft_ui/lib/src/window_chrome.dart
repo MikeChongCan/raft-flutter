@@ -13,6 +13,11 @@ class RaftWindowChromeScope extends InheritedWidget {
 
   final EdgeInsets overlayInsets;
 
+  /// The host can expose chrome again after fullscreen or a resize. Routes
+  /// retain its paint even when its current reserved bounds are empty.
+  static bool hasHost(BuildContext context) =>
+      context.getInheritedWidgetOfExactType<RaftWindowChromeScope>() != null;
+
   static EdgeInsets overlayInsetsOf(BuildContext context) =>
       context
           .dependOnInheritedWidgetOfExactType<RaftWindowChromeScope>()

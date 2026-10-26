@@ -157,6 +157,10 @@ class RaftFullBleedDialogRoute<T> extends DialogRoute<T> {
            ),
          ),
        );
+
+  @override
+  Widget buildModalBarrier() =>
+      RaftWindowChromePadding(child: super.buildModalBarrier());
 }
 
 /// Publishes [color] as the status bar colour while this widget is a visible

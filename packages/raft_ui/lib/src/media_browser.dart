@@ -79,7 +79,8 @@ String raftMediaDuration(Duration value) {
 /// the Hero flies the picture), so the page below shows through while the
 /// scrim is not yet black and while a drag-to-dismiss fades it. Once the open
 /// transition ends it turns opaque (the page below stops painting); a drag
-/// makes it see-through again ([setTranslucent]).
+/// makes it see-through again ([setTranslucent]). Desktop hosts retain the
+/// existing window toolbar, so their underlying route remains painted.
 ///
 /// Timing comes from [RaftMediaMotionTokens]: [transitionDuration] open,
 /// [reverseTransitionDuration] close. [scrim] is the picture's own progress
@@ -102,6 +103,14 @@ class RaftMediaBrowserRoute<T> extends PageRoute<T>
 
   /// The shell stages the transition (scrim, stage and chrome) itself.
   final bool staged;
+
+  bool _keepWindowChrome = false;
+
+  @override
+  void install() {
+    _keepWindowChrome = RaftWindowChromeScope.hasHost(navigator!.context);
+    super.install();
+  }
 
   /// Whether the shell stages this route's transition.
   bool get stagedTransition => staged && !reducedMotion;
@@ -149,7 +158,7 @@ class RaftMediaBrowserRoute<T> extends PageRoute<T>
       : RaftMediaMotionTokens.closeDuration;
 
   @override
-  bool get opaque => true;
+  bool get opaque => !_keepWindowChrome;
 
   @override
   bool get barrierDismissible => false;
@@ -164,11 +173,13 @@ class RaftMediaBrowserRoute<T> extends PageRoute<T>
   bool get maintainState => true;
 
   /// While true the page below is built and painted even at rest (the scrim
-  /// of a drag-to-dismiss fades over it).
+  /// of a drag-to-dismiss fades over it). A desktop host keeps its existing
+  /// window toolbar painted after the drag ends as well.
   void setTranslucent(bool value) {
     final entries = overlayEntries;
     if (entries.isEmpty) return;
-    entries.first.opaque = !value && (animation?.isCompleted ?? false);
+    entries.first.opaque =
+        !_keepWindowChrome && !value && (animation?.isCompleted ?? false);
   }
 
   @override

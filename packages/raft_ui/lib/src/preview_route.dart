@@ -15,4 +15,36 @@ class RaftPreviewPageRoute<T> extends MaterialPageRoute<T>
     : super(
         builder: (context) => RaftWindowChromePadding(child: builder(context)),
       );
+
+  bool _keepWindowChrome = false;
+
+  @override
+  void install() {
+    _keepWindowChrome = RaftWindowChromeScope.hasHost(navigator!.context);
+    super.install();
+  }
+
+  @override
+  bool get opaque => !_keepWindowChrome;
+
+  // A desktop preview occupies only the content below the window toolbar.
+  // Material's whole-page transitions can snapshot or transform that toolbar.
+  // Phones retain their native page transition and swipe-back behavior.
+  @override
+  bool canTransitionFrom(TransitionRoute<dynamic> previousRoute) =>
+      !_keepWindowChrome && super.canTransitionFrom(previousRoute);
+
+  @override
+  DelegatedTransitionBuilder? get delegatedTransition =>
+      _keepWindowChrome ? null : super.delegatedTransition;
+
+  @override
+  Widget buildTransitions(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) => _keepWindowChrome
+      ? child
+      : super.buildTransitions(context, animation, secondaryAnimation, child);
 }
