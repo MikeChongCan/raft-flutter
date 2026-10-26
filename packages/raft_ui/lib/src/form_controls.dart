@@ -15,7 +15,7 @@ import 'recipes/input.g.dart';
 import 'recipes/input_group.g.dart';
 import 'recipes/label.g.dart';
 import 'recipes/recipe_runtime.dart';
-import 'recipes/recipe_utilities.g.dart';
+import 'recipes/recipe_router.dart' show resolveAuthoredClasses;
 import 'recipes/textarea.g.dart';
 import 'recipes/textarea_counter.g.dart';
 import 'raft/css_box.dart';
@@ -425,15 +425,12 @@ class _RaftTextInputState extends State<RaftTextInput>
       // (or focus shadow-raft-sm), including Elegant dark inset layers.
       // The product's hard Brutal shadow and explicit invalid ring remain
       // caller overrides; no global recipe or renderer changes are required.
-      s = raftRecipeEngine.resolveSlot(
+      s = resolveAuthoredClasses(
         [
-          for (final name in [
-            'border',
-            focused ? 'border-line-strong' : 'border-line-field',
-            'bg-layer-panel',
-            focused ? 'shadow-raft-sm' : 'shadow-raft-xs',
-          ])
-            raftRecipeUtilities.indexWhere((u) => u.name == name),
+          'border',
+          focused ? 'border-line-strong' : 'border-line-field',
+          'bg-layer-panel',
+          focused ? 'shadow-raft-sm' : 'shadow-raft-xs',
         ],
         t.recipeStates(),
         rt,

@@ -1,5 +1,5 @@
 // GENERATED — do not edit. Regenerate with `tool/recipes/run`.
-// Source: raft-ui 0.5.52 dist/index.mjs (sha256 742e86bfdb372e8f),
+// Source: raft-ui 0.7.0 dist/index.mjs (sha256 83bf0bff35092e3d),
 // tailwindcss 4.2.2 with raft-ui styles.css + Web @theme overrides. Recipe `messageReplies`.
 // ignore_for_file: type=lint
 
@@ -50,7 +50,7 @@ class RaftMessageRepliesRecipeStyle {
   };
 }
 
-/// raft-ui recipe `messageReplies` (`src/components/message-replies/message-replies.recipe.ts`, index.mjs:10610).
+/// raft-ui recipe `messageReplies` (`src/components/message-replies/message-replies.recipe.ts`, index.mjs:8222).
 ///
 /// Used by: MessageReplies, MessageRepliesItem, MessageRepliesItemContent, MessageRepliesItemSender, MessageRepliesItemTime, MessageRepliesSummary, MessageRepliesSummaryItem.
 ///
@@ -67,12 +67,9 @@ abstract final class RaftMessageRepliesRecipe {
     'content',
     'time',
   ];
-  static const List<RaftRecipeAxis> axes = [
-    RaftRecipeAxis('theme', ['brutal', 'elegant'], null, false),
-  ];
+  static const List<RaftRecipeAxis> axes = [];
 
   static RaftMessageRepliesRecipeStyle resolve({
-    required RaftRecipeTheme theme,
     RaftRecipeStates states = RaftRecipeStates.none,
     RaftTokenResolver? tokens,
   }) {
@@ -81,7 +78,7 @@ abstract final class RaftMessageRepliesRecipe {
       axes,
       _lists,
       _combos,
-      [theme.name],
+      [],
       states,
       tokens,
       recipeName: recipeName,
@@ -121,60 +118,66 @@ abstract final class RaftMessageRepliesRecipe {
   /// Distinct class lists (indices into [raftRecipeUtilities]).
   static const List<List<int>> _lists = [
     [
-      1928,
-      2622,
-      1644,
-      2597,
-      3168,
+      1143,
+      959,
+      1473,
+      1912,
+      961,
+      1820,
+      1877,
+      974,
+      978,
+      1501,
+      1407,
+      1012,
+      1696,
+      619,
       1646,
-      1721,
-      2780,
-      2794,
-      3040,
-      3125,
-      1662,
-      1668,
-      877,
-      772,
-      2214,
+      1658,
+      579,
+      1811,
+      1274,
+      427,
+      979,
+      988,
     ],
-    [1644, 2902, 1650, 2331, 1721, 3125, 2959, 1709, 2999, 1903, 410],
-    [2320, 2331, 1720, 643, 426],
-    [1644, 2597, 2331, 1722, 2959],
-    [2597, 2900, 3133, 1717, 3001],
-    [2597, 1645, 3133, 3000],
-    [2608, 2902, 1714, 2957, 2946, 2996],
     [
-      1928,
-      2622,
-      1644,
-      2597,
-      3168,
-      1646,
-      1721,
-      2780,
-      2794,
-      3040,
-      1662,
-      1668,
-      826,
-      2899,
-      3106,
-      1626,
-      2205,
-      2288,
-      2848,
+      959,
+      1727,
+      965,
+      1310,
+      1877,
+      1013,
+      1806,
+      999,
+      1811,
+      1231,
+      250,
+      249,
+      255,
+      253,
+      254,
+      259,
+      256,
+      248,
+      260,
+      247,
+      246,
+      261,
+      251,
+      252,
+      257,
+      258,
     ],
-    [1644, 2902, 1650, 2331, 1721, 3073, 1713, 3125, 411, 2513, 3018],
-    [1644, 2597, 2331, 1722, 3073, 2366],
-    [2597, 2900, 3133, 1717, 3018],
-    [2597, 1645, 3133, 3020],
-    [2608, 2902, 1716, 2957, 2946, 3021],
+    [1296, 1310, 1011, 467, 278],
+    [959, 1473, 1310, 1013, 1806],
+    [1473, 1726, 1881, 1008, 1811],
+    [1473, 960, 1881, 1808],
+    [1487, 1727, 1005, 1823, 1768, 1808],
   ];
 
   /// Per combination (mixed radix over [axes]): class list per slot.
   static const List<List<int>> _combos = [
     [0, 1, 2, 3, 4, 5, 6],
-    [7, 8, 2, 9, 10, 11, 12],
   ];
 }

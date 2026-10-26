@@ -64,7 +64,7 @@ import 'panel_layout.dart' show RaftCssText, RaftCssLineBox;
 import 'recipe_surface.dart';
 export 'raft/button.dart' show RaftButton, RaftButtonVariant, RaftButtonSize;
 import 'recipes/card.g.dart';
-import 'recipes/recipe_utilities.g.dart';
+import 'recipes/recipe_router.dart' show resolveAuthoredClasses;
 import 'tooltip.dart' show RaftTooltip;
 import 'text_scaling.dart' show RaftScaled;
 import 'sized_image.dart';
@@ -132,16 +132,8 @@ class RaftPanel extends StatelessWidget {
         // all dark-theme inset layers of `shadow-raft-md`. Use the shared
         // CSS painter in every theme to retain live child state on switching.
         final rt = t.recipeTokens;
-        final s = raftRecipeEngine.resolveSlot(
-          [
-            for (final name in [
-              'border',
-              'border-line-muted',
-              'bg-layer-panel',
-              'shadow-raft-md',
-            ])
-              raftRecipeUtilities.indexWhere((u) => u.name == name),
-          ],
+        final s = resolveAuthoredClasses(
+          ['border', 'border-line-muted', 'bg-layer-panel', 'shadow-raft-md'],
           t.recipeStates(),
           rt,
         );

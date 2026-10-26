@@ -1,5 +1,5 @@
 // GENERATED — do not edit. Regenerate with `tool/recipes/run`.
-// Source: raft-ui 0.5.52 dist/index.mjs (sha256 742e86bfdb372e8f),
+// Source: raft-ui 0.7.0 dist/index.mjs (sha256 83bf0bff35092e3d),
 // tailwindcss 4.2.2 with raft-ui styles.css + Web @theme overrides. Recipe `messageForwardedBundleGallery`.
 // ignore_for_file: type=lint
 
@@ -42,7 +42,7 @@ class RaftMessageForwardedBundleGalleryRecipeStyle {
   };
 }
 
-/// raft-ui recipe `messageForwardedBundleGallery` (`src/components/message-forwarded-bundle/message-forwarded-bundle.recipe.ts`, index.mjs:11603).
+/// raft-ui recipe `messageForwardedBundleGallery` (`src/components/message-forwarded-bundle/message-forwarded-bundle.recipe.ts`, index.mjs:9254).
 ///
 /// Used by: MessageForwardedBundleGallery, MessageForwardedBundleGalleryTile.
 ///
@@ -100,12 +100,12 @@ abstract final class RaftMessageForwardedBundleGalleryRecipe {
 
   /// Distinct class lists (indices into [raftRecipeUtilities]).
   static const List<List<int>> _lists = [
-    [2597],
-    [1742, 1723],
-    [403, 407, 405],
-    [1742, 1723, 1743, 681, 2927],
-    [1742, 1723, 1744, 681, 2927],
-    [1742, 1723, 1744, 680, 2926, 2546],
+    [1473],
+    [1031, 1014],
+    [240, 244, 242],
+    [1031, 1014, 1032, 504, 1757],
+    [1031, 1014, 1033, 504, 1757],
+    [1031, 1014, 1033, 503, 1756, 1436],
   ];
 
   /// Per combination (mixed radix over [axes]): class list per slot.

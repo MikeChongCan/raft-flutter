@@ -567,6 +567,12 @@ def build() -> dict:
             'case': CASE_RAFT,
             'shadows': {
                 'xs': 'none', 'sm': 'none', 'md': 'none',
+                # The raft-ui 0.7.0 recipes name the two elevations by token
+                # (`elevationFloat`, `elevationSticker`, `focusRing`); legacy packs inherit
+                # them but their frozen recipes never read them.
+                'elevation-float': shadow_set['elevationFloat'],
+                'elevation-sticker': shadow_set['elevationSticker'],
+                'focus-ring': shadow_set['focusRing'],
                 'lg': shadow_set['elevationFloat'], 'xl': shadow_set['elevationFloat'],
                 'shadow.float': shadow_set['elevationFloat'],
                 'shadow.tooltip': shadow_set['elevationFloat'],

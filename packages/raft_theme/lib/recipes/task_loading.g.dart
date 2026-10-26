@@ -1,5 +1,5 @@
 // GENERATED — do not edit. Regenerate with `tool/recipes/run`.
-// Source: raft-ui 0.5.52 dist/index.mjs (sha256 742e86bfdb372e8f),
+// Source: raft-ui 0.7.0 dist/index.mjs (sha256 83bf0bff35092e3d),
 // tailwindcss 4.2.2 with raft-ui styles.css + Web @theme overrides. Recipe `taskLoading`.
 // ignore_for_file: type=lint
 
@@ -19,7 +19,7 @@ class RaftTaskLoadingRecipeStyle {
   Map<String, RaftSlotStyle> get slots => {'list': list, 'row': row};
 }
 
-/// raft-ui recipe `taskLoading` (`src/components/tasks/task-loading.recipe.ts`, index.mjs:19362).
+/// raft-ui recipe `taskLoading` (`src/components/tasks/task-loading.recipe.ts`, index.mjs:15565).
 ///
 /// Used by: TaskLoadingList, TaskLoadingRow.
 ///
@@ -28,12 +28,9 @@ class RaftTaskLoadingRecipeStyle {
 abstract final class RaftTaskLoadingRecipe {
   static const String recipeName = 'taskLoading';
   static const List<String> slotNames = ['list', 'row'];
-  static const List<RaftRecipeAxis> axes = [
-    RaftRecipeAxis('theme', ['brutal', 'elegant'], null, false),
-  ];
+  static const List<RaftRecipeAxis> axes = [];
 
   static RaftTaskLoadingRecipeStyle resolve({
-    required RaftRecipeTheme theme,
     RaftRecipeStates states = RaftRecipeStates.none,
     RaftTokenResolver? tokens,
   }) {
@@ -42,7 +39,7 @@ abstract final class RaftTaskLoadingRecipe {
       axes,
       _lists,
       _combos,
-      [theme.name],
+      [],
       states,
       tokens,
       recipeName: recipeName,
@@ -73,14 +70,12 @@ abstract final class RaftTaskLoadingRecipe {
 
   /// Distinct class lists (indices into [raftRecipeUtilities]).
   static const List<List<int>> _lists = [
-    [1644, 1646, 1723],
-    [1644, 2597, 1646, 1722, 2695, 2852, 878, 918],
-    [1644, 2597, 1646, 1722, 2695, 2847, 876, 912, 830, 2897, 1029],
+    [959, 961, 1014],
+    [959, 1473, 961, 1584, 1014, 1696, 618, 631, 594, 1725],
   ];
 
   /// Per combination (mixed radix over [axes]): class list per slot.
   static const List<List<int>> _combos = [
     [0, 1],
-    [0, 2],
   ];
 }

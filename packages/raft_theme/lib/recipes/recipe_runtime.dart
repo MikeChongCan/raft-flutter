@@ -341,10 +341,22 @@ final class TokenRef {
   String toString() => 'TokenRef($name)';
 }
 
+/// Which generated recipe set a theme pack paints with.
+///
+/// [raft] is the current raft-ui set (`recipes.dart`, no `theme` axis);
+/// [legacy] is the frozen 0.5.52 set (`recipes_legacy.dart`) that the Elegant
+/// and Brutal looks keep. The pack -> set mapping lives in
+/// [RaftThemePackRecipes]; the resolver carries the answer to every component.
+enum RaftRecipeSet { raft, legacy }
+
 /// Resolves foundation tokens for the active theme (brutal / elegant light /
 /// elegant dark). Bind this to the generated token ThemeExtension.
 abstract class RaftTokenResolver {
   const RaftTokenResolver();
+
+  /// The recipe set of the theme this resolver is bound to. A resolver that is
+  /// not bound to a theme pack keeps the frozen set.
+  RaftRecipeSet get recipeSet => RaftRecipeSet.legacy;
 
   Color color(String name);
 

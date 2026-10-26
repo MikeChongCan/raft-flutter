@@ -1,5 +1,5 @@
 // GENERATED — do not edit. Regenerate with `tool/recipes/run`.
-// Source: raft-ui 0.5.52 dist/index.mjs (sha256 742e86bfdb372e8f),
+// Source: raft-ui 0.7.0 dist/index.mjs (sha256 83bf0bff35092e3d),
 // tailwindcss 4.2.2 with raft-ui styles.css + Web @theme overrides. Recipe `popover`.
 // ignore_for_file: type=lint
 
@@ -70,7 +70,7 @@ class RaftPopoverRecipeStyle {
   };
 }
 
-/// raft-ui recipe `popover` (`src/components/popover/popover.tsx`, index.mjs:5885).
+/// raft-ui recipe `popover` (`src/components/popover/popover.tsx`, index.mjs:4707).
 ///
 /// Used by: PopoverArrow, PopoverBackdrop, PopoverClose, PopoverContent, PopoverDescription, PopoverHeader, PopoverPopup, PopoverSeparator, PopoverTitle, PopoverTrigger, PopoverViewport.
 ///
@@ -91,12 +91,9 @@ abstract final class RaftPopoverRecipe {
     'backdrop',
     'viewport',
   ];
-  static const List<RaftRecipeAxis> axes = [
-    RaftRecipeAxis('theme', ['brutal', 'elegant'], null, false),
-  ];
+  static const List<RaftRecipeAxis> axes = [];
 
   static RaftPopoverRecipeStyle resolve({
-    required RaftRecipeTheme theme,
     RaftRecipeStates states = RaftRecipeStates.none,
     RaftTokenResolver? tokens,
   }) {
@@ -105,7 +102,7 @@ abstract final class RaftPopoverRecipe {
       axes,
       _lists,
       _combos,
-      [theme.name],
+      [],
       states,
       tokens,
       recipeName: recipeName,
@@ -148,29 +145,39 @@ abstract final class RaftPopoverRecipe {
 
   /// Distinct class lists (indices into [raftRecipeUtilities]).
   static const List<List<int>> _lists = [
-    [2868],
-    [2328, 3183, 2672],
-    [2380, 2606, 2679, 2672, 878, 916, 833, 2895],
-    [1644, 2331, 2335, 2781, 2794],
-    [925, 916],
-    [2378, 2956, 1709, 2363, 1716, 3137, 3096, 3030],
-    [2378, 3073, 2354, 1716, 3024],
-    [2320, 2331, 2336, 2956, 1709, 2672, 3125, 1716, 3137, 3096, 3030, 2299],
-    [2911, 2835, 908, 927, 916, 833],
-    [1643, 2322, 863],
-    [874],
-    [2380, 2606, 2679, 2672, 2848, 833, 2898],
-    [925, 911],
-    [2378, 2958, 1713, 3087, 3028],
-    [2378, 3073, 2354, 3018],
-    [2320, 2331, 2336, 2672, 2958, 1713, 3087, 3018, 3125, 1626, 2295],
-    [2911, 2835, 907, 925, 911, 833],
-    [1643, 2322, 824, 685],
+    [1714],
+    [1308, 1927, 1565],
+    [1349, 1484, 1571, 1565, 1696, 600, 1807, 1724, 1681, 1685],
+    [959, 1310, 1314, 1647, 1459, 1014, 1656, 1623, 1609],
+    [637, 631],
+    [1348, 1007, 1817, 999, 1807],
+    [1348, 1007, 1806, 1811],
+    [
+      1296,
+      1310,
+      1315,
+      1565,
+      1877,
+      1179,
+      1483,
+      1697,
+      1644,
+      1007,
+      1806,
+      999,
+      1807,
+      1263,
+      425,
+      988,
+      280,
+    ],
+    [1737, 1687, 628, 637, 632, 600],
+    [958, 1298, 613],
+    [616],
   ];
 
   /// Per combination (mixed radix over [axes]): class list per slot.
   static const List<List<int>> _combos = [
     [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-    [0, 1, 11, 3, 12, 13, 14, 15, 16, 17, 10],
   ];
 }

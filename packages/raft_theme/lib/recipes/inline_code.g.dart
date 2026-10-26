@@ -1,5 +1,5 @@
 // GENERATED — do not edit. Regenerate with `tool/recipes/run`.
-// Source: raft-ui 0.5.52 dist/index.mjs (sha256 742e86bfdb372e8f),
+// Source: raft-ui 0.7.0 dist/index.mjs (sha256 83bf0bff35092e3d),
 // tailwindcss 4.2.2 with raft-ui styles.css + Web @theme overrides. Recipe `inlineCode`.
 // ignore_for_file: type=lint
 
@@ -27,7 +27,7 @@ class RaftInlineCodeRecipeStyle {
   Map<String, RaftSlotStyle> get slots => {'root': root};
 }
 
-/// raft-ui recipe `inlineCode` (`src/components/inline-code/inline-code.tsx`, index.mjs:8687).
+/// raft-ui recipe `inlineCode` (`src/components/inline-code/inline-code.tsx`, index.mjs:6808).
 ///
 /// Used by: InlineCode, MarkdownInlineCode.
 ///
@@ -38,12 +38,10 @@ abstract final class RaftInlineCodeRecipe {
   static const List<String> slotNames = ['root'];
   static const List<RaftRecipeAxis> axes = [
     RaftRecipeAxis('appearance', ['default', 'message'], 'default', false),
-    RaftRecipeAxis('theme', ['brutal', 'elegant'], null, false),
   ];
 
   static RaftInlineCodeRecipeStyle resolve({
     RaftInlineCodeRecipeAppearance? appearance,
-    required RaftRecipeTheme theme,
     RaftRecipeStates states = RaftRecipeStates.none,
     RaftTokenResolver? tokens,
   }) {
@@ -52,7 +50,7 @@ abstract final class RaftInlineCodeRecipe {
       axes,
       _lists,
       _combos,
-      [appearance?.css, theme.name],
+      [appearance?.css],
       states,
       tokens,
       recipeName: recipeName,
@@ -83,58 +81,22 @@ abstract final class RaftInlineCodeRecipe {
 
   /// Distinct class lists (indices into [raftRecipeUtilities]).
   static const List<List<int>> _lists = [
-    [876, 916, 794, 2778, 1714, 3053, 1713, 3024, 3176],
+    [1703, 1643, 1668, 1005, 1777, 1006, 1807, 1920, 579],
     [
-      2320,
-      2331,
-      2848,
-      2780,
-      2800,
-      1714,
-      3053,
-      1713,
-      756,
-      2977,
-      1003,
-      1182,
-      1165,
-    ],
-    [
-      916,
-      1714,
-      3053,
-      2318,
-      2849,
-      877,
-      2777,
-      2789,
-      641,
-      580,
-      2360,
-      1715,
-      3176,
-      775,
-      2994,
-    ],
-    [
-      2331,
-      1714,
-      3053,
-      1003,
-      1182,
-      2318,
-      2849,
-      877,
-      2777,
-      2789,
-      641,
-      580,
-      2360,
-      1715,
-      3176,
-      801,
-      3024,
-      1163,
+      1005,
+      1777,
+      1294,
+      619,
+      1643,
+      466,
+      414,
+      1334,
+      1006,
+      1920,
+      1703,
+      579,
+      1668,
+      1807,
     ],
   ];
 
@@ -142,7 +104,5 @@ abstract final class RaftInlineCodeRecipe {
   static const List<List<int>> _combos = [
     [0],
     [1],
-    [2],
-    [3],
   ];
 }

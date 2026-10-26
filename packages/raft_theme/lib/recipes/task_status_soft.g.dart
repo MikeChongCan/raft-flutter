@@ -1,5 +1,5 @@
 // GENERATED — do not edit. Regenerate with `tool/recipes/run`.
-// Source: raft-ui 0.5.52 dist/index.mjs (sha256 742e86bfdb372e8f),
+// Source: raft-ui 0.7.0 dist/index.mjs (sha256 83bf0bff35092e3d),
 // tailwindcss 4.2.2 with raft-ui styles.css + Web @theme overrides. Recipe `taskStatusSoft`.
 // ignore_for_file: type=lint
 
@@ -30,7 +30,9 @@ class RaftTaskStatusSoftRecipeStyle {
   Map<String, RaftSlotStyle> get slots => {'base': base};
 }
 
-/// raft-ui recipe `taskStatusSoft` (`src/components/tasks/task-status.recipe.ts`, index.mjs:18091).
+/// raft-ui recipe `taskStatusSoft` (`src/components/tasks/task-status.recipe.ts`, index.mjs:14824).
+///
+/// Used by: TaskCardStatus.
 ///
 /// Class lists are the exact tailwind-variants + tailwind-merge output for
 /// every variant combination; [resolve] applies the CSS cascade for [states].
@@ -88,11 +90,11 @@ abstract final class RaftTaskStatusSoftRecipe {
   /// Distinct class lists (indices into [raftRecipeUtilities]).
   static const List<List<int>> _lists = [
     [],
-    [862],
-    [858],
-    [860],
-    [856],
-    [854],
+    [612],
+    [610],
+    [611],
+    [609],
+    [608],
   ];
 
   /// Per combination (mixed radix over [axes]): class list per slot.

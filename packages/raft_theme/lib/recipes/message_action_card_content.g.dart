@@ -1,5 +1,5 @@
 // GENERATED — do not edit. Regenerate with `tool/recipes/run`.
-// Source: raft-ui 0.5.52 dist/index.mjs (sha256 742e86bfdb372e8f),
+// Source: raft-ui 0.7.0 dist/index.mjs (sha256 83bf0bff35092e3d),
 // tailwindcss 4.2.2 with raft-ui styles.css + Web @theme overrides. Recipe `messageActionCardContent`.
 // ignore_for_file: type=lint
 
@@ -10,22 +10,30 @@ import 'recipe_utilities.g.dart';
 class RaftMessageActionCardContentRecipeStyle {
   const RaftMessageActionCardContentRecipeStyle({
     required this.root,
+    required this.panel,
     required this.properties,
     required this.property,
     required this.propertyLabel,
     required this.propertyValue,
     required this.scopeList,
+    required this.scopeListViewport,
     required this.scopeListLabel,
     required this.scope,
     required this.scopeName,
     required this.scopeDescription,
+    required this.hintLabel,
     required this.hint,
+    required this.notice,
     required this.completion,
     required this.actions,
+    required this.actionsNote,
   });
 
   /// Slot `root`.
   final RaftSlotStyle root;
+
+  /// Slot `panel`.
+  final RaftSlotStyle panel;
 
   /// Slot `properties`.
   final RaftSlotStyle properties;
@@ -42,6 +50,9 @@ class RaftMessageActionCardContentRecipeStyle {
   /// Slot `scopeList`.
   final RaftSlotStyle scopeList;
 
+  /// Slot `scopeListViewport`.
+  final RaftSlotStyle scopeListViewport;
+
   /// Slot `scopeListLabel`.
   final RaftSlotStyle scopeListLabel;
 
@@ -54,8 +65,14 @@ class RaftMessageActionCardContentRecipeStyle {
   /// Slot `scopeDescription`.
   final RaftSlotStyle scopeDescription;
 
+  /// Slot `hintLabel`.
+  final RaftSlotStyle hintLabel;
+
   /// Slot `hint`.
   final RaftSlotStyle hint;
+
+  /// Slot `notice`.
+  final RaftSlotStyle notice;
 
   /// Slot `completion`.
   final RaftSlotStyle completion;
@@ -63,26 +80,34 @@ class RaftMessageActionCardContentRecipeStyle {
   /// Slot `actions`.
   final RaftSlotStyle actions;
 
+  /// Slot `actionsNote`.
+  final RaftSlotStyle actionsNote;
+
   Map<String, RaftSlotStyle> get slots => {
     'root': root,
+    'panel': panel,
     'properties': properties,
     'property': property,
     'propertyLabel': propertyLabel,
     'propertyValue': propertyValue,
     'scopeList': scopeList,
+    'scopeListViewport': scopeListViewport,
     'scopeListLabel': scopeListLabel,
     'scope': scope,
     'scopeName': scopeName,
     'scopeDescription': scopeDescription,
+    'hintLabel': hintLabel,
     'hint': hint,
+    'notice': notice,
     'completion': completion,
     'actions': actions,
+    'actionsNote': actionsNote,
   };
 }
 
-/// raft-ui recipe `messageActionCardContent` (`src/components/message-action-card/message-action-card-content.recipe.ts`, index.mjs:10734).
+/// raft-ui recipe `messageActionCardContent` (`src/components/message-action-card/message-action-card-content.recipe.ts`, index.mjs:8363).
 ///
-/// Used by: MessageActionCardActions, MessageActionCardCompletion, MessageActionCardContent, MessageActionCardHint, MessageActionCardProperties, MessageActionCardProperty, MessageActionCardPropertyLabel, MessageActionCardPropertyValue, MessageActionCardScope, MessageActionCardScopeDescription, MessageActionCardScopeList, MessageActionCardScopeListLabel, MessageActionCardScopeName.
+/// Used by: MessageActionCardActions, MessageActionCardActionsNote, MessageActionCardCompletion, MessageActionCardContent, MessageActionCardHint, MessageActionCardHintLabel, MessageActionCardNotice, MessageActionCardProperties, MessageActionCardProperty, MessageActionCardPropertyLabel, MessageActionCardPropertyValue, MessageActionCardScope, MessageActionCardScopeDescription, MessageActionCardScopeList, MessageActionCardScopeListLabel, MessageActionCardScopeListViewport, MessageActionCardScopeName.
 ///
 /// Class lists are the exact tailwind-variants + tailwind-merge output for
 /// every variant combination; [resolve] applies the CSS cascade for [states].
@@ -90,25 +115,27 @@ abstract final class RaftMessageActionCardContentRecipe {
   static const String recipeName = 'messageActionCardContent';
   static const List<String> slotNames = [
     'root',
+    'panel',
     'properties',
     'property',
     'propertyLabel',
     'propertyValue',
     'scopeList',
+    'scopeListViewport',
     'scopeListLabel',
     'scope',
     'scopeName',
     'scopeDescription',
+    'hintLabel',
     'hint',
+    'notice',
     'completion',
     'actions',
+    'actionsNote',
   ];
-  static const List<RaftRecipeAxis> axes = [
-    RaftRecipeAxis('theme', ['brutal', 'elegant'], null, false),
-  ];
+  static const List<RaftRecipeAxis> axes = [];
 
   static RaftMessageActionCardContentRecipeStyle resolve({
-    required RaftRecipeTheme theme,
     RaftRecipeStates states = RaftRecipeStates.none,
     RaftTokenResolver? tokens,
   }) {
@@ -117,7 +144,7 @@ abstract final class RaftMessageActionCardContentRecipe {
       axes,
       _lists,
       _combos,
-      [theme.name],
+      [],
       states,
       tokens,
       recipeName: recipeName,
@@ -125,18 +152,23 @@ abstract final class RaftMessageActionCardContentRecipe {
     );
     return RaftMessageActionCardContentRecipeStyle(
       root: s[0],
-      properties: s[1],
-      property: s[2],
-      propertyLabel: s[3],
-      propertyValue: s[4],
-      scopeList: s[5],
-      scopeListLabel: s[6],
-      scope: s[7],
-      scopeName: s[8],
-      scopeDescription: s[9],
-      hint: s[10],
-      completion: s[11],
-      actions: s[12],
+      panel: s[1],
+      properties: s[2],
+      property: s[3],
+      propertyLabel: s[4],
+      propertyValue: s[5],
+      scopeList: s[6],
+      scopeListViewport: s[7],
+      scopeListLabel: s[8],
+      scope: s[9],
+      scopeName: s[10],
+      scopeDescription: s[11],
+      hintLabel: s[12],
+      hint: s[13],
+      notice: s[14],
+      completion: s[15],
+      actions: s[16],
+      actionsNote: s[17],
     );
   }
 
@@ -162,36 +194,42 @@ abstract final class RaftMessageActionCardContentRecipe {
 
   /// Distinct class lists (indices into [raftRecipeUtilities]).
   static const List<List<int>> _lists = [
-    [2695, 2756],
-    [2378, 1742, 1745, 2330, 2484, 2483, 2621, 1733, 1739],
-    [958],
-    [2487, 2597, 3177, 3073, 2999],
-    [2378, 2597, 3177, 3073, 3002],
-    [2625, 2935],
-    [3073, 2352, 1715, 2999],
-    [2597, 876, 2693, 894, 868],
-    [945, 1714, 2958, 1709, 2999],
-    [3073, 2365, 3000],
-    [2621, 908, 895, 2722, 3073, 2329, 2999],
-    [2621, 3073, 2999],
-    [1644, 1650, 2331, 2624, 1725],
-    [2695, 2782, 2761, 2709, 2930],
-    [2378, 1742, 1745, 2330, 2484, 2483, 2623, 1736, 1741],
-    [2487, 2597, 3177, 2962, 2354, 3020],
-    [2378, 2597, 3177, 2962, 2354, 3024],
-    [2625, 2936],
-    [2962, 2354, 1713, 3024],
-    [2597, 876, 2693, 2848, 912, 832, 2780, 2794, 2899, 1029, 1003],
-    [945, 1716, 3073, 2352, 1713, 3018],
-    [2620, 2962, 2354, 3042, 3020],
-    [2624, 907, 912, 2723, 3073, 2352, 2329, 3020],
-    [2624, 2962, 2354, 3018],
-    [1644, 1650, 2331, 2625, 1723],
+    [1584, 959, 961, 1014, 1647, 1629, 1594],
+    [1157, 1571, 1871, 939, 946, 1493, 902, 842],
+    [1348, 1031, 1391, 1390, 1038, 1310, 1026, 1028],
+    [657],
+    [1393, 1473, 1921, 1806, 1004, 1808],
+    [1348, 1473, 1921, 1468, 1656, 1798, 1807],
+    [1497, 1761],
+    [1575, 1577, 1354, 1761, 1621],
+    [1806, 1004, 1808],
+    [1473, 618, 1582, 1697, 631, 594, 1646, 1658],
+    [649, 1005, 1823, 1006, 1807],
+    [1498, 1806, 1824, 1811],
+    [629, 632, 1606, 1806, 1811, 404],
+    [
+      959,
+      1312,
+      1014,
+      178,
+      176,
+      1419,
+      1697,
+      579,
+      1646,
+      1658,
+      1806,
+      1811,
+      170,
+      188,
+    ],
+    [1296, 1310, 1013, 1806, 1811, 179, 176, 186],
+    [959, 965, 1310, 1316, 1499, 1014],
+    [1473, 960, 507, 1806, 1811],
   ];
 
   /// Per combination (mixed radix over [axes]): class list per slot.
   static const List<List<int>> _combos = [
-    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-    [13, 14, 2, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24],
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 8, 12, 13, 14, 15, 16],
   ];
 }

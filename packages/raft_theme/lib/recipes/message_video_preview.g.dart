@@ -1,5 +1,5 @@
 // GENERATED — do not edit. Regenerate with `tool/recipes/run`.
-// Source: raft-ui 0.5.52 dist/index.mjs (sha256 742e86bfdb372e8f),
+// Source: raft-ui 0.7.0 dist/index.mjs (sha256 83bf0bff35092e3d),
 // tailwindcss 4.2.2 with raft-ui styles.css + Web @theme overrides. Recipe `messageVideoPreview`.
 // ignore_for_file: type=lint
 
@@ -55,7 +55,7 @@ class RaftMessageVideoPreviewRecipeStyle {
   };
 }
 
-/// raft-ui recipe `messageVideoPreview` (`src/components/message-attachment/message-video-preview.recipe.ts`, index.mjs:11363).
+/// raft-ui recipe `messageVideoPreview` (`src/components/message-attachment/message-video-preview.recipe.ts`, index.mjs:9065).
 ///
 /// Used by: MessageVideoPreview, MessageVideoPreviewAction, MessageVideoPreviewFailureAction, MessageVideoPreviewFailureContent, MessageVideoPreviewFailureIcon, MessageVideoPreviewFailureTitle, MessageVideoPreviewFallback, MessageVideoPreviewMedia.
 ///
@@ -73,12 +73,9 @@ abstract final class RaftMessageVideoPreviewRecipe {
     'failureAction',
     'action',
   ];
-  static const List<RaftRecipeAxis> axes = [
-    RaftRecipeAxis('theme', ['brutal', 'elegant'], null, false),
-  ];
+  static const List<RaftRecipeAxis> axes = [];
 
   static RaftMessageVideoPreviewRecipeStyle resolve({
-    required RaftRecipeTheme theme,
     RaftRecipeStates states = RaftRecipeStates.none,
     RaftTokenResolver? tokens,
   }) {
@@ -87,7 +84,7 @@ abstract final class RaftMessageVideoPreviewRecipe {
       axes,
       _lists,
       _combos,
-      [theme.name],
+      [],
       states,
       tokens,
       recipeName: recipeName,
@@ -127,93 +124,66 @@ abstract final class RaftMessageVideoPreviewRecipe {
 
   /// Distinct class lists (indices into [raftRecipeUtilities]).
   static const List<List<int>> _lists = [
-    [1941, 2804, 678, 3168, 2504, 2679, 769, 3040, 878, 892],
-    [874, 2925, 769, 2644],
-    [1644, 2925, 2331, 2336, 769, 3067],
-    [1644, 2490, 1646, 2331, 2783, 3007, 3073, 1723, 1709],
-    [432, 439],
+    [1154, 1669, 501, 1912, 1571, 571, 1820, 1413, 1696, 618, 631, 575],
+    [616, 1755, 571, 1541],
+    [959, 1755, 1310, 1315, 571, 1841],
+    [959, 1397, 961, 1310, 1649, 1801, 1014, 1007, 1799, 1008],
+    [283, 291],
     [],
     [
-      2320,
-      962,
-      2331,
-      1721,
-      877,
-      863,
-      2690,
-      3071,
-      582,
-      2303,
-      2667,
-      2673,
-      2675,
-      1674,
-      437,
+      1296,
+      661,
+      1310,
+      1012,
+      619,
+      613,
+      1580,
+      1842,
+      416,
+      1278,
+      1561,
+      1566,
+      1568,
+      983,
+      288,
     ],
     [
-      586,
-      2811,
-      3079,
-      1644,
-      2918,
-      2331,
-      2336,
-      876,
-      892,
-      872,
-      3000,
-      2256,
-      2291,
-      3125,
-      1626,
-      2669,
-      2673,
-      2675,
-      1667,
-      1607,
+      420,
+      959,
+      1310,
+      1315,
+      1877,
+      938,
+      1563,
+      1566,
+      1568,
+      976,
+      923,
+      276,
+      1850,
+      1675,
+      1744,
+      1697,
+      620,
+      633,
+      594,
+      1807,
+      1265,
+      1276,
+      1274,
       427,
-      425,
-      2849,
-    ],
-    [1941, 2804, 678, 3168, 2504, 2679, 769, 3040, 2847, 876, 912, 2899, 1029],
-    [1644, 2490, 1646, 2331, 2783, 3007, 3073, 1725],
-    [432, 442],
-    [1713],
-    [
-      586,
-      2811,
-      3079,
-      1644,
-      2918,
-      2331,
-      2336,
-      892,
-      1607,
-      427,
-      425,
-      2845,
-      877,
-      871,
-      3018,
-      2894,
-      686,
-      1166,
-      1132,
-      3109,
-      1626,
-      2259,
-      2295,
-      606,
-      2669,
-      2673,
-      2675,
-      1667,
+      1565,
+      988,
+      921,
+      918,
+      919,
+      934,
+      279,
     ],
   ];
 
   /// Per combination (mixed radix over [axes]): class list per slot.
   static const List<List<int>> _combos = [
     [0, 1, 2, 3, 4, 5, 6, 7],
-    [8, 1, 2, 9, 10, 11, 6, 12],
   ];
 }

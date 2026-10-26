@@ -214,18 +214,14 @@ void main() {
       t.fontFamily('sansFont'),
     );
     expect(
-      RaftInputRecipe.resolve(
-        theme: RaftRecipeTheme.elegant,
-        tokens: t,
-      ).root.borderRadius,
+      RaftInputRecipe.resolve(tokens: t).root.borderRadius,
       BorderRadius.circular(39),
     );
     expect(
       RaftInputRecipe.resolve(
-        theme: RaftRecipeTheme.elegant,
         tokens: RaftThemeRecipeTokens(t.values, bindComponents: false),
       ).root.borderRadius,
-      BorderRadius.circular(6),
+      BorderRadius.circular(8),
     );
   });
 

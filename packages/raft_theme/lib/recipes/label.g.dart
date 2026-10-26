@@ -1,5 +1,5 @@
 // GENERATED — do not edit. Regenerate with `tool/recipes/run`.
-// Source: raft-ui 0.5.52 dist/index.mjs (sha256 742e86bfdb372e8f),
+// Source: raft-ui 0.7.0 dist/index.mjs (sha256 83bf0bff35092e3d),
 // tailwindcss 4.2.2 with raft-ui styles.css + Web @theme overrides. Recipe `label`.
 // ignore_for_file: type=lint
 
@@ -41,9 +41,9 @@ class RaftLabelRecipeStyle {
   };
 }
 
-/// raft-ui recipe `label` (`src/components/label/label.tsx`, index.mjs:6206).
+/// raft-ui recipe `label` (`src/components/label/label.tsx`, index.mjs:4981).
 ///
-/// Used by: AppShellSidebarTrigger, ComboboxLabel, ContextMenuLabel, DropdownMenuLabel, FieldLabel, Label, LabelAsterisk, LabelSub, ProgressLabel, SegmentedControlLabel, SelectLabel, SortableComposerAttachment, TabsLabel, ToggleGroupLabel.
+/// Used by: AppShellSidebarTrigger, ComboboxLabel, ContextMenuLabel, DropdownMenuLabel, FieldLabel, Label, LabelAsterisk, LabelSub, ProgressLabel, SearchTriggerLabel, SegmentedControlLabel, SelectLabel, SidebarItemThreadCount, SortableComposerAttachment, TabsLabel, ToggleGroupLabel.
 ///
 /// Class lists are the exact tailwind-variants + tailwind-merge output for
 /// every variant combination; [resolve] applies the CSS cascade for [states].
@@ -51,12 +51,10 @@ abstract final class RaftLabelRecipe {
   static const String recipeName = 'label';
   static const List<String> slotNames = ['root', 'asterisk', 'sub'];
   static const List<RaftRecipeAxis> axes = [
-    RaftRecipeAxis('theme', ['brutal', 'elegant'], null, false),
     RaftRecipeAxis('size', ['sm', 'md'], 'md', false),
   ];
 
   static RaftLabelRecipeStyle resolve({
-    required RaftRecipeTheme theme,
     RaftLabelRecipeSize? size,
     RaftRecipeStates states = RaftRecipeStates.none,
     RaftTokenResolver? tokens,
@@ -66,7 +64,7 @@ abstract final class RaftLabelRecipe {
       axes,
       _lists,
       _combos,
-      [theme.name, size?.css],
+      [size?.css],
       states,
       tokens,
       recipeName: recipeName,
@@ -97,48 +95,15 @@ abstract final class RaftLabelRecipe {
 
   /// Distinct class lists (indices into [raftRecipeUtilities]).
   static const List<List<int>> _lists = [
-    [1925, 2320, 3167, 2331, 1721, 962, 2868, 1464, 1474, 1709, 3013, 3073],
-    [2988, 1864],
-    [2634, 1864, 1709, 3096, 3027],
-    [1925, 2320, 3167, 2331, 1721, 962, 2868, 1464, 1474, 1709, 3013, 3053],
-    [
-      1925,
-      2320,
-      3167,
-      2331,
-      1721,
-      962,
-      2868,
-      1464,
-      1474,
-      1713,
-      3024,
-      1183,
-      3073,
-    ],
-    [1715, 2634, 1864, 3027],
-    [
-      1925,
-      2320,
-      3167,
-      2331,
-      1721,
-      962,
-      2868,
-      1464,
-      1474,
-      1713,
-      3024,
-      1183,
-      3053,
-    ],
+    [1139, 1296, 1911, 1310, 1012, 661, 1714, 828, 833, 1007, 1811, 1799, 1008],
+    [1106, 1808],
+    [1517, 1106, 1006, 1857, 1808],
+    [1139, 1296, 1911, 1310, 1012, 661, 1714, 828, 833, 1007, 1811, 1806, 1008],
   ];
 
   /// Per combination (mixed radix over [axes]): class list per slot.
   static const List<List<int>> _combos = [
     [0, 1, 2],
     [3, 1, 2],
-    [4, 1, 5],
-    [6, 1, 5],
   ];
 }

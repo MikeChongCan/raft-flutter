@@ -1,5 +1,5 @@
 // GENERATED — do not edit. Regenerate with `tool/recipes/run`.
-// Source: raft-ui 0.5.52 dist/index.mjs (sha256 742e86bfdb372e8f),
+// Source: raft-ui 0.7.0 dist/index.mjs (sha256 83bf0bff35092e3d),
 // tailwindcss 4.2.2 with raft-ui styles.css + Web @theme overrides. Recipe `messageForwardedBundle`.
 // ignore_for_file: type=lint
 
@@ -60,7 +60,7 @@ class RaftMessageForwardedBundleRecipeStyle {
   };
 }
 
-/// raft-ui recipe `messageForwardedBundle` (`src/components/message-forwarded-bundle/message-forwarded-bundle.recipe.ts`, index.mjs:11502).
+/// raft-ui recipe `messageForwardedBundle` (`src/components/message-forwarded-bundle/message-forwarded-bundle.recipe.ts`, index.mjs:9184).
 ///
 /// Used by: MessageForwardedBundle, MessageForwardedBundleFooterAction, MessageForwardedBundleHeader, MessageForwardedBundleHeaderContent, MessageForwardedBundleHeaderCount, MessageForwardedBundleHeaderLabel, MessageForwardedBundleItems, MessageForwardedBundleSource, MessageForwardedBundleSourceLabel.
 ///
@@ -80,13 +80,11 @@ abstract final class RaftMessageForwardedBundleRecipe {
     'footerAction',
   ];
   static const List<RaftRecipeAxis> axes = [
-    RaftRecipeAxis('theme', ['brutal', 'elegant'], null, false),
     RaftRecipeAxis('fullWidth', ['true', 'false'], null, true),
     RaftRecipeAxis('collapsed', ['true', 'false'], null, true),
   ];
 
   static RaftMessageForwardedBundleRecipeStyle resolve({
-    required RaftRecipeTheme theme,
     bool? fullWidth,
     bool? collapsed,
     RaftRecipeStates states = RaftRecipeStates.none,
@@ -97,7 +95,7 @@ abstract final class RaftMessageForwardedBundleRecipe {
       axes,
       _lists,
       _combos,
-      [theme.name, fullWidth?.toString(), collapsed?.toString()],
+      [fullWidth?.toString(), collapsed?.toString()],
       states,
       tokens,
       recipeName: recipeName,
@@ -138,53 +136,48 @@ abstract final class RaftMessageForwardedBundleRecipe {
 
   /// Distinct class lists (indices into [raftRecipeUtilities]).
   static const List<List<int>> _lists = [
-    [2621, 2502],
-    [1644, 1650, 2331, 2335, 1723],
-    [1644, 2597, 2331, 1723],
-    [2320, 2902, 2331, 1721, 2958, 1708, 2363, 3001],
-    [2902, 2958, 1709, 2999],
+    [1499, 1412],
+    [959, 965, 1310, 1314, 1014],
+    [959, 1473, 1310, 1014],
+    [1296, 1727, 1310, 1012, 1806, 999, 1811, 278],
+    [1727, 1005, 1823, 1808],
     [
-      2597,
-      3133,
-      2320,
-      2331,
-      1721,
-      2958,
-      1709,
-      3135,
-      3125,
-      2998,
-      2291,
-      2307,
-      1663,
-      1671,
-      1666,
+      1473,
+      1881,
+      1296,
+      1310,
+      1012,
+      1691,
+      1799,
+      1008,
+      1808,
+      912,
+      1884,
+      1276,
+      1279,
+      1565,
+      988,
+      278,
     ],
-    [2597, 3133, 2320, 2331, 1721, 2958, 1709, 2997],
-    [2804],
-    [2320, 2331, 1721, 2958, 1708, 3134, 3135, 3000, 2291, 1663, 1671, 1666],
-    [2804, 2382, 2678, 632, 619, 630, 623, 627, 620, 1390, 626, 640, 638],
-    [2621, 3168, 2508],
-    [2320, 2902, 2331, 1721, 2958, 1713, 2363, 3018],
-    [2902, 2958, 1713, 3021],
+    [1473, 1881, 1296, 1310, 1012, 1799, 1808, 278],
+    [1669],
     [
-      2597,
-      3133,
-      2320,
-      2331,
-      1721,
-      2958,
-      1713,
-      3125,
-      3021,
-      2299,
-      1663,
-      1671,
-      1668,
+      1296,
+      1310,
+      1012,
+      1691,
+      1806,
+      1008,
+      1807,
+      1882,
+      912,
+      1884,
+      1272,
+      1565,
+      988,
     ],
-    [2597, 3133, 2320, 2331, 1721, 2958, 1713, 3021],
-    [2320, 2331, 1721, 2958, 1713, 3021, 2299, 1663, 1671, 1668],
-    [2804, 2382, 2678, 632, 619, 630, 623, 627, 620, 1390, 625, 639, 637],
+    [1669, 1351, 1570, 456, 440, 453, 447, 451, 442, 782, 450, 464, 462],
+    [1499, 1912, 1417],
   ];
 
   /// Per combination (mixed radix over [axes]): class list per slot.
@@ -198,14 +191,5 @@ abstract final class RaftMessageForwardedBundleRecipe {
     [0, 1, 2, 3, 4, 5, 6, 7, 8],
     [0, 1, 2, 3, 4, 5, 6, 9, 8],
     [0, 1, 2, 3, 4, 5, 6, 7, 8],
-    [0, 1, 2, 11, 12, 13, 14, 7, 15],
-    [0, 1, 2, 11, 12, 13, 14, 16, 15],
-    [0, 1, 2, 11, 12, 13, 14, 7, 15],
-    [10, 1, 2, 11, 12, 13, 14, 7, 15],
-    [10, 1, 2, 11, 12, 13, 14, 16, 15],
-    [10, 1, 2, 11, 12, 13, 14, 7, 15],
-    [0, 1, 2, 11, 12, 13, 14, 7, 15],
-    [0, 1, 2, 11, 12, 13, 14, 16, 15],
-    [0, 1, 2, 11, 12, 13, 14, 7, 15],
   ];
 }

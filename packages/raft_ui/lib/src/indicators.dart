@@ -11,7 +11,7 @@ import 'recipe_surface.dart';
 import 'recipes/checkbox.g.dart';
 import 'recipes/progress.g.dart';
 import 'recipes/recipe_runtime.dart';
-import 'recipes/recipe_utilities.g.dart';
+import 'recipes/recipe_router.dart' show resolveRecipeClasses;
 import 'theme.dart';
 import 'tokens/tokens.dart' show RaftTypeScale;
 
@@ -273,20 +273,16 @@ class RaftProgressBar extends StatelessWidget {
     // The indicator and track inherit Progress's local CSS variables. Resolve
     // their classes together with the root declarations before painting;
     // resolving an isolated slot loses --progress-color in the dark glow.
-    RaftSlotStyle inheritRoot(RaftSlotStyle slot) =>
-        raftRecipeEngine.resolveSlot(
-          [
-            for (final name in {...s.root.classes, ...slot.classes})
-              raftRecipeUtilities.indexWhere((utility) => utility.name == name),
-          ],
-          t.recipeStates(
-            extra: [
-              'group/progress:data-size=${size.css}',
-              if (pct >= 100) 'group/progress:data-complete',
-            ],
-          ),
-          rt,
-        );
+    RaftSlotStyle inheritRoot(RaftSlotStyle slot) => resolveRecipeClasses(
+      {...s.root.classes, ...slot.classes},
+      t.recipeStates(
+        extra: [
+          'group/progress:data-size=${size.css}',
+          if (pct >= 100) 'group/progress:data-complete',
+        ],
+      ),
+      rt,
+    );
     final trackStyle = inheritRoot(s.track);
     final indicatorStyle = inheritRoot(s.indicator);
     final indicator = RaftRecipeBox(style: indicatorStyle, tokens: rt);

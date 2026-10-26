@@ -1,14 +1,14 @@
 // GENERATED — do not edit. Regenerate with `tool/recipes/run`.
-// Source: raft-ui 0.5.52 dist/index.mjs (sha256 742e86bfdb372e8f),
-// tailwindcss 4.2.2 with raft-ui styles.css + Web @theme overrides. Recipe `messageBlock`.
+// Source: raft-ui 0.7.0 dist/index.mjs (sha256 83bf0bff35092e3d),
+// tailwindcss 4.2.2 with raft-ui styles.css + Web @theme overrides. Recipe `dialogNav`.
 // ignore_for_file: type=lint
 
 import 'recipe_runtime.dart';
 import 'recipe_utilities.g.dart';
 
-/// Resolved slots of [RaftMessageBlockRecipe].
-class RaftMessageBlockRecipeStyle {
-  const RaftMessageBlockRecipeStyle({required this.root});
+/// Resolved slots of [RaftDialogNavRecipe].
+class RaftDialogNavRecipeStyle {
+  const RaftDialogNavRecipeStyle({required this.root});
 
   /// Slot `root`.
   final RaftSlotStyle root;
@@ -16,21 +16,18 @@ class RaftMessageBlockRecipeStyle {
   Map<String, RaftSlotStyle> get slots => {'root': root};
 }
 
-/// raft-ui recipe `messageBlock` (`src/components/message-embed/message-embed.recipe.ts`, index.mjs:10330).
+/// raft-ui recipe `dialogNav` (`src/components/dialog/dialog.tsx`, index.mjs:491).
 ///
-/// Used by: MessageEmbed, MessageEmbedContent, MessageEmbedFooter, MessageEmbedHeader, MessageReplies, MessageRepliesItem, MessageRepliesItemContent, MessageRepliesItemSender, MessageRepliesItemTime, MessageRepliesSummary, MessageRepliesSummaryItem.
+/// Used by: DialogNav.
 ///
 /// Class lists are the exact tailwind-variants + tailwind-merge output for
 /// every variant combination; [resolve] applies the CSS cascade for [states].
-abstract final class RaftMessageBlockRecipe {
-  static const String recipeName = 'messageBlock';
+abstract final class RaftDialogNavRecipe {
+  static const String recipeName = 'dialogNav';
   static const List<String> slotNames = ['root'];
-  static const List<RaftRecipeAxis> axes = [
-    RaftRecipeAxis('theme', ['brutal', 'elegant'], null, false),
-  ];
+  static const List<RaftRecipeAxis> axes = [];
 
-  static RaftMessageBlockRecipeStyle resolve({
-    required RaftRecipeTheme theme,
+  static RaftDialogNavRecipeStyle resolve({
     RaftRecipeStates states = RaftRecipeStates.none,
     RaftTokenResolver? tokens,
   }) {
@@ -39,13 +36,13 @@ abstract final class RaftMessageBlockRecipe {
       axes,
       _lists,
       _combos,
-      [theme.name],
+      [],
       states,
       tokens,
       recipeName: recipeName,
       slotNames: slotNames,
     );
-    return RaftMessageBlockRecipeStyle(root: s[0]);
+    return RaftDialogNavRecipeStyle(root: s[0]);
   }
 
   /// Resolve by raw tailwind-variants props (`{'size': 'md'}`); for tooling and tests.
@@ -70,13 +67,11 @@ abstract final class RaftMessageBlockRecipe {
 
   /// Distinct class lists (indices into [raftRecipeUtilities]).
   static const List<List<int>> _lists = [
-    [],
-    [826, 2899, 3106, 1626, 2205, 2288],
+    [959, 1727, 961, 1575, 1894, 1011, 634, 632, 1583, 1373],
   ];
 
   /// Per combination (mixed radix over [axes]): class list per slot.
   static const List<List<int>> _combos = [
     [0],
-    [1],
   ];
 }

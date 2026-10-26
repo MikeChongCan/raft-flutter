@@ -1,5 +1,5 @@
 // GENERATED — do not edit. Regenerate with `tool/recipes/run`.
-// Source: raft-ui 0.5.52 dist/index.mjs (sha256 742e86bfdb372e8f),
+// Source: raft-ui 0.7.0 dist/index.mjs (sha256 83bf0bff35092e3d),
 // tailwindcss 4.2.2 with raft-ui styles.css + Web @theme overrides. Recipe `sidebarRecipe`.
 // ignore_for_file: type=lint
 
@@ -75,7 +75,7 @@ class RaftSidebarRecipeStyle {
   };
 }
 
-/// raft-ui recipe `sidebarRecipe` (`src/components/sidebar/sidebar.recipe.ts`, index.mjs:3162).
+/// raft-ui recipe `sidebarRecipe` (`src/components/sidebar/sidebar.recipe.ts`, index.mjs:2620).
 ///
 /// Used by: SidebarBody, SidebarContent, SidebarGroupLabel, SidebarHeader, SidebarHeaderTitle, SidebarLiveActivity, SidebarRoot.
 ///
@@ -97,12 +97,9 @@ abstract final class RaftSidebarRecipe {
     'sidebarScrollbar',
     'sidebarLiveActivity',
   ];
-  static const List<RaftRecipeAxis> axes = [
-    RaftRecipeAxis('theme', ['brutal', 'elegant'], null, false),
-  ];
+  static const List<RaftRecipeAxis> axes = [];
 
   static RaftSidebarRecipeStyle resolve({
-    required RaftRecipeTheme theme,
     RaftRecipeStates states = RaftRecipeStates.none,
     RaftTokenResolver? tokens,
   }) {
@@ -111,7 +108,7 @@ abstract final class RaftSidebarRecipe {
       axes,
       _lists,
       _combos,
-      [theme.name],
+      [],
       states,
       tokens,
       recipeName: recipeName,
@@ -155,70 +152,37 @@ abstract final class RaftSidebarRecipe {
 
   /// Distinct class lists (indices into [raftRecipeUtilities]).
   static const List<List<int>> _lists = [
-    [2804, 1644, 2925, 2583, 2868, 1646, 2044, 776, 2552],
-    [1644, 2331, 1725, 1946, 2902, 891, 892, 776, 2784, 2418, 2471, 565],
-    [2739, 586, 2323, 3077, 156, 2189],
-    [586, 2323, 3077],
-    [3133, 3041, 1709, 3013],
-    [2779, 2758, 2706, 1714, 2956, 1713, 3137, 3097, 3018],
-    [2804, 1644, 2583, 1645, 2679, 776, 2419],
-    [2804, 1644, 2583, 2597, 1645],
-    [2925, 2583, 1645, 2682, 2684],
-    [2595, 2597, 3168, 2779, 2762, 2701],
-    [3181, 1644, 3149, 2336, 2791, 2649, 3126, 1626, 2739, 1584, 1583, 1582],
-    [2739, 586, 2323, 2448, 937, 3182],
-    [1644, 2925, 2583, 2868, 1646, 2044, 2804, 825, 539, 2527, 2526, 2553],
+    [1669, 959, 1755, 1457, 1714, 961, 1203, 601, 1807, 1367, 632, 1428, 1441],
     [
-      1644,
-      2902,
-      2331,
-      1725,
-      586,
-      2323,
-      3077,
-      3180,
-      2328,
-      1945,
-      890,
-      863,
-      2773,
-      2569,
+      959,
+      1310,
+      1159,
+      1727,
+      1014,
+      621,
+      632,
+      1650,
+      601,
+      1807,
+      1368,
+      1382,
+      1386,
       384,
     ],
-    [2739, 586, 2323, 3077, 156, 874, 1975],
-    [586, 2323, 3077, 1980, 1267, 1266, 1265, 1264, 1262, 1263, 1261, 1260],
-    [3133, 1712, 2963, 1713, 3018],
-    [2804, 1644, 2583, 1645, 2679, 825],
-    [2595, 2597, 3168, 2701, 2773, 2569, 2755],
-    [3181, 1644, 3149, 2791, 2649, 3126, 1626, 2739, 1584, 1583, 1582, 2337],
-    [
-      2739,
-      586,
-      2323,
-      2448,
-      942,
-      3179,
-      2727,
-      2749,
-      2130,
-      2124,
-      2129,
-      2121,
-      2131,
-      2128,
-      2126,
-      2125,
-      2123,
-      2122,
-      2127,
-      126,
-      127,
-    ],
+    [1617, 420, 1305, 1846, 111, 1256],
+    [420, 1305, 1846],
+    [1881, 999, 1007, 1817, 1807, 1386],
+    [1645, 1635, 1592, 1007, 1806, 999, 1517, 1857, 1808],
+    [1669, 959, 1457, 960, 1571, 601, 1367],
+    [1669, 959, 1457, 1473, 960],
+    [1755, 1457, 960, 1574, 1575],
+    [1472, 1473, 1912, 1645, 1632, 1588],
+    [1925, 959, 1892, 1315, 1655, 1546, 1878, 938, 1617, 897, 896, 895],
+    [1617, 420, 1305, 1373, 641, 1926],
   ];
 
   /// Per combination (mixed radix over [axes]): class list per slot.
   static const List<List<int>> _combos = [
     [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
-    [12, 13, 14, 15, 16, 5, 17, 7, 8, 18, 19, 20],
   ];
 }

@@ -1,5 +1,5 @@
 // GENERATED — do not edit. Regenerate with `tool/recipes/run`.
-// Source: raft-ui 0.5.52 dist/index.mjs (sha256 742e86bfdb372e8f),
+// Source: raft-ui 0.7.0 dist/index.mjs (sha256 83bf0bff35092e3d),
 // tailwindcss 4.2.2 with raft-ui styles.css + Web @theme overrides. Recipe `messageTextSelectionToolbar`.
 // ignore_for_file: type=lint
 
@@ -30,7 +30,7 @@ class RaftMessageTextSelectionToolbarRecipeStyle {
   };
 }
 
-/// raft-ui recipe `messageTextSelectionToolbar` (`src/components/message-item/message-text-selection-toolbar.recipe.ts`, index.mjs:10122).
+/// raft-ui recipe `messageTextSelectionToolbar` (`src/components/message-item/message-text-selection-toolbar.recipe.ts`, index.mjs:7838).
 ///
 /// Used by: MessageTextSelectionToolbar, MessageTextSelectionToolbarButton, MessageTextSelectionToolbarSeparator.
 ///
@@ -39,12 +39,9 @@ class RaftMessageTextSelectionToolbarRecipeStyle {
 abstract final class RaftMessageTextSelectionToolbarRecipe {
   static const String recipeName = 'messageTextSelectionToolbar';
   static const List<String> slotNames = ['toolbar', 'button', 'separator'];
-  static const List<RaftRecipeAxis> axes = [
-    RaftRecipeAxis('theme', ['brutal', 'elegant'], null, false),
-  ];
+  static const List<RaftRecipeAxis> axes = [];
 
   static RaftMessageTextSelectionToolbarRecipeStyle resolve({
-    required RaftRecipeTheme theme,
     RaftRecipeStates states = RaftRecipeStates.none,
     RaftTokenResolver? tokens,
   }) {
@@ -53,7 +50,7 @@ abstract final class RaftMessageTextSelectionToolbarRecipe {
       axes,
       _lists,
       _combos,
-      [theme.name],
+      [],
       states,
       tokens,
       recipeName: recipeName,
@@ -88,47 +85,43 @@ abstract final class RaftMessageTextSelectionToolbarRecipe {
 
   /// Distinct class lists (indices into [raftRecipeUtilities]).
   static const List<List<int>> _lists = [
-    [1644, 2597, 2331, 2868, 2679, 3073, 878, 892, 868, 1717, 2897],
-    [1644, 1966, 2331, 1722, 2779, 2672, 3125, 2994, 2247, 1660],
-    [3170, 771],
     [
-      1644,
-      2597,
-      2331,
-      2868,
-      2679,
-      3073,
-      1721,
-      2847,
-      879,
-      912,
-      830,
-      2692,
-      1713,
-      2899,
-      1029,
+      959,
+      1473,
+      1310,
+      1714,
+      1011,
+      1572,
+      1697,
+      1587,
+      1806,
+      999,
+      600,
+      1681,
+      1685,
+      1724,
     ],
     [
-      1644,
-      1966,
-      2331,
-      1722,
-      2779,
-      2672,
-      3125,
-      2852,
-      3018,
-      2231,
-      2295,
-      1659,
-      1693,
+      959,
+      1310,
+      1013,
+      1565,
+      1877,
+      1179,
+      1697,
+      1646,
+      1807,
+      1263,
+      425,
+      988,
+      279,
+      293,
     ],
-    [3170, 2189],
+    [1914, 1507, 1174, 602],
   ];
 
   /// Per combination (mixed radix over [axes]): class list per slot.
   static const List<List<int>> _combos = [
     [0, 1, 2],
-    [3, 4, 5],
   ];
 }

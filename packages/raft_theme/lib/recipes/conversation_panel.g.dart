@@ -1,5 +1,5 @@
 // GENERATED — do not edit. Regenerate with `tool/recipes/run`.
-// Source: raft-ui 0.5.52 dist/index.mjs (sha256 742e86bfdb372e8f),
+// Source: raft-ui 0.7.0 dist/index.mjs (sha256 83bf0bff35092e3d),
 // tailwindcss 4.2.2 with raft-ui styles.css + Web @theme overrides. Recipe `conversationPanel`.
 // ignore_for_file: type=lint
 
@@ -35,7 +35,7 @@ class RaftConversationPanelRecipeStyle {
   };
 }
 
-/// raft-ui recipe `conversationPanel` (`src/components/conversation-panel/conversation-panel.recipe.ts`, index.mjs:4514).
+/// raft-ui recipe `conversationPanel` (`src/components/conversation-panel/conversation-panel.recipe.ts`, index.mjs:3576).
 ///
 /// Used by: ConversationPanelContent, ConversationPanelFooter, ConversationPanelRoot, ConversationPanelTabs, ProfilePanelBody.
 ///
@@ -44,12 +44,9 @@ class RaftConversationPanelRecipeStyle {
 abstract final class RaftConversationPanelRecipe {
   static const String recipeName = 'conversationPanel';
   static const List<String> slotNames = ['root', 'content', 'tabs', 'footer'];
-  static const List<RaftRecipeAxis> axes = [
-    RaftRecipeAxis('theme', ['brutal', 'elegant'], null, false),
-  ];
+  static const List<RaftRecipeAxis> axes = [];
 
   static RaftConversationPanelRecipeStyle resolve({
-    required RaftRecipeTheme theme,
     RaftRecipeStates states = RaftRecipeStates.none,
     RaftTokenResolver? tokens,
   }) {
@@ -58,7 +55,7 @@ abstract final class RaftConversationPanelRecipe {
       axes,
       _lists,
       _combos,
-      [theme.name],
+      [],
       states,
       tokens,
       recipeName: recipeName,
@@ -94,49 +91,14 @@ abstract final class RaftConversationPanelRecipe {
 
   /// Distinct class lists (indices into [raftRecipeUtilities]).
   static const List<List<int>> _lists = [
-    [1644, 1980, 2583, 2597, 1645, 1646, 868, 1716, 2994],
-    [1644, 2583, 2597, 1645, 1646, 868],
-    [
-      2902,
-      891,
-      892,
-      868,
-      112,
-      111,
-      109,
-      110,
-      108,
-      107,
-      244,
-      247,
-      243,
-      242,
-      241,
-    ],
-    [927, 892, 868],
-    [1644, 1980, 2583, 2597, 1645, 1646, 2804, 825, 1716, 3024],
-    [
-      1644,
-      2583,
-      2597,
-      1645,
-      1646,
-      2804,
-      2678,
-      830,
-      1013,
-      1766,
-      1767,
-      1768,
-      1092,
-    ],
-    [2902, 890, 830, 2417, 1022, 1137, 2420, 2421, 248, 245, 246, 2409],
-    [],
+    [959, 1189, 1457, 1473, 960, 961, 593, 1007, 1807],
+    [959, 1457, 1473, 960, 961, 593],
+    [1727, 621, 632, 593, 85, 84, 1363, 83],
+    [593],
   ];
 
   /// Per combination (mixed radix over [axes]): class list per slot.
   static const List<List<int>> _combos = [
     [0, 1, 2, 3],
-    [4, 5, 6, 7],
   ];
 }

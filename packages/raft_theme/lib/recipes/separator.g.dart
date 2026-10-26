@@ -1,5 +1,5 @@
 // GENERATED — do not edit. Regenerate with `tool/recipes/run`.
-// Source: raft-ui 0.5.52 dist/index.mjs (sha256 742e86bfdb372e8f),
+// Source: raft-ui 0.7.0 dist/index.mjs (sha256 83bf0bff35092e3d),
 // tailwindcss 4.2.2 with raft-ui styles.css + Web @theme overrides. Recipe `separator`.
 // ignore_for_file: type=lint
 
@@ -35,7 +35,7 @@ class RaftSeparatorRecipeStyle {
   };
 }
 
-/// raft-ui recipe `separator` (`src/components/separator/separator.tsx`, index.mjs:16492).
+/// raft-ui recipe `separator` (`src/components/separator/separator.tsx`, index.mjs:13638).
 ///
 /// Used by: ComboboxSeparator, ContextMenuSeparator, DropdownMenuSeparator, MessageTextSelectionToolbarSeparator, PopoverSeparator, PreviewCardSeparator, SelectSeparator, Separator.
 ///
@@ -49,12 +49,9 @@ abstract final class RaftSeparatorRecipe {
     'labeledLine',
     'labeledContent',
   ];
-  static const List<RaftRecipeAxis> axes = [
-    RaftRecipeAxis('theme', ['brutal', 'elegant'], null, false),
-  ];
+  static const List<RaftRecipeAxis> axes = [];
 
   static RaftSeparatorRecipeStyle resolve({
-    required RaftRecipeTheme theme,
     RaftRecipeStates states = RaftRecipeStates.none,
     RaftTokenResolver? tokens,
   }) {
@@ -63,7 +60,7 @@ abstract final class RaftSeparatorRecipe {
       axes,
       _lists,
       _combos,
-      [theme.name],
+      [],
       states,
       tokens,
       recipeName: recipeName,
@@ -99,18 +96,14 @@ abstract final class RaftSeparatorRecipe {
 
   /// Distinct class lists (indices into [raftRecipeUtilities]).
   static const List<List<int>> _lists = [
-    [2902, 1312, 1318, 1306, 1301, 1300, 1319, 1313, 1314],
-    [1742, 1748, 2331, 1725, 2796],
-    [3168, 2902, 1949, 927, 916],
-    [2597, 1714, 3073, 1713, 3032],
-    [2902, 1312, 1318, 834, 1308, 1321],
-    [3168, 2902, 1981, 834],
-    [2597, 1714, 3073, 1713, 3021],
+    [1727, 717, 721, 602, 713, 723],
+    [1031, 1036, 1310, 1016, 1660],
+    [1912, 1727, 1190, 602],
+    [1473, 1007, 1806, 1008, 1808],
   ];
 
   /// Per combination (mixed radix over [axes]): class list per slot.
   static const List<List<int>> _combos = [
     [0, 1, 2, 3],
-    [4, 1, 5, 6],
   ];
 }

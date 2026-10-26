@@ -1,5 +1,5 @@
 // GENERATED — do not edit. Regenerate with `tool/recipes/run`.
-// Source: raft-ui 0.5.52 dist/index.mjs (sha256 742e86bfdb372e8f),
+// Source: raft-ui 0.7.0 dist/index.mjs (sha256 83bf0bff35092e3d),
 // tailwindcss 4.2.2 with raft-ui styles.css + Web @theme overrides. Recipe `spinner`.
 // ignore_for_file: type=lint
 
@@ -32,7 +32,11 @@ enum RaftSpinnerRecipeVariant {
 
 /// Resolved slots of [RaftSpinnerRecipe].
 class RaftSpinnerRecipeStyle {
-  const RaftSpinnerRecipeStyle({required this.root, required this.ring});
+  const RaftSpinnerRecipeStyle({
+    required this.root,
+    required this.ring,
+    required this.pixel,
+  });
 
   /// Slot `root`.
   final RaftSlotStyle root;
@@ -40,10 +44,17 @@ class RaftSpinnerRecipeStyle {
   /// Slot `ring`.
   final RaftSlotStyle ring;
 
-  Map<String, RaftSlotStyle> get slots => {'root': root, 'ring': ring};
+  /// Slot `pixel`.
+  final RaftSlotStyle pixel;
+
+  Map<String, RaftSlotStyle> get slots => {
+    'root': root,
+    'ring': ring,
+    'pixel': pixel,
+  };
 }
 
-/// raft-ui recipe `spinner` (`src/components/spinner/spinner.tsx`, index.mjs:110).
+/// raft-ui recipe `spinner` (`src/components/spinner/spinner.tsx`, index.mjs:96).
 ///
 /// Used by: Spinner.
 ///
@@ -51,15 +62,13 @@ class RaftSpinnerRecipeStyle {
 /// every variant combination; [resolve] applies the CSS cascade for [states].
 abstract final class RaftSpinnerRecipe {
   static const String recipeName = 'spinner';
-  static const List<String> slotNames = ['root', 'ring'];
+  static const List<String> slotNames = ['root', 'ring', 'pixel'];
   static const List<RaftRecipeAxis> axes = [
-    RaftRecipeAxis('theme', ['brutal', 'elegant'], null, false),
     RaftRecipeAxis('size', ['xs', 'sm', 'md', 'lg'], 'sm', false),
     RaftRecipeAxis('variant', ['default', 'inverse'], null, true),
   ];
 
   static RaftSpinnerRecipeStyle resolve({
-    required RaftRecipeTheme theme,
     RaftSpinnerRecipeSize? size,
     RaftSpinnerRecipeVariant? variant,
     RaftRecipeStates states = RaftRecipeStates.none,
@@ -70,13 +79,13 @@ abstract final class RaftSpinnerRecipe {
       axes,
       _lists,
       _combos,
-      [theme.name, size?.css, variant?.css],
+      [size?.css, variant?.css],
       states,
       tokens,
       recipeName: recipeName,
       slotNames: slotNames,
     );
-    return RaftSpinnerRecipeStyle(root: s[0], ring: s[1]);
+    return RaftSpinnerRecipeStyle(root: s[0], ring: s[1], pixel: s[2]);
   }
 
   /// Resolve by raw tailwind-variants props (`{'size': 'md'}`); for tooling and tests.
@@ -101,50 +110,31 @@ abstract final class RaftSpinnerRecipe {
 
   /// Distinct class lists (indices into [raftRecipeUtilities]).
   static const List<List<int>> _lists = [
-    [2804, 2320, 2902, 2331, 2336, 2363, 3008, 2912],
-    [874, 2925, 2902],
-    [2804, 2320, 2902, 2331, 2336, 2363, 2912, 2994],
-    [874, 2925, 2902, 648, 2845, 878, 899, 929],
-    [2804, 2320, 2902, 2331, 2336, 2363, 2912, 3067],
-    [874, 2925, 2902, 648, 2845, 878, 900, 929],
-    [2804, 2320, 2902, 2331, 2336, 2363, 3008, 2915],
-    [2804, 2320, 2902, 2331, 2336, 2363, 2915, 2994],
-    [2804, 2320, 2902, 2331, 2336, 2363, 2915, 3067],
-    [2804, 2320, 2902, 2331, 2336, 2363, 3008, 2917],
-    [2804, 2320, 2902, 2331, 2336, 2363, 2917, 2994],
-    [2804, 2320, 2902, 2331, 2336, 2363, 2917, 3067],
-    [2804, 2320, 2902, 2331, 2336, 2363, 3008, 2920],
-    [2804, 2320, 2902, 2331, 2336, 2363, 2920, 2994],
-    [2804, 2320, 2902, 2331, 2336, 2363, 2920, 3067],
-    [2804, 2320, 2902, 2331, 2336, 2363, 3008, 2914],
-    [2804, 2320, 2902, 2331, 2336, 2363, 3008, 2916],
+    [1669, 1296, 1727, 1310, 1315, 1337, 1802, 357, 354],
+    [1727, 1031, 1754, 1039, 1009],
+    [616, 1729, 1690, 576, 1548],
+    [1669, 1296, 1727, 1310, 1315, 1337, 357, 354, 1809],
+    [1669, 1296, 1727, 1310, 1315, 1337, 1802, 358, 355],
+    [1669, 1296, 1727, 1310, 1315, 1337, 358, 355, 1809],
+    [1669, 1296, 1727, 1310, 1315, 1337, 1802, 359, 355],
+    [1669, 1296, 1727, 1310, 1315, 1337, 359, 355, 1809],
+    [1669, 1296, 1727, 1310, 1315, 1337, 1802, 360, 356],
+    [1669, 1296, 1727, 1310, 1315, 1337, 360, 356, 1809],
   ];
 
   /// Per combination (mixed radix over [axes]): class list per slot.
   static const List<List<int>> _combos = [
-    [0, 1],
-    [2, 3],
-    [4, 5],
-    [6, 1],
-    [7, 3],
-    [8, 5],
-    [9, 1],
-    [10, 3],
-    [11, 5],
-    [12, 1],
-    [13, 3],
-    [14, 5],
-    [15, 1],
-    [15, 1],
-    [15, 1],
-    [15, 1],
-    [15, 1],
-    [15, 1],
-    [16, 1],
-    [16, 1],
-    [16, 1],
-    [16, 1],
-    [16, 1],
-    [16, 1],
+    [0, 1, 2],
+    [0, 1, 2],
+    [3, 1, 2],
+    [4, 1, 2],
+    [4, 1, 2],
+    [5, 1, 2],
+    [6, 1, 2],
+    [6, 1, 2],
+    [7, 1, 2],
+    [8, 1, 2],
+    [8, 1, 2],
+    [9, 1, 2],
   ];
 }

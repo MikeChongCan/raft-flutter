@@ -1,5 +1,5 @@
 // GENERATED — do not edit. Regenerate with `tool/recipes/run`.
-// Source: raft-ui 0.5.52 dist/index.mjs (sha256 742e86bfdb372e8f),
+// Source: raft-ui 0.7.0 dist/index.mjs (sha256 83bf0bff35092e3d),
 // tailwindcss 4.2.2 with raft-ui styles.css + Web @theme overrides. Recipe `previewCard`.
 // ignore_for_file: type=lint
 
@@ -55,7 +55,7 @@ class RaftPreviewCardRecipeStyle {
   };
 }
 
-/// raft-ui recipe `previewCard` (`src/components/preview-card/preview-card.tsx`, index.mjs:6059).
+/// raft-ui recipe `previewCard` (`src/components/preview-card/preview-card.tsx`, index.mjs:4857).
 ///
 /// Used by: PreviewCardArrow, PreviewCardContent, PreviewCardDescription, PreviewCardHeader, PreviewCardPopup, PreviewCardSeparator, PreviewCardTitle, PreviewCardTrigger.
 ///
@@ -73,12 +73,9 @@ abstract final class RaftPreviewCardRecipe {
     'description',
     'arrow',
   ];
-  static const List<RaftRecipeAxis> axes = [
-    RaftRecipeAxis('theme', ['brutal', 'elegant'], null, false),
-  ];
+  static const List<RaftRecipeAxis> axes = [];
 
   static RaftPreviewCardRecipeStyle resolve({
-    required RaftRecipeTheme theme,
     RaftRecipeStates states = RaftRecipeStates.none,
     RaftTokenResolver? tokens,
   }) {
@@ -87,7 +84,7 @@ abstract final class RaftPreviewCardRecipe {
       axes,
       _lists,
       _combos,
-      [theme.name],
+      [],
       states,
       tokens,
       recipeName: recipeName,
@@ -128,68 +125,43 @@ abstract final class RaftPreviewCardRecipe {
   /// Distinct class lists (indices into [raftRecipeUtilities]).
   static const List<List<int>> _lists = [
     [],
-    [2328, 3183, 2672],
+    [1308, 1927, 1565],
     [
-      2380,
-      2606,
-      2679,
-      2672,
-      2662,
-      3101,
-      2650,
-      3174,
-      3119,
-      1632,
-      1635,
-      1592,
-      1590,
-      1488,
-      1486,
-      1483,
-      1521,
-      2616,
-      878,
-      916,
-      833,
-      2895,
+      1349,
+      1484,
+      1571,
+      1565,
+      1557,
+      1861,
+      1547,
+      1918,
+      1872,
+      942,
+      945,
+      904,
+      903,
+      846,
+      844,
+      840,
+      865,
+      1493,
+      1900,
+      1696,
+      600,
+      1807,
+      1724,
+      1681,
+      1685,
     ],
-    [1644, 2333, 1725, 2781, 2762, 2706],
-    [925, 916],
-    [2378, 3133, 3053, 2363, 1716, 1709, 3024],
-    [2378, 3133, 2781, 2794, 3073, 2354, 1716, 3032],
-    [2911, 2835, 2189],
-    [
-      2380,
-      2606,
-      2679,
-      2672,
-      2662,
-      3101,
-      2650,
-      3174,
-      3119,
-      1632,
-      1635,
-      1592,
-      1590,
-      1488,
-      1486,
-      1483,
-      1521,
-      2616,
-      2848,
-      833,
-      2898,
-    ],
-    [925, 912, 1027],
-    [2378, 3133, 3053, 2363, 1716, 1713, 3013],
-    [2378, 3133, 2781, 2794, 3073, 2354, 822, 1716, 1022, 3014],
-    [2911, 2835, 907, 925, 911, 833],
+    [959, 1312, 1016, 1649, 1635, 1594, 1322],
+    [637, 631],
+    [1348, 1881, 1007, 1817, 999, 1807],
+    [1348, 1881, 1649, 1660, 1322, 1007, 1798, 1811],
+    [1737, 1687, 628, 637, 632, 600],
   ];
 
   /// Per combination (mixed radix over [axes]): class list per slot.
   static const List<List<int>> _combos = [
     [0, 1, 2, 3, 4, 5, 6, 7],
-    [0, 1, 8, 3, 9, 10, 11, 12],
   ];
 }

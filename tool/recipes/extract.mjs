@@ -106,9 +106,16 @@ function evaluate(node, ctx, path) {
   switch (node.type) {
     case 'Literal':
       return node.value;
-    case 'TemplateLiteral':
+    case 'TemplateLiteral': {
       if (node.expressions.length === 0) return node.quasis[0].value.cooked;
+      // `border-sticker-ink ${fill} ...` inside a class helper: substitute
+      // string-valued parameters, give up (non-literal) on anything else.
+      const parts = node.expressions.map((e) => evaluate(e, ctx, path));
+      if (parts.every((v) => typeof v === 'string')) {
+        return node.quasis.map((q, i) => q.value.cooked + (i < parts.length ? parts[i] : '')).join('');
+      }
       break;
+    }
     case 'ArrayExpression': {
       const out = [];
       node.elements.forEach((e, i) => {
@@ -143,6 +150,8 @@ function evaluate(node, ctx, path) {
       break;
     case 'Identifier': {
       if (node.name === 'undefined') return null;
+      // Parameter of a class helper currently being inlined (see CallExpression).
+      if (ctx.env?.has(node.name)) return ctx.env.get(node.name);
       const decl = topLevel.get(node.name);
       if (decl && decl.kind === 'const' && decl.node.init) {
         ctx.resolvedIdentifiers.push({ path, name: node.name });
@@ -154,6 +163,26 @@ function evaluate(node, ctx, path) {
       if (node.callee.type === 'Identifier' && TV_CALLEES.has(node.callee.name)) {
         const inner = callNames.get(node);
         return { $recipe: inner };
+      }
+      // raft-ui 0.7.0 factors repeated class lists into top-level helpers
+      // (`const sticker = (fill) => [...]`, `outline`, `chip`, `linkChip`).
+      // Inline a call to such an expression-bodied arrow function by binding
+      // its identifier parameters to the evaluated literal arguments, so the
+      // recipe sees exactly the class list the Web runtime builds.
+      if (node.callee.type === 'Identifier') {
+        const decl = topLevel.get(node.callee.name);
+        const fn = decl?.kind === 'const' ? decl.node.init : null;
+        if (
+          fn?.type === 'ArrowFunctionExpression' &&
+          fn.expression &&
+          fn.params.every((p) => p.type === 'Identifier') &&
+          node.arguments.length === fn.params.length &&
+          node.arguments.every((a) => a.type !== 'SpreadElement')
+        ) {
+          const env = new Map(ctx.env ?? []);
+          fn.params.forEach((p, i) => env.set(p.name, evaluate(node.arguments[i], ctx, path)));
+          return evaluate(fn.body, { ...ctx, env }, path);
+        }
       }
       break;
   }

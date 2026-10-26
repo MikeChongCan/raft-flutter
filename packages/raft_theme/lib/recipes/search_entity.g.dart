@@ -1,5 +1,5 @@
 // GENERATED — do not edit. Regenerate with `tool/recipes/run`.
-// Source: raft-ui 0.5.52 dist/index.mjs (sha256 742e86bfdb372e8f),
+// Source: raft-ui 0.7.0 dist/index.mjs (sha256 83bf0bff35092e3d),
 // tailwindcss 4.2.2 with raft-ui styles.css + Web @theme overrides. Recipe `searchEntity`.
 // ignore_for_file: type=lint
 
@@ -55,7 +55,7 @@ class RaftSearchEntityRecipeStyle {
   };
 }
 
-/// raft-ui recipe `searchEntity` (`src/components/search/search-entity.recipe.ts`, index.mjs:20466).
+/// raft-ui recipe `searchEntity` (`src/components/search/search-entity.recipe.ts`, index.mjs:16437).
 ///
 /// Used by: SearchEntityResult, SearchEntityResultActivity, SearchEntityResultContent, SearchEntityResultDescription, SearchEntityResultHeader, SearchEntityResultIcon, SearchEntityResultLeading, SearchEntityResultTitle.
 ///
@@ -73,12 +73,9 @@ abstract final class RaftSearchEntityRecipe {
     'entityTitle',
     'entityDescription',
   ];
-  static const List<RaftRecipeAxis> axes = [
-    RaftRecipeAxis('theme', ['brutal', 'elegant'], null, false),
-  ];
+  static const List<RaftRecipeAxis> axes = [];
 
   static RaftSearchEntityRecipeStyle resolve({
-    required RaftRecipeTheme theme,
     RaftRecipeStates states = RaftRecipeStates.none,
     RaftTokenResolver? tokens,
   }) {
@@ -87,7 +84,7 @@ abstract final class RaftSearchEntityRecipe {
       axes,
       _lists,
       _combos,
-      [theme.name],
+      [],
       states,
       tokens,
       recipeName: recipeName,
@@ -128,74 +125,51 @@ abstract final class RaftSearchEntityRecipe {
   /// Distinct class lists (indices into [raftRecipeUtilities]).
   static const List<List<int>> _lists = [
     [
-      1644,
-      2597,
-      3168,
-      2331,
+      959,
+      1473,
+      1912,
+      1310,
+      1016,
+      1584,
+      1820,
+      1877,
+      1669,
+      1701,
+      619,
+      613,
+      1649,
+      1660,
+      1807,
       1725,
-      2695,
-      3040,
-      3125,
-      878,
-      896,
-      868,
-      2260,
-      2288,
-      598,
-      610,
-      1338,
-      1346,
-      1663,
-      1672,
-      1671,
-      1666,
+      1375,
+      1531,
+      1538,
+      1537,
+      1536,
+      1534,
+      1533,
+      1263,
+      425,
+      923,
+      925,
+      917,
+      735,
+      740,
+      1565,
+      972,
+      973,
     ],
-    [2804, 1644, 2902],
-    [1644, 2920, 2331, 2336, 2679, 878, 892, 868, 2994],
-    [586, 141, 128, 2319, 2912, 2902, 2845, 876, 892, 782],
-    [2597, 1645],
-    [1644, 2597, 2331, 1723],
-    [3133, 3053, 1709, 2994, 1538],
-    [874, 3133, 3073, 2998, 1537],
-    [
-      1644,
-      2597,
-      3168,
-      2331,
-      1725,
-      2695,
-      3040,
-      2847,
-      879,
-      912,
-      830,
-      2899,
-      3103,
-      1626,
-      2204,
-      1339,
-      1340,
-      1344,
-      1342,
-      1343,
-      1046,
-      2672,
-      1676,
-      1689,
-      1029,
-      1083,
-      1086,
-      1084,
-    ],
-    [1644, 2920, 2331, 2336, 2679, 2848, 801, 3015],
-    [586, 141, 128, 2319, 2912, 2902, 2845, 876, 909, 782, 1020],
-    [3133, 3053, 1713, 3024, 1539],
-    [874, 3133, 3073, 3019, 1539],
+    [1669, 959, 1727],
+    [959, 1310, 1315, 1571, 1749, 1703, 579, 1811, 278],
+    [420, 1295, 1727, 1679, 646, 1753, 1691, 620, 635, 604, 1723],
+    [1473, 960, 959, 961, 1011],
+    [959, 1473, 1310, 1014],
+    [1881, 1007, 1795, 1008, 1807, 874],
+    [616, 1881, 1798, 1811, 874],
   ];
 
   /// Per combination (mixed radix over [axes]): class list per slot.
   static const List<List<int>> _combos = [
     [0, 1, 2, 3, 4, 5, 6, 7],
-    [8, 1, 9, 10, 4, 5, 11, 12],
   ];
 }

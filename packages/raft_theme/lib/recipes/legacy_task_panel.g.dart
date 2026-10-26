@@ -1,5 +1,5 @@
 // GENERATED — do not edit. Regenerate with `tool/recipes/run`.
-// Source: raft-ui 0.5.52 dist/index.mjs (sha256 742e86bfdb372e8f),
+// Source: raft-ui 0.7.0 dist/index.mjs (sha256 83bf0bff35092e3d),
 // tailwindcss 4.2.2 with raft-ui styles.css + Web @theme overrides. Recipe `legacyTaskPanel`.
 // ignore_for_file: type=lint
 
@@ -85,7 +85,7 @@ class RaftLegacyTaskPanelRecipeStyle {
   };
 }
 
-/// raft-ui recipe `legacyTaskPanel` (`src/components/legacy-task-panel/legacy-task-panel.recipe.ts`, index.mjs:19568).
+/// raft-ui recipe `legacyTaskPanel` (`src/components/legacy-task-panel/legacy-task-panel.recipe.ts`, index.mjs:15713).
 ///
 /// Used by: LegacyTaskPanelBody, LegacyTaskPanelField, LegacyTaskPanelFieldLabel, LegacyTaskPanelFieldText, LegacyTaskPanelFieldTitle, LegacyTaskPanelIcon, LegacyTaskPanelMeta, LegacyTaskPanelMetaLabel, LegacyTaskPanelMetaRow, LegacyTaskPanelMetaValue, LegacyTaskPanelRoot, LegacyTaskPanelSection, LegacyTaskPanelStatus, LegacyTaskPanelTitle.
 ///
@@ -110,12 +110,10 @@ abstract final class RaftLegacyTaskPanelRecipe {
     'metaValue',
   ];
   static const List<RaftRecipeAxis> axes = [
-    RaftRecipeAxis('theme', ['brutal', 'elegant'], null, false),
     RaftRecipeAxis('framed', ['true', 'false'], null, true),
   ];
 
   static RaftLegacyTaskPanelRecipeStyle resolve({
-    required RaftRecipeTheme theme,
     bool? framed,
     RaftRecipeStates states = RaftRecipeStates.none,
     RaftTokenResolver? tokens,
@@ -125,7 +123,7 @@ abstract final class RaftLegacyTaskPanelRecipe {
       axes,
       _lists,
       _combos,
-      [theme.name, framed?.toString()],
+      [framed?.toString()],
       states,
       tokens,
       recipeName: recipeName,
@@ -171,29 +169,20 @@ abstract final class RaftLegacyTaskPanelRecipe {
 
   /// Distinct class lists (indices into [raftRecipeUtilities]).
   static const List<List<int>> _lists = [
-    [2925, 2593, 2507, 2679, 878, 892, 2896],
-    [1644, 2921, 2902, 2331, 2336, 878, 892, 836, 2994],
-    [1644, 1646, 2333, 1720, 2680, 3171],
-    [2940, 2684, 2784, 2798],
-    [1644, 1650, 2331, 1723],
-    [2696, 2938, 878, 892, 868, 2896],
+    [1755, 1470, 1416, 1571, 1696, 618, 632, 593, 1725],
+    [959, 1727, 1310, 1315, 1749, 1703, 579, 1811, 278],
+    [959, 961, 1312, 1011, 1572, 1915],
+    [1764, 1575, 1650, 1662],
+    [959, 965, 1310, 1014],
+    [1585, 1763, 1696, 618, 631, 594, 1725],
     [],
-    [2512, 1714, 3073, 2996],
-    [2378, 3041, 3177, 1709, 2994],
-    [2378, 3053, 3173, 3177, 3003],
-    [2936, 2696, 3053, 878, 892, 868, 2896],
-    [1644, 2333, 2335, 1725],
-    [1714, 2998],
-    [3048, 2994],
-    [2925, 2593, 2507, 2679, 2854, 876, 912, 2897, 1029],
-    [1644, 2921, 2902, 2331, 2336, 2848, 879, 912, 830, 3015],
-    [2696, 2938, 2847, 879, 912, 830, 2899, 1029],
-    [2512, 1714, 3073, 3018],
-    [2378, 3041, 3177, 1712, 1713, 3013],
-    [2378, 3053, 3173, 3177, 3034],
-    [2936, 2696, 3053, 2847, 879, 912, 830, 2899, 1029],
-    [1714, 3073, 3021],
-    [3048, 3013],
+    [1420, 1007, 1806, 1004, 1808],
+    [1348, 1921, 1795, 1008, 1807],
+    [1348, 1917, 1921, 1829, 1811],
+    [1585, 1826, 1759, 1696, 618, 631, 594, 1649, 1658, 1725],
+    [959, 1314, 1016, 1468, 1310],
+    [1007, 1806, 1004, 1808],
+    [1825, 1798, 1807],
   ];
 
   /// Per combination (mixed radix over [axes]): class list per slot.
@@ -201,8 +190,5 @@ abstract final class RaftLegacyTaskPanelRecipe {
     [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
     [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
     [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
-    [14, 15, 2, 3, 4, 16, 6, 17, 18, 19, 20, 11, 21, 22],
-    [14, 15, 2, 3, 4, 16, 6, 17, 18, 19, 20, 11, 21, 22],
-    [14, 15, 2, 3, 4, 16, 6, 17, 18, 19, 20, 11, 21, 22],
   ];
 }

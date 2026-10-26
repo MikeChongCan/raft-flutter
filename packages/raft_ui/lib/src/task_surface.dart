@@ -12,7 +12,7 @@ import 'indicators.dart' show RaftSkeleton;
 import 'panel_layout.dart' show RaftCssText;
 import 'recipes/button_variants.g.dart';
 import 'recipes/card.g.dart';
-import 'recipes/recipe_utilities.g.dart';
+import 'recipes/recipe_router.dart' show resolveAuthoredClasses;
 import 'components.dart' show RaftAvatar, RaftAvatarKind;
 import 'list_items.dart';
 import 'mounted_avatar_recipe.dart';
@@ -879,14 +879,7 @@ class _RaftTaskSurfaceState extends State<RaftTaskSurface> {
       'text-foreground-strong',
       'shadow-raft-md',
     ];
-    return raftRecipeEngine.resolveSlot(
-      [
-        for (final name in classes)
-          raftRecipeUtilities.indexWhere((utility) => utility.name == name),
-      ],
-      t.recipeStates(),
-      t.recipeTokens,
-    );
+    return resolveAuthoredClasses(classes, t.recipeStates(), t.recipeTokens);
   }
 
   /// Web `TaskProperties` history: `Timeline size="sm"` of the visible events

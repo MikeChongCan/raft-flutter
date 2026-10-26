@@ -1,5 +1,5 @@
 // GENERATED — do not edit. Regenerate with `tool/recipes/run`.
-// Source: raft-ui 0.5.52 dist/index.mjs (sha256 742e86bfdb372e8f),
+// Source: raft-ui 0.7.0 dist/index.mjs (sha256 83bf0bff35092e3d),
 // tailwindcss 4.2.2 with raft-ui styles.css + Web @theme overrides. Recipe `field`.
 // ignore_for_file: type=lint
 
@@ -51,7 +51,7 @@ class RaftFieldRecipeStyle {
   };
 }
 
-/// raft-ui recipe `field` (`src/components/field/field.tsx`, index.mjs:6341).
+/// raft-ui recipe `field` (`src/components/field/field.tsx`, index.mjs:5077).
 ///
 /// Used by: Field, FieldDescription, FieldError, FieldItem, FieldLabel, LegacyTaskPanelField.
 ///
@@ -67,12 +67,10 @@ abstract final class RaftFieldRecipe {
     'error',
   ];
   static const List<RaftRecipeAxis> axes = [
-    RaftRecipeAxis('theme', ['brutal', 'elegant'], null, false),
     RaftRecipeAxis('size', ['sm', 'md'], 'md', false),
   ];
 
   static RaftFieldRecipeStyle resolve({
-    required RaftRecipeTheme theme,
     RaftFieldRecipeSize? size,
     RaftRecipeStates states = RaftRecipeStates.none,
     RaftTokenResolver? tokens,
@@ -82,7 +80,7 @@ abstract final class RaftFieldRecipe {
       axes,
       _lists,
       _combos,
-      [theme.name, size?.css],
+      [size?.css],
       states,
       tokens,
       recipeName: recipeName,
@@ -119,24 +117,17 @@ abstract final class RaftFieldRecipe {
 
   /// Distinct class lists (indices into [raftRecipeUtilities]).
   static const List<List<int>> _lists = [
-    [1920, 1644, 1646, 1721],
-    [1921, 1644, 2333, 1723, 97],
-    [874, 1863, 1709, 3073, 3030],
-    [3073, 2354, 1863, 3029],
-    [3073, 2354, 1863, 3009],
-    [874, 1863, 1709, 3013, 3053],
-    [1920, 1644, 1646, 1722],
-    [874, 1863, 1713, 3024, 1183, 3073],
-    [2962, 3014, 1863],
-    [1863, 2962, 3009],
-    [874, 1863, 1713, 3024, 1183, 3053],
+    [1134, 959, 961, 1013],
+    [1135, 959, 1312, 1014, 69],
+    [616, 1105, 1007, 1811, 1799, 1008],
+    [1105, 1799, 1808],
+    [1105, 1799, 1008, 1804],
+    [616, 1105, 1007, 1811, 1806, 1008],
   ];
 
   /// Per combination (mixed radix over [axes]): class list per slot.
   static const List<List<int>> _combos = [
     [0, 1, 2, 3, 4],
     [0, 1, 5, 3, 4],
-    [6, 1, 7, 8, 9],
-    [6, 1, 10, 8, 9],
   ];
 }

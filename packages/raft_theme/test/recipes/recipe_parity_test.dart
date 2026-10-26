@@ -1,7 +1,4 @@
-@Tags(['look-elegant', 'look-brutal'])
-library;
-
-// Checks every generated slot against the independent JS cascade oracle.
+// The Raft set: checks every generated slot against the independent JS cascade oracle.
 // The committed fixture is complete, so a standalone copy needs no repository
 // build directory or raft_ui to verify source recipe values.
 import 'dart:convert';

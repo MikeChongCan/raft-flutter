@@ -220,6 +220,7 @@ class RaftInlineBadge extends StatelessWidget {
       states: RaftRecipeStates({
         if (t.dark) RaftRecipeStates.dark,
       }, MediaQuery.sizeOf(context).width),
+      tokens: RaftRecipeTokens(t),
     ).root;
     return RaftCssInlineBox(
       lineText: bodyLine

@@ -1,5 +1,5 @@
 // GENERATED — do not edit. Regenerate with `tool/recipes/run`.
-// Source: raft-ui 0.5.52 dist/index.mjs (sha256 742e86bfdb372e8f),
+// Source: raft-ui 0.7.0 dist/index.mjs (sha256 83bf0bff35092e3d),
 // tailwindcss 4.2.2 with raft-ui styles.css + Web @theme overrides. Recipe `textareaCounter`.
 // ignore_for_file: type=lint
 
@@ -16,7 +16,7 @@ class RaftTextareaCounterRecipeStyle {
   Map<String, RaftSlotStyle> get slots => {'root': root};
 }
 
-/// raft-ui recipe `textareaCounter` (`src/components/textarea/textarea.tsx`, index.mjs:7987).
+/// raft-ui recipe `textareaCounter` (`src/components/textarea/textarea.tsx`, index.mjs:6283).
 ///
 /// Used by: TextareaCounter.
 ///
@@ -26,12 +26,10 @@ abstract final class RaftTextareaCounterRecipe {
   static const String recipeName = 'textareaCounter';
   static const List<String> slotNames = ['root'];
   static const List<RaftRecipeAxis> axes = [
-    RaftRecipeAxis('theme', ['brutal', 'elegant'], null, false),
     RaftRecipeAxis('overLimit', ['true', 'false'], 'false', false),
   ];
 
   static RaftTextareaCounterRecipeStyle resolve({
-    required RaftRecipeTheme theme,
     bool? overLimit,
     RaftRecipeStates states = RaftRecipeStates.none,
     RaftTokenResolver? tokens,
@@ -41,7 +39,7 @@ abstract final class RaftTextareaCounterRecipe {
       axes,
       _lists,
       _combos,
-      [theme.name, overLimit?.toString()],
+      [overLimit?.toString()],
       states,
       tokens,
       recipeName: recipeName,
@@ -72,17 +70,13 @@ abstract final class RaftTextareaCounterRecipe {
 
   /// Distinct class lists (indices into [raftRecipeUtilities]).
   static const List<List<int>> _lists = [
-    [1714, 3073, 2946, 1769, 1868, 3009],
-    [1714, 3073, 2946, 3029, 1769, 1868],
-    [1714, 2946, 2958, 2363, 3102, 1629, 1637, 1770, 1868, 3009],
-    [1714, 2946, 2958, 2363, 3023, 3102, 1629, 1637, 1770, 1868],
+    [1005, 1768, 1823, 1049, 1107, 999, 1804],
+    [1005, 1768, 1823, 1808, 1049, 1107],
   ];
 
   /// Per combination (mixed radix over [axes]): class list per slot.
   static const List<List<int>> _combos = [
     [0],
     [1],
-    [2],
-    [3],
   ];
 }

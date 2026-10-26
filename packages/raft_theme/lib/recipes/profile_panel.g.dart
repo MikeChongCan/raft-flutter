@@ -1,5 +1,5 @@
 // GENERATED — do not edit. Regenerate with `tool/recipes/run`.
-// Source: raft-ui 0.5.52 dist/index.mjs (sha256 742e86bfdb372e8f),
+// Source: raft-ui 0.7.0 dist/index.mjs (sha256 83bf0bff35092e3d),
 // tailwindcss 4.2.2 with raft-ui styles.css + Web @theme overrides. Recipe `profilePanel`.
 // ignore_for_file: type=lint
 
@@ -35,7 +35,7 @@ class RaftProfilePanelRecipeStyle {
   };
 }
 
-/// raft-ui recipe `profilePanel` (`src/components/profile-panel/profile-panel.recipe.ts`, index.mjs:17185).
+/// raft-ui recipe `profilePanel` (`src/components/profile-panel/profile-panel.recipe.ts`, index.mjs:14192).
 ///
 /// Used by: ProfilePanel, ProfilePanelHeader, ProfilePanelHeaderContent, ProfilePanelSection.
 ///
@@ -49,12 +49,9 @@ abstract final class RaftProfilePanelRecipe {
     'headerContent',
     'section',
   ];
-  static const List<RaftRecipeAxis> axes = [
-    RaftRecipeAxis('theme', ['brutal', 'elegant'], null, false),
-  ];
+  static const List<RaftRecipeAxis> axes = [];
 
   static RaftProfilePanelRecipeStyle resolve({
-    required RaftRecipeTheme theme,
     RaftRecipeStates states = RaftRecipeStates.none,
     RaftTokenResolver? tokens,
   }) {
@@ -63,7 +60,7 @@ abstract final class RaftProfilePanelRecipe {
       axes,
       _lists,
       _combos,
-      [theme.name],
+      [],
       states,
       tokens,
       recipeName: recipeName,
@@ -99,17 +96,14 @@ abstract final class RaftProfilePanelRecipe {
 
   /// Distinct class lists (indices into [raftRecipeUtilities]).
   static const List<List<int>> _lists = [
-    [1644, 1980, 2583, 2597, 1645, 1646, 509, 830],
+    [959, 1189, 1457, 1473, 960, 961, 339, 1669, 593, 1007, 1807],
     [],
-    [1644, 1980, 2583, 2597, 1645, 1646, 509, 2804, 825, 1716, 3024],
-    [2424, 2472, 2572],
-    [2537, 2558, 2543],
-    [912, 2785, 2799],
+    [1313, 1010],
+    [631, 1650, 1662],
   ];
 
   /// Per combination (mixed radix over [axes]): class list per slot.
   static const List<List<int>> _combos = [
-    [0, 1, 1, 1],
-    [2, 3, 4, 5],
+    [0, 1, 2, 3],
   ];
 }

@@ -12,13 +12,17 @@ import '../theme.dart';
 /// source of their names.
 class RaftRecipeTokens extends RaftThemeRecipeTokens {
   RaftRecipeTokens(this.tokens)
-    : super(tokens.themeValues ?? const RaftModeValues());
+    : super(
+        tokens.themeValues ?? const RaftModeValues(),
+        recipeSet: tokens.recipeSet,
+      );
 
   /// Frozen source component values with the current foundation lookups.
   RaftRecipeTokens.source(this.tokens)
     : super(
         tokens.themeValues ?? const RaftModeValues(),
         bindComponents: false,
+        recipeSet: tokens.recipeSet,
       );
 
   final RaftTokens tokens;
@@ -56,11 +60,11 @@ class RaftRecipeTokens extends RaftThemeRecipeTokens {
       'theme-shadow-md' || 'shadow-raft-md' => s.md,
       'theme-shadow-lg' || 'shadow-raft-lg' => s.lg,
       'theme-shadow-xl' || 'shadow-raft-xl' => s.xl,
-      final other => throw ArgumentError(
-        'Unknown shadow token "$name" ($other)',
-      ),
+      // Pack-level elevations the Raft recipes name directly
+      // (`elevationFloat`, `elevationSticker`); the frozen set never does.
+      _ => null,
     };
-    return shadow.paintOrder;
+    return shadow == null ? super.shadow(name) : shadow.paintOrder;
   }
 
   @override

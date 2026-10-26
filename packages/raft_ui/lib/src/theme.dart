@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show defaultTargetPlatform;
 import 'package:raft_theme/raft_theme.dart';
+import 'package:raft_theme/recipes.dart'
+    show RaftRecipeSet, RaftThemePackRecipes;
 
 import 'control_typography.dart';
 import 'tokens/tokens.dart';
@@ -122,6 +124,7 @@ class RaftTokens extends ThemeExtension<RaftTokens> {
     this.systemFonts = false,
     this.systemFontFamilies = const RaftFontFamilies(),
     this.textLocale,
+    this.recipeSet = RaftRecipeSet.raft,
   }) : _tokens = tokens,
        _mode = mode;
 
@@ -163,9 +166,16 @@ class RaftTokens extends ThemeExtension<RaftTokens> {
       systemFonts: systemFonts,
       systemFontFamilies: systemFontFamilies,
       textLocale: textLocale,
+      recipeSet: themePack.recipeSet,
     );
   }
   final bool dark;
+
+  /// Which generated recipe set this theme paints with: the Raft set for Raft
+  /// and user packs, the frozen 0.5.52 set for the built-in Elegant and Brutal
+  /// packs (see `RaftThemePackRecipes`). Components never read it directly;
+  /// `recipeTokens` hands it to the recipe router.
+  final RaftRecipeSet recipeSet;
   final bool systemFonts;
   final RaftFontFamilies systemFontFamilies;
 
@@ -383,6 +393,7 @@ class RaftTokens extends ThemeExtension<RaftTokens> {
           systemFonts: systemFonts,
           systemFontFamilies: systemFontFamilies,
           textLocale: textLocale ?? this.textLocale,
+          recipeSet: recipeSet,
         )
       : RaftTokens.theme(
           dark: dark,

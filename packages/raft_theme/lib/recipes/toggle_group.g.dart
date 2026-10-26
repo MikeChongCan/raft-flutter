@@ -1,5 +1,5 @@
 // GENERATED — do not edit. Regenerate with `tool/recipes/run`.
-// Source: raft-ui 0.5.52 dist/index.mjs (sha256 742e86bfdb372e8f),
+// Source: raft-ui 0.7.0 dist/index.mjs (sha256 83bf0bff35092e3d),
 // tailwindcss 4.2.2 with raft-ui styles.css + Web @theme overrides. Recipe `toggleGroup`.
 // ignore_for_file: type=lint
 
@@ -30,7 +30,7 @@ class RaftToggleGroupRecipeStyle {
   };
 }
 
-/// raft-ui recipe `toggleGroup` (`src/components/toggle-group/toggle-group.tsx`, index.mjs:7867).
+/// raft-ui recipe `toggleGroup` (`src/components/toggle-group/toggle-group.tsx`, index.mjs:6218).
 ///
 /// Used by: ToggleGroup, ToggleGroupItem, ToggleGroupLabel.
 ///
@@ -39,12 +39,9 @@ class RaftToggleGroupRecipeStyle {
 abstract final class RaftToggleGroupRecipe {
   static const String recipeName = 'toggleGroup';
   static const List<String> slotNames = ['root', 'item', 'label'];
-  static const List<RaftRecipeAxis> axes = [
-    RaftRecipeAxis('theme', ['brutal', 'elegant'], null, false),
-  ];
+  static const List<RaftRecipeAxis> axes = [];
 
   static RaftToggleGroupRecipeStyle resolve({
-    required RaftRecipeTheme theme,
     RaftRecipeStates states = RaftRecipeStates.none,
     RaftTokenResolver? tokens,
   }) {
@@ -53,7 +50,7 @@ abstract final class RaftToggleGroupRecipe {
       axes,
       _lists,
       _combos,
-      [theme.name],
+      [],
       states,
       tokens,
       recipeName: recipeName,
@@ -84,94 +81,55 @@ abstract final class RaftToggleGroupRecipe {
 
   /// Distinct class lists (indices into [raftRecipeUtilities]).
   static const List<List<int>> _lists = [
-    [2320, 2505, 2331, 1304, 1305, 1315, 1316, 1721],
+    [1296, 1414, 1310, 709, 710, 718, 719, 1011, 1689, 579, 1587],
     [
-      2320,
-      1968,
-      2597,
-      2902,
-      2331,
-      2336,
-      1722,
-      2780,
-      3073,
-      2352,
-      3172,
+      1296,
+      1179,
+      1473,
+      1727,
+      1310,
+      1315,
+      1013,
+      1916,
+      1562,
+      1566,
+      1568,
+      1865,
+      937,
+      931,
+      828,
+      274,
+      276,
+      1697,
+      620,
+      639,
+      613,
+      1647,
+      1007,
+      1798,
+      1008,
+      1811,
+      264,
+      1263,
+      888,
+      887,
+      889,
+      894,
+      892,
+      893,
+      890,
+      891,
+      885,
+      988,
       830,
-      3013,
-      2668,
-      2673,
-      2675,
-      3108,
-      1625,
-      1614,
-      1464,
-      1468,
-      1570,
-      1581,
-      423,
-      425,
-      414,
-      878,
-      916,
-      1709,
-      2244,
-      1668,
-      614,
-      1577,
+      833,
+      829,
     ],
-    [3133],
-    [2320, 2505, 2331, 1304, 1305, 1315, 1316, 1722],
-    [
-      2320,
-      1968,
-      2597,
-      2902,
-      2331,
-      2336,
-      1722,
-      2780,
-      3073,
-      2352,
-      1713,
-      3172,
-      830,
-      3013,
-      2668,
-      2673,
-      2675,
-      3108,
-      1625,
-      1614,
-      1464,
-      1468,
-      1570,
-      1581,
-      423,
-      425,
-      414,
-      2852,
-      649,
-      2885,
-      1144,
-      1146,
-      2640,
-      1145,
-      1575,
-      1576,
-      1076,
-      1075,
-      1677,
-      1680,
-      1685,
-      1687,
-      607,
-    ],
+    [1881],
   ];
 
   /// Per combination (mixed radix over [axes]): class list per slot.
   static const List<List<int>> _combos = [
     [0, 1, 2],
-    [3, 4, 2],
   ];
 }

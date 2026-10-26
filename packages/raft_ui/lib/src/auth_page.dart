@@ -685,6 +685,7 @@ class _RaftAuthLegalCheckboxState extends State<RaftAuthLegalCheckbox> {
     final size = RaftCheckboxRecipe.resolve(
       theme: RaftRecipeTheme.elegant,
       size: RaftCheckboxRecipeSize.md,
+      tokens: t.recipeTokens,
     ).root.width!;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,

@@ -1,5 +1,5 @@
 // GENERATED — do not edit. Regenerate with `tool/recipes/run`.
-// Source: raft-ui 0.5.52 dist/index.mjs (sha256 742e86bfdb372e8f),
+// Source: raft-ui 0.7.0 dist/index.mjs (sha256 83bf0bff35092e3d),
 // tailwindcss 4.2.2 with raft-ui styles.css + Web @theme overrides. Recipe `messageForwardedBundleItem`.
 // ignore_for_file: type=lint
 
@@ -66,7 +66,7 @@ class RaftMessageForwardedBundleItemRecipeStyle {
   };
 }
 
-/// raft-ui recipe `messageForwardedBundleItem` (`src/components/message-forwarded-bundle/message-forwarded-bundle.recipe.ts`, index.mjs:11554).
+/// raft-ui recipe `messageForwardedBundleItem` (`src/components/message-forwarded-bundle/message-forwarded-bundle.recipe.ts`, index.mjs:9216).
 ///
 /// Used by: MessageForwardedBundleAttachment, MessageForwardedBundleAttachmentMeta, MessageForwardedBundleAttachmentName, MessageForwardedBundleAttachments, MessageForwardedBundleItem, MessageForwardedBundleItemAuthor, MessageForwardedBundleItemContent, MessageForwardedBundleItemMeta.
 ///
@@ -85,12 +85,10 @@ abstract final class RaftMessageForwardedBundleItemRecipe {
     'attachmentMeta',
   ];
   static const List<RaftRecipeAxis> axes = [
-    RaftRecipeAxis('theme', ['brutal', 'elegant'], null, false),
     RaftRecipeAxis('action', ['static', 'interactive'], 'static', false),
   ];
 
   static RaftMessageForwardedBundleItemRecipeStyle resolve({
-    required RaftRecipeTheme theme,
     RaftMessageForwardedBundleItemRecipeAction? action,
     RaftRecipeStates states = RaftRecipeStates.none,
     RaftTokenResolver? tokens,
@@ -100,7 +98,7 @@ abstract final class RaftMessageForwardedBundleItemRecipe {
       axes,
       _lists,
       _combos,
-      [theme.name, action?.css],
+      [action?.css],
       states,
       tokens,
       recipeName: recipeName,
@@ -140,77 +138,37 @@ abstract final class RaftMessageForwardedBundleItemRecipe {
 
   /// Distinct class lists (indices into [raftRecipeUtilities]).
   static const List<List<int>> _lists = [
-    [868, 2781, 2794, 3053, 2994],
-    [1644, 2597, 1650, 2331, 2512, 1722, 2958, 1714, 2999],
-    [1709, 3002],
-    [2597, 2505, 3177],
-    [1644, 1650, 2622, 1722],
-    [2320, 2505, 2331, 1721, 876, 895, 868, 2778, 2791, 2958, 1709, 3003],
-    [2597, 3133],
-    [2902, 2998],
+    [1647, 1659, 1795, 1807],
+    [959, 1473, 965, 1310, 1420, 1013, 1005, 1823, 1768, 1808],
+    [1007, 1806, 999, 1807],
+    [1473, 1414, 1921],
+    [959, 965, 1500, 1013],
+    [1296, 1414, 1310, 1182, 1012, 1695, 579, 1644, 1799, 1008, 1807, 278],
+    [1473, 1881],
+    [1727, 1005, 1006, 1808],
     [
-      2320,
-      2505,
-      2331,
-      1721,
-      876,
-      895,
-      868,
-      2778,
-      2791,
-      2958,
-      1709,
-      3003,
-      962,
-      3125,
-      2266,
-      1663,
-      1671,
-      1668,
-    ],
-    [2781, 2797, 3053, 2354, 3024],
-    [1644, 2597, 1650, 2331, 2512, 1722, 2958, 1716, 2946, 3021],
-    [1717, 3024],
-    [
-      2320,
-      2505,
-      2331,
-      1721,
-      2852,
-      876,
-      912,
-      830,
-      2779,
-      2791,
-      2958,
-      2352,
-      1713,
-      3018,
-      1003,
-    ],
-    [2902, 3021],
-    [
-      2320,
-      2505,
-      2331,
-      1721,
-      2852,
-      876,
-      912,
-      830,
-      2779,
-      2791,
-      2958,
-      2352,
-      1713,
-      3018,
-      1003,
-      962,
-      3125,
-      2266,
-      1663,
-      1671,
-      1668,
+      1296,
+      1414,
+      1310,
+      1182,
+      1012,
+      1695,
+      579,
+      1644,
+      1799,
+      1008,
+      1807,
+      278,
+      661,
+      1877,
+      1267,
+      975,
+      981,
+      978,
+      1274,
+      427,
+      979,
+      988,
     ],
   ];
 
@@ -218,7 +176,5 @@ abstract final class RaftMessageForwardedBundleItemRecipe {
   static const List<List<int>> _combos = [
     [0, 1, 2, 3, 4, 5, 6, 7],
     [0, 1, 2, 3, 4, 8, 6, 7],
-    [9, 10, 11, 3, 4, 12, 6, 13],
-    [9, 10, 11, 3, 4, 14, 6, 13],
   ];
 }

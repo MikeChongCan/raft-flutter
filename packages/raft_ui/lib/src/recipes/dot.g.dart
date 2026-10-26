@@ -1,2 +1,2 @@
-// Compatibility export; the independent engine owns generated recipes.
-export 'package:raft_theme/recipes/dot.g.dart';
+// Removed from raft-ui after 0.5.52; only the frozen looks have it.
+export 'package:raft_theme/recipes/legacy/dot.g.dart';

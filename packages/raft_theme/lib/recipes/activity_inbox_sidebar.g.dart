@@ -1,5 +1,5 @@
 // GENERATED — do not edit. Regenerate with `tool/recipes/run`.
-// Source: raft-ui 0.5.52 dist/index.mjs (sha256 742e86bfdb372e8f),
+// Source: raft-ui 0.7.0 dist/index.mjs (sha256 83bf0bff35092e3d),
 // tailwindcss 4.2.2 with raft-ui styles.css + Web @theme overrides. Recipe `activityInboxSidebar`.
 // ignore_for_file: type=lint
 
@@ -30,7 +30,7 @@ class RaftActivityInboxSidebarRecipeStyle {
   };
 }
 
-/// raft-ui recipe `activityInboxSidebar` (`src/components/activity-inbox/activity-inbox-sidebar.recipe.ts`, index.mjs:19897).
+/// raft-ui recipe `activityInboxSidebar` (`src/components/activity-inbox/activity-inbox-sidebar.recipe.ts`, index.mjs:16003).
 ///
 /// Used by: ActivityInboxSidebar.
 ///
@@ -43,12 +43,9 @@ abstract final class RaftActivityInboxSidebarRecipe {
     'sidebarBody',
     'sidebarContent',
   ];
-  static const List<RaftRecipeAxis> axes = [
-    RaftRecipeAxis('theme', ['brutal', 'elegant'], null, false),
-  ];
+  static const List<RaftRecipeAxis> axes = [];
 
   static RaftActivityInboxSidebarRecipeStyle resolve({
-    required RaftRecipeTheme theme,
     RaftRecipeStates states = RaftRecipeStates.none,
     RaftTokenResolver? tokens,
   }) {
@@ -57,7 +54,7 @@ abstract final class RaftActivityInboxSidebarRecipe {
       axes,
       _lists,
       _combos,
-      [theme.name],
+      [],
       states,
       tokens,
       recipeName: recipeName,
@@ -92,68 +89,38 @@ abstract final class RaftActivityInboxSidebarRecipe {
 
   /// Distinct class lists (indices into [raftRecipeUtilities]).
   static const List<List<int>> _lists = [
-    [3152, 2902, 2448, 2535, 922, 892],
-    [868],
+    [1727, 1373, 1429, 1895, 634, 632, 593],
+    [593],
     [
-      2695,
-      392,
-      391,
+      1584,
+      232,
+      231,
+      31,
+      33,
+      230,
+      233,
+      234,
+      32,
+      35,
+      229,
+      36,
+      34,
+      235,
       48,
       50,
-      390,
-      393,
-      394,
-      49,
-      388,
-      395,
-      52,
+      204,
+      205,
       54,
-      66,
-      69,
-      343,
-      345,
-      74,
-      67,
-      70,
-      72,
-      65,
-      73,
-      340,
-    ],
-    [2902, 2448, 2535, 3153, 1011],
-    [],
-    [
-      2695,
-      392,
-      391,
-      48,
-      50,
-      390,
-      393,
-      394,
       49,
-      389,
-      53,
       51,
-      66,
-      69,
-      344,
-      345,
-      74,
-      67,
-      71,
-      73,
-      68,
-      341,
-      342,
-      338,
-      339,
+      52,
+      47,
+      53,
     ],
   ];
 
   /// Per combination (mixed radix over [axes]): class list per slot.
   static const List<List<int>> _combos = [
     [0, 1, 2],
-    [3, 4, 5],
   ];
 }

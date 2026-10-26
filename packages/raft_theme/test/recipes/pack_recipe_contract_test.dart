@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_theme/raft_theme.dart';
 import 'package:raft_theme/recipes.dart';
+import 'package:raft_theme/recipes_legacy.dart' as legacy;
 
 Directory _themePackage() {
   var ancestor = Directory.current;
@@ -58,11 +59,20 @@ void main() {
   test(
     'each generated slot retains source identity independently of raft_ui',
     () {
-      expect(raftRecipes, hasLength(121));
+      expect(raftRecipes, hasLength(124));
       for (final recipe in raftRecipes.entries) {
+        final slots = recipe.value(const {});
+        expect(slots, isNotEmpty, reason: recipe.key);
+        for (final slot in slots.entries) {
+          expect(slot.value.context!.recipe, recipe.key);
+          expect(slot.value.context!.slot, slot.key);
+        }
+      }
+      // The frozen 0.5.52 set keeps its theme axis.
+      expect(legacy.raftRecipes, hasLength(121));
+      for (final recipe in legacy.raftRecipes.entries) {
         for (final theme in ['elegant', 'brutal']) {
-          final props = {'theme': theme};
-          final slots = recipe.value(props);
+          final slots = recipe.value({'theme': theme});
           expect(slots, isNotEmpty, reason: recipe.key);
           for (final slot in slots.entries) {
             expect(slot.value.context!.recipe, recipe.key);
@@ -87,13 +97,9 @@ void main() {
           );
           expect(tokens.fontFamily('sansFont'), values.fonts['sans']!.family);
           final source = RaftInputRecipe.resolve(
-            theme: RaftRecipeTheme.elegant,
             tokens: RaftThemeRecipeTokens(values, bindComponents: false),
           ).root;
-          final bound = RaftInputRecipe.resolve(
-            theme: RaftRecipeTheme.elegant,
-            tokens: tokens,
-          ).root;
+          final bound = RaftInputRecipe.resolve(tokens: tokens).root;
           expect(
             bound.borderRadius!.topLeft.x,
             values.geometry['radius.control'],
@@ -105,7 +111,32 @@ void main() {
               .toList()
               .reversed;
           expect(shadow.map((s) => s.offset), expected.map((s) => s.offset));
+          // Every token the Raft set names must exist in every pack (the
+          // built-in family packs inherit the Raft pack's values).
           for (final recipe in raftRecipes.entries) {
+            for (final style in recipe.value(const {}, tokens: tokens).values) {
+              style.backgroundColor?.resolve(tokens);
+              style.color?.resolve(tokens);
+              style.textStyle(tokens);
+              style.border(tokens);
+              style.decoration(tokens);
+            }
+          }
+          // The frozen set resolves against the same packs, as before.
+          final legacySource = legacy.RaftInputRecipe.resolve(
+            theme: RaftRecipeTheme.elegant,
+            tokens: RaftThemeRecipeTokens(values, bindComponents: false),
+          ).root;
+          final legacyBound = legacy.RaftInputRecipe.resolve(
+            theme: RaftRecipeTheme.elegant,
+            tokens: tokens,
+          ).root;
+          expect(
+            legacyBound.borderRadius!.topLeft.x,
+            values.geometry['radius.control'],
+          );
+          expect(legacyBound.padding, legacySource.padding);
+          for (final recipe in legacy.raftRecipes.entries) {
             for (final style in recipe.value({
               'theme': 'elegant',
             }, tokens: tokens).values) {

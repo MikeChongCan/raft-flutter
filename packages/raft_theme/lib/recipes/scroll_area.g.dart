@@ -1,5 +1,5 @@
 // GENERATED — do not edit. Regenerate with `tool/recipes/run`.
-// Source: raft-ui 0.5.52 dist/index.mjs (sha256 742e86bfdb372e8f),
+// Source: raft-ui 0.7.0 dist/index.mjs (sha256 83bf0bff35092e3d),
 // tailwindcss 4.2.2 with raft-ui styles.css + Web @theme overrides. Recipe `scrollArea`.
 // ignore_for_file: type=lint
 
@@ -45,7 +45,7 @@ class RaftScrollAreaRecipeStyle {
   };
 }
 
-/// raft-ui recipe `scrollArea` (`src/components/scroll-area/scroll-area.recipe.ts`, index.mjs:3065).
+/// raft-ui recipe `scrollArea` (`src/components/scroll-area/scroll-area.recipe.ts`, index.mjs:2548).
 ///
 /// Used by: ScrollArea, ScrollAreaContent, ScrollAreaCorner, ScrollAreaScrollbar, ScrollAreaThumb, ScrollAreaViewport.
 ///
@@ -61,12 +61,9 @@ abstract final class RaftScrollAreaRecipe {
     'thumb',
     'corner',
   ];
-  static const List<RaftRecipeAxis> axes = [
-    RaftRecipeAxis('theme', ['brutal', 'elegant'], null, false),
-  ];
+  static const List<RaftRecipeAxis> axes = [];
 
   static RaftScrollAreaRecipeStyle resolve({
-    required RaftRecipeTheme theme,
     RaftRecipeStates states = RaftRecipeStates.none,
     RaftTokenResolver? tokens,
   }) {
@@ -75,7 +72,7 @@ abstract final class RaftScrollAreaRecipe {
       axes,
       _lists,
       _combos,
-      [theme.name],
+      [],
       states,
       tokens,
       recipeName: recipeName,
@@ -113,37 +110,35 @@ abstract final class RaftScrollAreaRecipe {
 
   /// Distinct class lists (indices into [raftRecipeUtilities]).
   static const List<List<int>> _lists = [
-    [2804, 2583],
-    [2925, 2583, 2687, 2672, 583, 560],
-    [2595],
+    [1669, 1457],
+    [1755, 1457, 1577, 1565, 418, 379],
+    [1472],
     [
-      1931,
-      3183,
-      1644,
-      3086,
-      2868,
-      2692,
-      2649,
-      3126,
-      1626,
-      2739,
-      1584,
-      1583,
-      1582,
-      1320,
-      1317,
-      1307,
-      1303,
-      1309,
+      1147,
+      1927,
+      959,
+      1854,
+      1714,
+      1581,
+      1546,
+      1878,
+      938,
+      1617,
+      897,
+      896,
+      895,
+      722,
+      720,
+      712,
+      708,
+      714,
     ],
-    [2804, 2845, 1778, 1777, 773, 2213],
-    [863],
-    [2804, 2845, 1778, 1777, 809, 2235],
+    [1669, 1051, 1050, 1691, 586, 1264],
+    [613],
   ];
 
   /// Per combination (mixed radix over [axes]): class list per slot.
   static const List<List<int>> _combos = [
     [0, 1, 2, 3, 4, 5],
-    [0, 1, 2, 3, 6, 5],
   ];
 }

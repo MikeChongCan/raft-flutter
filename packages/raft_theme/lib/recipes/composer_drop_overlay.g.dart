@@ -1,5 +1,5 @@
 // GENERATED — do not edit. Regenerate with `tool/recipes/run`.
-// Source: raft-ui 0.5.52 dist/index.mjs (sha256 742e86bfdb372e8f),
+// Source: raft-ui 0.7.0 dist/index.mjs (sha256 83bf0bff35092e3d),
 // tailwindcss 4.2.2 with raft-ui styles.css + Web @theme overrides. Recipe `composerDropOverlay`.
 // ignore_for_file: type=lint
 
@@ -35,7 +35,7 @@ class RaftComposerDropOverlayRecipeStyle {
   };
 }
 
-/// raft-ui recipe `composerDropOverlay` (`src/components/composer/composer-drop-overlay.recipe.ts`, index.mjs:13954).
+/// raft-ui recipe `composerDropOverlay` (`src/components/composer/composer-drop-overlay.recipe.ts`, index.mjs:11744).
 ///
 /// Used by: ComposerDropOverlay, ComposerDropOverlayLabel, ComposerDropOverlayPrompt.
 ///
@@ -49,12 +49,9 @@ abstract final class RaftComposerDropOverlayRecipe {
     'dropOverlayIconCluster',
     'dropOverlayIcon',
   ];
-  static const List<RaftRecipeAxis> axes = [
-    RaftRecipeAxis('theme', ['brutal', 'elegant'], null, false),
-  ];
+  static const List<RaftRecipeAxis> axes = [];
 
   static RaftComposerDropOverlayRecipeStyle resolve({
-    required RaftRecipeTheme theme,
     RaftRecipeStates states = RaftRecipeStates.none,
     RaftTokenResolver? tokens,
   }) {
@@ -63,7 +60,7 @@ abstract final class RaftComposerDropOverlayRecipe {
       axes,
       _lists,
       _combos,
-      [theme.name],
+      [],
       states,
       tokens,
       recipeName: recipeName,
@@ -99,19 +96,14 @@ abstract final class RaftComposerDropOverlayRecipe {
 
   /// Distinct class lists (indices into [raftRecipeUtilities]).
   static const List<List<int>> _lists = [
-    [586, 2322, 3181, 1644, 2331, 2336, 878, 902, 892, 824],
-    [1644, 1646, 2331, 1726, 877, 2690, 3007, 1713, 3016, 1187, 3053],
-    [2804, 1644, 2331, 2336, 1969, 3145],
-    [830, 2896, 2821, 2830, 1152, 2849, 2693, 428],
-    [586, 3181, 1644, 2331, 2336, 129, 2854, 877, 761],
-    [1644, 1646, 2331, 1726, 877, 2690, 3007, 1713, 3016, 1187, 2993],
-    [2804, 1644, 2331, 2336, 1953, 3148],
-    [830, 2896, 2821, 2830, 1152, 2848, 2694, 429],
+    [420, 1298, 1925, 959, 1310, 1315, 1696, 620, 624, 632, 594, 567],
+    [959, 961, 1310, 619, 1580, 1801, 1016, 1007, 1798, 1008, 1807],
+    [1669, 959, 1310, 1315, 1164, 1891],
+    [1697, 1583, 594, 1725, 1681, 1684, 279],
   ];
 
   /// Per combination (mixed radix over [axes]): class list per slot.
   static const List<List<int>> _combos = [
     [0, 1, 2, 3],
-    [4, 5, 6, 7],
   ];
 }

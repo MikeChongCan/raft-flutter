@@ -1,5 +1,5 @@
 // GENERATED — do not edit. Regenerate with `tool/recipes/run`.
-// Source: raft-ui 0.5.52 dist/index.mjs (sha256 742e86bfdb372e8f),
+// Source: raft-ui 0.7.0 dist/index.mjs (sha256 83bf0bff35092e3d),
 // tailwindcss 4.2.2 with raft-ui styles.css + Web @theme overrides. Recipe `kbd`.
 // ignore_for_file: type=lint
 
@@ -19,7 +19,7 @@ class RaftKbdRecipeStyle {
   Map<String, RaftSlotStyle> get slots => {'root': root, 'group': group};
 }
 
-/// raft-ui recipe `kbd` (`src/components/kbd/kbd.tsx`, index.mjs:4681).
+/// raft-ui recipe `kbd` (`src/components/kbd/kbd.tsx`, index.mjs:3699).
 ///
 /// Used by: Kbd, KbdGroup.
 ///
@@ -28,12 +28,9 @@ class RaftKbdRecipeStyle {
 abstract final class RaftKbdRecipe {
   static const String recipeName = 'kbd';
   static const List<String> slotNames = ['root', 'group'];
-  static const List<RaftRecipeAxis> axes = [
-    RaftRecipeAxis('theme', ['brutal', 'elegant'], null, false),
-  ];
+  static const List<RaftRecipeAxis> axes = [];
 
   static RaftKbdRecipeStyle resolve({
-    required RaftRecipeTheme theme,
     RaftRecipeStates states = RaftRecipeStates.none,
     RaftTokenResolver? tokens,
   }) {
@@ -42,7 +39,7 @@ abstract final class RaftKbdRecipe {
       axes,
       _lists,
       _combos,
-      [theme.name],
+      [],
       states,
       tokens,
       recipeName: recipeName,
@@ -74,56 +71,34 @@ abstract final class RaftKbdRecipe {
   /// Distinct class lists (indices into [raftRecipeUtilities]).
   static const List<List<int>> _lists = [
     [
-      2739,
-      2320,
-      3167,
-      2902,
-      2331,
-      2336,
-      1721,
-      3172,
-      1716,
-      1713,
-      2868,
-      423,
-      413,
-      2962,
-      3032,
+      1617,
+      1296,
+      1911,
+      1727,
+      1310,
+      1315,
+      1012,
+      1916,
+      1714,
+      274,
+      262,
+      1477,
+      1692,
+      1643,
+      1005,
+      1823,
+      1006,
+      1808,
+      1300,
+      1302,
+      1284,
+      1283,
     ],
-    [2320, 2331, 1721],
-    [
-      2739,
-      2320,
-      3167,
-      2902,
-      2331,
-      2336,
-      1721,
-      3172,
-      1716,
-      2868,
-      423,
-      413,
-      2603,
-      2852,
-      830,
-      2778,
-      2791,
-      2956,
-      1713,
-      3018,
-      2821,
-      2827,
-      2829,
-      1003,
-      1152,
-      1156,
-    ],
+    [1296, 1310, 1012],
   ];
 
   /// Per combination (mixed radix over [axes]): class list per slot.
   static const List<List<int>> _combos = [
     [0, 1],
-    [2, 1],
   ];
 }

@@ -1,5 +1,5 @@
 // GENERATED — do not edit. Regenerate with `tool/recipes/run`.
-// Source: raft-ui 0.5.52 dist/index.mjs (sha256 742e86bfdb372e8f),
+// Source: raft-ui 0.7.0 dist/index.mjs (sha256 83bf0bff35092e3d),
 // tailwindcss 4.2.2 with raft-ui styles.css + Web @theme overrides. Recipe `composerToolbarLabel`.
 // ignore_for_file: type=lint
 
@@ -16,7 +16,7 @@ class RaftComposerToolbarLabelRecipeStyle {
   Map<String, RaftSlotStyle> get slots => {'root': root};
 }
 
-/// raft-ui recipe `composerToolbarLabel` (`src/components/composer/composer-toolbar-label.tsx`, index.mjs:14299).
+/// raft-ui recipe `composerToolbarLabel` (`src/components/composer/composer-toolbar-label.tsx`, index.mjs:11989).
 ///
 /// Used by: ComposerToolbarLabel.
 ///
@@ -25,12 +25,9 @@ class RaftComposerToolbarLabelRecipeStyle {
 abstract final class RaftComposerToolbarLabelRecipe {
   static const String recipeName = 'composerToolbarLabel';
   static const List<String> slotNames = ['root'];
-  static const List<RaftRecipeAxis> axes = [
-    RaftRecipeAxis('theme', ['brutal', 'elegant'], null, false),
-  ];
+  static const List<RaftRecipeAxis> axes = [];
 
   static RaftComposerToolbarLabelRecipeStyle resolve({
-    required RaftRecipeTheme theme,
     RaftRecipeStates states = RaftRecipeStates.none,
     RaftTokenResolver? tokens,
   }) {
@@ -39,7 +36,7 @@ abstract final class RaftComposerToolbarLabelRecipe {
       axes,
       _lists,
       _combos,
-      [theme.name],
+      [],
       states,
       tokens,
       recipeName: recipeName,
@@ -70,30 +67,11 @@ abstract final class RaftComposerToolbarLabelRecipe {
 
   /// Distinct class lists (indices into [raftRecipeUtilities]).
   static const List<List<int>> _lists = [
-    [2320, 962, 2868, 2331, 1722, 3073, 1709, 3030],
-    [
-      2320,
-      962,
-      2868,
-      2331,
-      1722,
-      3073,
-      2590,
-      2848,
-      877,
-      863,
-      2780,
-      2792,
-      1713,
-      3018,
-      3125,
-      2231,
-    ],
+    [1296, 661, 1714, 1310, 1468, 1014, 1007, 1798, 1008, 1807, 1250, 1251],
   ];
 
   /// Per combination (mixed radix over [axes]): class list per slot.
   static const List<List<int>> _combos = [
     [0],
-    [1],
   ];
 }

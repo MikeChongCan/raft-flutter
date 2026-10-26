@@ -1,5 +1,5 @@
 // GENERATED — do not edit. Regenerate with `tool/recipes/run`.
-// Source: raft-ui 0.5.52 dist/index.mjs (sha256 742e86bfdb372e8f),
+// Source: raft-ui 0.7.0 dist/index.mjs (sha256 83bf0bff35092e3d),
 // tailwindcss 4.2.2 with raft-ui styles.css + Web @theme overrides. Recipe `skeleton`.
 // ignore_for_file: type=lint
 
@@ -28,7 +28,7 @@ class RaftSkeletonRecipeStyle {
   Map<String, RaftSlotStyle> get slots => {'root': root};
 }
 
-/// raft-ui recipe `skeleton` (`src/components/skeleton/skeleton.tsx`, index.mjs:14525).
+/// raft-ui recipe `skeleton` (`src/components/skeleton/skeleton.tsx`, index.mjs:12213).
 ///
 /// Used by: Skeleton.
 ///
@@ -38,12 +38,10 @@ abstract final class RaftSkeletonRecipe {
   static const String recipeName = 'skeleton';
   static const List<String> slotNames = ['root'];
   static const List<RaftRecipeAxis> axes = [
-    RaftRecipeAxis('theme', ['brutal', 'elegant'], null, false),
     RaftRecipeAxis('variant', ['line', 'block', 'circle'], 'block', false),
   ];
 
   static RaftSkeletonRecipeStyle resolve({
-    required RaftRecipeTheme theme,
     RaftSkeletonRecipeVariant? variant,
     RaftRecipeStates states = RaftRecipeStates.none,
     RaftTokenResolver? tokens,
@@ -53,7 +51,7 @@ abstract final class RaftSkeletonRecipe {
       axes,
       _lists,
       _combos,
-      [theme.name, variant?.css],
+      [variant?.css],
       states,
       tokens,
       recipeName: recipeName,
@@ -84,12 +82,9 @@ abstract final class RaftSkeletonRecipe {
 
   /// Distinct class lists (indices into [raftRecipeUtilities]).
   static const List<List<int>> _lists = [
-    [647, 2739, 1395, 1392, 1960],
-    [647, 2739, 1395, 1392],
-    [647, 2739, 1395, 1392, 2845, 821],
-    [647, 2739, 1396, 1394, 1393, 1391, 1960],
-    [647, 2739, 1396, 1394, 1393, 1391],
-    [647, 2739, 1396, 1394, 1393, 1391, 2845, 814],
+    [471, 1490, 1617, 786, 785, 784, 783, 1171],
+    [471, 1490, 1617, 786, 785, 784, 783],
+    [471, 1490, 1617, 786, 785, 784, 783, 1703, 579],
   ];
 
   /// Per combination (mixed radix over [axes]): class list per slot.
@@ -97,8 +92,5 @@ abstract final class RaftSkeletonRecipe {
     [0],
     [1],
     [2],
-    [3],
-    [4],
-    [5],
   ];
 }

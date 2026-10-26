@@ -1,5 +1,5 @@
 // GENERATED — do not edit. Regenerate with `tool/recipes/run`.
-// Source: raft-ui 0.5.52 dist/index.mjs (sha256 742e86bfdb372e8f),
+// Source: raft-ui 0.7.0 dist/index.mjs (sha256 83bf0bff35092e3d),
 // tailwindcss 4.2.2 with raft-ui styles.css + Web @theme overrides. Recipe `composerRoot`.
 // ignore_for_file: type=lint
 
@@ -16,7 +16,7 @@ class RaftComposerRootRecipeStyle {
   Map<String, RaftSlotStyle> get slots => {'base': base};
 }
 
-/// raft-ui recipe `composerRoot` (`src/components/composer/composer-root.tsx`, index.mjs:14263).
+/// raft-ui recipe `composerRoot` (`src/components/composer/composer-root.tsx`, index.mjs:11975).
 ///
 /// Used by: ComposerRoot.
 ///
@@ -25,12 +25,9 @@ class RaftComposerRootRecipeStyle {
 abstract final class RaftComposerRootRecipe {
   static const String recipeName = 'composerRoot';
   static const List<String> slotNames = ['base'];
-  static const List<RaftRecipeAxis> axes = [
-    RaftRecipeAxis('theme', ['brutal', 'elegant'], null, false),
-  ];
+  static const List<RaftRecipeAxis> axes = [];
 
   static RaftComposerRootRecipeStyle resolve({
-    required RaftRecipeTheme theme,
     RaftRecipeStates states = RaftRecipeStates.none,
     RaftTokenResolver? tokens,
   }) {
@@ -39,7 +36,7 @@ abstract final class RaftComposerRootRecipe {
       axes,
       _lists,
       _combos,
-      [theme.name],
+      [],
       states,
       tokens,
       recipeName: recipeName,
@@ -70,29 +67,11 @@ abstract final class RaftComposerRootRecipe {
 
   /// Distinct class lists (indices into [raftRecipeUtilities]).
   static const List<List<int>> _lists = [
-    [2804, 1644, 3168, 1646, 1723],
-    [
-      2804,
-      1644,
-      3168,
-      1646,
-      1722,
-      2008,
-      2007,
-      2003,
-      2001,
-      1999,
-      2000,
-      2006,
-      2002,
-      2004,
-      2005,
-    ],
+    [1669, 959, 1912, 961, 1014],
   ];
 
   /// Per combination (mixed radix over [axes]): class list per slot.
   static const List<List<int>> _combos = [
     [0],
-    [1],
   ];
 }

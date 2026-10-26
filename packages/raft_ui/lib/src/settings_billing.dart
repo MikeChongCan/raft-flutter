@@ -16,7 +16,7 @@ import 'recipes/button_variants.g.dart'
     show RaftButtonRecipeSize, RaftButtonRecipeVariant;
 import 'recipes/card.g.dart';
 import 'recipes/progress.g.dart';
-import 'recipes/recipe_utilities.g.dart';
+import 'recipes/recipe_router.dart' show resolveRecipeClasses;
 import 'recipes/skeleton.g.dart';
 import 'recipes/status.g.dart';
 import 'settings_controls.dart';
@@ -916,11 +916,8 @@ class _SeatUsage extends StatelessWidget {
     );
     // The track inherits Progress's local CSS variables (see RaftProgressBar);
     // the callsite adds `flex !overflow-hidden`.
-    final track = raftRecipeEngine.resolveSlot(
-      [
-        for (final name in {...p.root.classes, ...p.track.classes})
-          raftRecipeUtilities.indexWhere((u) => u.name == name),
-      ],
+    final track = resolveRecipeClasses(
+      {...p.root.classes, ...p.track.classes},
       states,
       rt,
     );

@@ -1,5 +1,5 @@
 // GENERATED — do not edit. Regenerate with `tool/recipes/run`.
-// Source: raft-ui 0.5.52 dist/index.mjs (sha256 742e86bfdb372e8f),
+// Source: raft-ui 0.7.0 dist/index.mjs (sha256 83bf0bff35092e3d),
 // tailwindcss 4.2.2 with raft-ui styles.css + Web @theme overrides. Recipe `liveAgentActivityBar`.
 // ignore_for_file: type=lint
 
@@ -45,7 +45,7 @@ class RaftLiveAgentActivityBarRecipeStyle {
   };
 }
 
-/// raft-ui recipe `liveAgentActivityBar` (`src/components/live-agent-activity-bar/live-agent-activity-bar.tsx`, index.mjs:17896).
+/// raft-ui recipe `liveAgentActivityBar` (`src/components/live-agent-activity-bar/live-agent-activity-bar.tsx`, index.mjs:14432).
 ///
 /// Used by: LiveAgentActivityBar, LiveAgentActivityBarAvatar, LiveAgentActivityBarContent, LiveAgentActivityBarRow, LiveAgentActivityBarStatus, LiveAgentActivityBarText.
 ///
@@ -61,12 +61,9 @@ abstract final class RaftLiveAgentActivityBarRecipe {
     'status',
     'text',
   ];
-  static const List<RaftRecipeAxis> axes = [
-    RaftRecipeAxis('theme', ['brutal', 'elegant'], null, false),
-  ];
+  static const List<RaftRecipeAxis> axes = [];
 
   static RaftLiveAgentActivityBarRecipeStyle resolve({
-    required RaftRecipeTheme theme,
     RaftRecipeStates states = RaftRecipeStates.none,
     RaftTokenResolver? tokens,
   }) {
@@ -75,7 +72,7 @@ abstract final class RaftLiveAgentActivityBarRecipe {
       axes,
       _lists,
       _combos,
-      [theme.name],
+      [],
       states,
       tokens,
       recipeName: recipeName,
@@ -113,21 +110,16 @@ abstract final class RaftLiveAgentActivityBarRecipe {
 
   /// Distinct class lists (indices into [raftRecipeUtilities]).
   static const List<List<int>> _lists = [
-    [2902, 2794, 927, 892, 868, 2783, 2533],
-    [1644, 2590, 2331, 1723],
-    [2921, 2902, 2679],
-    [1644, 2597, 1645, 2331, 1722],
-    [892],
-    [2597, 3133, 3053, 1714, 3000],
-    [2902, 2781, 2794, 2847, 876, 912, 830, 2896, 1029],
-    [2597, 1645, 2331, 1722, 958],
-    [2659],
-    [2597, 3133, 1645, 1716, 2962, 1715, 3018],
+    [1727, 1696, 618, 631, 594, 1647, 1658, 1725],
+    [959, 1468, 1310, 1014, 125],
+    [1727, 1571, 1747],
+    [959, 1473, 960, 1310, 1013],
+    [470, 368],
+    [1473, 1881, 1007, 1806, 1008, 1807],
   ];
 
   /// Per combination (mixed radix over [axes]): class list per slot.
   static const List<List<int>> _combos = [
     [0, 1, 2, 3, 4, 5],
-    [6, 1, 2, 7, 8, 9],
   ];
 }

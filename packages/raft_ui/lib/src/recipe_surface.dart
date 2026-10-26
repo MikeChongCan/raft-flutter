@@ -117,7 +117,7 @@ extension RaftSlotPaint on RaftSlotStyle {
         case RaftTokenShadow(:final token):
           final resolver = tokens;
           if (resolver is RaftRecipeTokens) {
-            out.addAll(_themeShadow(resolver.tokens, token.name).layers);
+            out.addAll(_themeShadow(resolver.tokens, token.name));
           } else {
             for (final s in tokens.shadow(token.name).reversed) {
               out.add(
@@ -147,16 +147,24 @@ extension RaftSlotPaint on RaftSlotStyle {
   }
 }
 
-RaftShadow _themeShadow(RaftTokens t, String name) {
+List<RaftCssShadow> _themeShadow(RaftTokens t, String name) {
   final s = t.themeShadows;
-  return switch (RaftRecipeTokens.cssName(name)) {
+  final css = RaftRecipeTokens.cssName(name);
+  final shadow = switch (css) {
     'theme-shadow-xs' || 'shadow-raft-xs' => s.xs,
     'theme-shadow-sm' || 'shadow-raft-sm' => s.sm,
     'theme-shadow-md' || 'shadow-raft-md' => s.md,
     'theme-shadow-lg' || 'shadow-raft-lg' => s.lg,
     'theme-shadow-xl' || 'shadow-raft-xl' => s.xl,
-    final other => throw ArgumentError('Unknown shadow token $other'),
+    _ => null,
   };
+  if (shadow != null) return shadow.layers;
+  // Pack-level shadows the Raft recipes name directly (`elevation-float`,
+  // `elevation-sticker`, `focus-ring`); the frozen set never does.
+  if (t.themeValues?.shadows.containsKey(css) ?? false) {
+    return t.shadowLayers(css);
+  }
+  throw ArgumentError('Unknown shadow token $css');
 }
 
 /// Flutter [BoxShadow.blurRadius] whose sigma equals the CSS sigma

@@ -1,5 +1,5 @@
 // GENERATED — do not edit. Regenerate with `tool/recipes/run`.
-// Source: raft-ui 0.5.52 dist/index.mjs (sha256 742e86bfdb372e8f),
+// Source: raft-ui 0.7.0 dist/index.mjs (sha256 83bf0bff35092e3d),
 // tailwindcss 4.2.2 with raft-ui styles.css + Web @theme overrides. Recipe `messageTranslation`.
 // ignore_for_file: type=lint
 
@@ -50,7 +50,7 @@ class RaftMessageTranslationRecipeStyle {
   };
 }
 
-/// raft-ui recipe `messageTranslation` (`src/components/message-translation/message-translation.recipe.ts`, index.mjs:12137).
+/// raft-ui recipe `messageTranslation` (`src/components/message-translation/message-translation.recipe.ts`, index.mjs:9720).
 ///
 /// Used by: MessageItemTranslationAction, MessageItemTranslationFailedStatus, MessageItemTranslationOriginal, MessageItemTranslationOriginalLabel, MessageItemTranslationProgressTrack, MessageItemTranslationRetryAction, MessageItemTranslationStatus.
 ///
@@ -67,12 +67,9 @@ abstract final class RaftMessageTranslationRecipe {
     'translationAction',
     'translationRetryAction',
   ];
-  static const List<RaftRecipeAxis> axes = [
-    RaftRecipeAxis('theme', ['brutal', 'elegant'], null, false),
-  ];
+  static const List<RaftRecipeAxis> axes = [];
 
   static RaftMessageTranslationRecipeStyle resolve({
-    required RaftRecipeTheme theme,
     RaftRecipeStates states = RaftRecipeStates.none,
     RaftTokenResolver? tokens,
   }) {
@@ -81,7 +78,7 @@ abstract final class RaftMessageTranslationRecipe {
       axes,
       _lists,
       _combos,
-      [theme.name],
+      [],
       states,
       tokens,
       recipeName: recipeName,
@@ -120,38 +117,31 @@ abstract final class RaftMessageTranslationRecipe {
 
   /// Distinct class lists (indices into [raftRecipeUtilities]).
   static const List<List<int>> _lists = [
-    [2641],
-    [2511, 2956, 1709, 3137, 3094, 2996],
-    [2320, 2331, 1722, 1714, 2958, 2997],
-    [2320, 2331, 1722, 1714, 2958, 3004],
-    [],
-    [2320, 2331, 1721, 1713, 3134, 3135, 1604, 2280],
-    [2320, 2331, 1721, 3134, 3135, 1709, 3004, 1604, 2280],
-    [2511, 2956, 1713, 3094, 3019],
-    [2320, 2331, 1722, 2958, 2363, 3018],
-    [2320, 2331, 1722, 2958, 2363, 3064],
-    [1952],
-    [2320, 2331, 1721, 1713, 3135, 3019, 2633, 2298],
+    [1539, 1499],
+    [1420, 1005, 1823, 1808],
+    [1296, 1310, 1013, 1499, 1005, 1823, 1808, 277],
+    [1296, 1310, 1013, 1499, 1005, 1823, 1840, 277],
+    [1163],
     [
-      2320,
-      2331,
-      1721,
-      1713,
-      3135,
-      2852,
-      2777,
-      2790,
-      3064,
-      2633,
-      3125,
-      2255,
-      2302,
+      1296,
+      1310,
+      1012,
+      1882,
+      1691,
+      1007,
+      1799,
+      1008,
+      1807,
+      912,
+      1884,
+      1272,
+      1565,
+      988,
     ],
   ];
 
   /// Per combination (mixed radix over [axes]): class list per slot.
   static const List<List<int>> _combos = [
-    [0, 1, 2, 3, 4, 5, 6],
-    [0, 7, 8, 9, 10, 11, 12],
+    [0, 1, 2, 3, 4, 5, 5],
   ];
 }

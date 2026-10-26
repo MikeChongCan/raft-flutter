@@ -1,5 +1,5 @@
 // GENERATED — do not edit. Regenerate with `tool/recipes/run`.
-// Source: raft-ui 0.5.52 dist/index.mjs (sha256 742e86bfdb372e8f),
+// Source: raft-ui 0.7.0 dist/index.mjs (sha256 83bf0bff35092e3d),
 // tailwindcss 4.2.2 with raft-ui styles.css + Web @theme overrides. Recipe `messageAttachment`.
 // ignore_for_file: type=lint
 
@@ -75,7 +75,7 @@ class RaftMessageAttachmentRecipeStyle {
   };
 }
 
-/// raft-ui recipe `messageAttachment` (`src/components/message-attachment/message-attachment.recipe.ts`, index.mjs:10941).
+/// raft-ui recipe `messageAttachment` (`src/components/message-attachment/message-attachment.recipe.ts`, index.mjs:8688).
 ///
 /// Used by: MessageAttachmentAction, MessageAttachmentCard, MessageAttachmentCommentSummary, MessageAttachmentDiffAddition, MessageAttachmentDiffDeletion, MessageAttachmentDiffSummary, MessageAttachmentGroup, MessageAttachmentMeta, MessageAttachmentMetaEnd, MessageAttachmentMetaStart, MessageAttachmentSummary, MessageAttachmentTitle.
 ///
@@ -97,12 +97,9 @@ abstract final class RaftMessageAttachmentRecipe {
     'diffDeletion',
     'action',
   ];
-  static const List<RaftRecipeAxis> axes = [
-    RaftRecipeAxis('theme', ['brutal', 'elegant'], null, false),
-  ];
+  static const List<RaftRecipeAxis> axes = [];
 
   static RaftMessageAttachmentRecipeStyle resolve({
-    required RaftRecipeTheme theme,
     RaftRecipeStates states = RaftRecipeStates.none,
     RaftTokenResolver? tokens,
   }) {
@@ -111,7 +108,7 @@ abstract final class RaftMessageAttachmentRecipe {
       axes,
       _lists,
       _combos,
-      [theme.name],
+      [],
       states,
       tokens,
       recipeName: recipeName,
@@ -155,78 +152,65 @@ abstract final class RaftMessageAttachmentRecipe {
 
   /// Distinct class lists (indices into [raftRecipeUtilities]).
   static const List<List<int>> _lists = [
-    [1644, 2495, 1650, 2333, 1723],
+    [959, 1402, 965, 1312, 1014],
     [
-      1910,
-      2804,
-      2320,
-      1959,
-      3151,
-      2601,
-      2488,
-      2902,
-      1646,
-      2679,
-      3040,
-      876,
-      894,
-      868,
-      2780,
-      2792,
-      2994,
-      3125,
-      2262,
-      2240,
+      1125,
+      1669,
+      1296,
+      1170,
+      1893,
+      1479,
+      1394,
+      1727,
+      961,
+      1571,
+      1820,
+      1696,
+      618,
+      631,
+      594,
+      1658,
+      1622,
+      1606,
+      1807,
+      1565,
+      1274,
+      427,
+      988,
+      227,
     ],
-    [874, 3168, 2505, 2902, 3133, 3073, 1713, 2994],
-    [2628, 1644, 3168, 2597, 2505, 2331, 2335, 1722, 2956, 2997],
-    [2597, 1645, 3133],
-    [2608, 2320, 2902, 2331, 1721, 435, 425],
-    [2620, 2320, 2902, 2331, 3172, 2956, 427, 425, 1713, 2997],
-    [1727],
-    [1722],
-    [3055],
-    [3009],
-    [2804, 1644, 2913, 2331, 2336, 694, 688, 709, 427, 425, 3000, 1888],
+    [616, 1912, 1414, 1727, 1881, 1621, 1007, 1798, 1008, 1807],
+    [1506, 959, 1912, 1473, 1414, 1310, 1314, 1014, 1005, 1823, 1808],
+    [1473, 960, 1881],
+    [1487, 1296, 1727, 1310, 1012, 286, 276],
+    [1498, 1296, 1727, 1310, 1916, 276, 1621, 1005, 1823, 1808, 278],
+    [1019],
+    [1013],
+    [1831],
+    [1804],
     [
-      1910,
-      2804,
-      2320,
-      3151,
-      2601,
-      2488,
-      2902,
-      1646,
-      2679,
-      3040,
-      1957,
-      2840,
-      879,
-      913,
-      830,
-      2780,
-      2792,
-      3024,
-      2899,
-      3103,
-      1626,
-      2265,
-      2240,
-      596,
-      1029,
-      1127,
-      1113,
-      979,
+      1669,
+      959,
+      1310,
+      1315,
+      511,
+      508,
+      527,
+      276,
+      99,
+      1743,
+      1697,
+      1807,
+      1565,
+      1263,
+      425,
+      988,
+      279,
     ],
-    [874, 3168, 2505, 2902, 3133, 3073, 1713, 3013],
-    [2628, 1644, 3168, 2597, 2505, 2331, 2335, 1722, 2956, 3021],
-    [2620, 2320, 2902, 2331, 3172, 2956, 427, 425, 1713, 3021],
-    [2804, 1644, 2913, 2331, 2336, 694, 688, 709, 427, 425, 3015, 3125, 1889],
   ];
 
   /// Per combination (mixed radix over [axes]): class list per slot.
   static const List<List<int>> _combos = [
     [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
-    [0, 12, 13, 14, 4, 5, 15, 7, 8, 9, 10, 16],
   ];
 }

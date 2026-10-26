@@ -1,5 +1,5 @@
 // GENERATED — do not edit. Regenerate with `tool/recipes/run`.
-// Source: raft-ui 0.5.52 dist/index.mjs (sha256 742e86bfdb372e8f),
+// Source: raft-ui 0.7.0 dist/index.mjs (sha256 83bf0bff35092e3d),
 // tailwindcss 4.2.2 with raft-ui styles.css + Web @theme overrides. Recipe `taskCard`.
 // ignore_for_file: type=lint
 
@@ -60,7 +60,7 @@ class RaftTaskCardRecipeStyle {
   };
 }
 
-/// raft-ui recipe `taskCard` (`src/components/task-card/task-card.recipe.ts`, index.mjs:18460).
+/// raft-ui recipe `taskCard` (`src/components/task-card/task-card.recipe.ts`, index.mjs:14856).
 ///
 /// Used by: TaskCard, TaskCardBody, TaskCardChannel, TaskCardDescription, TaskCardLegacy, TaskCardMeta, TaskCardNumber, TaskCardRow, TaskCardTitle.
 ///
@@ -79,12 +79,9 @@ abstract final class RaftTaskCardRecipe {
     'title',
     'description',
   ];
-  static const List<RaftRecipeAxis> axes = [
-    RaftRecipeAxis('theme', ['brutal', 'elegant'], null, false),
-  ];
+  static const List<RaftRecipeAxis> axes = [];
 
   static RaftTaskCardRecipeStyle resolve({
-    required RaftRecipeTheme theme,
     RaftRecipeStates states = RaftRecipeStates.none,
     RaftTokenResolver? tokens,
   }) {
@@ -93,7 +90,7 @@ abstract final class RaftTaskCardRecipe {
       axes,
       _lists,
       _combos,
-      [theme.name],
+      [],
       states,
       tokens,
       recipeName: recipeName,
@@ -135,73 +132,56 @@ abstract final class RaftTaskCardRecipe {
   /// Distinct class lists (indices into [raftRecipeUtilities]).
   static const List<List<int>> _lists = [
     [
-      2804,
-      3168,
-      2781,
-      2795,
-      3040,
-      3124,
-      1625,
-      1259,
-      1220,
-      1219,
-      1227,
-      1755,
-      1754,
-      2615,
-      2616,
-      878,
-      916,
-      830,
-      2897,
-      2191,
-      2287,
+      1669,
+      1912,
+      1820,
+      1876,
+      937,
+      696,
+      677,
+      680,
+      1043,
+      1492,
+      1493,
+      1696,
+      618,
+      631,
+      594,
+      1584,
+      1807,
+      1725,
+      697,
+      695,
+      673,
+      676,
+      1042,
     ],
-    [1644, 2597, 2333, 1723],
-    [2597, 1645],
-    [2513, 1644, 2597, 2331, 1723, 1648],
-    [3073, 2352, 2597, 3133, 1709, 3030],
-    [2902, 2958, 1714, 3026],
-    [2902, 2778, 2790, 2956, 876, 912, 1712, 1709, 3029],
-    [2375, 3177, 3053, 2354, 1709, 3024],
-    [2623, 2374, 3177, 3073, 2352, 3032],
+    [959, 1473, 1312, 1014],
+    [1473, 960],
+    [959, 1473, 963, 1310, 1014, 1422],
+    [1473, 1881, 1005, 1823, 1006, 1808],
+    [1727, 1005, 1823, 1006, 1808],
     [
-      2804,
-      3168,
-      2781,
-      2795,
-      3040,
-      3124,
-      1625,
-      1259,
-      1220,
-      1219,
-      1227,
-      1755,
-      1754,
-      2615,
-      2616,
-      2847,
-      879,
-      912,
-      830,
-      2899,
-      2204,
-      1756,
-      1258,
-      1029,
+      1727,
+      1296,
+      1182,
+      1310,
+      1695,
+      1644,
+      1653,
+      1300,
+      1302,
+      1005,
+      1823,
+      1006,
+      1811,
     ],
-    [2513, 1644, 2597, 1648, 2331, 1722],
-    [3073, 2352, 2597, 3133, 1713, 3018],
-    [2902, 2958, 1716, 2351, 1713, 2946, 3021],
-    [2902, 2778, 2790, 2956, 2852, 876, 912, 801, 1716, 2350, 1713, 3093, 3018],
-    [2375, 3177, 3053, 2354, 1713, 3013],
-    [2623, 2374, 3177, 2962, 2353, 3018],
+    [1345, 1921, 1795, 1008, 1807, 1281],
+    [1344, 1921, 1499, 1798, 1811, 1281],
   ];
 
   /// Per combination (mixed radix over [axes]): class list per slot.
   static const List<List<int>> _combos = [
     [0, 1, 2, 3, 4, 5, 6, 7, 8],
-    [9, 1, 2, 10, 11, 12, 13, 14, 15],
   ];
 }

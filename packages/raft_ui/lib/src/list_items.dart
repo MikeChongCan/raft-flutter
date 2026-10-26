@@ -14,7 +14,7 @@ import 'recipes/button_variants.g.dart';
 
 import 'recipe_surface.dart';
 import 'recipes/card.g.dart';
-import 'recipes/recipe_utilities.g.dart';
+import 'recipes/recipe_router.dart' show resolveAuthoredClasses;
 import 'recipes/recipe_runtime.dart';
 import 'panel_layout.dart';
 import 'text_measure.dart';
@@ -161,11 +161,8 @@ class _RaftSurfaceListItemState extends State<RaftSurfaceListItem> {
           'hover:shadow-raft-sm',
         ],
       ];
-      card = raftRecipeEngine.resolveSlot(
-        [
-          for (final name in classes)
-            raftRecipeUtilities.indexWhere((utility) => utility.name == name),
-        ],
+      card = resolveAuthoredClasses(
+        classes,
         t.recipeStates(hovered: hover),
         rt,
       );
@@ -1289,11 +1286,8 @@ RaftSlotStyle _selectionPopoverSurface(RaftTokens tokens) {
     'bg-layer-panel',
     'shadow-raft-sm',
   ];
-  return raftRecipeEngine.resolveSlot(
-    [
-      for (final name in classes)
-        raftRecipeUtilities.indexWhere((utility) => utility.name == name),
-    ],
+  return resolveAuthoredClasses(
+    classes,
     tokens.recipeStates(),
     tokens.recipeTokens,
   );
