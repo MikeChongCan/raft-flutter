@@ -12,7 +12,11 @@ import 'indicators.dart' show RaftSkeleton;
 import 'panel_layout.dart' show RaftCssText;
 import 'recipes/button_variants.g.dart';
 import 'recipes/card.g.dart';
-import 'recipes/recipe_router.dart' show resolveAuthoredClasses;
+
+import 'package:raft_theme/recipes.dart' show RaftRecipeSet;
+
+import 'recipes/recipe_router.dart'
+    show raftPopoverSurfaceClasses, resolveRecipeClasses;
 import 'components.dart' show RaftAvatar, RaftAvatarKind;
 import 'list_items.dart';
 import 'mounted_avatar_recipe.dart';
@@ -805,7 +809,7 @@ class _RaftTaskSurfaceState extends State<RaftTaskSurface> {
     return RaftSelectionPopover(
       title: raftText(context, 'Assignee'),
       width: 240,
-      surfaceStyle: assigneeSurface(t),
+      surfaceStyle: taskAssigneeSurface(t),
       searchController: assigneeSearch,
       searchPlaceholder: raftText(context, 'Search people and agents'),
       onSearchChanged: (_) {},
@@ -846,40 +850,6 @@ class _RaftTaskSurfaceState extends State<RaftTaskSurface> {
           ),
       ],
     );
-  }
-
-  /// `w-[240px] border border-line-muted bg-layer-popover text-foreground-strong
-  /// shadow-raft-md` (theme-brutal: `border-2 border-black bg-white text-black
-  /// shadow-brutal`) over the Card recipe.
-  RaftSlotStyle assigneeSurface(RaftTokens t) {
-    final card = RaftCardRecipe.resolve(
-      theme: t.recipeTheme,
-      states: t.recipeStates(),
-      tokens: t.recipeTokens,
-    ).root;
-    final classes = [
-      ...card.classes.where(
-        (name) => !const {
-          'min-w-0',
-          'border-2',
-          'border-[0.5px]',
-          'border-line-muted',
-          'border-line-strong',
-          'border-black',
-          'bg-white',
-          'bg-layer-panel',
-          'shadow-raft-md',
-          'shadow-raft-xs',
-          'shadow-raft-sm',
-        }.contains(name),
-      ),
-      'border',
-      'border-line-muted',
-      'bg-layer-popover',
-      'text-foreground-strong',
-      'shadow-raft-md',
-    ];
-    return resolveAuthoredClasses(classes, t.recipeStates(), t.recipeTokens);
   }
 
   /// Web `TaskProperties` history: `Timeline size="sm"` of the visible events
@@ -1141,4 +1111,43 @@ class _RaftTaskSurfaceState extends State<RaftTaskSurface> {
   }
 
   String taskTime(dynamic value) => widget.formatTime(value);
+}
+
+/// `w-[240px] border border-line-muted bg-layer-popover text-foreground-strong
+/// shadow-raft-md` (theme-brutal: `border-2 border-black bg-white text-black
+/// shadow-brutal`) over the Card recipe.
+@visibleForTesting
+RaftSlotStyle taskAssigneeSurface(RaftTokens t) {
+  final card = RaftCardRecipe.resolve(
+    theme: t.recipeTheme,
+    states: t.recipeStates(),
+    tokens: t.recipeTokens,
+  ).root;
+  // Raft look: the Card classes of the current set with the Popover content
+  // treatment. Frozen looks: their Card classes plus the authored 0.5.52 list.
+  final classes = t.recipeSet == RaftRecipeSet.raft
+      ? raftPopoverSurfaceClasses(card.classes)
+      : [
+          ...card.classes.where(
+            (name) => !const {
+              'min-w-0',
+              'border-2',
+              'border-[0.5px]',
+              'border-line-muted',
+              'border-line-strong',
+              'border-black',
+              'bg-white',
+              'bg-layer-panel',
+              'shadow-raft-md',
+              'shadow-raft-xs',
+              'shadow-raft-sm',
+            }.contains(name),
+          ),
+          'border',
+          'border-line-muted',
+          'bg-layer-popover',
+          'text-foreground-strong',
+          'shadow-raft-md',
+        ];
+  return resolveRecipeClasses(classes, t.recipeStates(), t.recipeTokens);
 }

@@ -31,46 +31,74 @@ Map<String, RaftSlotStyle> withLegacySlots(
   RaftTokenResolver? tokens,
 ) => {for (final name in legacySlots) name: absentSlot(tokens), ...raft};
 
+/// Utility indices of [names] in [utilities]. A name the table never compiled
+/// is a bug in the caller (typically a list that mixes names of two recipe
+/// sets), so it fails loudly in debug builds, naming the offender.
+List<int> _indices(
+  List<RaftUtility> utilities,
+  Iterable<String> names,
+  String table,
+) {
+  final out = <int>[];
+  for (final name in names) {
+    final i = utilities.indexWhere((u) => u.name == name);
+    assert(i >= 0, 'Class "$name" is not in the $table utility table.');
+    if (i >= 0) out.add(i);
+  }
+  return out;
+}
+
 /// Resolves class names (as listed in a resolved slot's `classes`) through the
-/// utility table and engine of the recipe set [tokens] paints with. Names the
-/// Raft table never compiled are skipped; the frozen table always has them.
+/// utility table and engine of the recipe set [tokens] paints with. Every name
+/// must exist there: pass names of one set only (debug builds assert).
 RaftSlotStyle resolveRecipeClasses(
   Iterable<String> names,
   RaftRecipeStates states,
   RaftTokenResolver tokens,
 ) {
   final legacySet = usesLegacyRecipes(tokens);
-  final utilities = legacySet
-      ? legacy.raftRecipeUtilities
-      : raft.raftRecipeUtilities;
-  final engine = legacySet ? legacy.raftRecipeEngine : raft.raftRecipeEngine;
-  return engine.resolveSlot(
-    [
-      for (final name in names)
-        if (utilities.indexWhere((u) => u.name == name) case final i
-            when i >= 0)
-          i,
-    ],
-    states,
-    tokens,
-  );
+  return (legacySet ? legacy.raftRecipeEngine : raft.raftRecipeEngine)
+      .resolveSlot(
+        _indices(
+          legacySet ? legacy.raftRecipeUtilities : raft.raftRecipeUtilities,
+          names,
+          legacySet ? 'frozen 0.5.52' : 'Raft',
+        ),
+        states,
+        tokens,
+      );
 }
 
 /// Resolves class names written in this repository (product compositions such as
-/// `.card-brutal`, not the output of a recipe) through the 0.5.52 utility table.
-///
-/// Those lists use the 0.5.52 vocabulary (`bg-layer-panel`, `shadow-raft-md`),
-/// which the Raft set's table no longer compiles, so they stay on the table they
-/// were authored against in every look.
+/// `.card-brutal`) through the 0.5.52 utility table, in every look. The list
+/// must be authored entirely in the 0.5.52 vocabulary (`bg-layer-panel`,
+/// `shadow-raft-md`): never mix in the `classes` of a routed recipe, which come
+/// from the Raft set in the Raft look. Debug builds assert on unknown names.
 RaftSlotStyle resolveAuthoredClasses(
   Iterable<String> names,
   RaftRecipeStates states,
   RaftTokenResolver tokens,
 ) => legacy.raftRecipeEngine.resolveSlot(
-  [
-    for (final name in names)
-      legacy.raftRecipeUtilities.indexWhere((u) => u.name == name),
-  ],
+  _indices(legacy.raftRecipeUtilities, names, 'frozen 0.5.52'),
   states,
   tokens,
 );
+
+/// The Card recipe's classes re-skinned as a floating surface in the Raft set:
+/// the Popover content treatment of raft-ui 0.7.0 (`bg-layer-popover
+/// shadow-float ring-1 ring-line-seam`, no border) instead of the card's
+/// hairline, fill and `shadow-none`.
+List<String> raftPopoverSurfaceClasses(Iterable<String> cardClasses) => [
+  ...cardClasses.where(
+    (name) => !const {
+      'border',
+      'border-line-hairline',
+      'bg-layer-card',
+      'shadow-none',
+    }.contains(name),
+  ),
+  'bg-layer-popover',
+  'shadow-float',
+  'ring-1',
+  'ring-line-seam',
+];

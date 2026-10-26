@@ -162,16 +162,6 @@ void main() {
       expect(mask.properties, isEmpty);
     });
 
-    test('class lists skip names the current table did not compile', () {
-      final t = tokens(builtInRaftTheme);
-      final style = resolveRecipeClasses(
-        const ['border', 'bg-layer-panel'],
-        t.recipeStates(),
-        t.recipeTokens,
-      );
-      expect(style.classes, ['border']);
-    });
-
     test('a resolver that names no set keeps the frozen recipes', () {
       final frozen = RaftButtonRecipe.resolve(theme: RaftRecipeTheme.elegant);
       expect(frozen.root.fontSize, 14);

@@ -14,7 +14,8 @@ import 'recipes/button_variants.g.dart';
 
 import 'recipe_surface.dart';
 import 'recipes/card.g.dart';
-import 'recipes/recipe_router.dart' show resolveAuthoredClasses;
+import 'recipes/recipe_router.dart'
+    show raftPopoverSurfaceClasses, resolveRecipeClasses;
 import 'recipes/recipe_runtime.dart';
 import 'panel_layout.dart';
 import 'text_measure.dart';
@@ -144,28 +145,37 @@ class _RaftSurfaceListItemState extends State<RaftSurfaceListItem> {
       tokens: rt,
     ).root;
     {
-      final classes = [
-        ...card.classes.where(
-          (name) =>
-              name != 'border-[0.5px]' &&
-              name != 'border-line-muted' &&
-              name != 'bg-layer-panel' &&
-              (!(widget.selected || hover) || name != 'shadow-raft-xs'),
-        ),
-        'border',
-        widget.selected ? 'border-info' : 'border-line-muted',
-        widget.selected ? 'bg-info-muted' : 'bg-layer-card',
-        if (widget.selected) 'shadow-raft-sm',
-        if (interactive && !widget.selected) ...[
-          'hover:border-line-strong',
-          'hover:shadow-raft-sm',
-        ],
-      ];
-      card = resolveAuthoredClasses(
-        classes,
-        t.recipeStates(hovered: hover),
-        rt,
-      );
+      // Raft set (a user pack that opts out of `surfaceItem.style: raft`): the
+      // Card classes with the `raft` style's selected fill and hover wash.
+      // Frozen looks: their Card classes plus the authored 0.5.52 list.
+      final classes = t.recipeSet == RaftRecipeSet.raft
+          ? [
+              ...card.classes.where(
+                (name) =>
+                    !widget.selected ||
+                    (name != 'bg-layer-card' && name != 'border-line-hairline'),
+              ),
+              if (widget.selected) ...['bg-info-soft', 'border-line-hairline'],
+              if (interactive && !widget.selected) 'hover:press-overlay',
+            ]
+          : [
+              ...card.classes.where(
+                (name) =>
+                    name != 'border-[0.5px]' &&
+                    name != 'border-line-muted' &&
+                    name != 'bg-layer-panel' &&
+                    (!(widget.selected || hover) || name != 'shadow-raft-xs'),
+              ),
+              'border',
+              widget.selected ? 'border-info' : 'border-line-muted',
+              widget.selected ? 'bg-info-muted' : 'bg-layer-card',
+              if (widget.selected) 'shadow-raft-sm',
+              if (interactive && !widget.selected) ...[
+                'hover:border-line-strong',
+                'hover:shadow-raft-sm',
+              ],
+            ];
+      card = resolveRecipeClasses(classes, t.recipeStates(hovered: hover), rt);
     }
 
     Widget item = RaftRecipeBox(
@@ -1265,28 +1275,32 @@ RaftSlotStyle _selectionPopoverSurface(RaftTokens tokens) {
     states: tokens.recipeStates(),
     tokens: tokens.recipeTokens,
   ).root;
-  final classes = [
-    ...card.classes.where(
-      (name) => !const {
-        'min-w-0',
-        'border-2',
-        'border-[0.5px]',
-        'border-line-muted',
-        'border-line-strong',
-        'border-black',
-        'bg-white',
-        'bg-layer-panel',
-        'shadow-raft-md',
-        'shadow-raft-xs',
-      }.contains(name),
-    ),
-    'min-w-[220px]',
-    'border',
-    'border-line-muted',
-    'bg-layer-panel',
-    'shadow-raft-sm',
-  ];
-  return resolveAuthoredClasses(
+  // Raft set: the Card classes with the Popover content treatment. Frozen
+  // looks: their Card classes plus the authored 0.5.52 list.
+  final classes = tokens.recipeSet == RaftRecipeSet.raft
+      ? [...raftPopoverSurfaceClasses(card.classes), 'min-w-[220px]']
+      : [
+          ...card.classes.where(
+            (name) => !const {
+              'min-w-0',
+              'border-2',
+              'border-[0.5px]',
+              'border-line-muted',
+              'border-line-strong',
+              'border-black',
+              'bg-white',
+              'bg-layer-panel',
+              'shadow-raft-md',
+              'shadow-raft-xs',
+            }.contains(name),
+          ),
+          'min-w-[220px]',
+          'border',
+          'border-line-muted',
+          'bg-layer-panel',
+          'shadow-raft-sm',
+        ];
+  return resolveRecipeClasses(
     classes,
     tokens.recipeStates(),
     tokens.recipeTokens,
