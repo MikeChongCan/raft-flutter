@@ -240,7 +240,11 @@ void main() {
           // neutral placeholder only (Web's tinted image box).
           expect(find.byType(RaftTransferPlaceholder), findsNWidgets(2));
           expect(find.text('Connecting…'), findsNothing);
-          expect(find.byType(RaftTransferBar), findsOneWidget, reason: 'failed tile only');
+          expect(
+            find.byType(RaftTransferBar),
+            findsOneWidget,
+            reason: 'failed tile only',
+          );
           expect(find.byType(RaftTransferChip), findsOneWidget);
           expect(find.text('Download failed · tap to retry'), findsOneWidget);
           // The chip band retries; the rest of the failed tile still opens.
