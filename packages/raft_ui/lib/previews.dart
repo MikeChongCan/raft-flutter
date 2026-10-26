@@ -79,7 +79,7 @@ Widget composerPreview() => const _InteractivePreview('Composer');
 Widget emptyPreview() => const RaftEmptyState(
   title: 'No unread messages',
   detail: 'You are up to date with your workspace.',
-  icon: Icons.done_all,
+  glyph: RaftGlyph.checkCheck,
 );
 @RaftPreviews('Upload')
 Widget uploadPreview() => const _InteractivePreview('Upload');

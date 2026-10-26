@@ -1,27 +1,27 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' show Icons;
+import 'package:flutter/widgets.dart';
 
 import 'icons.dart';
 import 'panel_layout.dart' show RaftCssText;
 import 'theme.dart';
 
-/// Centered empty content. Semantic copy belongs to the caller; visual values
-/// and the default icon renderer belong to the theme pack.
+/// raft-ui `EmptyState`: a [glyph] (36px, `foreground-hint`), a bold title, one
+/// sentence and at most one [action], centred. Semantic copy belongs to the
+/// caller; every visual value comes from the theme pack. Without a [glyph] the
+/// pack's `emptyState.defaultGlyph` stands in (the Raft look: a Lucide message
+/// square; the frozen Elegant and Brutal looks keep their original forum mark).
 class RaftEmptyState extends StatelessWidget {
   const RaftEmptyState({
     super.key,
     required this.title,
     required this.detail,
-    IconData? icon,
     this.glyph,
     this.action,
-  }) : icon = icon ?? Icons.forum_outlined,
-       _defaultIcon = icon == null;
+  });
 
   final String title, detail;
-  final IconData icon;
-  final bool _defaultIcon;
 
-  /// Lucide glyph; wins over [icon].
+  /// Lucide glyph.
   final RaftGlyph? glyph;
   final Widget? action;
 
@@ -29,11 +29,14 @@ class RaftEmptyState extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
     final css = t.option('emptyState.textLayout', or: 'css') == 'css';
-    final titleBase = Theme.of(context).textTheme.titleLarge!;
     final bodyBase = DefaultTextStyle.of(context).style;
     final titleSize = t.size('type.emptyTitle.size', fallback: 17);
     final bodySize = t.size('type.emptyBody.size', fallback: 14);
-    final titleStyle = titleBase.copyWith(
+    final titleStyle = TextStyle(
+      locale: t.textLocale,
+      fontFamilyFallback: t.fontFallback,
+      fontWeight: FontWeight.w700,
+      letterSpacing: 0,
       fontFamily: t.fontFamily('font.emptyTitle'),
       fontSize: titleSize,
       height: t.size('type.emptyTitle.line', fallback: 22) / titleSize,
@@ -49,13 +52,10 @@ class RaftEmptyState extends StatelessWidget {
         : Text(value, style: style, textAlign: TextAlign.center);
     final size = t.size('size.emptyGlyph', fallback: 36);
     final iconColor = t.colors['foreground-empty-icon'] ?? t.strong;
-    final effectiveGlyph =
-        glyph ??
-        (_defaultIcon &&
-                t.option('emptyState.defaultGlyph', or: 'messageSquare') ==
-                    'messageSquare'
-            ? RaftGlyph.messageSquare
-            : null);
+    final forum =
+        glyph == null &&
+        t.option('emptyState.defaultGlyph', or: 'messageSquare') == 'forum';
+    final effectiveGlyph = glyph ?? (forum ? null : RaftGlyph.messageSquare);
     final contentMax = t.size('size.emptyContentMax', fallback: 384);
     final descriptionMax = t.size('size.emptyDescriptionMax', fallback: 300);
     return Center(
@@ -74,7 +74,7 @@ class RaftEmptyState extends StatelessWidget {
               if (effectiveGlyph != null)
                 RaftIcon(effectiveGlyph, size: size, color: iconColor)
               else
-                Icon(icon, size: size, color: iconColor),
+                Icon(Icons.forum_outlined, size: size, color: iconColor),
               SizedBox(height: t.size('space.emptyIconAfter', fallback: 16)),
               text(title, titleStyle),
               const SizedBox(height: 8),
