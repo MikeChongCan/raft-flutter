@@ -346,6 +346,22 @@ class FrameFixtureContractTest(unittest.TestCase):
         self.assertEqual(frame['routeSets']['fr-channel'].get(f'GET /tasks/channel/{channel}'), {'tasks': []})
 
 
+class DesktopDownloadFixtureContractTest(unittest.TestCase):
+    def test_about_families_supply_a_platform_status_for_every_os(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            builders.build_manifest(pathlib.Path(tmp))
+        for family in ('settings', 'public-server'):
+            with self.subTest(family=family):
+                fixture = json.loads((EXT / f'fixtures/{family}.json').read_text())
+                response = fixture['routes'].get('GET /desktop-download/platforms')
+                self.assertIsInstance(response, dict)
+                self.assertEqual(set(response), {'mac', 'linux', 'windows'})
+                for platform in response.values():
+                    self.assertIn(platform['status'], {'available', 'none', 'unknown'})
+                    if platform['status'] == 'available':
+                        self.assertIsInstance(platform['version'], str)
+
+
 class PageInventoryTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

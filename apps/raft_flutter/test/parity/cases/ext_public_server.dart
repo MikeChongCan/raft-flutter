@@ -87,7 +87,7 @@ Widget _page(ParityContext ctx) {
             ),
           )
         : null,
-    appVersion: '1.17.5',
+    appVersion: fx[ctx.againstWeb ? 'webAppVersion' : 'appVersion'] as String,
     onSignIn: () {},
     onRegister: () {},
     onUnavailable: () {},

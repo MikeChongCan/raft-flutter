@@ -199,7 +199,11 @@ Widget _page(ParityContext ctx) {
       bridgeEnabled: flags.contains('bridge'),
       labsEnabled: flags.contains('labs'),
       now: () => now,
-      appVersion: _fx(ctx)['appVersion'] as String,
+      appVersion:
+          _fx(ctx)[ctx.againstWeb && ctx.props['tab'] == 'about'
+                  ? 'webAppVersion'
+                  : 'appVersion']
+              as String,
       // The React render host's origin (the QR encodes `<origin>/download`).
       frontendOrigin: Uri.parse(
         'http://127.0.0.1:${Platform.environment['PARITY_EXT_WEB_PORT'] ?? '4396'}',

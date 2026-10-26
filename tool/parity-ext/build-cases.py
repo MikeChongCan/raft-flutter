@@ -520,10 +520,16 @@ settings_fixture = {
     'name': 'raft-flutter parity extension: settings (Workspace + Resources groups)',
     'scope': 'Public deterministic test data; no credentials.',
     'sourceCommit': '26f77ef97c40d3d91aa2c5e42b0fd66b8bf39fe6',
-    # Web AboutSection shows the Web artifact version (packages/web/package.json
-    # at the pinned commit); the Flutter builder passes the same string.
+    # Keep the frozen legacy version; current Web About uses the pinned
+    # v1.21.23 artifact version (confirmed by the actual rendered page).
     'appVersion': '1.17.5',
+    'webAppVersion': '1.21.23',
     'routes': {
+        # Controlled availability matching the Web's initial defaults, not a
+        # claim about the live release. The API always supplies all three OSes.
+        'GET /desktop-download/platforms': {
+            'mac': {'status': 'unknown'}, 'linux': {'status': 'unknown'}, 'windows': {'status': 'none'},
+        },
         'GET /release-notes': {'items': releases, 'nextCursor': None},
         'GET /product-feedback/tickets': {'tickets': tickets, 'next_cursor': None, 'unread_total': 2},
         f"GET /product-feedback/tickets/{FB_ACTIVE['id']}": FB_ACTIVE_DETAIL,
@@ -641,9 +647,13 @@ settings_case('nav.row-hover', 'rail: hovered Documentation row', tab='about', h
 ABOUT_HINT = SETTINGS_HINT + '#AboutSection + MobileDownloadQr.tsx'
 settings_case('about.page', 'About: whole page', tab='about', hint=ABOUT_HINT, selector=None)
 settings_case('about.panel', 'About: panel', tab='about', region='panel', hint=ABOUT_HINT)
-for i, name in enumerate(['version', 'mobile-app', 'workspace'], start=1):
+for name, section in {
+    'version': 'div.space-y-6 > section:first-of-type',
+    'mobile-app': 'div.space-y-6 > section:has([data-testid="mobile-download-android"])',
+    'workspace': '[data-testid="settings-about-workspace"]',
+}.items():
     settings_case(f'about.{name}', f'About section: {name}', tab='about', hint=ABOUT_HINT,
-                  selector=f"[data-parity-region='settings-panel'] div.space-y-4 > section:nth-of-type({i})",
+                  selector=f"[data-parity-region='settings-panel'] {section}",
                   android_key=f'settings-about-{name}')
 RN_HINT = 'packages/web/src/components/settings/ReleaseNotesPanel.tsx'
 settings_case('release-notes.page', 'Release Notes: whole page', tab='release-notes', hint=RN_HINT)

@@ -108,11 +108,19 @@ FIXTURE = {
     'description': 'Public server page (signed-out preview and signed-in nonmember): API answers per case route '
                    'set, shared by host/PublicServerCases.tsx and cases/ext_public_server.dart.',
     'slug': SLUG,
+    'appVersion': '1.17.5',
+    'webAppVersion': '1.21.23',
     'user': AUTH_EXT['user'],
     'servers': AUTH_EXT['servers'],
     'server': SERVER,
     'agreement': AGREEMENT,
-    'routes': {},
+    'routes': {
+        # Same controlled availability as Settings > About; these three
+        # platform records are required by the mounted download endpoint.
+        'GET /desktop-download/platforms': {
+            'mac': {'status': 'unknown'}, 'linux': {'status': 'unknown'}, 'windows': {'status': 'none'},
+        },
+    },
     'routeSets': ROUTE_SETS,
 }
 

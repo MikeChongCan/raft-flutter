@@ -1,6 +1,8 @@
 {
  "description": "Public server page (signed-out preview and signed-in nonmember): API answers per case route set, shared by host/PublicServerCases.tsx and cases/ext_public_server.dart.",
  "slug": "raft-design",
+ "appVersion": "1.17.5",
+ "webAppVersion": "1.21.23",
  "user": {
   "id": "visual-user",
   "email": "artin@raft.build",
@@ -65,7 +67,19 @@
   "version": 3,
   "bodyMarkdown": "Welcome to the Raft community. Please read these rules before you join.\n\n1. Be kind and assume good intent.\n2. No spam or unsolicited advertising.\n3. Keep conversations in the right channel."
  },
- "routes": {},
+ "routes": {
+  "GET /desktop-download/platforms": {
+   "mac": {
+    "status": "unknown"
+   },
+   "linux": {
+    "status": "unknown"
+   },
+   "windows": {
+    "status": "none"
+   }
+  }
+ },
  "routeSets": {
   "ps-joinable": {
    "GET /public/servers/raft-design": {

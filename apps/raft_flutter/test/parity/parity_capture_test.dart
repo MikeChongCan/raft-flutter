@@ -17,6 +17,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_flutter/features/sidebar_conversation_finder.dart';
+import 'package:raft_updater/raft_updater.dart';
 
 import '../flutter_test_config.dart' show RaftTestBinding;
 import 'case_map.dart';
@@ -113,6 +114,9 @@ void main() {
   final shardTotal = int.tryParse(env['PARITY_SHARD_TOTAL'] ?? '') ?? 1;
 
   setUpAll(() async {
+    // The process-owned updater outlives captures. Initialize its availability
+    // notifier with the suite, rather than charging it to the first About case.
+    final _ = AppUpdater.instance;
     await loadParityFonts();
   });
   tearDownAll(() {
