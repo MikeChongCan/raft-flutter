@@ -607,6 +607,9 @@ def settings_case(key, title, *, tab, region=None, selector=None, android_key=No
                   flags='', route_set='', interactions=(), android=(), hint=SETTINGS_HINT, notes=None,
                   platform='desktop'):
     props = {'tab': tab, 'role': role}
+    # Feedback routes must not be shadowed by another family's empty inbox.
+    if tab == 'feedback':
+        props['extFixture'] = 'settings'
     if platform != 'desktop':
         props['platform'] = platform
     if flags:

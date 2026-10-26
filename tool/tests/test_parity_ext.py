@@ -346,6 +346,18 @@ class FrameFixtureContractTest(unittest.TestCase):
         self.assertEqual(frame['routeSets']['fr-channel'].get(f'GET /tasks/channel/{channel}'), {'tasks': []})
 
 
+class FeedbackFixtureScopeTest(unittest.TestCase):
+    def test_feedback_cases_bind_their_own_route_family(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            manifest = json.loads(builders.build_manifest(pathlib.Path(tmp)).read_text())
+        feedback = [case for case in manifest['cases']
+                    if case['id'].startswith('components.ext-settings.feedback.')]
+        self.assertTrue(feedback)
+        for case in feedback:
+            props = case['variants'][0]['props']
+            self.assertEqual(props.get('extFixture'), 'settings', case['id'])
+
+
 class DesktopDownloadFixtureContractTest(unittest.TestCase):
     def test_about_families_supply_a_platform_status_for_every_os(self):
         with tempfile.TemporaryDirectory() as tmp:
