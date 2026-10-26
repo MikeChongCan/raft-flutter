@@ -555,11 +555,13 @@ class RaftButton extends StatelessWidget {
     final tokens = t.recipeTokens;
     final inactive = disabled || !state.enabled;
     final inert = inactive && inertWhenDisabled;
-    final hasIcon = glyph != null || icon != null || iconBuilder != null;
+    final hasIcon =
+        glyph != null || icon != null || iconBuilder != null || leading != null;
+    final hasLabel = label.isNotEmpty || child != null;
     final inlineStart =
-        hasIcon && iconInlineStart && !iconInlineEnd && label.isNotEmpty;
+        hasIcon && iconInlineStart && !iconInlineEnd && hasLabel;
     final inlineEnd =
-        (hasIcon && iconInlineEnd || trailingGlyph != null) && label.isNotEmpty;
+        (hasIcon && iconInlineEnd || trailingGlyph != null) && hasLabel;
     final states = t.recipeStates(
       hovered: state.hovered && !inactive,
       pressed: state.pressed && !inactive,
