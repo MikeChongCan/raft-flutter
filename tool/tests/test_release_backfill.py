@@ -64,11 +64,13 @@ class ReleaseBackfillTests(unittest.TestCase):
                     patch.object(backfill.os, 'chdir'), \
                     patch.object(backfill, 'checked_source'), \
                     patch.object(backfill, 'existing_release', return_value=remote), \
-                    patch.dict(sys.modules, {'macos_runner': Mock()}), \
+                    patch.dict(sys.modules, {'macos_runner': Mock(), 'linux_runner': Mock()}), \
                     patch.object(backfill.release, 'verify_artifacts'), \
                     patch.object(backfill.subprocess, 'run') as run:
                 backfill.main()
-                self.assertEqual(run.call_count, 3)
+                self.assertEqual(run.call_count, 4 if platform == 'appimage' else 3)
+                if platform == 'appimage':
+                    self.assertEqual(Path(run.call_args_list[1].args[0][1]).name, 'prepare-media-appimage')
                 for call in run.call_args_list:
                     env = call.kwargs['env']
                     self.assertEqual(env['GITHUB_SHA'], self.commit)

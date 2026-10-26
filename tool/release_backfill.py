@@ -70,12 +70,18 @@ def main():
         if platform == 'macos':
             import macos_runner
             macos_runner.verify(source)
+        else:
+            import linux_runner
+            linux_runner.verify(source)
         env = dict(os.environ, GITHUB_REF=f'refs/tags/{tag}', GITHUB_RUN_NUMBER=number, GITHUB_SHA=commit,
                    GITHUB_EVENT_NAME='workflow_dispatch', RELEASE_VERSION=identity['version'],
                    RELEASE_BUILD_NUMBER=number)
-        for command in ([sys.executable, source / 'tool/release.py', 'sdk'],
-                        [sys.executable, source / 'tool/flutter', 'pub', 'get', '--enforce-lockfile'],
-                        [sys.executable, source / 'tool/release.py', 'build', platform]):
+        commands = [[sys.executable, source / 'tool/release.py', 'sdk']]
+        if platform == 'appimage':
+            commands.append([sys.executable, source / 'tool/prepare-media-appimage'])
+        commands.extend(([sys.executable, source / 'tool/flutter', 'pub', 'get', '--enforce-lockfile'],
+                         [sys.executable, source / 'tool/release.py', 'build', platform]))
+        for command in commands:
             subprocess.run([str(x) for x in command], cwd=source, env=env, check=True)
         checked_source(source, tag, commit)
         release.verify_artifacts(output, {'include': [{'platform': platform, 'arch': {'macos': 'arm64', 'appimage': 'x64'}[platform]}]},

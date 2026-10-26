@@ -72,9 +72,80 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-  publish:
-    if: inputs.publish
+  appimage-startup:
     needs: build
+    if: inputs.platform == 'appimage'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.release_tag }}
+          path: source
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-backfill-${{ inputs.platform }}-${{ inputs.release_tag }}
+          path: source/build/release
+      - name: Install the original AppImage startup dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fuse3 libgtk-3-0t64 libsecret-1-0 libmpv2 poppler-utils libgdk-pixbuf2.0-bin librsvg2-common xvfb x11-utils imagemagick desktop-file-utils gnome-keyring at-spi2-core
+      - name: Restore executable permission on the downloaded AppImage
+        run: chmod +x source/build/release/*.AppImage
+      - name: Run the original production AppImage at 2x display scale
+        working-directory: source
+        run: |
+          artifact=$(find build/release -maxdepth 1 -name '*.AppImage' -print -quit)
+          test -n "$artifact"
+          xvfb-run -a -s '-screen 0 2880x1800x24' dbus-run-session -- python tool/appimage-smoke.py --artifact "$artifact" --output build/appimage-smoke --mode direct
+          xvfb-run -a -s '-screen 0 2880x1800x24' dbus-run-session -- python tool/appimage-smoke.py --artifact "$artifact" --output build/appimage-smoke --mode extract
+      - name: Preserve AppImage startup evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-backfill-appimage-startup-${{ inputs.release_tag }}
+          path: source/build/appimage-smoke/
+          if-no-files-found: warn
+          retention-days: 14
+
+  appimage-compatibility:
+    needs: build
+    if: inputs.platform == 'appimage'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.release_tag }}
+          path: source
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-backfill-${{ inputs.platform }}-${{ inputs.release_tag }}
+          path: build/release
+      - name: Test the original AppImage on Fedora KDE Wayland without FUSE
+        run: |
+          chmod +x build/release/*.AppImage
+          mkdir -p build/appimage-compatibility
+          docker run --rm --cap-add IPC_LOCK --cap-add SYS_NICE --env GITHUB_ACTIONS=true --volume "$PWD/source:/source:ro" --volume "$PWD/build/release:/artifacts:ro" --volume "$PWD/build/appimage-compatibility:/evidence" fedora:44 bash /source/tool/appimage-fedora-test.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: release-backfill-appimage-fedora-${{ inputs.release_tag }}
+          path: build/appimage-compatibility/
+          if-no-files-found: warn
+          retention-days: 14
+
+  publish:
+    if: >-
+      ${{ !cancelled() && inputs.publish && needs.build.result == 'success' &&
+          (inputs.platform != 'appimage' || (needs.appimage-startup.result == 'success' &&
+           needs.appimage-compatibility.result == 'success')) }}
+    needs: [build, appimage-startup, appimage-compatibility]
     runs-on: ubuntu-24.04
     permissions:
       contents: write
