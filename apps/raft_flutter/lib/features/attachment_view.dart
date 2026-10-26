@@ -60,10 +60,8 @@ DialogRoute<void> attachmentDownloadProgressRoute({
     title: Text('Downloading $name'),
     content: ValueListenableBuilder<double?>(
       valueListenable: progress,
-      builder: (_, value, _) => ConstrainedBox(
-        constraints: const BoxConstraints(minWidth: 240),
-        child: RaftProgressBar(value: value == null ? null : value * 100),
-      ),
+      builder: (_, value, _) =>
+          RaftProgressBar(value: value == null ? null : value * 100),
     ),
     actions: [TextButton(onPressed: onCancel, child: const Text('Cancel'))],
   ),
