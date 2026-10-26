@@ -16,7 +16,8 @@
 #   --raft-ui-only  compile without the Web client's @theme overrides
 # Environment:
 #   RAFT_UI_SOURCE   raft-ui package root (default /tmp/rui)
-#   RAFT_WEB_CSS     Web client index.css to snapshot @theme from (optional)
+#   RAFT_WEB_CSS     Pinned Web client index.css (required unless RAFT_UI_SOURCE
+#                    names its packages/web/node_modules/@botiverse/raft-ui)
 #   RAFT_PNPM_STORE  pnpm store with the JS dependencies (see link-deps.sh)
 set -euo pipefail
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -35,8 +36,18 @@ export PATH
 while IFS= read -r v; do unset "$v"; done < <(env | grep -o '^npm_config_[^=]*' || true)
 
 export RAFT_UI_SOURCE="${RAFT_UI_SOURCE:-/tmp/rui}"
-default_web_css="/home/kevinzhow/.slock/agents/9a92b742-8942-488c-8635-67d224ec54ab/work/raft-source/packages/web/src/index.css"
-export RAFT_WEB_CSS="${RAFT_WEB_CSS:-$default_web_css}"
+# The Web source owns product compositions as well as @theme overrides. Do not
+# fall back to a machine-local checkout which may be a different release.
+if [[ -z "${RAFT_WEB_CSS:-}" ]]; then
+  if [[ "$RAFT_UI_SOURCE" == */node_modules/@botiverse/raft-ui ]]; then
+    RAFT_WEB_CSS="${RAFT_UI_SOURCE%/node_modules/@botiverse/raft-ui}/src/index.css"
+  else
+    echo "Set RAFT_WEB_CSS to the pinned Web client's src/index.css; no unrelated checkout is selected automatically." >&2
+    exit 2
+  fi
+fi
+[[ -f "$RAFT_WEB_CSS" ]] || { echo "Pinned Web CSS does not exist: $RAFT_WEB_CSS" >&2; exit 2; }
+export RAFT_WEB_CSS
 
 run_tests=0
 resolve_args=()
