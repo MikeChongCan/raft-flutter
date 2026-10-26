@@ -17,6 +17,7 @@ _loader.exec_module(ds_audit)
 FIXTURE = 'apps/raft_flutter/test/fixtures/ds_audit_sample.dart'
 CONTRACT_FIXTURES = 'packages/raft_ui/test/fixtures/ds_audit_contract'
 BYPASS_FIXTURES = 'apps/raft_flutter/test/fixtures/ds_audit_bypass'
+FAMILY_FIXTURES = 'apps/raft_flutter/test/fixtures/ds_audit_family'
 
 
 class CompareTest(unittest.TestCase):
@@ -324,6 +325,141 @@ class BypassScannerFixtureTest(unittest.TestCase):
         report = ds_audit.aggregate(ds_audit.run_scanner([BYPASS_FIXTURES], contract=[], bypass=[]))
         self.assertFalse([c for c in report['totals'] if c.startswith('bypass.')])
         self.assertTrue(any(c.startswith('widget.') for c in report['totals']))  # the app rules still run
+
+
+class FamilyRegistryTest(unittest.TestCase):
+    """tool/ds-audit-families.json: one implementation per design-system family."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.families = ds_audit.load_families()
+        cls.sources = {p: p.read_text() for p in (ROOT / 'packages/raft_ui/lib').rglob('*.dart')}
+
+    def declared(self, name, text):
+        import re
+        return re.search(rf'^(?:abstract |final |base |sealed |interface )*(?:class|mixin|enum) {name}\b'
+                         rf'|^[A-Za-z<>?, ]+ {name}[<(]', text, re.M) is not None
+
+    def test_every_deprecated_name_is_declared_in_its_listed_raft_ui_file(self):
+        for family, entry in self.families.items():
+            for name, file in entry['deprecated'].items():
+                self.assertTrue(file.startswith('packages/raft_ui/lib/'), f'{family}: {name}')
+                self.assertTrue((ROOT / file).is_file(), f'{family}: {name} -> {file}')
+                self.assertTrue(self.declared(name, (ROOT / file).read_text()), f'{name} is not declared in {file}')
+
+    def test_every_canonical_component_exists_in_raft_ui(self):
+        for family, entry in self.families.items():
+            if 'pending' in entry:  # canonical choice belongs to an open work package
+                self.assertEqual((entry['canonical'], entry['deprecated']), ([], {}), family)
+                continue
+            self.assertTrue(entry['canonical'], family)
+            for name in entry['canonical']:
+                self.assertTrue(any(self.declared(name, text) for text in self.sources.values()),
+                                f'{family}: canonical {name} not found in packages/raft_ui/lib')
+
+    def test_a_name_belongs_to_one_family_and_never_to_both_roles(self):
+        seen = ds_audit.duplicate_index(self.families)  # raises if two families deprecate the same name
+        canonical = {n for e in self.families.values() for n in e['canonical']}
+        self.assertEqual(canonical & set(seen), set())
+
+    def test_deprecating_a_name_twice_is_an_error(self):
+        families = {'a': {'canonical': ['X'], 'deprecated': {'Old': 'f.dart'}},
+                    'b': {'canonical': ['Y'], 'deprecated': {'Old': 'g.dart'}}}
+        with self.assertRaises(ds_audit.AuditError):
+            ds_audit.duplicate_index(families)
+
+    def test_the_requested_families_are_registered_and_uncertain_choices_say_why(self):
+        self.assertEqual(set(self.families), {'button', 'menu', 'popover', 'dialog', 'segmented', 'spinner',
+                                               'card', 'banner', 'list_row'})
+        self.assertGreater(len(self.families['menu']['pending']), 40)  # P2 decides; nothing counted yet
+        for family in ('segmented',):
+            self.assertGreater(len(self.families[family].get('uncertain', '')), 40, family)
+        for family in ('spinner', 'card', 'popover'):  # decided by P6: canonical only, no duplicate left
+            self.assertEqual(self.families[family]['deprecated'], {}, family)
+        self.assertIn('RaftArchivedNameBanner', self.families['banner']['deprecated'])
+        self.assertNotIn('RaftAgentBanner', self.families['banner']['deprecated'])  # thin adapter over RaftBanner
+
+
+class FamilyRatchetTest(unittest.TestCase):
+    """duplicate.<family>: growth fails and names the canonical component, decreases pass."""
+
+    APP = 'apps/raft_flutter/lib/features/x.dart'
+    UI = 'packages/raft_ui/lib/src/y.dart'
+    BASELINE = {'files': {APP: {'duplicate.button': 3}, UI: {'duplicate.dialog': 2}}}
+
+    def check(self, files):
+        return ContractRatchetTest.check(self, files, baseline=self.BASELINE)
+
+    def test_growth_fails_in_either_scope_and_names_the_canonical_component(self):
+        for name, category, canonical, old in ((self.APP, 'duplicate.button', 'RaftButton', 'RaftRecipeButton'),
+                                               (self.UI, 'duplicate.dialog', 'RaftDialog', 'RaftDialogCard'),
+                                               (self.UI, 'duplicate.list_row', 'RaftListRow', 'RaftAvatarListRow'),
+                                               (self.APP, 'duplicate.banner', 'RaftBanner', 'RaftComposerNotice')):
+            files = {self.APP: {'duplicate.button': 3}, self.UI: {'duplicate.dialog': 2}}
+            files.setdefault(name, {})
+            files[name][category] = files[name].get(category, 0) + 1
+            code, output = self.check(files)
+            self.assertEqual(code, 1, category)
+            self.assertIn(f'{name}: {category}', output)
+            self.assertIn(f'{category}: use {canonical}', output)
+            self.assertIn(old, output)
+
+    def test_unchanged_and_lower_counts_pass(self):
+        for files in (self.BASELINE['files'], {self.APP: {'duplicate.button': 1}}, {}):
+            code, output = self.check(files)
+            self.assertEqual(code, 0, files)
+            self.assertNotIn('GREW', output)
+
+    def test_a_new_file_using_a_deprecated_duplicate_fails(self):
+        code, output = self.check({**self.BASELINE['files'], 'apps/raft_flutter/lib/new.dart': {'duplicate.menu': 1}})
+        self.assertEqual(code, 1)
+        self.assertIn('new.dart: duplicate.menu 0 -> 1', output)
+
+
+class FamilyScannerFixtureTest(unittest.TestCase):
+    """Exact counts for the resolved-AST family scan on a fixture with negatives."""
+
+    OLD = f'{FAMILY_FIXTURES}/old_widgets.dart'
+    REGISTRY = {
+        'button': {'canonical': ['NewButton'], 'deprecated': {'OldButton': OLD}},
+        'banner': {'canonical': ['NewButton'], 'deprecated': {'OldBanner': OLD}},
+        'dialog': {'canonical': ['NewButton'], 'deprecated': {'showOldModal': OLD}},
+    }
+
+    @classmethod
+    def setUpClass(cls):
+        cls.document = ds_audit.run_scanner([FAMILY_FIXTURES], contract=[], bypass=[FAMILY_FIXTURES],
+                                            bypass_allow={}, families=cls.REGISTRY)
+        cls.report = ds_audit.aggregate(cls.document)
+
+    def duplicates(self, table):
+        return {c: n for c, n in table.items() if c.startswith('duplicate.')}
+
+    def test_counts_references_outside_the_defining_file(self):
+        self.assertEqual(self.duplicates(self.report['totals']), {
+            'duplicate.banner': 1,
+            # field type, parameter type, extends, const call, named constructor, static member, is-check
+            'duplicate.button': 7,
+            'duplicate.dialog': 2,  # call and tear-off
+        })
+        self.assertEqual(list(self.report['files']), [f'{FAMILY_FIXTURES}/family_sample.dart'])
+
+    def test_the_defining_file_the_canonical_component_and_a_same_named_class_elsewhere_do_not_count(self):
+        counted = {f['file'].rsplit('/', 1)[1] for f in self.document['findings']
+                   if f['category'].startswith('duplicate.')}
+        self.assertEqual(counted, {'family_sample.dart'})  # not old_widgets.dart, new_widgets.dart or lookalike.dart
+        lines = {f['line'] for f in self.document['findings'] if f['category'].startswith('duplicate.')}
+        self.assertFalse(lines & {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12})  # comments, doc reference, imports, string
+
+    def test_without_a_registry_nothing_is_counted(self):
+        report = ds_audit.aggregate(ds_audit.run_scanner([FAMILY_FIXTURES], contract=[], bypass=[FAMILY_FIXTURES],
+                                                         bypass_allow={}, families={}))
+        self.assertFalse([c for c in report['totals'] if c.startswith('duplicate.')])
+
+    def test_a_directory_outside_the_scan_scopes_is_not_scanned(self):
+        report = ds_audit.aggregate(ds_audit.run_scanner([FAMILY_FIXTURES], contract=[], bypass=[],
+                                                         bypass_allow={}, families=self.REGISTRY))
+        self.assertFalse([c for c in report['totals'] if c.startswith('duplicate.')])
 
 
 class RatchetTest(unittest.TestCase):

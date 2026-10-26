@@ -12,7 +12,10 @@
 /// runs the bypass scan (raw Material/Cupertino controls, `bypass.*`) on the
 /// files under that directory; `--bypass-allow JSON` is a map
 /// `{file: {family: reason}}` of designated raft_ui wrapper files whose
-/// findings are reported as allowlisted. Exits 2 when a scanned file has
+/// findings are reported as allowlisted. `--families JSON` is a map
+/// `{name: {family, file}}` of deprecated duplicate Raft components; the files
+/// under the `--bypass` directories are also scanned for references to them
+/// (`duplicate.<family>`). Exits 2 when a scanned file has
 /// analysis errors, because unresolved code would silently undercount.
 library;
 
@@ -26,6 +29,7 @@ import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:ds_audit/bypass_audit.dart';
 import 'package:ds_audit/contract_audit.dart';
 import 'package:ds_audit/ds_audit.dart';
+import 'package:ds_audit/family_audit.dart';
 
 Future<void> main(List<String> argv) async {
   var root = Directory.current.path;
@@ -33,6 +37,7 @@ Future<void> main(List<String> argv) async {
   final contractPrefixes = <String>[];
   final bypassPrefixes = <String>[];
   var bypassAllow = <String, Map<String, String>>{};
+  var families = <String, Map<String, String>>{};
   for (var i = 0; i < argv.length; i++) {
     if (argv[i] == '--root') {
       root = argv[++i];
@@ -42,6 +47,11 @@ Future<void> main(List<String> argv) async {
       bypassPrefixes.add(argv[++i]);
     } else if (argv[i] == '--bypass-allow') {
       bypassAllow = {
+        for (final e in (jsonDecode(argv[++i]) as Map<String, Object?>).entries)
+          e.key: (e.value as Map<String, Object?>).cast<String, String>(),
+      };
+    } else if (argv[i] == '--families') {
+      families = {
         for (final e in (jsonDecode(argv[++i]) as Map<String, Object?>).entries)
           e.key: (e.value as Map<String, Object?>).cast<String, String>(),
       };
@@ -66,6 +76,13 @@ Future<void> main(List<String> argv) async {
   final bypassRoots = [
     for (final p in bypassPrefixes) context.normalize(context.join(root, p)),
   ];
+  final duplicates = {
+    for (final e in families.entries)
+      e.key: DeprecatedDuplicate(
+        e.value['family']!,
+        context.normalize(context.join(root, e.value['file']!)),
+      ),
+  };
   final findings = <Finding>[];
   final generated = <String, int>{};
   final scanned = <String>[];
@@ -119,6 +136,16 @@ Future<void> main(List<String> argv) async {
         );
         result.unit.accept(bypass);
         findings.addAll(bypass.findings);
+        if (duplicates.isNotEmpty) {
+          final family = FamilyAuditVisitor(
+            relative,
+            result,
+            duplicates,
+            absolutePath: result.path,
+          );
+          result.unit.accept(family);
+          findings.addAll(family.findings);
+        }
       }
     }
   }

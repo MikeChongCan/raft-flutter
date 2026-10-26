@@ -1,0 +1,98 @@
+{
+ "about": "One implementation per design-system family (tool/ds-audit, category duplicate.<family>). `canonical` is the component new code uses; `deprecated` maps each duplicate widget or function to the file that declares it. Every reference to a deprecated name outside its own file is counted and ratcheted down in tool/ds-audit-baseline.json. A family with an empty `deprecated` map counts nothing; it records the canonical component only. `pending` marks a family whose canonical choice belongs to an open work package (no canonical, no deprecated names until it lands); `uncertain` records a canonical choice that still needs a decision (JSON has no comments, so these are fields); `note` explains the entry. Do not add a name to two families.",
+ "families": {
+  "button": {
+   "canonical": [
+    "RaftButton"
+   ],
+   "note": "One RaftButton (raft/button.dart, Web Button + icon-* sizes). Every other button-like widget retires onto it.",
+   "deprecated": {
+    "RaftControl": "packages/raft_ui/lib/src/design_primitives.dart",
+    "RaftRecipeButton": "packages/raft_ui/lib/src/dialog_card.dart",
+    "RaftTextButton": "packages/raft_ui/lib/src/design_primitives.dart",
+    "RaftIconButton": "packages/raft_ui/lib/src/design_primitives.dart",
+    "RaftCloseButton": "packages/raft_ui/lib/src/dialog_card.dart",
+    "RaftGlyphButton": "packages/raft_ui/lib/src/overlays/dialog.dart",
+    "RaftPanelIconButton": "packages/raft_ui/lib/src/panel_layout.dart",
+    "RaftComposerToolButton": "packages/raft_ui/lib/src/composer_tool_button.dart",
+    "RaftLightboxIconAction": "packages/raft_ui/lib/src/attachment_lightbox.dart"
+   }
+  },
+  "menu": {
+   "canonical": [],
+   "pending": "P2 (menus and popovers) decides the single menu implementation (RaftDropdownMenu, RaftMenuPanel, RaftContextMenuContent, RaftSidebarContextMenu, RaftSelectionPopover and RaftMenuButtonItem are the candidates). Nothing is canonical or deprecated until it lands.",
+   "note": "Registered so the family is visible; it counts nothing yet.",
+   "deprecated": {}
+  },
+  "popover": {
+   "canonical": [
+    "RaftPopoverSurface",
+    "RaftAnchoredPopup"
+   ],
+   "note": "RaftAnchoredPopup places a popup (viewport collision, flip) and RaftPopoverSurface paints it: layers of one popover, not rivals, so neither is deprecated. Private OverlayPortal/OverlayEntry panels are covered by bypass.overlay.",
+   "deprecated": {}
+  },
+  "dialog": {
+   "canonical": [
+    "RaftDialog",
+    "showRaftDialog",
+    "RaftAlertDialog",
+    "showRaftAlertDialog"
+   ],
+   "uncertain": "RaftFormDialog has many app callers and may be rebuilt on RaftDialog instead of removed; it is listed so no new callers appear.",
+   "note": "Five dialog stacks exist (inventory section 2); overlays/dialog.dart is the Web Dialog port.",
+   "deprecated": {
+    "RaftDialogCard": "packages/raft_ui/lib/src/dialog_card.dart",
+    "showRaftModal": "packages/raft_ui/lib/src/dialog_card.dart",
+    "RaftFormDialog": "packages/raft_ui/lib/src/form_dialog.dart",
+    "RaftDialogShell": "packages/raft_ui/lib/src/settings_controls.dart",
+    "RaftDialogFrame": "packages/raft_ui/lib/src/presentation.dart"
+   }
+  },
+  "segmented": {
+   "canonical": [
+    "RaftSegmentedControl"
+   ],
+   "uncertain": "The inventory names RaftSegmentedTrack + RaftSegmentedItem (raft/segmented_control.dart) as the Web-ported implementation and RaftSegmentedControl (design_primitives.dart) as a duplicate; RaftSegmentedControl is built on RaftSegmentedTrack today. Listed as requested; the surviving public API is not decided.",
+   "note": "Segmented control duplicates (inventory section 2).",
+   "deprecated": {
+    "RaftRecipeSegmentedControl": "packages/raft_ui/lib/src/dialog_card.dart",
+    "RaftSegmentedTrack": "packages/raft_ui/lib/src/raft/segmented_control.dart"
+   }
+  },
+  "spinner": {
+   "canonical": [
+    "RaftSpinner"
+   ],
+   "note": "RaftSpinner is the single public spinner (P6). RaftPixelSpinner (raft/pixel_spinner.dart) is its internal painter for the pixel look, not a duplicate.",
+   "deprecated": {}
+  },
+  "card": {
+   "canonical": [
+    "RaftCard"
+   ],
+   "note": "RaftRecipeCard, RaftSurfaceListItem and RaftChoiceCard were merged into RaftCard (P6) and no longer exist.",
+   "deprecated": {}
+  },
+  "banner": {
+   "canonical": [
+    "RaftBanner"
+   ],
+   "note": "RaftWarningBanner was removed (P6). RaftAgentBanner is a thin adapter over RaftBanner (maps status and passes colour overrides, styles nothing itself), so it is not a duplicate. RaftArchivedNameBanner was deferred by P6 on purpose: it builds its own box from the banner recipe. RaftBillingNotice and RaftPreviewNotice are not banners and are not listed.",
+   "deprecated": {
+    "RaftComposerNotice": "packages/raft_ui/lib/src/composer_pending_mentions.dart",
+    "RaftArchivedNameBanner": "packages/raft_ui/lib/src/create_channel_view.dart"
+   }
+  },
+  "list_row": {
+   "canonical": [
+    "RaftListRow"
+   ],
+   "note": "List row duplicates; RaftListRow (raft/list_row.dart) is the Web ListRow port. RaftSurfaceListItem was merged into RaftCard (P6) and no longer exists.",
+   "deprecated": {
+    "RaftAvatarListRow": "packages/raft_ui/lib/src/list_items.dart",
+    "RaftConversationListRow": "packages/raft_ui/lib/src/conversation_list_row.dart"
+   }
+  }
+ }
+}

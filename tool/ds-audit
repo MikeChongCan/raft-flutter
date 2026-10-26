@@ -16,7 +16,9 @@ Two scopes share one baseline (files are keyed by path):
   packages/raft_ui/lib    contract.* (docs/theme-contract.md 7.3: literal colours, font sizes,
                           radii and stroke widths, theme-name branches, direct RaftRecipeTheme use).
   both scopes      bypass.* (raw Material/Cupertino controls and overlays that should be a Raft component;
-                   only the wrapper files in BYPASS_ALLOWLIST may host a Material primitive).
+                   only the wrapper files in BYPASS_ALLOWLIST may host a Material primitive) and
+                   duplicate.<family> (references to deprecated duplicate Raft components outside
+                   their own file; one implementation per family, registry tool/ds-audit-families.json).
 The independent recipe tables and runtime are also scanned; theme pack data definitions are not.
 Generated *.g.dart recipe files are not scanned for literals; their `const`
 variables are counted per recipe file as `generated.recipe_constants`, which is
@@ -94,6 +96,7 @@ BYPASS_USE = {
     'bypass.overlay': 'RaftAnchoredPopup / RaftPopoverSurface / showRaftToast / RaftTooltip',
 }
 BASELINE = ROOT / 'tool/ds-audit-baseline.json'
+FAMILIES = ROOT / 'tool/ds-audit-families.json'
 REPORT = ROOT / '.local/ds-audit.json'
 UPDATE_HINT = 'tool/ds-audit --update-baseline'
 
@@ -115,17 +118,36 @@ def dart_executable():
     return pathlib.Path(flutter_root) / 'bin' / ('dart.bat' if os.name == 'nt' else 'dart')
 
 
-def run_scanner(paths, contract=None, bypass=None, bypass_allow=None):
+def load_families(path=None):
+    """The family registry (tool/ds-audit-families.json) as {family: {canonical, deprecated, ...}}."""
+    return json.loads((path or FAMILIES).read_text())['families']
+
+
+def duplicate_index(families):
+    """Flatten the registry to {deprecated name: {family, file}} for the scanner."""
+    index = {}
+    for family, entry in families.items():
+        for name, file in entry['deprecated'].items():
+            if name in index:
+                raise AuditError(f'{name} is deprecated in two families: {index[name]["family"]} and {family}')
+            index[name] = {'family': family, 'file': file}
+    return index
+
+
+def run_scanner(paths, contract=None, bypass=None, bypass_allow=None, families=None):
     """Return the raw scanner document ({scanned, errors, findings, generated}).
 
     `contract` lists the directories (relative to the repo) scanned with the
     theme-contract rules; it defaults to CONTRACT_SCOPES. `bypass` lists the
     directories that also get the bypass scan (default BYPASS_SCOPES) and
-    `bypass_allow` the wrapper allowlist (default BYPASS_ALLOWLIST).
+    `bypass_allow` the wrapper allowlist (default BYPASS_ALLOWLIST). The same
+    directories are scanned for references to the deprecated duplicates in
+    `families` (a registry dict, default tool/ds-audit-families.json).
     """
     contract = CONTRACT_SCOPES if contract is None else contract
     bypass = BYPASS_SCOPES if bypass is None else bypass
     bypass_allow = BYPASS_ALLOWLIST if bypass_allow is None else bypass_allow
+    duplicates = duplicate_index(load_families() if families is None else families)
     package_config = ROOT / '.dart_tool/package_config.json'
     if not package_config.is_file() or '"ds_audit"' not in package_config.read_text():
         raise AuditError('workspace is not resolved; run `tool/flutter pub get` at the repository root')
@@ -134,7 +156,7 @@ def run_scanner(paths, contract=None, bypass=None, bypass_allow=None):
          str(ROOT / 'tool/ds_audit/bin/ds_audit.dart'), '--root', str(ROOT),
          *[arg for prefix in contract for arg in ('--contract', prefix)],
          *[arg for prefix in bypass for arg in ('--bypass', prefix)],
-         '--bypass-allow', json.dumps(bypass_allow), *paths],
+         '--bypass-allow', json.dumps(bypass_allow), '--families', json.dumps(duplicates), *paths],
         cwd=ROOT, capture_output=True, text=True)
     if out.returncode != 0:
         raise AuditError(f'ds_audit scanner failed (exit {out.returncode}):\n{out.stderr.strip()}')
@@ -254,6 +276,15 @@ def format_comparison(regressions, improvements):
             lines.append('A raw Material/Cupertino control or overlay bypasses the design system. Use the Raft component:')
             lines += [f'  {c}: {BYPASS_USE[c]}' for c in bypass]
             lines.append('Only the designated wrapper files in BYPASS_ALLOWLIST (tool/ds-audit) may host a Material primitive.')
+        duplicate = sorted({c for _, c, _, _ in regressions if c.startswith('duplicate.')})
+        if duplicate:
+            registry = load_families()
+            lines.append('A deprecated duplicate Raft component was used (one implementation per family, '
+                         'tool/ds-audit-families.json). Use the canonical component:')
+            for c in duplicate:
+                entry = registry.get(c.removeprefix('duplicate.'), {})
+                lines.append(f"  {c}: use {' / '.join(entry.get('canonical', ['?']))} "
+                             f"instead of {', '.join(sorted(entry.get('deprecated', {})))}")
         lines.append('Use raft_ui components/tokens and the theme pack instead (docs/ds-migration.md). Genuinely '
                      'platform-only code may carry `// ds-allow: <reason>` for review.')
     if improvements:

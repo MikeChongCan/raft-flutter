@@ -30,6 +30,11 @@
   "contract.radius_literal": 200,
   "contract.stroke_width_literal": 273,
   "contract.theme_name_branch": 1,
+  "duplicate.banner": 7,
+  "duplicate.button": 271,
+  "duplicate.dialog": 47,
+  "duplicate.list_row": 5,
+  "duplicate.segmented": 10,
   "style.border_radius": 10,
   "style.dimension": 36,
   "style.duration": 2,
@@ -62,6 +67,7 @@
   },
   "apps/raft_flutter/lib/features/account_connections_view.dart": {
    "bypass.list_tile": 1,
+   "duplicate.button": 3,
    "widget.list_tile": 1
   },
   "apps/raft_flutter/lib/features/account_onboarding.dart": {
@@ -71,6 +77,7 @@
   "apps/raft_flutter/lib/features/account_settings.dart": {
    "bypass.button": 1,
    "bypass.dialog": 1,
+   "duplicate.dialog": 3,
    "style.dimension": 1,
    "style.edge_insets": 1,
    "widget.button": 1,
@@ -82,11 +89,42 @@
    "style.dimension": 1,
    "style.edge_insets": 1
   },
+  "apps/raft_flutter/lib/features/activity_card_row.dart": {
+   "duplicate.button": 1
+  },
+  "apps/raft_flutter/lib/features/activity_list_row.dart": {
+   "duplicate.button": 1,
+   "duplicate.list_row": 1
+  },
   "apps/raft_flutter/lib/features/agent_apps_view.dart": {
    "style.sized_box": 1,
    "widget.button": 1,
    "widget.dialog": 1,
    "widget.other": 1
+  },
+  "apps/raft_flutter/lib/features/agent_connections_section.dart": {
+   "duplicate.button": 6
+  },
+  "apps/raft_flutter/lib/features/agent_detail_view.dart": {
+   "duplicate.button": 6
+  },
+  "apps/raft_flutter/lib/features/agent_hosted_cindy_banner.dart": {
+   "duplicate.button": 1
+  },
+  "apps/raft_flutter/lib/features/agent_hosted_status.dart": {
+   "duplicate.button": 1
+  },
+  "apps/raft_flutter/lib/features/agent_identity_adoption.dart": {
+   "duplicate.button": 1
+  },
+  "apps/raft_flutter/lib/features/agent_migration_panel.dart": {
+   "duplicate.button": 1
+  },
+  "apps/raft_flutter/lib/features/agent_migration_start_dialog.dart": {
+   "duplicate.dialog": 1
+  },
+  "apps/raft_flutter/lib/features/agent_runtime_editor.dart": {
+   "duplicate.button": 1
   },
   "apps/raft_flutter/lib/features/agent_scopes_view.dart": {
    "bypass.button": 1,
@@ -105,8 +143,17 @@
    "style.edge_insets": 1,
    "style.sized_box": 8
   },
+  "apps/raft_flutter/lib/features/artifact_viewer.dart": {
+   "duplicate.button": 1
+  },
   "apps/raft_flutter/lib/features/attachment_html_preview.dart": {
    "style.dimension": 2
+  },
+  "apps/raft_flutter/lib/features/attachment_preview_dialog.dart": {
+   "duplicate.button": 2
+  },
+  "apps/raft_flutter/lib/features/attachment_video_comments.dart": {
+   "duplicate.button": 1
   },
   "apps/raft_flutter/lib/features/attachment_view.dart": {
    "bypass.button": 1,
@@ -115,6 +162,9 @@
    "widget.button": 1,
    "widget.dialog": 1,
    "widget.progress": 1
+  },
+  "apps/raft_flutter/lib/features/auth_view.dart": {
+   "duplicate.dialog": 1
   },
   "apps/raft_flutter/lib/features/channel_conversion_previews.dart": {
    "bypass.button": 2,
@@ -139,16 +189,41 @@
    "widget.list_tile": 1,
    "widget.progress": 1
   },
+  "apps/raft_flutter/lib/features/channel_members.dart": {
+   "duplicate.dialog": 1
+  },
   "apps/raft_flutter/lib/features/channel_settings.dart": {
    "bypass.dialog": 2,
+   "duplicate.dialog": 4,
    "widget.dialog": 2
   },
   "apps/raft_flutter/lib/features/chat_view.dart": {
    "bypass.overlay": 1,
    "style.edge_insets": 1
   },
+  "apps/raft_flutter/lib/features/chinese_community.dart": {
+   "duplicate.button": 1
+  },
+  "apps/raft_flutter/lib/features/create_agent_dialog.dart": {
+   "duplicate.button": 2
+  },
+  "apps/raft_flutter/lib/features/create_channel_dialog.dart": {
+   "duplicate.banner": 1
+  },
+  "apps/raft_flutter/lib/features/create_joint_channel_dialog.dart": {
+   "duplicate.banner": 1
+  },
+  "apps/raft_flutter/lib/features/desktop_directory_view.dart": {
+   "duplicate.button": 1
+  },
   "apps/raft_flutter/lib/features/desktop_master_detail.dart": {
    "style.dimension": 1
+  },
+  "apps/raft_flutter/lib/features/external_identity.dart": {
+   "duplicate.button": 1
+  },
+  "apps/raft_flutter/lib/features/feedback_attachment_preview.dart": {
+   "duplicate.button": 1
   },
   "apps/raft_flutter/lib/features/fleet_views.dart": {
    "bypass.button": 3,
@@ -156,6 +231,7 @@
    "bypass.icon_button": 2,
    "bypass.list_tile": 3,
    "bypass.progress": 2,
+   "duplicate.dialog": 3,
    "style.edge_insets": 4,
    "style.material_icons": 3,
    "style.material_theme": 1,
@@ -168,15 +244,28 @@
    "widget.progress": 2,
    "widget.scaffold": 1
   },
+  "apps/raft_flutter/lib/features/forward_composer_page.dart": {
+   "duplicate.button": 1
+  },
   "apps/raft_flutter/lib/features/forward_messages_dialog.dart": {
    "bypass.dialog": 1,
    "widget.dialog": 1
+  },
+  "apps/raft_flutter/lib/features/human_login_servers.dart": {
+   "duplicate.list_row": 1
+  },
+  "apps/raft_flutter/lib/features/human_login_sheet.dart": {
+   "duplicate.dialog": 1
+  },
+  "apps/raft_flutter/lib/features/integrations_views.dart": {
+   "duplicate.dialog": 2
   },
   "apps/raft_flutter/lib/features/management_support.dart": {
    "bypass.button": 2,
    "bypass.dialog": 1,
    "bypass.icon_button": 1,
    "bypass.progress": 1,
+   "duplicate.dialog": 2,
    "style.dimension": 2,
    "style.edge_insets": 4,
    "style.material_icons": 2,
@@ -187,6 +276,10 @@
    "widget.icon_button": 1,
    "widget.progress": 1
   },
+  "apps/raft_flutter/lib/features/mcp_server_editor.dart": {
+   "duplicate.button": 1,
+   "duplicate.dialog": 1
+  },
   "apps/raft_flutter/lib/features/mcp_views.dart": {
    "style.edge_insets": 1,
    "style.sized_box": 1,
@@ -194,10 +287,28 @@
    "widget.dialog": 1,
    "widget.list_tile": 1
   },
+  "apps/raft_flutter/lib/features/media_browser.dart": {
+   "duplicate.button": 1
+  },
+  "apps/raft_flutter/lib/features/media_image_page.dart": {
+   "duplicate.button": 2
+  },
+  "apps/raft_flutter/lib/features/member_profile_self_edit.dart": {
+   "duplicate.dialog": 1
+  },
+  "apps/raft_flutter/lib/features/member_profile_view.dart": {
+   "duplicate.button": 2,
+   "duplicate.list_row": 1
+  },
   "apps/raft_flutter/lib/features/message_action_card.dart": {
    "bypass.toggle": 1,
+   "duplicate.button": 1,
+   "duplicate.dialog": 2,
    "widget.dialog": 1,
    "widget.list_tile": 1
+  },
+  "apps/raft_flutter/lib/features/message_history_gaps.dart": {
+   "duplicate.button": 1
   },
   "apps/raft_flutter/lib/features/message_image_export.dart": {
    "bypass.dialog": 2,
@@ -214,6 +325,9 @@
    "widget.button": 1,
    "widget.dialog": 3
   },
+  "apps/raft_flutter/lib/features/notification_activation_banner.dart": {
+   "duplicate.button": 1
+  },
   "apps/raft_flutter/lib/features/page_alignment_previews.dart": {
    "style.edge_insets": 2
   },
@@ -221,11 +335,15 @@
    "style.dimension": 1,
    "style.sized_box": 2
   },
+  "apps/raft_flutter/lib/features/pending_mention_actions.dart": {
+   "duplicate.banner": 5
+  },
   "apps/raft_flutter/lib/features/provider_views.dart": {
    "bypass.button": 3,
    "bypass.dialog": 3,
    "bypass.icon_button": 1,
    "bypass.list_tile": 2,
+   "duplicate.dialog": 2,
    "style.edge_insets": 1,
    "style.material_icons": 2,
    "style.material_theme": 1,
@@ -235,6 +353,12 @@
    "widget.icon_button": 1,
    "widget.list_tile": 2,
    "widget.other": 2
+  },
+  "apps/raft_flutter/lib/features/public_attachments.dart": {
+   "duplicate.button": 5
+  },
+  "apps/raft_flutter/lib/features/public_server_view.dart": {
+   "duplicate.dialog": 1
   },
   "apps/raft_flutter/lib/features/resource_search.dart": {
    "style.border_radius": 1,
@@ -253,6 +377,7 @@
    "bypass.progress": 1,
    "bypass.select": 1,
    "bypass.text_field": 2,
+   "duplicate.dialog": 2,
    "style.dimension": 9,
    "style.edge_insets": 12,
    "style.font_size": 1,
@@ -271,7 +396,14 @@
    "widget.surface": 2,
    "widget.text_field": 4
   },
+  "apps/raft_flutter/lib/features/search_continue_footer.dart": {
+   "duplicate.button": 2
+  },
+  "apps/raft_flutter/lib/features/search_filter_bar.dart": {
+   "duplicate.button": 2
+  },
   "apps/raft_flutter/lib/features/search_home.dart": {
+   "duplicate.button": 1,
    "style.edge_insets": 2,
    "style.sized_box": 2
   },
@@ -286,6 +418,8 @@
    "bypass.list_tile": 1,
    "bypass.menu": 3,
    "bypass.progress": 1,
+   "duplicate.button": 1,
+   "duplicate.dialog": 4,
    "style.edge_insets": 1,
    "style.material_icons": 1,
    "style.material_theme": 1,
@@ -321,8 +455,12 @@
   "apps/raft_flutter/lib/features/source_channel_file_glyph.dart": {
    "style.border_radius": 8
   },
+  "apps/raft_flutter/lib/features/source_channel_files_actions.dart": {
+   "duplicate.button": 1
+  },
   "apps/raft_flutter/lib/features/source_channel_files_view.dart": {
    "bypass.menu": 2,
+   "duplicate.button": 4,
    "style.border_radius": 1,
    "style.dimension": 8,
    "style.duration": 1,
@@ -331,6 +469,9 @@
    "style.sized_box": 1,
    "widget.button": 1,
    "widget.menu": 2
+  },
+  "apps/raft_flutter/lib/features/source_feedback_view.dart": {
+   "duplicate.button": 4
   },
   "apps/raft_flutter/lib/features/system_notification_center.dart": {
    "bypass.overlay": 1,
@@ -343,6 +484,7 @@
   "apps/raft_flutter/lib/features/task_selection_filter.dart": {
    "bypass.menu": 1,
    "bypass.text_field": 1,
+   "duplicate.button": 1,
    "style.dimension": 2,
    "style.edge_insets": 2,
    "style.material_colors": 1,
@@ -356,9 +498,13 @@
    "style.material_theme": 1,
    "widget.button": 2
   },
+  "apps/raft_flutter/lib/features/workspace_history_controls.dart": {
+   "duplicate.button": 3
+  },
   "apps/raft_flutter/lib/features/workspace_view.dart": {
    "bypass.dialog": 5,
    "bypass.progress": 1,
+   "duplicate.button": 7,
    "style.dimension": 3,
    "style.edge_insets": 1,
    "style.material_icons": 1,
@@ -372,8 +518,12 @@
    "style.material_colors": 3,
    "style.material_theme": 2
   },
+  "packages/raft_ui/lib/activity_scope_previews.dart": {
+   "duplicate.button": 1
+  },
   "packages/raft_ui/lib/activity_selected_previews.dart": {
-   "contract.font_size_literal": 1
+   "contract.font_size_literal": 1,
+   "duplicate.button": 1
   },
   "packages/raft_ui/lib/attachment_comments_previews.dart": {
    "bypass.button": 1
@@ -381,13 +531,22 @@
   "packages/raft_ui/lib/basic_component_previews.dart": {
    "bypass.dialog": 1,
    "bypass.select": 3,
-   "bypass.text_field": 4
+   "bypass.text_field": 4,
+   "duplicate.button": 7,
+   "duplicate.dialog": 1
+  },
+  "packages/raft_ui/lib/channel_header_previews.dart": {
+   "duplicate.button": 1
   },
   "packages/raft_ui/lib/chat_composition_previews.dart": {
-   "bypass.divider": 1
+   "bypass.divider": 1,
+   "duplicate.button": 2
   },
   "packages/raft_ui/lib/composer_expand_previews.dart": {
    "bypass.text_field": 1
+  },
+  "packages/raft_ui/lib/conversation_card_previews.dart": {
+   "duplicate.button": 1
   },
   "packages/raft_ui/lib/document_previews.dart": {
    "contract.color_literal": 1
@@ -396,7 +555,8 @@
    "bypass.select": 1
   },
   "packages/raft_ui/lib/media_browser_previews.dart": {
-   "contract.color_literal": 3
+   "contract.color_literal": 3,
+   "duplicate.button": 1
   },
   "packages/raft_ui/lib/message_row_previews.dart": {
    "bypass.toggle": 2
@@ -404,18 +564,25 @@
   "packages/raft_ui/lib/mobile_computer_previews.dart": {
    "bypass.button": 1
   },
+  "packages/raft_ui/lib/mobile_detail_previews.dart": {
+   "duplicate.button": 1
+  },
   "packages/raft_ui/lib/mobile_page_header_previews.dart": {
    "bypass.icon_button": 1
   },
   "packages/raft_ui/lib/mounted_avatar_previews.dart": {
    "bypass.button": 3
   },
+  "packages/raft_ui/lib/notification_previews.dart": {
+   "duplicate.button": 1
+  },
   "packages/raft_ui/lib/previews.dart": {
    "bypass.dialog": 3,
    "bypass.icon_button": 1,
    "bypass.list_tile": 2,
    "bypass.toggle": 2,
-   "contract.font_size_literal": 1
+   "contract.font_size_literal": 1,
+   "duplicate.dialog": 1
   },
   "packages/raft_ui/lib/pull_to_refresh_previews.dart": {
    "bypass.list_tile": 1
@@ -424,14 +591,16 @@
    "bypass.button": 1
   },
   "packages/raft_ui/lib/rich_surface_visual_previews.dart": {
-   "contract.color_literal": 5
+   "contract.color_literal": 5,
+   "duplicate.button": 1
   },
   "packages/raft_ui/lib/section_pager_previews.dart": {
    "bypass.list_tile": 1,
    "bypass.text_field": 1
   },
   "packages/raft_ui/lib/src/action_card.dart": {
-   "contract.color_literal": 1
+   "contract.color_literal": 1,
+   "duplicate.button": 1
   },
   "packages/raft_ui/lib/src/activity_scope.dart": {
    "bypass.select": 1,
@@ -445,16 +614,22 @@
   },
   "packages/raft_ui/lib/src/add_computer_dialog.dart": {
    "bypass.dialog": 1,
-   "contract.stroke_width_literal": 1
+   "contract.stroke_width_literal": 1,
+   "duplicate.button": 5,
+   "duplicate.dialog": 1,
+   "duplicate.segmented": 1
   },
   "packages/raft_ui/lib/src/add_members_dialog_view.dart": {
    "bypass.tooltip": 1,
    "contract.radius_literal": 1,
-   "contract.stroke_width_literal": 1
+   "contract.stroke_width_literal": 1,
+   "duplicate.button": 2,
+   "duplicate.dialog": 1
   },
   "packages/raft_ui/lib/src/agent_avatar_picker.dart": {
    "contract.radius_literal": 1,
-   "contract.stroke_width_literal": 1
+   "contract.stroke_width_literal": 1,
+   "duplicate.button": 1
   },
   "packages/raft_ui/lib/src/agent_chat_view.dart": {
    "contract.color_literal": 1,
@@ -471,14 +646,22 @@
    "bypass.text_field": 1,
    "contract.font_size_literal": 9,
    "contract.legacy_recipe_theme": 1,
-   "contract.stroke_width_literal": 1
+   "contract.stroke_width_literal": 1,
+   "duplicate.button": 2
+  },
+  "packages/raft_ui/lib/src/agent_dialogs.dart": {
+   "duplicate.dialog": 1
   },
   "packages/raft_ui/lib/src/agent_profile.dart": {
    "bypass.overlay": 1,
    "contract.color_literal": 5,
    "contract.legacy_recipe_theme": 2,
    "contract.radius_literal": 5,
-   "contract.stroke_width_literal": 5
+   "contract.stroke_width_literal": 5,
+   "duplicate.button": 3
+  },
+  "packages/raft_ui/lib/src/agent_unavailable_panel.dart": {
+   "duplicate.button": 1
   },
   "packages/raft_ui/lib/src/announcement_markdown.dart": {
    "contract.font_size_literal": 2
@@ -486,20 +669,23 @@
   "packages/raft_ui/lib/src/announcement_modal.dart": {
    "contract.font_size_literal": 1,
    "contract.radius_literal": 1,
-   "contract.stroke_width_literal": 2
+   "contract.stroke_width_literal": 2,
+   "duplicate.button": 2
   },
   "packages/raft_ui/lib/src/app_icon_choices.dart": {
    "contract.radius_literal": 1
   },
   "packages/raft_ui/lib/src/appearance_picker.dart": {
    "contract.color_literal": 1,
-   "contract.radius_literal": 6
+   "contract.radius_literal": 6,
+   "duplicate.segmented": 2
   },
   "packages/raft_ui/lib/src/attachment_card.dart": {
    "bypass.button": 2,
    "bypass.progress": 2,
    "contract.font_size_literal": 1,
-   "contract.stroke_width_literal": 2
+   "contract.stroke_width_literal": 2,
+   "duplicate.button": 2
   },
   "packages/raft_ui/lib/src/attachment_comment_ref.dart": {
    "contract.font_size_literal": 1,
@@ -508,19 +694,22 @@
   "packages/raft_ui/lib/src/attachment_comments.dart": {
    "contract.font_size_literal": 8,
    "contract.radius_literal": 1,
-   "contract.stroke_width_literal": 2
+   "contract.stroke_width_literal": 2,
+   "duplicate.button": 1
   },
   "packages/raft_ui/lib/src/attachment_lightbox.dart": {
    "bypass.dialog": 1,
    "contract.color_literal": 2,
    "contract.font_size_literal": 6,
    "contract.radius_literal": 1,
-   "contract.stroke_width_literal": 2
+   "contract.stroke_width_literal": 2,
+   "duplicate.button": 3
   },
   "packages/raft_ui/lib/src/attachment_preview_shell.dart": {
    "bypass.dialog": 1,
    "contract.color_literal": 2,
-   "contract.font_size_literal": 1
+   "contract.font_size_literal": 1,
+   "duplicate.button": 4
   },
   "packages/raft_ui/lib/src/attachment_tokens.dart": {
    "contract.color_literal": 16,
@@ -530,13 +719,15 @@
    "contract.color_literal": 5,
    "contract.font_size_literal": 2,
    "contract.radius_literal": 2,
-   "contract.stroke_width_literal": 1
+   "contract.stroke_width_literal": 1,
+   "duplicate.button": 2
   },
   "packages/raft_ui/lib/src/auth_page.dart": {
    "bypass.toggle": 1,
    "contract.font_size_literal": 4,
    "contract.legacy_recipe_theme": 2,
-   "contract.radius_literal": 2
+   "contract.radius_literal": 2,
+   "duplicate.button": 1
   },
   "packages/raft_ui/lib/src/avatar_pixel_data.dart": {
    "contract.color_literal": 1
@@ -545,11 +736,13 @@
    "contract.color_literal": 1
   },
   "packages/raft_ui/lib/src/channel_footer.dart": {
-   "contract.stroke_width_literal": 1
+   "contract.stroke_width_literal": 1,
+   "duplicate.button": 1
   },
   "packages/raft_ui/lib/src/channel_header.dart": {
    "contract.radius_literal": 1,
-   "contract.stroke_width_literal": 2
+   "contract.stroke_width_literal": 2,
+   "duplicate.button": 1
   },
   "packages/raft_ui/lib/src/channel_joint_section_view.dart": {
    "bypass.divider": 2
@@ -557,7 +750,8 @@
   "packages/raft_ui/lib/src/channel_members_view.dart": {
    "contract.font_size_literal": 1,
    "contract.radius_literal": 1,
-   "contract.stroke_width_literal": 8
+   "contract.stroke_width_literal": 8,
+   "duplicate.button": 10
   },
   "packages/raft_ui/lib/src/channel_overflow_sheet.dart": {
    "bypass.dialog": 1,
@@ -566,6 +760,12 @@
    "contract.radius_literal": 2,
    "contract.stroke_width_literal": 1
   },
+  "packages/raft_ui/lib/src/channel_resolution_body.dart": {
+   "duplicate.button": 1
+  },
+  "packages/raft_ui/lib/src/channel_settings_sheet.dart": {
+   "duplicate.button": 6
+  },
   "packages/raft_ui/lib/src/channel_slack_field.dart": {
    "bypass.select": 1
   },
@@ -573,7 +773,8 @@
    "bypass.divider": 1,
    "contract.color_literal": 3,
    "contract.radius_literal": 1,
-   "contract.stroke_width_literal": 1
+   "contract.stroke_width_literal": 1,
+   "duplicate.button": 3
   },
   "packages/raft_ui/lib/src/chinese_community_page.dart": {
    "contract.radius_literal": 3
@@ -583,14 +784,16 @@
    "contract.stroke_width_literal": 5
   },
   "packages/raft_ui/lib/src/collapsible.dart": {
-   "contract.color_literal": 3
+   "contract.color_literal": 3,
+   "duplicate.button": 1
   },
   "packages/raft_ui/lib/src/combobox_panel.dart": {
    "bypass.text_field": 1,
    "contract.font_size_literal": 1
   },
   "packages/raft_ui/lib/src/community_agreement_dialog.dart": {
-   "contract.stroke_width_literal": 1
+   "contract.stroke_width_literal": 1,
+   "duplicate.button": 3
   },
   "packages/raft_ui/lib/src/components.dart": {
    "bypass.button": 2,
@@ -599,7 +802,8 @@
    "contract.font_size_literal": 5,
    "contract.legacy_recipe_theme": 3,
    "contract.radius_literal": 4,
-   "contract.stroke_width_literal": 4
+   "contract.stroke_width_literal": 4,
+   "duplicate.button": 2
   },
   "packages/raft_ui/lib/src/composer_attachments.dart": {
    "contract.color_literal": 2,
@@ -613,6 +817,11 @@
    "contract.radius_literal": 1,
    "contract.stroke_width_literal": 1
   },
+  "packages/raft_ui/lib/src/composer_expand.dart": {
+   "duplicate.button": 4,
+   "duplicate.dialog": 1,
+   "duplicate.segmented": 1
+  },
   "packages/raft_ui/lib/src/composer_expansion_state.dart": {
    "bypass.overlay": 1
   },
@@ -620,27 +829,40 @@
    "contract.font_size_literal": 5,
    "contract.legacy_recipe_theme": 2,
    "contract.radius_literal": 4,
-   "contract.stroke_width_literal": 3
+   "contract.stroke_width_literal": 3,
+   "duplicate.button": 2
   },
   "packages/raft_ui/lib/src/composer_recipe.dart": {
    "contract.font_size_literal": 1,
    "contract.radius_literal": 3,
-   "contract.stroke_width_literal": 1
+   "contract.stroke_width_literal": 1,
+   "duplicate.button": 1
+  },
+  "packages/raft_ui/lib/src/composer_recoverable_uploads.dart": {
+   "duplicate.button": 1
   },
   "packages/raft_ui/lib/src/composer_tool_button.dart": {
-   "contract.radius_literal": 1
+   "contract.radius_literal": 1,
+   "duplicate.button": 1
   },
   "packages/raft_ui/lib/src/computer_detail.dart": {
    "bypass.dialog": 1,
    "contract.color_literal": 2,
-   "contract.stroke_width_literal": 3
+   "contract.stroke_width_literal": 3,
+   "duplicate.button": 3,
+   "duplicate.dialog": 1,
+   "duplicate.list_row": 1
   },
   "packages/raft_ui/lib/src/computer_release_notes.dart": {
    "bypass.dialog": 1
   },
+  "packages/raft_ui/lib/src/computer_runtime_detection.dart": {
+   "duplicate.button": 1
+  },
   "packages/raft_ui/lib/src/computer_surfaces.dart": {
    "contract.radius_literal": 2,
-   "contract.stroke_width_literal": 5
+   "contract.stroke_width_literal": 5,
+   "duplicate.button": 1
   },
   "packages/raft_ui/lib/src/conversation_finder.dart": {
    "bypass.text_field": 1,
@@ -653,17 +875,26 @@
   },
   "packages/raft_ui/lib/src/copyable_code.dart": {
    "contract.font_size_literal": 1,
-   "contract.stroke_width_literal": 1
+   "contract.stroke_width_literal": 1,
+   "duplicate.button": 1
   },
   "packages/raft_ui/lib/src/create_channel_view.dart": {
-   "bypass.divider": 1
+   "bypass.divider": 1,
+   "duplicate.button": 4,
+   "duplicate.dialog": 1,
+   "duplicate.segmented": 1
+  },
+  "packages/raft_ui/lib/src/create_task_view.dart": {
+   "duplicate.button": 4,
+   "duplicate.dialog": 1
   },
   "packages/raft_ui/lib/src/design_primitives.dart": {
    "bypass.overlay": 1,
    "contract.color_literal": 16,
    "contract.font_size_literal": 3,
    "contract.radius_literal": 10,
-   "contract.stroke_width_literal": 9
+   "contract.stroke_width_literal": 9,
+   "duplicate.segmented": 1
   },
   "packages/raft_ui/lib/src/dialog_card.dart": {
    "contract.color_literal": 5,
@@ -672,7 +903,8 @@
    "contract.stroke_width_literal": 3
   },
   "packages/raft_ui/lib/src/document_preview.dart": {
-   "contract.font_size_literal": 3
+   "contract.font_size_literal": 3,
+   "duplicate.button": 1
   },
   "packages/raft_ui/lib/src/editor_groups.dart": {
    "contract.color_literal": 2,
@@ -689,12 +921,15 @@
    "contract.radius_literal": 6
   },
   "packages/raft_ui/lib/src/error_presentation.dart": {
-   "bypass.overlay": 1
+   "bypass.overlay": 1,
+   "duplicate.button": 3
   },
   "packages/raft_ui/lib/src/external_agent_setup.dart": {
    "contract.font_size_literal": 2,
    "contract.radius_literal": 2,
-   "contract.stroke_width_literal": 3
+   "contract.stroke_width_literal": 3,
+   "duplicate.button": 2,
+   "duplicate.segmented": 1
   },
   "packages/raft_ui/lib/src/external_identity_panel.dart": {
    "contract.font_size_literal": 4
@@ -708,7 +943,8 @@
    "bypass.text_field": 1,
    "contract.font_size_literal": 2,
    "contract.radius_literal": 1,
-   "contract.stroke_width_literal": 2
+   "contract.stroke_width_literal": 2,
+   "duplicate.button": 5
   },
   "packages/raft_ui/lib/src/form_controls.dart": {
    "contract.font_size_literal": 1,
@@ -717,15 +953,19 @@
   "packages/raft_ui/lib/src/form_dialog.dart": {
    "bypass.dialog": 1,
    "bypass.select": 2,
-   "bypass.text_field": 1
+   "bypass.text_field": 1,
+   "duplicate.button": 2
   },
   "packages/raft_ui/lib/src/form_presentation.dart": {
-   "bypass.dialog": 1
+   "bypass.dialog": 1,
+   "duplicate.button": 1,
+   "duplicate.dialog": 1
   },
   "packages/raft_ui/lib/src/forward_composer.dart": {
    "bypass.text_field": 2,
    "contract.font_size_literal": 7,
-   "contract.radius_literal": 1
+   "contract.radius_literal": 1,
+   "duplicate.button": 5
   },
   "packages/raft_ui/lib/src/forward_desktop_dialog.dart": {
    "contract.font_size_literal": 1,
@@ -773,7 +1013,14 @@
   },
   "packages/raft_ui/lib/src/invite_human_dialog.dart": {
    "bypass.select": 3,
-   "contract.font_size_literal": 5
+   "contract.font_size_literal": 5,
+   "duplicate.button": 6,
+   "duplicate.dialog": 1,
+   "duplicate.segmented": 1
+  },
+  "packages/raft_ui/lib/src/joint_channel_dialog_view.dart": {
+   "duplicate.button": 4,
+   "duplicate.dialog": 1
   },
   "packages/raft_ui/lib/src/large_content_viewer.dart": {
    "bypass.overlay": 1,
@@ -789,12 +1036,14 @@
    "bypass.text_field": 1,
    "contract.font_size_literal": 7,
    "contract.radius_literal": 3,
-   "contract.stroke_width_literal": 5
+   "contract.stroke_width_literal": 5,
+   "duplicate.button": 1
   },
   "packages/raft_ui/lib/src/list_page_parts.dart": {
    "contract.font_size_literal": 2,
    "contract.radius_literal": 1,
-   "contract.stroke_width_literal": 1
+   "contract.stroke_width_literal": 1,
+   "duplicate.button": 3
   },
   "packages/raft_ui/lib/src/markdown_outline.dart": {
    "contract.font_size_literal": 1
@@ -808,7 +1057,8 @@
    "contract.color_literal": 1,
    "contract.font_size_literal": 3,
    "contract.radius_literal": 1,
-   "contract.stroke_width_literal": 1
+   "contract.stroke_width_literal": 1,
+   "duplicate.button": 1
   },
   "packages/raft_ui/lib/src/mermaid_fullscreen.dart": {
    "contract.color_literal": 4
@@ -816,12 +1066,16 @@
   "packages/raft_ui/lib/src/message_body.dart": {
    "bypass.menu": 4,
    "contract.color_literal": 3,
-   "contract.font_size_literal": 2
+   "contract.font_size_literal": 2,
+   "duplicate.button": 3
   },
   "packages/raft_ui/lib/src/message_content_tokens.dart": {
    "contract.color_literal": 2,
    "contract.radius_literal": 1,
    "contract.stroke_width_literal": 2
+  },
+  "packages/raft_ui/lib/src/message_context_menu.dart": {
+   "duplicate.button": 1
   },
   "packages/raft_ui/lib/src/message_export.dart": {
    "bypass.divider": 2,
@@ -842,20 +1096,26 @@
    "contract.color_literal": 1,
    "contract.font_size_literal": 1,
    "contract.radius_literal": 3,
-   "contract.stroke_width_literal": 3
+   "contract.stroke_width_literal": 3,
+   "duplicate.button": 2
   },
   "packages/raft_ui/lib/src/message_toolbar_glyphs.dart": {
    "contract.radius_literal": 1,
    "contract.stroke_width_literal": 2
   },
+  "packages/raft_ui/lib/src/message_translation.dart": {
+   "duplicate.button": 1
+  },
   "packages/raft_ui/lib/src/mobile_computer_list.dart": {
    "contract.radius_literal": 3,
-   "contract.stroke_width_literal": 2
+   "contract.stroke_width_literal": 2,
+   "duplicate.button": 1
   },
   "packages/raft_ui/lib/src/mobile_navigation.dart": {
    "contract.color_literal": 10,
    "contract.radius_literal": 3,
-   "contract.stroke_width_literal": 2
+   "contract.stroke_width_literal": 2,
+   "duplicate.button": 3
   },
   "packages/raft_ui/lib/src/mobile_navigation_docked.dart": {
    "contract.radius_literal": 2,
@@ -870,7 +1130,8 @@
    "contract.stroke_width_literal": 2
   },
   "packages/raft_ui/lib/src/mobile_workspace_header.dart": {
-   "contract.radius_literal": 2
+   "contract.radius_literal": 2,
+   "duplicate.button": 1
   },
   "packages/raft_ui/lib/src/mounted_avatar_recipe.dart": {
    "contract.color_literal": 2
@@ -878,16 +1139,22 @@
   "packages/raft_ui/lib/src/mounted_reaction_recipe.dart": {
    "contract.font_size_literal": 1,
    "contract.radius_literal": 1,
-   "contract.stroke_width_literal": 2
+   "contract.stroke_width_literal": 2,
+   "duplicate.button": 2
   },
   "packages/raft_ui/lib/src/mounted_task_chip.dart": {
    "contract.radius_literal": 2,
-   "contract.stroke_width_literal": 1
+   "contract.stroke_width_literal": 1,
+   "duplicate.button": 1
+  },
+  "packages/raft_ui/lib/src/new_updates_button.dart": {
+   "duplicate.button": 1
   },
   "packages/raft_ui/lib/src/notification_center.dart": {
    "contract.color_literal": 5,
    "contract.radius_literal": 1,
-   "contract.stroke_width_literal": 1
+   "contract.stroke_width_literal": 1,
+   "duplicate.button": 1
   },
   "packages/raft_ui/lib/src/notification_settings_card.dart": {
    "contract.font_size_literal": 3,
@@ -919,13 +1186,16 @@
   },
   "packages/raft_ui/lib/src/preview_unavailable.dart": {
    "contract.radius_literal": 1,
-   "contract.stroke_width_literal": 1
+   "contract.stroke_width_literal": 1,
+   "duplicate.button": 5
   },
   "packages/raft_ui/lib/src/profile_preview_card.dart": {
    "contract.stroke_width_literal": 1
   },
   "packages/raft_ui/lib/src/provider_edit_view.dart": {
-   "contract.color_literal": 1
+   "contract.color_literal": 1,
+   "duplicate.button": 2,
+   "duplicate.dialog": 1
   },
   "packages/raft_ui/lib/src/public_page_mark.dart": {
    "contract.color_literal": 1,
@@ -938,7 +1208,8 @@
    "contract.stroke_width_literal": 5
   },
   "packages/raft_ui/lib/src/quick_reaction_picker.dart": {
-   "contract.radius_literal": 1
+   "contract.radius_literal": 1,
+   "duplicate.button": 1
   },
   "packages/raft_ui/lib/src/quick_switcher.dart": {
    "contract.color_literal": 1,
@@ -946,7 +1217,8 @@
    "contract.stroke_width_literal": 1
   },
   "packages/raft_ui/lib/src/quick_switcher_results.dart": {
-   "contract.stroke_width_literal": 2
+   "contract.stroke_width_literal": 2,
+   "duplicate.button": 1
   },
   "packages/raft_ui/lib/src/quoted_message_card.dart": {
    "contract.color_literal": 9,
@@ -1041,7 +1313,9 @@
   },
   "packages/raft_ui/lib/src/report_issue_dialog.dart": {
    "contract.font_size_literal": 1,
-   "contract.stroke_width_literal": 2
+   "contract.stroke_width_literal": 2,
+   "duplicate.button": 6,
+   "duplicate.dialog": 2
   },
   "packages/raft_ui/lib/src/resource_cards.dart": {
    "contract.font_size_literal": 1,
@@ -1069,10 +1343,17 @@
   "packages/raft_ui/lib/src/runtime_usage_card.dart": {
    "bypass.dialog": 1,
    "contract.color_literal": 1,
-   "contract.stroke_width_literal": 5
+   "contract.stroke_width_literal": 5,
+   "duplicate.button": 1
+  },
+  "packages/raft_ui/lib/src/search_input.dart": {
+   "duplicate.button": 1
   },
   "packages/raft_ui/lib/src/search_result_surface.dart": {
    "contract.stroke_width_literal": 1
+  },
+  "packages/raft_ui/lib/src/secret_view.dart": {
+   "duplicate.button": 2
   },
   "packages/raft_ui/lib/src/select_field.dart": {
    "bypass.overlay": 1,
@@ -1105,17 +1386,20 @@
    "contract.color_literal": 1,
    "contract.font_size_literal": 2,
    "contract.radius_literal": 2,
-   "contract.stroke_width_literal": 10
+   "contract.stroke_width_literal": 10,
+   "duplicate.list_row": 1
   },
   "packages/raft_ui/lib/src/settings_app_editor.dart": {
    "bypass.select": 2,
-   "contract.stroke_width_literal": 12
+   "contract.stroke_width_literal": 12,
+   "duplicate.button": 1
   },
   "packages/raft_ui/lib/src/settings_applications.dart": {
    "bypass.select": 1,
    "contract.color_literal": 1,
    "contract.radius_literal": 1,
-   "contract.stroke_width_literal": 8
+   "contract.stroke_width_literal": 8,
+   "duplicate.button": 1
   },
   "packages/raft_ui/lib/src/settings_billing.dart": {
    "contract.font_size_literal": 2,
@@ -1129,7 +1413,8 @@
    "contract.stroke_width_literal": 2
   },
   "packages/raft_ui/lib/src/settings_language.dart": {
-   "bypass.select": 1
+   "bypass.select": 1,
+   "duplicate.segmented": 1
   },
   "packages/raft_ui/lib/src/settings_layout.dart": {
    "contract.radius_literal": 1,
@@ -1159,7 +1444,8 @@
   "packages/raft_ui/lib/src/sidebar_frame.dart": {
    "contract.color_literal": 1,
    "contract.radius_literal": 1,
-   "contract.stroke_width_literal": 2
+   "contract.stroke_width_literal": 2,
+   "duplicate.button": 1
   },
   "packages/raft_ui/lib/src/sidebar_indicators.dart": {
    "contract.radius_literal": 1,
@@ -1168,9 +1454,13 @@
   "packages/raft_ui/lib/src/sidebar_menus.dart": {
    "bypass.overlay": 1
   },
+  "packages/raft_ui/lib/src/sidebar_section.dart": {
+   "duplicate.button": 2
+  },
   "packages/raft_ui/lib/src/sidebar_section_dialog.dart": {
    "bypass.overlay": 1,
-   "contract.font_size_literal": 1
+   "contract.font_size_literal": 1,
+   "duplicate.button": 4
   },
   "packages/raft_ui/lib/src/slack_bridge_wizard.dart": {
    "bypass.select": 1,
@@ -1184,7 +1474,8 @@
    "contract.stroke_width_literal": 1
   },
   "packages/raft_ui/lib/src/sos_dialog.dart": {
-   "contract.font_size_literal": 1
+   "contract.font_size_literal": 1,
+   "duplicate.dialog": 1
   },
   "packages/raft_ui/lib/src/switch_recipe.dart": {
    "contract.radius_literal": 1
@@ -1196,12 +1487,17 @@
    "contract.font_size_literal": 5,
    "contract.legacy_recipe_theme": 4,
    "contract.radius_literal": 2,
-   "contract.stroke_width_literal": 1
+   "contract.stroke_width_literal": 1,
+   "duplicate.button": 1
+  },
+  "packages/raft_ui/lib/src/task_filter_control.dart": {
+   "duplicate.segmented": 1
   },
   "packages/raft_ui/lib/src/task_surface.dart": {
    "contract.color_literal": 1,
    "contract.radius_literal": 1,
-   "contract.stroke_width_literal": 2
+   "contract.stroke_width_literal": 2,
+   "duplicate.button": 4
   },
   "packages/raft_ui/lib/src/task_timeline.dart": {
    "contract.stroke_width_literal": 1
@@ -1219,20 +1515,29 @@
    "bypass.text_field": 1,
    "contract.font_size_literal": 1,
    "contract.radius_literal": 1,
-   "contract.stroke_width_literal": 3
+   "contract.stroke_width_literal": 3,
+   "duplicate.button": 6
   },
   "packages/raft_ui/lib/src/thread_followers.dart": {
    "bypass.overlay": 1,
    "contract.font_size_literal": 5,
-   "contract.stroke_width_literal": 1
+   "contract.stroke_width_literal": 1,
+   "duplicate.button": 3
   },
   "packages/raft_ui/lib/src/thread_replies.dart": {
    "bypass.button": 3,
    "contract.font_size_literal": 4,
    "contract.legacy_recipe_theme": 1
   },
+  "packages/raft_ui/lib/src/thread_resolution_body.dart": {
+   "duplicate.button": 1
+  },
+  "packages/raft_ui/lib/src/timeline_bottom_button.dart": {
+   "duplicate.button": 2
+  },
   "packages/raft_ui/lib/src/toast.dart": {
-   "contract.stroke_width_literal": 1
+   "contract.stroke_width_literal": 1,
+   "duplicate.button": 2
   },
   "packages/raft_ui/lib/src/tokens/token_set.dart": {
    "contract.color_literal": 1
@@ -1264,7 +1569,11 @@
   },
   "packages/raft_ui/lib/src/workspace_top_bar.dart": {
    "contract.radius_literal": 1,
-   "contract.stroke_width_literal": 1
+   "contract.stroke_width_literal": 1,
+   "duplicate.button": 1
+  },
+  "packages/raft_ui/lib/task_surface_previews.dart": {
+   "duplicate.button": 1
   },
   "packages/raft_ui/lib/timeline_composition_previews.dart": {
    "bypass.button": 1
