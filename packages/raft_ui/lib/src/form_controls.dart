@@ -15,7 +15,6 @@ import 'recipe_surface.dart';
 import 'recipes/field.g.dart' as gen;
 import 'recipes/input.g.dart';
 import 'recipes/input_group.g.dart';
-import 'recipes/button_variants.g.dart';
 import 'recipes/kbd.g.dart';
 import 'recipes/label.g.dart';
 import 'kbd.dart';
@@ -27,6 +26,7 @@ import 'recipes/token_binding.dart';
 import 'auth_page.dart'
     show RaftAuthHandleGroup, raftAuthGroupedInputDecoration;
 import 'label.dart';
+import 'raft/button.dart' show RaftButton, RaftButtonVariant, RaftButtonSize;
 import 'raft/css_box.dart';
 import 'raft/ui_tokens.dart';
 import 'theme.dart';
@@ -1187,20 +1187,13 @@ class _RaftInputGroupState extends State<RaftInputGroup>
 
   /// `Button variant="ghost" size="icon-sm"` with the X: the recipe's square and its `svg` size.
   Widget _clearButton(RaftTokens t, RaftTokenResolver rt) {
-    final size = RaftButtonRecipe.resolve(
-      theme: t.recipeTheme,
-      variant: RaftButtonRecipeVariant.ghost,
-      size: RaftButtonRecipeSize.iconSm,
-      tokens: rt,
-    ).root;
-    final square = size.width ?? 28;
-    return RaftIconButton(
+    return RaftButton(
+      label: '',
       glyph: RaftGlyph.x,
-      glyphSize: size.target("& svg:not([class*='size-'])")?.width,
-      visualSize: square,
-      minimumTargetSize: square,
+      uiVariant: RaftButtonVariant.ghost,
+      uiSize: RaftButtonSize.iconSm,
       tooltip: widget.clearLabel,
-      variant: RaftControlVariant.ghost,
+      semanticLabel: widget.clearLabel,
       onPressed: widget.onClear,
     );
   }
