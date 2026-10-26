@@ -77,7 +77,6 @@ void main() {
         TargetPlatform.iOS,
         TargetPlatform.macOS,
         TargetPlatform.linux,
-        TargetPlatform.windows,
         TargetPlatform.fuchsia,
       ]) {
         expect(

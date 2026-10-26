@@ -1,4 +1,4 @@
-# Android Chinese control labels
+# Chinese control labels on Android and Windows
 
 Status: adopted. Owner rule and prior art: the Miraa app's
 `docs/android-cjk-control-typography.md` (commit 33d35b15).
@@ -10,7 +10,10 @@ Android + zh locale + single-line control label (badge, chip, tag, button,
 tab, segment, menu row)
     -> TextStyle.height = 1.30 (token) + leadingDistribution: proportional
 
-body text, multi-line text, other locales, iOS / macOS / Linux / Windows
+Windows + zh locale + single-line control label
+    -> TextStyle.height = 1.20 (token) + leadingDistribution: proportional
+
+body text, multi-line text, other locales, iOS / macOS / Linux
     -> unchanged
 ```
 
@@ -22,8 +25,9 @@ the only entry point:
   are kept. Other platforms/locales get the same `TextStyle` instance back.
 - The value is a generated token: `tool/design-source/control-typography.json`
   -> `tool/gen-tokens` -> `tokens/typography.g.dart`
-  (`RaftControlTypographyTokens.androidChineseLineHeight`). Never write `1.3`
-  at a call site.
+  (`RaftControlTypographyTokens.androidChineseLineHeight` and
+  `windowsChineseLineHeight`). Never write a platform line-height factor at a
+  call site.
 
 ## Why
 
@@ -39,6 +43,21 @@ baseline with the line height, and the offset of the ink from the box centre is
 
 so a taller proportional line moves the ink down, a shorter one up, for every font
 whose natural line (a + d) is not exactly `h`.
+
+The factors differ because the fallback font metrics differ. Android's
+system CJK face benefits from a taller proportional line (`1.30`); Windows'
+Microsoft YaHei fallback puts the ink lower and benefits from a shorter one
+(`1.20`). The Windows value was selected by a native Windows Flutter renderer
+sweep over the three appearances at text scales 1.0, 1.3 and 2.0, rather than
+by copying the Android value or adding an offset to the conversation tabs.
+The fixture uses production controls and the installed fallback face, and
+compares the rasterised text ink with the adjacent icon's ink. Its render-tree
+capture is separate from an OS window screenshot or interactive acceptance.
+Detailed measurements and raw before/after records belong in the fixing PR.
+
+Both profiles are selected by UI locale. English UI labels retain their
+existing line metrics; mixed-language labels inside Chinese UI follow that
+UI's control profile. Font family, fallback order, size and weight are kept.
 
 On Android `systemFonts` is on (`apps/raft_flutter/lib/main.dart`): every label
 uses the device's own sans family and falls back to the device CJK font. The

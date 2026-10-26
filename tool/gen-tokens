@@ -1176,13 +1176,15 @@ def emit_typography():
              '// dart format off', '',
              '/// Typography policy tokens for single-line control labels.',
              '///',
-             '/// Flutter centres a font\'s line box, not the visible glyphs. The Android system',
-             '/// CJK fallback draws Chinese ink above that centre, so single-line control labels',
-             '/// (badges, chips, buttons, tabs, segments) use a taller, proportionally split line',
-             '/// there. See `RaftControlTypography` and docs/android-cjk-control-typography.md.',
+             '/// Flutter centres a font\'s line box, not the visible glyphs. Android and Windows',
+             '/// CJK fallback faces need different, measured proportional line heights for',
+             '/// single-line control labels. See `RaftControlTypography` and',
+             '/// docs/android-cjk-control-typography.md.',
              'abstract final class RaftControlTypographyTokens {',
              '  /// `control.androidChineseLineHeight`: `TextStyle.height` factor.',
              f"  static const double androidChineseLineHeight = {fmt_double(float(src['androidChineseLineHeight']))};",
+             '  /// `control.windowsChineseLineHeight`: `TextStyle.height` factor.',
+             f"  static const double windowsChineseLineHeight = {fmt_double(float(src['windowsChineseLineHeight']))};",
              '}']
     return '\n'.join(lines) + '\n'
 

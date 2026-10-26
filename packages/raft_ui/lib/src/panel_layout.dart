@@ -1371,7 +1371,7 @@ class RaftCssText extends StatelessWidget {
   final bool? softWrap;
   final StrutStyle? strutStyle;
 
-  /// A single-line control label: on Android + Chinese it takes
+  /// A single-line control label: on Android/Windows + Chinese it takes
   /// [RaftControlTypography], and its optical line box replaces the CSS
   /// baseline snap (which would undo the correction).
   final bool controlLabel;
@@ -1445,14 +1445,18 @@ class RaftCssLineBox extends SingleChildRenderObjectWidget {
   });
   final TextStyle style;
   final TextScaler textScaler;
+  bool _windowsChinese(BuildContext context) =>
+      Theme.of(context).platform == TargetPlatform.windows &&
+      RaftControlTypography.appliesIn(context);
   @override
   RenderObject createRenderObject(BuildContext context) =>
-      _RenderCssLineBox(style, textScaler);
+      _RenderCssLineBox(style, textScaler, _windowsChinese(context));
   @override
   void updateRenderObject(BuildContext context, _RenderCssLineBox r) {
     r
       ..style = style
-      ..textScaler = textScaler;
+      ..textScaler = textScaler
+      ..windowsChinese = _windowsChinese(context);
   }
 }
 
@@ -1496,9 +1500,16 @@ double _laidOutGlobalTop(RenderBox box) {
 }
 
 class _RenderCssLineBox extends RenderProxyBox {
-  _RenderCssLineBox(this._style, this._textScaler);
+  _RenderCssLineBox(this._style, this._textScaler, this._windowsChinese);
   TextStyle _style;
   TextScaler _textScaler;
+  bool _windowsChinese;
+  set windowsChinese(bool value) {
+    if (value == _windowsChinese) return;
+    _windowsChinese = value;
+    markNeedsLayout();
+  }
+
   double _flutterBaseline = 0;
   set style(TextStyle v) {
     if (v == _style) return;
@@ -1514,10 +1525,13 @@ class _RenderCssLineBox extends RenderProxyBox {
 
   _BlinkMetrics get _metrics => _BlinkMetrics.of(_style, _textScaler);
 
-  /// A control label on the Android Chinese profile keeps Flutter's own
+  /// A control label on a Chinese platform profile keeps Flutter's own
   /// proportional baseline: the Blink even-leading baseline (and its snap)
   /// would move the ink back to where the font draws it too high.
-  bool get _optical => RaftControlTypography.isControlStyle(_style);
+  bool get _optical =>
+      RaftControlTypography.isControlStyle(_style) &&
+      (_style.height == RaftControlTypography.androidChineseLineHeight ||
+          _windowsChinese);
 
   int get _lines {
     final c = child;

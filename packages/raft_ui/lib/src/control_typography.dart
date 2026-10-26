@@ -13,13 +13,19 @@ import 'tokens/typography.g.dart';
 /// ascent/descent moves the baseline to where the ink is centred. The value is
 /// measured on a device and lives in `tool/design-source/control-typography.json`.
 ///
-/// Scope: Android + Chinese locale + single-line control label. Body text,
-/// multi-line text, other locales and Apple platforms keep their metrics.
+/// Windows' YaHei fallback has the opposite offset: a shorter proportional
+/// line centres its ink. The platform profiles share this entry point.
+/// Scope: Android/Windows + Chinese locale + single-line control label.
+/// Body text, multi-line text and other platform/locales keep their metrics.
 abstract final class RaftControlTypography {
   /// `TextStyle.height` factor of the Android Chinese control profile.
   static double get androidChineseLineHeight =>
       debugAndroidChineseLineHeight ??
       RaftControlTypographyTokens.androidChineseLineHeight;
+
+  /// Measured line-height factor for Windows Chinese control labels.
+  static double get windowsChineseLineHeight =>
+      RaftControlTypographyTokens.windowsChineseLineHeight;
 
   /// Measurement hook for the device sweep (tool/cjk-labels); never set in
   /// product code.
@@ -35,7 +41,8 @@ abstract final class RaftControlTypography {
     required Locale locale,
   }) =>
       !debugDisabled &&
-      platform == TargetPlatform.android &&
+      (platform == TargetPlatform.android ||
+          platform == TargetPlatform.windows) &&
       locale.languageCode == 'zh';
 
   /// [baseStyle] with the control profile when it applies, otherwise
@@ -48,7 +55,9 @@ abstract final class RaftControlTypography {
   }) {
     if (!appliesTo(platform: platform, locale: locale)) return baseStyle;
     return baseStyle.copyWith(
-      height: androidChineseLineHeight,
+      height: platform == TargetPlatform.windows
+          ? windowsChineseLineHeight
+          : androidChineseLineHeight,
       leadingDistribution: TextLeadingDistribution.proportional,
     );
   }
@@ -70,5 +79,6 @@ abstract final class RaftControlTypography {
   /// Whether [style] already carries the profile.
   static bool isControlStyle(TextStyle style) =>
       style.leadingDistribution == TextLeadingDistribution.proportional &&
-      style.height == androidChineseLineHeight;
+      (style.height == androidChineseLineHeight ||
+          style.height == windowsChineseLineHeight);
 }
