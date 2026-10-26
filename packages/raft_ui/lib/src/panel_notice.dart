@@ -112,6 +112,7 @@ class RaftPanelNotice extends StatelessWidget {
       decoration: BoxDecoration(
         color: t.colors[_legacyFill(status)],
         border: Border(
+          // ds-allow: the frozen Elegant and Brutal strip draws its 1px rule as it always did
           bottom: BorderSide(color: t.colors['line-muted']!, width: 1),
         ),
       ),

@@ -22,8 +22,14 @@ Widget host(ThemeData theme, Widget child, {bool reduced = false}) =>
   final transform = tester.widget<Transform>(
     find.byKey(const ValueKey('progress-indeterminate-sweep')),
   );
-  final m = transform.transform;
-  return (m.entry(0, 3), m.entry(0, 0));
+  final shift = tester
+      .widget<FractionalTranslation>(
+        find.byKey(const ValueKey('progress-indeterminate-shift')),
+      )
+      .translation
+      .dx;
+  // The stripe is half of the 200px track.
+  return (shift * 100, transform.transform.entry(0, 0));
 }
 
 void main() {

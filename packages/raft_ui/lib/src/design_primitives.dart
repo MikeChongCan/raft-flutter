@@ -1519,7 +1519,8 @@ class RaftMenuRecipe {
         ];
 }
 
-/// Theme spinner: the source pixel grid or original ring, with caller overrides.
+/// raft-ui `Spinner`, the one spinner of the client: the pixel grid in the Raft
+/// look and the original ring in the frozen looks, with caller overrides.
 class RaftSpinner extends StatefulWidget {
   const RaftSpinner({
     super.key,

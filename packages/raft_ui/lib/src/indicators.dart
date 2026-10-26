@@ -404,15 +404,15 @@ class _IndeterminateSweepState extends State<_IndeterminateSweep>
         final scaleFrom = leg ? .35 : .6, scaleTo = leg ? .6 : .35;
         final shift = from + (to - from) * k;
         final scale = scaleFrom + (scaleTo - scaleFrom) * k;
-        return LayoutBuilder(
-          builder: (context, box) => Transform(
+        // `translateX(%)` is a fraction of the stripe's own (unscaled) width,
+        // so the shift wraps the scale; neither needs the track's width.
+        return FractionalTranslation(
+          key: const ValueKey('progress-indeterminate-shift'),
+          translation: Offset(shift, 0),
+          child: Transform(
             key: const ValueKey('progress-indeterminate-sweep'),
             alignment: Alignment.centerLeft,
-            transform: Matrix4.translationValues(
-              shift * box.maxWidth * .5,
-              0,
-              0,
-            )..scaleByDouble(scale, 1, 1, 1),
+            transform: Matrix4.diagonal3Values(scale, 1, 1),
             child: child,
           ),
         );

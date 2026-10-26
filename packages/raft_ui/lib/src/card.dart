@@ -10,7 +10,6 @@ import 'package:flutter/material.dart';
 
 import 'dialog_card.dart' show raftRecipeThemeOf;
 import 'design_primitives.dart' show RaftInteractive;
-import 'raft/css_box.dart' show raftControlBorderPx;
 import 'raft/ui_tokens.dart';
 import 'recipe_surface.dart';
 import 'recipes/card.g.dart';
@@ -183,19 +182,18 @@ class _RaftCardState extends State<RaftCard> {
       final fill = hover && !widget.selected
           ? Color.alphaBlend(ui.fillPressed, base)
           : base;
-      Widget raft = Container(
+      final root = RaftCardRecipe.resolve(
+        theme: t.recipeTheme,
+        states: t.recipeStates(),
+        tokens: rt,
+      ).root;
+      Widget raft = RaftRecipeBox(
+        style: root.withCssUsedBorderWidths(),
+        tokens: rt,
         width: double.infinity,
         padding: _padding,
-        decoration: BoxDecoration(
-          color: fill,
-          borderRadius: BorderRadius.circular(
-            t.size('radius.container', fallback: 10),
-          ),
-          border: Border.all(
-            color: ui.lineHairline,
-            width: raftControlBorderPx(context, 1),
-          ),
-        ),
+        applyText: false,
+        decorationOverride: (d) => d.copyWith(color: fill),
         child: widget.child,
       );
       if (interactive) {

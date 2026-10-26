@@ -18,6 +18,9 @@ enum RaftPixelSpinnerSize {
   double get extent => pixel * 2 + gap;
 }
 
+/// The Raft look's painter for raft-ui `Spinner`. App and product code uses
+/// `RaftSpinner`, the one spinner: it paints this in the Raft look and the
+/// frozen ring in Elegant and Brutal.
 class RaftPixelSpinner extends StatefulWidget {
   const RaftPixelSpinner({
     super.key,
