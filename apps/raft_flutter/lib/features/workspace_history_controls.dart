@@ -117,6 +117,7 @@ class WorkspaceHistoryControls extends StatelessWidget {
         if (!compact) ...[
           RaftIconButton(
             key: const Key('topbar-back'),
+            uiVariant: RaftButtonVariant.onFrame,
             glyph: RaftGlyph.arrowLeft,
             tooltip: 'Go back',
             semanticLabel: raftText(context, 'Go back'),
@@ -124,6 +125,7 @@ class WorkspaceHistoryControls extends StatelessWidget {
           ),
           RaftIconButton(
             key: const Key('topbar-forward'),
+            uiVariant: RaftButtonVariant.onFrame,
             glyph: RaftGlyph.arrowRight,
             tooltip: 'Go forward',
             semanticLabel: raftText(context, 'Go forward'),
@@ -139,6 +141,7 @@ class WorkspaceHistoryControls extends StatelessWidget {
             focusNode: focus,
             child: RaftIconButton(
               key: const Key('topbar-history'),
+              uiVariant: RaftButtonVariant.onFrame,
               glyph: RaftGlyph.clock,
               tooltip: 'History',
               semanticLabel: raftText(context, 'History'),

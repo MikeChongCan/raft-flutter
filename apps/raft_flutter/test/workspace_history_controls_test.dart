@@ -50,6 +50,23 @@ void main() {
           await mount();
           await t.pumpAndSettle();
           button(history, enabled: true);
+          // The real header chooses Button's on-frame compound, not the
+          // default 32px icon. Its source border box and glyph are 36/20.
+          for (final key in [
+            'topbar-history',
+            if (width >= 1000) ...['topbar-back', 'topbar-forward'],
+          ]) {
+            final action = find.byKey(Key(key));
+            final face = find
+                .descendant(of: action, matching: find.byType(RaftRecipeBox))
+                .first;
+            expect(t.getSize(face), const Size.square(36), reason: key);
+            final glyph = find.descendant(
+              of: action,
+              matching: find.byType(RaftIcon),
+            );
+            expect(t.widget<RaftIcon>(glyph).size, 20, reason: key);
+          }
           if (width >= 1000) {
             button(back, enabled: true);
             button(forward, enabled: false);
