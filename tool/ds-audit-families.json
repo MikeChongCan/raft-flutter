@@ -37,10 +37,12 @@
     "RaftDialog",
     "showRaftDialog",
     "RaftAlertDialog",
-    "showRaftAlertDialog"
+    "showRaftAlertDialog",
+    "RaftDialogSurface",
+    "RaftDialogBackdrop"
    ],
    "uncertain": "RaftFormDialog has many app callers and may be rebuilt on RaftDialog instead of removed; it is listed so no new callers appear.",
-   "note": "Five dialog stacks exist (inventory section 2); overlays/dialog.dart is the Web Dialog port.",
+   "note": "RaftDialogSurface and RaftDialogBackdrop are shared paint and scrim parts; title, body, footer and positioning stay with the dialog family. Frozen compositions keep their existing renderers.",
    "deprecated": {
     "RaftDialogCard": "packages/raft_ui/lib/src/dialog_card.dart",
     "showRaftModal": "packages/raft_ui/lib/src/dialog_card.dart",

@@ -69,6 +69,7 @@ export 'src/attachment_comments.dart';
 export 'src/design_primitives.dart';
 export 'src/raft/raft.dart';
 export 'src/recipe_surface.dart';
+export 'src/dialog_surface.dart';
 export 'src/control_typography.dart';
 export 'src/indicators.dart';
 export 'src/working_agents.dart';
