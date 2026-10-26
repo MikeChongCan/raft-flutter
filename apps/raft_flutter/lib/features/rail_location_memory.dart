@@ -131,7 +131,19 @@ class RailLocationMemory {
     RaftLocation target,
   ) async {
     try {
-      await w.selectChannel(channel);
+      final authority = w.navigationAuthority;
+      final selecting = w.selectChannel(channel);
+      // selectChannel publishes its channel location synchronously. The
+      // remembered thread belongs to that navigation, not to whichever page
+      // happens to be visible when the channel's network read completes.
+      final revision = w.navigationRevision;
+      await selecting;
+      if (w.messageDomain.context.disposed ||
+          w.navigationAuthority != authority ||
+          w.navigationRevision != revision ||
+          w.channel?.id != channel.id) {
+        return;
+      }
       final thread = target.thread;
       if (thread != null) {
         await w.openThreadIdentity(
