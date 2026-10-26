@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_flutter/data/raft_location.dart';
 import 'package:raft_flutter/features/chat_view.dart';
-import 'package:raft_flutter/features/mobile_workspace_pages.dart';
+import 'package:raft_flutter/features/global_server_selector.dart';
+import 'package:raft_flutter/features/workspace_view.dart';
 import 'package:raft_ui/raft_ui.dart';
+import 'package:raft_flutter/features/mobile_workspace_pages.dart';
 
 import 'app_global_server_selector_test.dart' show RootFixture;
 
@@ -100,5 +102,62 @@ void main() {
       expect(find.byType(EditableText), findsWidgets);
       expect(t.takeException(), isNull);
     }, variant: TargetPlatformVariant.only(TargetPlatform.android));
+  }
+  for (final width in [412.0, 816.0]) {
+    testWidgets(
+      'cold conversation remains visible through fold/resume at $width',
+      (t) async {
+        final f = RootFixture();
+        final response = Completer<dynamic>();
+        f.holds['GET /messages/channel/ca'] = response;
+        addTearDown(() async {
+          if (!response.isCompleted)
+            response.complete({
+              'messages': [row('ca')],
+            });
+          await f.close(t);
+        });
+        await f.mount(t, 'light', width, uri: Uri.parse('/s/alpha/channel/ca'));
+        await f.flush(t);
+        // With no cached workspace a wide cold start can still own the
+        // explicit workspace chooser/loading surface. A phone direct page
+        // may already show its composer while the tail request is pending.
+        if (find.byType(WorkspaceView).evaluate().isNotEmpty) {
+          expect(find.byType(RaftChatView), findsOneWidget);
+          expect(find.byType(EditableText), findsWidgets);
+        } else {
+          expect(
+            find.byType(GlobalServerSelector).evaluate().isNotEmpty ||
+                find.byType(RaftSpinner).evaluate().isNotEmpty,
+            isTrue,
+          );
+        }
+        response.complete({
+          'messages': [row('ca')],
+          'hasMore': false,
+        });
+        await f.flush(t);
+        final w = f.workspace(t);
+        expect(w.location.entityId, 'ca');
+        expect(find.textContaining('Actual conversation ca'), findsWidgets);
+        t.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+        t.binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
+        t.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+        t.binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
+        t.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+        t.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+        await f.flush(t);
+        for (final next in [width == 412 ? 816.0 : 412.0, width]) {
+          t.view.physicalSize = Size(next, 900);
+          await f.flush(t);
+          expect(w.location.entityId, 'ca');
+          expect(find.byType(RaftChatView), findsOneWidget);
+          expect(find.textContaining('Actual conversation ca'), findsWidgets);
+          expect(find.byType(EditableText), findsWidgets);
+          expect(t.takeException(), isNull);
+        }
+      },
+      variant: TargetPlatformVariant.only(TargetPlatform.android),
+    );
   }
 }
