@@ -62,4 +62,40 @@ void main() {
       expect(serverEdits, 1);
     },
   );
+  testWidgets('external frame also owns the wide onboarding brand', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    for (final width in [390.0, 1280.0]) {
+      tester.view.physicalSize = Size(width, 800);
+      for (final external in [false, true]) {
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: raftTheme(),
+            home: RaftAuthHeaderScope(
+              external: external,
+              child: const RaftOnboardingShell(
+                preview: Text('Workspace preview'),
+                child: Text('Create workspace'),
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(
+          find.byType(RaftBrandMark),
+          external ? findsNothing : findsOneWidget,
+          reason: 'width=$width external=$external',
+        );
+        expect(find.text('Create workspace'), findsOneWidget);
+        expect(
+          find.text('Workspace preview'),
+          width >= 1024 ? findsOneWidget : findsNothing,
+        );
+        expect(tester.takeException(), isNull);
+      }
+    }
+    await tester.pumpWidget(const SizedBox());
+  });
 }

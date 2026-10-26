@@ -1901,14 +1901,15 @@ class RaftOnboardingShell extends StatelessWidget {
                           ),
                         ),
                       ),
-                      const Positioned(
-                        left: 40,
-                        top: 32,
-                        child: RaftBrandMark(
-                          RaftBrandMarkKind.logo,
-                          height: 20,
+                      if (!RaftAuthHeaderScope.externalOf(context))
+                        const Positioned(
+                          left: 40,
+                          top: 32,
+                          child: RaftBrandMark(
+                            RaftBrandMarkKind.logo,
+                            height: 20,
+                          ),
                         ),
-                      ),
                     ],
                   ),
                 ),
