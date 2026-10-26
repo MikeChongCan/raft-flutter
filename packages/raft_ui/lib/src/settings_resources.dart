@@ -437,7 +437,8 @@ class RaftReleaseNotesView extends StatelessWidget {
             style: text.bodyMuted,
           ),
           RaftReleaseNotesStatus.error => RaftBanner(
-            status: RaftBannerRecipeStatus.destructive,
+            // ReleaseNotesPanel: `<Banner intent="warning" withIcon>`.
+            status: RaftBannerRecipeStatus.warning,
             glyph: RaftGlyph.alertTriangle,
             description: 'Release notes are unavailable right now.',
             action: RaftButton(

@@ -33,7 +33,10 @@ import 'recipes/toggle_group.g.dart';
 import 'select_field.dart';
 import 'settings_controls.dart';
 import 'settings_layout.dart';
+import 'raft/ui_tokens.dart';
+import 'recipes/recipe_runtime.dart' show RaftRecipeSet;
 import 'theme.dart';
+import 'tokens/tokens.dart' show RaftTypeScale;
 import 'tooltip.dart';
 import 'viewport_breakpoints.dart';
 import 'sized_image.dart';
@@ -576,6 +579,20 @@ class _EmptyBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
+    // Web: `<div className="px-4 py-8 text-center text-callout
+    // text-foreground-hint">`, bare text without a card.
+    if (t.recipeSet == RaftRecipeSet.raft) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
+        child: Center(
+          child: Text(
+            message,
+            textAlign: TextAlign.center,
+            style: t.scale(RaftTypeScale.callout, color: t.ui.foregroundHint),
+          ),
+        ),
+      );
+    }
     return RaftSettingsCard(
       padding: const EdgeInsets.all(24),
       child: Text(
