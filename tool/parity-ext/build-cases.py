@@ -236,12 +236,12 @@ SECTIONS = {
              'div.px-5.py-4:has(input[placeholder="Computer name"])'),
     'description': ('div.px-5.py-4:has(> div > button[aria-label="Edit computer description"]), '
                     'div.px-5.py-4:has(textarea)'),
-    'info': 'div.px-5.py-4.border-b:has(.gap-x-8)',
+    'info': 'div.px-5.py-4:has(> div.space-y-3)',
     'agents': 'div.space-y-6 > div:has(> div.flex-wrap.gap-y-2)',
-    'workspaces': 'div.mt-2.border-t:has(svg.lucide-folder-open)',
+    'workspaces': 'div.mt-2:has(svg.lucide-folder-open)',
     'service': '[data-testid="computer-service-actions"]',
     'recovery-guide': '[data-testid="computer-recovery-guide"]',
-    'delete': 'div.mt-2.border-t > div.p-4:last-child',
+    'delete': 'div.mt-2 > [data-slot="card"]:last-child',
     'recovery-card': '[data-testid="computer-recovery-card"]',
 }
 
