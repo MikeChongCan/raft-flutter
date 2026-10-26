@@ -6,6 +6,9 @@ import 'design_primitives.dart';
 import 'icons.dart';
 import 'interaction.dart';
 import 'localization.dart';
+import 'kbd.dart';
+import 'recipe_surface.dart';
+import 'recipes/search_trigger.g.dart';
 import 'raft/css_box.dart' show raftControlBorderPx;
 import 'shortcut_platform.dart';
 import 'status_bar.dart';
@@ -186,6 +189,59 @@ class RaftWorkspaceSearchTrigger extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
+    if (t.isRaftLook) {
+      final control = RaftInteractive(
+        key: const Key('topbar-search'),
+        semanticLabel: raftText(context, 'Search'),
+        onPressed: onPressed,
+        builder: (context, state) {
+          final rt = t.recipeTokens;
+          final slots = RaftSearchTriggerRecipe.resolve(
+            tokens: rt,
+            states: t.recipeStates(
+              hovered: state.hovered,
+              pressed: state.pressed,
+              focusVisible: state.focusVisible,
+            ),
+          );
+          final glyph = slots.root.target("& > svg:not([class*='size-'])")!;
+          return RaftRecipeBox(
+            style: slots.root.withCssUsedBorderWidths(),
+            tokens: rt,
+            controlLabel: true,
+            child: Row(
+              spacing: slots.root.columnGap ?? 0,
+              children: [
+                RaftIcon(RaftGlyph.search, size: glyph.width!),
+                Expanded(
+                  child: RaftRecipeBox(
+                    style: slots.label,
+                    tokens: rt,
+                    child: Text(
+                      raftText(context, 'Search'),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ),
+                if (RaftInteraction.of(context).pointer)
+                  RaftRecipeBox(
+                    style: slots.shortcut,
+                    tokens: rt,
+                    child: RaftKbd(globalSearchShortcutLabel()),
+                  ),
+              ],
+            ),
+          );
+        },
+      );
+      return RaftInteraction.of(context).touch
+          ? RaftTapSlopAnchor(
+              minSize: const Size.square(RaftMetrics.touchTarget),
+              child: control,
+            )
+          : control;
+    }
     final control = RaftControl(
       key: const Key('topbar-search'),
       recipe: _WorkspaceSearchRecipe(t, raftControlBorderPx(context, 1.5)),
