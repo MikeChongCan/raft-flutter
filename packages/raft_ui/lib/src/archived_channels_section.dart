@@ -1,12 +1,13 @@
 // Web components/settings/ArchivedChannelsSection.tsx (Settings > Server): the
 // archived channels the member may restore. Presentation only: the app owns
 // the channel list, the capability check and the unarchive request.
+import 'card.dart' show RaftCard;
+
 import 'package:flutter/material.dart';
 
 import 'raft_underline.dart';
 import 'css_pixel_snap.dart';
 import 'icons.dart';
-import 'list_items.dart';
 import 'error_presentation.dart';
 import 'localization.dart';
 import 'recipes/button_variants.g.dart';
@@ -89,7 +90,7 @@ class RaftArchivedChannelsSection extends StatelessWidget {
           ],
           for (final (index, row) in rows.indexed) ...[
             if (index > 0) const SizedBox(height: 8),
-            RaftSurfaceListItem(
+            RaftCard.item(
               key: ValueKey('archived-channel-row-${row.id}'),
               interactive: false,
               child: _row(context, t, row, wide),

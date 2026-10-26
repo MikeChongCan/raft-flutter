@@ -4,6 +4,8 @@
 // Name / Description, the "Invite servers" Card of per-server invite cards
 // (SlugInput + invited people), the current-server member picker and
 // Cancel / Create Joint Channel. The app adapter owns state and the create command.
+import 'card.dart' show RaftCard;
+
 import 'package:flutter/material.dart';
 
 import 'form_presentation.dart';
@@ -180,7 +182,7 @@ class RaftCreateJointChannelDialogView extends StatelessWidget {
               ),
             ),
             gap,
-            RaftRecipeCard(
+            RaftCard(
               padding: const EdgeInsets.all(12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -303,7 +305,7 @@ class _InviteCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
     const gap = SizedBox(height: 12);
-    return RaftRecipeCard(
+    return RaftCard(
       padding: const EdgeInsets.all(12),
       // `theme-brutal:bg-brutal-gray/20` names no theme colour, so Brutal keeps
       // the `bg-layer-inset` fill too.

@@ -72,7 +72,7 @@ void main() {
                   : const Center(
                       child: SizedBox(
                         width: 358,
-                        child: RaftRecipeCard(
+                        child: RaftCard(
                           padding: EdgeInsets.all(24),
                           child: SizedBox(key: probeKey, width: 10, height: 10),
                         ),

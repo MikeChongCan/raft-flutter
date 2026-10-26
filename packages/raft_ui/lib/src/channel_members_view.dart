@@ -5,6 +5,7 @@
 // AvatarSlot compact-list + description tooltip, pinned "Create a New Agent"
 // entry, "Add selected (N)"). The app adapter owns roster data, selection and
 // commands.
+import 'card.dart' show RaftCard;
 import 'interaction.dart';
 import 'hover_region.dart';
 
@@ -243,7 +244,7 @@ class RaftChannelMembersModal extends StatelessWidget {
       ),
     );
     return RaftModalBackdrop(
-      child: RaftRecipeCard(
+      child: RaftCard(
         dialog: true,
         maxWidth: 384, // max-w-sm
         padding: const EdgeInsets.all(24),
@@ -304,7 +305,7 @@ class RaftChannelMembersModal extends StatelessWidget {
     );
 
     final eyebrowFill = t.colors['fill-muted'];
-    return RaftRecipeCard(
+    return RaftCard(
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxHeight: 288),
         child: SingleChildScrollView(

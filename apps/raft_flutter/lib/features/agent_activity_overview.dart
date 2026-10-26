@@ -275,7 +275,7 @@ class _NowCard extends StatelessWidget {
       (sum, turn) => sum + turn.problemsShown,
     );
     final hint = t.colors['foreground-hint'] ?? t.muted;
-    return RaftSurfaceListItem(
+    return RaftCard.item(
       key: const ValueKey('activity-overview-now'),
       interactive: false,
       // ds-allow: Web Card `py-5` content with `gap-4`
@@ -544,7 +544,7 @@ class _LastReplyState extends State<_LastReply> {
           })
         : raftText(context, 'Last reply');
     final hint = t.colors['foreground-hint'] ?? t.muted;
-    return RaftSurfaceListItem(
+    return RaftCard.item(
       key: const ValueKey('activity-overview-reply'),
       interactive: false,
       // ds-allow: Web reply Card `p-3`

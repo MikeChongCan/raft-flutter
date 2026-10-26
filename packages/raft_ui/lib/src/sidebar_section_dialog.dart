@@ -1,3 +1,4 @@
+import 'card.dart' show RaftCard;
 import 'hover_region.dart';
 
 import 'dart:math' as math;
@@ -219,7 +220,7 @@ class _RaftSidebarSectionDialogState extends State<RaftSidebarSectionDialog> {
         footer: footer,
       );
     }
-    return RaftRecipeCard(
+    return RaftCard(
       dialog: true,
       maxWidth: 384, // max-w-sm
       padding: const EdgeInsets.all(20),

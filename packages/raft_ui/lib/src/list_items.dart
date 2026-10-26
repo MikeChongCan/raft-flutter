@@ -2,7 +2,7 @@
 // SurfaceListItem (raft-ui Card + product overrides), AvatarListRow,
 // SectionEyebrow and SectionHeader. Class lists are cited per widget.
 
-import 'hover_region.dart';
+import 'card.dart' show RaftCard;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -50,244 +50,7 @@ class RaftInlineBox extends StatelessWidget {
   );
 }
 
-/// Web `SurfaceListItem`: raft-ui `Card` (variant default) +
-/// `min-w-0 w-full px-4 py-3 transition-colors` and, per state,
-/// elegant `border-line-muted bg-layer-card` (`hover:border-line-strong
-/// hover:shadow-raft-sm` when interactive) or selected `border-info
-/// bg-info-muted shadow-raft-sm`; brutal `border-2 border-black bg-white`,
-/// selected `bg-brutal-cyan/15 shadow-brutal-sm`, interactive hover
-/// `shadow-brutal-sm`.
-class RaftSurfaceListItem extends StatefulWidget {
-  const RaftSurfaceListItem({
-    super.key,
-    required this.child,
-    this.selected = false,
-    this.onTap,
-    this.interactive,
-    this.padding = const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-    this.background,
-    this.selectedBackground,
-  });
-
-  final Widget child;
-  final bool selected;
-
-  /// Callsite `bg-*` that also wins over the selected fill (e.g. the
-  /// MachineAgentList bulk bar: `SurfaceListItem selected` +
-  /// `bg-layer-canvas-muted theme-brutal:bg-gray-100`).
-  final Color? selectedBackground;
-
-  /// Callsite `bg-*` override of the unselected, unhovered surface (e.g.
-  /// MachineAgentList `bg-layer-canvas-muted theme-brutal:bg-gray-100`).
-  final Color? background;
-  final VoidCallback? onTap;
-
-  /// Hover affordance; defaults to `onTap != null`.
-  final bool? interactive;
-  final EdgeInsets padding;
-
-  @override
-  State<RaftSurfaceListItem> createState() => _RaftSurfaceListItemState();
-}
-
-class _RaftSurfaceListItemState extends State<RaftSurfaceListItem> {
-  bool hovered = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = RaftTokens.of(context);
-    final rt = t.recipeTokens;
-    final interactive = widget.interactive ?? widget.onTap != null;
-    final hover = interactive && hovered;
-    if (t.option('surfaceItem.style', or: 'recipe') == 'raft') {
-      final ui = t.ui;
-      final base = widget.selected
-          ? (widget.selectedBackground ?? ui['info-soft'])
-          : (widget.background ?? ui.layerCard);
-      // `hover:press-overlay`: the pressed wash laid over the resting fill.
-      final fill = hover && !widget.selected
-          ? Color.alphaBlend(ui.fillPressed, base)
-          : base;
-      Widget raft = Container(
-        width: double.infinity,
-        padding: widget.padding,
-        decoration: BoxDecoration(
-          color: fill,
-          borderRadius: BorderRadius.circular(
-            t.size('radius.container', fallback: 10),
-          ),
-          border: Border.all(
-            color: ui.lineHairline,
-            width: raftControlBorderPx(context, 1),
-          ),
-        ),
-        child: widget.child,
-      );
-      if (interactive) {
-        raft = RaftHoverRegion(
-          cursor: widget.onTap != null
-              ? SystemMouseCursors.click
-              : MouseCursor.defer,
-          onEnter: (_) => setState(() => hovered = true),
-          onExit: (_) => setState(() => hovered = false),
-          child: GestureDetector(onTap: widget.onTap, child: raft),
-        );
-      }
-      return Semantics(
-        selected: widget.selected,
-        button: widget.onTap != null,
-        child: raft,
-      );
-    }
-    var card = RaftCardRecipe.resolve(
-      theme: t.recipeTheme,
-      states: t.recipeStates(),
-      tokens: rt,
-    ).root;
-    {
-      // Raft set (a user pack that opts out of `surfaceItem.style: raft`): the
-      // Card classes with the `raft` style's selected fill and hover wash.
-      // Frozen looks: their Card classes plus the authored 0.5.52 list.
-      final classes = t.recipeSet == RaftRecipeSet.raft
-          ? [
-              ...card.classes.where(
-                (name) =>
-                    !widget.selected ||
-                    (name != 'bg-layer-card' && name != 'border-line-hairline'),
-              ),
-              if (widget.selected) ...['bg-info-soft', 'border-line-hairline'],
-              if (interactive && !widget.selected) 'hover:press-overlay',
-            ]
-          : [
-              ...card.classes.where(
-                (name) =>
-                    name != 'border-[0.5px]' &&
-                    name != 'border-line-muted' &&
-                    name != 'bg-layer-panel' &&
-                    (!(widget.selected || hover) || name != 'shadow-raft-xs'),
-              ),
-              'border',
-              widget.selected ? 'border-info' : 'border-line-muted',
-              widget.selected ? 'bg-info-muted' : 'bg-layer-card',
-              if (widget.selected) 'shadow-raft-sm',
-              if (interactive && !widget.selected) ...[
-                'hover:border-line-strong',
-                'hover:shadow-raft-sm',
-              ],
-            ];
-      card = resolveRecipeClasses(classes, t.recipeStates(hovered: hover), rt);
-    }
-
-    Widget item = RaftRecipeBox(
-      style: card,
-      tokens: rt,
-      width: double.infinity,
-      padding: widget.padding,
-      clip: true,
-      decorationOverride: widget.selected && widget.selectedBackground != null
-          ? (d) => d.copyWith(color: widget.selectedBackground)
-          : widget.background != null && !widget.selected
-          ? (d) => d.copyWith(
-              color: hover ? t.colors['layer-panel'] : widget.background,
-            )
-          : null,
-      child: widget.child,
-    );
-    if (interactive) {
-      item = RaftHoverRegion(
-        cursor: widget.onTap != null
-            ? SystemMouseCursors.click
-            : MouseCursor.defer,
-        onEnter: (_) => setState(() => hovered = true),
-        onExit: (_) => setState(() => hovered = false),
-        child: GestureDetector(onTap: widget.onTap, child: item),
-      );
-    }
-    return Semantics(
-      selected: widget.selected,
-      button: widget.onTap != null,
-      child: item,
-    );
-  }
-}
-
-/// Web ServerSelector option: raft-ui `Card variant="option"` rendered as a
-/// `<button class="w-full text-left">`. The raft-ui option recipe itself has
-/// no hover, active or focus styles, so a touch client would show no response
-/// at all. This is the design-system interactive form of that card: the
-/// recipe box plus [RaftInteractive] states, with the same treatment the
-/// other interactive cards use (`RaftSurfaceListItem` hover) and a pressed
-/// fill. The 48dp hit area comes from [RaftInteractive] on touch density.
-///
-/// - hover: elegant `border-line-strong shadow-raft-sm`; the idle brutal card
-///   already carries `shadow-brutal-sm`.
-/// - pressed: filled with the muted canvas (elegant) or the brutal cream;
-///   brutal drops its shadow, like a pressed brutal button.
-/// - focus-visible: a 2px ring.
-class RaftChoiceCard extends StatelessWidget {
-  const RaftChoiceCard({
-    super.key,
-    required this.child,
-    this.onPressed,
-    this.semanticLabel,
-    this.padding = const EdgeInsets.all(12),
-  });
-
-  final Widget child;
-  final VoidCallback? onPressed;
-  final String? semanticLabel;
-  final EdgeInsets padding;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = RaftTokens.of(context);
-    final rt = t.recipeTokens;
-    return RaftInteractive(
-      onPressed: onPressed,
-      semanticLabel: semanticLabel,
-      builder: (context, state) {
-        final active = state.enabled && (state.hovered || state.pressed);
-        final root = RaftCardRecipe.resolve(
-          theme: t.recipeTheme,
-          variant: RaftCardRecipeVariant.option,
-          states: t.recipeStates(
-            hovered: state.hovered,
-            pressed: state.pressed,
-            focusVisible: state.focusVisible,
-            disabled: !state.enabled,
-          ),
-          tokens: rt,
-        ).root;
-        return RaftRecipeBox(
-          style: root,
-          tokens: rt,
-          width: double.infinity,
-          padding: padding,
-          decorationOverride: (base) {
-            final pressed = state.enabled && state.pressed;
-            return base.copyWith(
-              color: pressed ? (t.colors['layer-canvas-muted']) : base.color,
-              border: (active)
-                  ? Border.all(color: t.colors['line-strong']!)
-                  : base.border,
-              boxShadow: [
-                ...[...?base.boxShadow, if (active) ...t.shadows],
-                if (state.focusVisible)
-                  BoxShadow(
-                    color: (t.ink).withValues(alpha: .8),
-                    spreadRadius: 2,
-                  ),
-              ],
-            );
-          },
-          child: child,
-        );
-      },
-    );
-  }
-}
-
-/// Web `AvatarListRow` (`align="center"`, v1.21.12): a [RaftSurfaceListItem]
+/// Web `AvatarListRow` (`align="center"`, v1.21.12): a [RaftCard.item]
 /// with `px-3 py-2`, avatar, name (`truncate text-sm font-semibold
 /// text-foreground-muted theme-brutal:font-bold theme-brutal:text-black`) +
 /// subtitle (`text-xs font-mono text-foreground-hint
@@ -307,7 +70,7 @@ class RaftAvatarListRow extends StatelessWidget {
     this.background,
   });
 
-  /// Callsite surface fill (see [RaftSurfaceListItem.background]).
+  /// Callsite surface fill (see [RaftCard.background]).
   final Color? background;
   final Widget avatar;
   final String name;
@@ -415,7 +178,7 @@ class RaftAvatarListRow extends StatelessWidget {
             },
           );
     if (grows && (rightContent.isNotEmpty || actionContent.isNotEmpty)) {
-      return RaftSurfaceListItem(
+      return RaftCard.item(
         selected: selected,
         onTap: onTap,
         background: background,
@@ -441,7 +204,7 @@ class RaftAvatarListRow extends StatelessWidget {
         ),
       );
     }
-    return RaftSurfaceListItem(
+    return RaftCard.item(
       selected: selected,
       onTap: onTap,
       background: background,

@@ -386,7 +386,7 @@ class _AppCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
     String tr(String s) => raftText(context, s);
-    return RaftRecipeCard(
+    return RaftCard(
       padding: const EdgeInsets.all(RaftSpace.x3),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -487,7 +487,7 @@ class _ConsentCard extends StatelessWidget {
           ),
         ),
         const SizedBox(height: RaftSpace.x1),
-        RaftRecipeCard(
+        RaftCard(
           padding: const EdgeInsets.all(RaftSpace.x3),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,

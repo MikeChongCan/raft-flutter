@@ -1,6 +1,8 @@
 // Web components/server/CommunityAgreementDialog.tsx: the agreement a member
 // accepts to join a community server. Presentation plus the dialog's own
 // submitting / error state; the app performs the join.
+import 'card.dart' show RaftCard;
+
 import 'package:flutter/material.dart';
 
 import 'settings_administration.dart' show RaftAgreementBody;
@@ -72,7 +74,7 @@ class _RaftCommunityAgreementDialogState
     return Material(
       type: MaterialType.transparency,
       child: RaftModalBackdrop(
-        child: RaftRecipeCard(
+        child: RaftCard(
           dialog: true,
           key: const ValueKey('community-agreement-card'),
           maxWidth: 512,

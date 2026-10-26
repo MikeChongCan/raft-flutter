@@ -2,11 +2,12 @@
 // layout/Sidebar.tsx computers mode (section heading + ComputerRow) and the
 // small controls MachineDetailPanel / AddMachineDialog compose. Data and
 // actions stay in the app; values cite the Web classes they come from.
+import 'card.dart' show RaftCard;
+
 import 'package:flutter/material.dart';
 
 import 'agent_profile.dart' show raftGray400;
 import 'design_primitives.dart' hide RaftPanelHeaderRecipe;
-import 'dialog_card.dart';
 import 'error_presentation.dart' show RaftErrorBanner;
 import 'icons.dart';
 import 'localization.dart';
@@ -462,7 +463,7 @@ class RaftComputerRow extends StatelessWidget {
                               ),
                             ),
                           )
-                        : RaftRecipeCard(
+                        : RaftCard(
                             child: Center(
                               child: RaftIcon(
                                 RaftGlyph.monitor,

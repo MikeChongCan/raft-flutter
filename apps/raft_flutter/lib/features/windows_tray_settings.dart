@@ -36,7 +36,7 @@ class _WindowsTraySettingsState extends State<WindowsTraySettings> {
           final busy = snapshot.connectionState != ConnectionState.done;
           final unavailable =
               snapshot.data?.failed == true || state?.available == false;
-          return RaftRecipeCard(
+          return RaftCard(
             padding: const EdgeInsets.all(RaftSpace.x4),
             child: RaftGapColumn(
               gap: RaftSpace.x3,

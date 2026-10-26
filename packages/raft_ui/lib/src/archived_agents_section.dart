@@ -1,12 +1,13 @@
 // Web components/settings/ArchivedAgentsSection.tsx (Settings > Server): the
 // archived agents of this server. Presentation only: the app owns the list, the
 // metadata copy and the navigation.
+import 'card.dart' show RaftCard;
+
 import 'package:flutter/material.dart';
 
 import 'agent_profile.dart' show RaftAvatarSlot, RaftAvatarSlotContext;
 import 'css_pixel_snap.dart';
 import 'icons.dart';
-import 'list_items.dart';
 import 'localization.dart';
 import 'raft_underline.dart';
 import 'recipes/button_variants.g.dart';
@@ -69,7 +70,7 @@ class RaftArchivedAgentsSection extends StatelessWidget {
           ),
           for (final (index, row) in rows.indexed) ...[
             if (index > 0) const SizedBox(height: 8),
-            RaftSurfaceListItem(
+            RaftCard.item(
               key: ValueKey('archived-agent-row-${row.id}'),
               interactive: false,
               child: _row(context, row, wide),

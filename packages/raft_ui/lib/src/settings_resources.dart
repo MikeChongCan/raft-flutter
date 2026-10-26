@@ -3,6 +3,8 @@
 // - [RaftReleaseNotesView]: settings/ReleaseNotesPanel.tsx body (the panel
 //   header is the caller's RaftSettingsPanelHeader).
 // The app supplies data and callbacks; every class list is resolved here.
+import 'card.dart' show RaftCard;
+
 import 'package:flutter/material.dart';
 
 import 'banner.dart';
@@ -136,7 +138,7 @@ class RaftSettingsAbout extends StatelessWidget {
       _ => null,
     };
     final detail = update.detail;
-    return RaftSurfaceListItem(
+    return RaftCard.item(
       key: const ValueKey('settings-about-update'),
       interactive: false,
       child: Column(
@@ -210,7 +212,7 @@ class RaftSettingsAbout extends StatelessWidget {
           ],
         );
     // SurfaceListItem `space-y-1`: bold title over the muted text-xs detail.
-    Widget card(String title, String detail) => RaftSurfaceListItem(
+    Widget card(String title, String detail) => RaftCard.item(
       interactive: false,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -246,7 +248,7 @@ class RaftSettingsAbout extends StatelessWidget {
             'mobile-app',
             'Mobile app',
             RaftGlyph.smartphone,
-            RaftSurfaceListItem(
+            RaftCard.item(
               interactive: false,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

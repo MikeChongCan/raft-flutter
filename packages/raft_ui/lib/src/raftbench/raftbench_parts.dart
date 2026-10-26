@@ -112,7 +112,7 @@ class RaftbenchCard extends StatelessWidget {
       raftBreakpointWidth(context) >= 768 ? 20 : 16;
 
   @override
-  Widget build(BuildContext context) => RaftRecipeCard(
+  Widget build(BuildContext context) => RaftCard(
     padding: padded ? EdgeInsets.all(inset(context)) : EdgeInsets.zero,
     background: color,
     clip: clip,

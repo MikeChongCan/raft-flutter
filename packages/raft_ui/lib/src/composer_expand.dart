@@ -1,10 +1,11 @@
+import 'card.dart' show RaftCard;
+
 import 'package:flutter/material.dart';
 
 import 'composer_recipe.dart';
 import 'composer_tool_button.dart';
 import 'design_primitives.dart';
-import 'dialog_card.dart'
-    show RaftRecipeButton, RaftRecipeCard, RaftRecipeSegmentedControl;
+import 'dialog_card.dart' show RaftRecipeButton, RaftRecipeSegmentedControl;
 import 'icons.dart';
 import 'localization.dart';
 import 'markdown_editing.dart';
@@ -493,7 +494,7 @@ class _RaftComposerExpandedViewState extends State<RaftComposerExpandedView> {
         namesRoute: true,
         explicitChildNodes: true,
         label: widget.title,
-        child: RaftRecipeCard(
+        child: RaftCard(
           dialog: true,
           maxWidth: RaftComposerExpandedView.dialogMaxWidth,
           padding: const EdgeInsets.all(RaftSpace.x6),

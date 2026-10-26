@@ -46,7 +46,7 @@ class _CollapsibleSectionPreviewState
               gap: 16,
               children: [
                 for (final (name, title, description, invocable) in skills)
-                  RaftSurfaceListItem(
+                  RaftCard.item(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

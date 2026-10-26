@@ -1,3 +1,5 @@
+import 'card.dart' show RaftCard;
+
 import 'dart:async';
 import 'dart:math' as math;
 
@@ -1020,7 +1022,7 @@ class _RaftTaskSurfaceState extends State<RaftTaskSurface> {
         spacing: 16,
         children: [
           RaftTaskStatus(status: '${task['status']}'),
-          RaftRecipeCard(
+          RaftCard(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1052,7 +1054,7 @@ class _RaftTaskSurfaceState extends State<RaftTaskSurface> {
               ],
             ),
           ),
-          RaftRecipeCard(
+          RaftCard(
             padding: const EdgeInsets.all(16),
             child: Column(
               spacing: 8,

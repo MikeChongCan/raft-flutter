@@ -3,6 +3,8 @@
 // - [RaftProviderConnectionsFrame]: ProviderConnectionsSettings.tsx page
 //   chrome (header, description, error, loading, empty, list frame).
 // The app supplies data and callbacks; every class list is resolved here.
+import 'card.dart' show RaftCard;
+
 import 'package:flutter/material.dart';
 
 import 'raft_underline.dart';
@@ -13,7 +15,7 @@ import 'design_primitives.dart' show RaftSpinner, RaftTypography;
 import 'feedback_inbox.dart' show RaftDashedBorderPainter;
 import 'error_presentation.dart';
 import 'icons.dart';
-import 'list_items.dart' show RaftSectionEyebrow, RaftSurfaceListItem;
+import 'list_items.dart' show RaftSectionEyebrow;
 import 'settings_controls.dart' show RaftSettingsRecipeButton;
 import 'localization.dart';
 import 'panel_layout.dart' show RaftCssText;
@@ -696,7 +698,7 @@ class _RaftMcpServersSectionState extends State<RaftMcpServersSection> {
         for (final r in widget.recommendations)
           (_) => Padding(
             padding: const EdgeInsets.only(top: 12),
-            child: RaftSurfaceListItem(
+            child: RaftCard.item(
               key: ValueKey('mcp-recommendation-${r.id}'),
               interactive: false,
               child: Row(
@@ -785,7 +787,7 @@ class _McpServerCard extends StatelessWidget {
     };
     final muted = RaftTypography.body(t, size: 14, line: 20, color: t.muted);
     final placeholder = t.colors['foreground-placeholder']!;
-    return RaftSurfaceListItem(
+    return RaftCard.item(
       interactive: false,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,

@@ -291,10 +291,7 @@ final _cases = <_Case>[
       subtitle: l,
     ),
   ),
-  _Case(
-    'RaftSurfaceListItem',
-    (l) => RaftSurfaceListItem(onTap: _noop, child: Text(l)),
-  ),
+  _Case('RaftCard.item', (l) => RaftCard.item(onTap: _noop, child: Text(l))),
   _Case(
     'RaftComposerTaskToggle',
     (l) => RaftComposerTaskToggle(checked: true, label: l, onChanged: (_) {}),

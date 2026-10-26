@@ -36,8 +36,8 @@ void main() {
                 onExpandedChanged: onExpandedChanged,
                 action: action,
                 children: const [
-                  RaftSurfaceListItem(child: Text('deploy')),
-                  RaftSurfaceListItem(child: Text('feature-map')),
+                  RaftCard.item(child: Text('deploy')),
+                  RaftCard.item(child: Text('feature-map')),
                 ],
               ),
             ],

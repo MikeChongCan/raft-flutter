@@ -50,7 +50,7 @@ void main() {
     ) async {
       await _pump(t, 3.1, sos(), view: const Size(390, 500));
       expect(t.takeException(), isNull);
-      final card = t.getRect(find.byType(RaftRecipeCard));
+      final card = t.getRect(find.byType(RaftCard));
       expect(card.height, lessThanOrEqualTo(500 - 32));
       final scroll = find.descendant(
         of: find.byType(RaftSosDialog),

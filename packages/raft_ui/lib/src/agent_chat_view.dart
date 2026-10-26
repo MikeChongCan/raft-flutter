@@ -8,6 +8,8 @@
 // headers `px-5` (20), channel cards `px-4` (16) + `space-y-3`, DM list `p-4`,
 // DM card `p-3` with its own border (1px line-muted, brutal 2px black/30)
 // that is not the SurfaceListItem border.
+import 'card.dart' show RaftCard;
+
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -307,7 +309,7 @@ class _RaftAgentChatViewState extends State<RaftAgentChatView> {
     final placeholder = t.colors['foreground-placeholder']!;
     final muted = t.colors['foreground-muted'];
     final description = c.description?.trim();
-    return RaftSurfaceListItem(
+    return RaftCard.item(
       onTap: c.onTap,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,

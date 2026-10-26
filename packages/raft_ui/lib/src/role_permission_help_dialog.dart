@@ -1,12 +1,13 @@
 // Web `member/RolePermissionHelpDialog.tsx`: a DialogCard titled "Human roles" /
 // "Agent roles" holding one `Card p-3` per role (name, summary, details).
+import 'card.dart' show RaftCard;
+
 import 'dart:ui' show ImageFilter;
 
 import 'package:flutter/material.dart';
 
 import 'agent_create_form.dart';
 import 'design_primitives.dart';
-import 'dialog_card.dart' show RaftRecipeCard;
 import 'localization.dart';
 import 'panel_layout.dart' show RaftCssText;
 import 'theme.dart';
@@ -93,7 +94,7 @@ class RaftRolePermissionHelpDialog extends StatelessWidget {
         for (final (i, (role, sum, text))
             in (agent ? _agentRoles : _humanRoles).indexed) ...[
           if (i > 0) const SizedBox(height: 12),
-          RaftRecipeCard(
+          RaftCard(
             padding: const EdgeInsets.all(12), // p-3
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,

@@ -82,7 +82,7 @@ void main() {
           await t.pumpWidget(
             _host(
               raftTheme(dark: dark, pack: recipeOptions),
-              RaftSurfaceListItem(
+              RaftCard.item(
                 selected: selected,
                 onTap: () {},
                 child: const Text('row'),

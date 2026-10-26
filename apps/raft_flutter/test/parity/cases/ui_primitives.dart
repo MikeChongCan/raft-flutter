@@ -881,17 +881,17 @@ Widget _surfaceItemBody(ParityContext ctx, String title, String detail) =>
     );
 
 final ParityCase _surfaceListItem = ParityCase(
-  widgets: const ['raft_ui:RaftSurfaceListItem'],
+  widgets: const ['raft_ui:RaftCard'],
   notes: 'Row text is the Source fixture child markup: text-black and text-black/50 in every theme.',
   build: (ctx) => _frame(
     ctx,
     height: 182,
     child: _column(12, [
-      RaftSurfaceListItem(
+      RaftCard.item(
         interactive: false,
         child: _surfaceItemBody(ctx, 'Private app', 'Available to this server'),
       ),
-      RaftSurfaceListItem(
+      RaftCard.item(
         selected: true,
         interactive: false,
         child: _surfaceItemBody(

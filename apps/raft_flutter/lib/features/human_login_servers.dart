@@ -145,9 +145,10 @@ class _HumanLoginServerFieldState extends State<HumanLoginServerField> {
       spacing: RaftSpace.x1_5,
       children: [
         for (final choice in choices)
-          RaftChoiceCard(
+          RaftCard(
+            variant: RaftCardRecipeVariant.option,
             key: ValueKey('human-login-server-${choice.server.id}'),
-            onPressed: widget.enabled && several
+            onTap: widget.enabled && several
                 ? () => widget.onSelect(choice.server.id)
                 : null,
             padding: const EdgeInsets.all(RaftSpace.x3),
@@ -204,7 +205,7 @@ class _HumanLoginServerFieldState extends State<HumanLoginServerField> {
           ),
         ),
     ];
-    return RaftRecipeCard(
+    return RaftCard(
       key: const ValueKey('human-login-marketplace-servers'),
       clip: true,
       child: Column(
@@ -349,7 +350,7 @@ class HumanLoginCommitZone extends StatelessWidget {
     final setupDomain = state == HumanLoginCommit.install
         ? appSetupDomain(client?.setupUrl)
         : null;
-    return RaftRecipeCard(
+    return RaftCard(
       key: const ValueKey('human-login-commit-zone'),
       background: t.colors['fill-muted'],
       padding: const EdgeInsets.all(RaftSpace.x4),
@@ -434,9 +435,10 @@ class _HumanLoginFaqState extends State<HumanLoginFaq> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       spacing: RaftSpace.x2,
       children: [
-        RaftChoiceCard(
+        RaftCard(
+          variant: RaftCardRecipeVariant.option,
           key: const ValueKey('human-login-faq'),
-          onPressed: () => setState(() => open = !open),
+          onTap: () => setState(() => open = !open),
           semanticLabel: tr('FAQ'),
           padding: const EdgeInsets.all(RaftSpace.x3),
           child: Row(
@@ -503,7 +505,7 @@ class HumanLoginNotAccessible extends StatelessWidget {
           ),
           style: _body(t),
         ),
-        RaftRecipeCard(
+        RaftCard(
           background: t.colors['info-soft'],
           padding: const EdgeInsets.all(RaftSpace.x4),
           child: Column(

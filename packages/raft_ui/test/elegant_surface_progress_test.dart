@@ -34,7 +34,7 @@ void main() {
         await tester.pumpWidget(
           host(
             theme,
-            RaftSurfaceListItem(
+            RaftCard.item(
               selected: true,
               onTap: () => taps++,
               child: const Text(
@@ -64,7 +64,7 @@ void main() {
         expect(taps, 1);
         final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
         await mouse.addPointer(location: const Offset(600, 600));
-        await mouse.moveTo(tester.getCenter(find.byType(RaftSurfaceListItem)));
+        await mouse.moveTo(tester.getCenter(find.byType(RaftCard)));
         await tester.pump();
         await mouse.moveTo(const Offset(600, 600));
         await tester.pump();

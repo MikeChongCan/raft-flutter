@@ -8,6 +8,7 @@
 //
 // Values come from the generated recipes (package:raft_ui/recipes.dart) and
 // tokens; Tailwind classes written in the Web JSX are resolved in comments.
+import 'card.dart' show RaftCard;
 import 'text_selection_toolbar.dart';
 import 'hover_region.dart';
 
@@ -679,85 +680,6 @@ RawDialogRoute<T> raftModalRoute<T>({
   ),
 );
 
-/// raft-ui `Card` root (`card.recipe.ts` slot `root`) with [padding].
-class RaftRecipeCard extends StatelessWidget {
-  const RaftRecipeCard({
-    super.key,
-    required this.child,
-    this.padding = EdgeInsets.zero,
-    this.maxWidth,
-    this.background,
-    this.dialog = false,
-    this.clip = false,
-    this.transparentBorder = false,
-  });
-  final Widget child;
-  final EdgeInsets padding;
-  final double? maxWidth;
-
-  /// The card is a dialog's surface. Web draws every dialog on raft-ui's
-  /// `DialogSurface` (`bg-layer-popover`); the legacy packs keep their frozen
-  /// Card fill (`layer-panel`) through the dialog component role.
-  /// An explicit [background] still wins.
-  final bool dialog;
-
-  /// Call-site `bg-*` override of the Card fill.
-  final Color? background;
-
-  /// Call-site `overflow-hidden`: the content is clipped to the rounded box.
-  final bool clip;
-
-  /// Call-site `border-transparent`: the border keeps its width (and takes
-  /// its layout space) but paints nothing.
-  final bool transparentBorder;
-  @override
-  Widget build(BuildContext context) {
-    final t = RaftTokens.of(context);
-    final tokens = RaftRecipeTokens(t);
-    final root = RaftCardRecipe.resolve(
-      theme: raftRecipeThemeOf(t),
-      states: RaftRecipeStates({if (t.dark) RaftRecipeStates.dark}),
-      tokens: tokens,
-    ).root;
-    final fill = background ?? (dialog ? t.colors['layer-dialog'] : null);
-    return ConstrainedBox(
-      constraints: BoxConstraints(maxWidth: maxWidth ?? double.infinity),
-      child: RaftRecipeBox(
-        style: root.withCssUsedBorderWidths(),
-        tokens: tokens,
-        width: double.infinity,
-        padding: padding,
-        applyText: false,
-        clip: clip,
-        decorationOverride: fill == null && !transparentBorder
-            ? null
-            : (d) {
-                final border = d.border;
-                return d.copyWith(
-                  color: fill ?? d.color,
-                  border: transparentBorder && border is Border
-                      ? Border(
-                          top: border.top.copyWith(color: Colors.transparent),
-                          right: border.right.copyWith(
-                            color: Colors.transparent,
-                          ),
-                          bottom: border.bottom.copyWith(
-                            color: Colors.transparent,
-                          ),
-                          left: border.left.copyWith(color: Colors.transparent),
-                        )
-                      : border,
-                );
-              },
-        child: DefaultTextStyle.merge(
-          style: root.textStyle(tokens),
-          child: child,
-        ),
-      ),
-    );
-  }
-}
-
 /// Web `DialogCard`: `Card w-full max-w-md p-6`; header `mb-4 flex
 /// items-center justify-between border-b-0 p-0` with a `CardTitle`
 /// `text-lg font-bold` (sentence case) and a [RaftCloseButton] (`X` 20).
@@ -914,7 +836,7 @@ class _RaftDialogCardState extends State<RaftDialogCard> {
       );
       return ConstrainedBox(
         constraints: BoxConstraints(maxHeight: cap),
-        child: RaftRecipeCard(
+        child: RaftCard(
           dialog: true,
           maxWidth: maxWidth,
           child: Column(
@@ -954,7 +876,7 @@ class _RaftDialogCardState extends State<RaftDialogCard> {
         ),
       );
     }
-    return RaftRecipeCard(
+    return RaftCard(
       dialog: true,
       maxWidth: maxWidth,
       padding: const EdgeInsets.all(24),

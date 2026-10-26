@@ -5,6 +5,7 @@
 // member_graph_layout.dart (a port of the Web code); the app owns the request,
 // the avatars and the profile hover card and passes them in.
 // Tailwind classes written in the JSX are resolved in comments.
+import 'card.dart' show RaftCard;
 import 'hover_region.dart';
 
 import 'dart:async';
@@ -316,7 +317,7 @@ class _Sidebar extends StatelessWidget {
     );
     Widget tile(String value, String label) => Expanded(
       // `Card className="p-2 text-center"`
-      child: RaftRecipeCard(
+      child: RaftCard(
         padding: const EdgeInsets.all(8),
         child: Column(
           children: [
@@ -339,7 +340,7 @@ class _Sidebar extends StatelessWidget {
     );
     Widget ranked_(String title, List<Widget> rows, String empty) =>
         // `Card className="p-3"`
-        RaftRecipeCard(
+        RaftCard(
           padding: const EdgeInsets.all(12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,

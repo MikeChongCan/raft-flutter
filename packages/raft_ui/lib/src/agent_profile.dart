@@ -4,6 +4,7 @@
 // components/member/HumanDetailPanel.tsx). Data loading stays in the app; the
 // widgets here take plain view data and callbacks. Values cite the Tailwind
 // classes / raft-ui recipes they come from.
+import 'card.dart' show RaftCard;
 import 'hover_region.dart';
 import 'css_pixel_snap.dart';
 import 'anchored_popup.dart';
@@ -1772,7 +1773,7 @@ class _RaftSkillsSectionState extends State<RaftSkillsSection> {
     );
   }
 
-  Widget _card(RaftTokens t, RaftSkillItem s) => RaftSurfaceListItem(
+  Widget _card(RaftTokens t, RaftSkillItem s) => RaftCard.item(
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1971,7 +1972,7 @@ class RaftReminderListView extends StatelessWidget {
 
   Widget _card(RaftTokens t, RaftReminderItem r) {
     final meta60 = raftPanelInk(t, .6, t.colors['foreground-muted']!);
-    return RaftSurfaceListItem(
+    return RaftCard.item(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -2931,7 +2932,7 @@ class RaftAccessCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
-    return RaftSurfaceListItem(
+    return RaftCard.item(
       onTap: onTap,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,

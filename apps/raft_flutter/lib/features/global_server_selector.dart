@@ -306,9 +306,10 @@ class _ServerOption extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
-    return RaftChoiceCard(
+    return RaftCard(
+      variant: RaftCardRecipeVariant.option,
       key: ValueKey('global-server-${server.id}'),
-      onPressed: onPressed,
+      onTap: onPressed,
       semanticLabel: server.string('name'),
       child: SizedBox(
         width: double.infinity,

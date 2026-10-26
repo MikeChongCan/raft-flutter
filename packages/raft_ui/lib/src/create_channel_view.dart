@@ -3,6 +3,7 @@
 // with Name, Description (optional), Visibility segmented control, Members
 // (optional) search + AGENTS/HUMANS picker and Cancel/Create Channel. The app
 // adapter owns loading, selection state and the create command.
+import 'card.dart' show RaftCard;
 import 'hover_region.dart';
 
 import 'package:flutter/material.dart';
@@ -252,7 +253,7 @@ class _MemberPicker extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       background: eyebrowFill,
     );
-    return RaftRecipeCard(
+    return RaftCard(
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxHeight: 192 - 4),
         child: SingleChildScrollView(

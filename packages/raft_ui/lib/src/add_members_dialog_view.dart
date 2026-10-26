@@ -5,6 +5,7 @@
 // (Agents / Humans sections with one row per candidate and a remove-from-list
 // button) and Cancel / "Add N members". The adapter owns candidates, selection
 // and the batch add.
+import 'card.dart' show RaftCard;
 import 'hover_region.dart';
 
 import 'package:flutter/material.dart';
@@ -260,7 +261,7 @@ class _MemberListShell extends StatelessWidget {
         ),
       ),
     );
-    return RaftRecipeCard(
+    return RaftCard(
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxHeight: 288 - 4),
         child: SingleChildScrollView(

@@ -834,7 +834,7 @@ class _RaftComputerDetailViewState extends State<RaftComputerDetailView> {
           children: [
             SizedBox.square(
               dimension: 64,
-              child: RaftRecipeCard(
+              child: RaftCard(
                 child: Center(
                   child: RaftIcon(
                     RaftGlyph.monitor,
@@ -1299,7 +1299,7 @@ class _RaftComputerDetailViewState extends State<RaftComputerDetailView> {
       context,
       "If it doesn't reconnect within a few minutes, run {command} on that machine to check.",
     ).split('{command}');
-    return RaftRecipeCard(
+    return RaftCard(
       key: const ValueKey('computer-upgrade-reconnecting'),
       padding: const EdgeInsets.all(16),
       child: Row(
@@ -1680,7 +1680,7 @@ class _RaftComputerDetailViewState extends State<RaftComputerDetailView> {
           _gapColumn(8, [
             if (widget.agentNotice case final notice?) notice,
             if (manage && selected.isNotEmpty)
-              RaftSurfaceListItem(
+              RaftCard.item(
                 selected: true,
                 interactive: false,
                 selectedBackground: t.colors['layer-canvas-muted'],
@@ -1877,7 +1877,7 @@ class _RaftComputerDetailViewState extends State<RaftComputerDetailView> {
               _recoveryGuide(t, c),
               const SizedBox(height: 12),
             ],
-            RaftRecipeCard(
+            RaftCard(
               key: const ValueKey('computer-section-delete'),
               padding: const EdgeInsets.all(16),
               child: Row(
@@ -1930,7 +1930,7 @@ class _RaftComputerDetailViewState extends State<RaftComputerDetailView> {
     final webUpgradeOn = service?.webUpgradeOn ?? false;
     final upgradeCommands = kind == RaftComputerServiceKind.commands ? c : null;
     final progress = operation;
-    return RaftRecipeCard(
+    return RaftCard(
       key: const ValueKey('computer-section-service'),
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -2106,7 +2106,7 @@ class _RaftComputerDetailViewState extends State<RaftComputerDetailView> {
         RaftCopyableCode(command, copyLabel: copy),
       ],
     );
-    return RaftRecipeCard(
+    return RaftCard(
       key: const ValueKey('computer-section-recovery-guide'),
       padding: const EdgeInsets.all(16),
       child: Column(

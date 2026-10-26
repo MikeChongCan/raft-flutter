@@ -6,6 +6,8 @@
 // My apps tabs, the search / category / layout filters, the three app
 // collections (grid or list), and the listing / installed-app detail cards.
 // The app supplies the projected rows and callbacks; class lists live here.
+import 'card.dart' show RaftCard;
+
 import 'package:flutter/material.dart';
 
 import 'raft_underline.dart';
@@ -16,10 +18,10 @@ import 'design_primitives.dart'
         RaftSegmentedControl,
         RaftSegmentedOption,
         RaftTypography;
-import 'dialog_card.dart' show RaftCloseButton, RaftRecipeCard;
+import 'dialog_card.dart' show RaftCloseButton;
 import 'error_presentation.dart';
 import 'icons.dart';
-import 'list_items.dart' show RaftSectionEyebrow, RaftSurfaceListItem;
+import 'list_items.dart' show RaftSectionEyebrow;
 import 'localization.dart';
 import 'recipe_min_height.dart' show RaftMinHeightBox;
 import 'recipe_surface.dart';
@@ -1195,7 +1197,7 @@ class _AppRowCard extends StatelessWidget {
         ],
       );
     }
-    return RaftSurfaceListItem(interactive: false, child: body);
+    return RaftCard.item(interactive: false, child: body);
   }
 }
 
@@ -1789,7 +1791,7 @@ class RaftConnectedAppDetailCard extends StatelessWidget {
         ),
       ),
     ];
-    return RaftRecipeCard(
+    return RaftCard(
       maxWidth: 672,
       padding: const EdgeInsets.all(20),
       child: Column(
