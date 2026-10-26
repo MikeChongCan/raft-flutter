@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 import sys
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 
 TOOL = Path(__file__).resolve().parents[1]
@@ -50,6 +50,31 @@ class ReleaseBackfillTests(unittest.TestCase):
         with patch.dict(backfill.release.os.environ, {'GITHUB_EVENT_NAME': 'workflow_dispatch'}), \
                 self.assertRaisesRegex(ValueError, 'version-tag push'):
             backfill.release.publish('macos')
+
+    def test_build_subprocesses_compile_the_original_source_sha_not_the_workflow_sha(self):
+        for platform, arch in [('macos', 'arm64'), ('appimage', 'x64')]:
+            environment = {'GITHUB_EVENT_NAME': 'workflow_dispatch', 'GITHUB_SHA': 'a' * 40,
+                           'GITHUB_RUN_NUMBER': '999', 'BACKFILL_TAG': self.tag,
+                           'BACKFILL_COMMIT': self.commit, 'BACKFILL_BUILD_NUMBER': '87',
+                           'BACKFILL_PLATFORM': platform}
+            remote = self.remote(platforms=[{'platform': platform, 'arch': arch}])
+            with self.subTest(platform=platform), \
+                    patch.dict(backfill.os.environ, environment), \
+                    patch.object(sys, 'argv', ['release_backfill.py', 'build', '--source', '/source']), \
+                    patch.object(backfill.os, 'chdir'), \
+                    patch.object(backfill, 'checked_source'), \
+                    patch.object(backfill, 'existing_release', return_value=remote), \
+                    patch.dict(sys.modules, {'macos_runner': Mock()}), \
+                    patch.object(backfill.release, 'verify_artifacts'), \
+                    patch.object(backfill.subprocess, 'run') as run:
+                backfill.main()
+                self.assertEqual(run.call_count, 3)
+                for call in run.call_args_list:
+                    env = call.kwargs['env']
+                    self.assertEqual(env['GITHUB_SHA'], self.commit)
+                    defines = backfill.release.release_defines('1.21.23', '87', env, self.tag)
+                    self.assertEqual(defines['RAFT_COMMIT_SHA'], self.commit)
+                    self.assertEqual(env['GITHUB_RUN_NUMBER'], '87')
 
 
 if __name__ == '__main__':

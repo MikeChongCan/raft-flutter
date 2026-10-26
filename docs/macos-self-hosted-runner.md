@@ -19,6 +19,15 @@ startup log and launcher may stay in the agent's control directory; macOS
 launchd cannot open external-volume log paths before the service starts. The
 small LaunchAgent definition belongs in the user's Library.
 
+If launchd is denied external-volume access, use a small, identifiable launcher
+app. Select only the dedicated runner directory through the system folder
+picker, and retain its security-scoped bookmark in the small control directory.
+Restore that bookmark before starting `runsvc.sh`; do not grant Full Disk Access
+or borrow another application's permission. Verify that a service restart
+reconnects without another directory selection. The active service can hold an
+idle-sleep assertion with `caffeinate -is`; stopping it releases that assertion
+without changing the computer's power settings.
+
 Use GitHub's official runner package and compare its SHA-256 with the release
 asset digest. Register with a short-lived token supplied through
 `ACTIONS_RUNNER_INPUT_TOKEN`; never put the token into scripts, reports or

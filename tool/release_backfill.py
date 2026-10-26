@@ -70,7 +70,7 @@ def main():
         if platform == 'macos':
             import macos_runner
             macos_runner.verify(source)
-        env = dict(os.environ, GITHUB_REF=f'refs/tags/{tag}', GITHUB_RUN_NUMBER=number,
+        env = dict(os.environ, GITHUB_REF=f'refs/tags/{tag}', GITHUB_RUN_NUMBER=number, GITHUB_SHA=commit,
                    GITHUB_EVENT_NAME='workflow_dispatch', RELEASE_VERSION=identity['version'],
                    RELEASE_BUILD_NUMBER=number)
         for command in ([sys.executable, source / 'tool/release.py', 'sdk'],
