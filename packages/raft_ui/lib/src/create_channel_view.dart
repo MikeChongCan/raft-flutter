@@ -14,6 +14,8 @@ import 'dialog_card.dart';
 import 'icons.dart';
 import 'localization.dart';
 import 'recipe_surface.dart';
+import 'raft/button.dart';
+import 'recipes/recipe_runtime.dart' show RaftRecipeSet;
 import 'recipes/banner.g.dart';
 import 'recipes/button_variants.g.dart';
 import 'separator.dart';
@@ -74,6 +76,7 @@ class RaftCreateChannelDialogView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final legacy = RaftTokens.of(context).recipeSet == RaftRecipeSet.legacy;
     // space-y-4 between the form's direct children.
     const gap = SizedBox(height: 16);
     return RaftModalBackdrop(
@@ -146,31 +149,60 @@ class RaftCreateChannelDialogView extends StatelessWidget {
             ],
           ],
         ),
-        footer: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            RaftRecipeButton(
-              label: 'Cancel',
-              variant: RaftButtonRecipeVariant.outline,
-              size: RaftButtonRecipeSize.sm,
-              // px-4 py-2 text-sm
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              textStep: RaftTextSteps.sm,
-              disabled: submitting,
-              onPressed: raftExplicitClose(context, onClose),
-            ),
-            const SizedBox(width: 12), // gap-3
-            RaftRecipeButton(
-              label: submitting ? 'Creating…' : 'Create Channel',
-              variant: RaftButtonRecipeVariant.accent,
-              size: RaftButtonRecipeSize.sm,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              textStep: RaftTextSteps.sm,
-              disabled: submitting,
-              onPressed: onSubmit,
-            ),
-          ],
-        ),
+        footer: !legacy
+            ? OverflowBar(
+                alignment: MainAxisAlignment.end,
+                overflowAlignment: OverflowBarAlignment.end,
+                spacing: 8,
+                overflowSpacing: 8,
+                children: [
+                  RaftButton(
+                    label: 'Cancel',
+                    uiVariant: RaftButtonVariant.ghost,
+                    uiSize: RaftButtonSize.lg,
+                    onPressed: submitting
+                        ? null
+                        : raftExplicitClose(context, onClose),
+                  ),
+                  RaftButton(
+                    label: submitting ? 'Creating…' : 'Create Channel',
+                    uiVariant: RaftButtonVariant.accent,
+                    uiSize: RaftButtonSize.lg,
+                    onPressed: submitting ? null : onSubmit,
+                  ),
+                ],
+              )
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  RaftRecipeButton(
+                    label: 'Cancel',
+                    variant: RaftButtonRecipeVariant.outline,
+                    size: RaftButtonRecipeSize.sm,
+                    // px-4 py-2 text-sm
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    textStep: RaftTextSteps.sm,
+                    disabled: submitting,
+                    onPressed: raftExplicitClose(context, onClose),
+                  ),
+                  const SizedBox(width: 12), // gap-3
+                  RaftRecipeButton(
+                    label: submitting ? 'Creating…' : 'Create Channel',
+                    variant: RaftButtonRecipeVariant.accent,
+                    size: RaftButtonRecipeSize.sm,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    textStep: RaftTextSteps.sm,
+                    disabled: submitting,
+                    onPressed: onSubmit,
+                  ),
+                ],
+              ),
       ),
     );
   }

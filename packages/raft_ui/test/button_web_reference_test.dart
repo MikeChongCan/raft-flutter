@@ -62,6 +62,45 @@ void main() {
         expect((cancel.border! as Border).top.color, Colors.transparent);
       },
     );
+    testWidgets('actual Create Channel footer follows Web ($dark)', (t) async {
+      await t.binding.setSurfaceSize(const Size(900, 1200));
+      addTearDown(() => t.binding.setSurfaceSize(null));
+      final name = TextEditingController(text: 'design');
+      final description = TextEditingController();
+      final search = TextEditingController();
+      addTearDown(name.dispose);
+      addTearDown(description.dispose);
+      addTearDown(search.dispose);
+      addTearDown(() async {
+        await t.pumpWidget(const SizedBox.shrink());
+        await t.pump();
+      });
+      await t.pumpWidget(
+        _app(
+          dark,
+          RaftCreateChannelDialogView(
+            name: name,
+            description: description,
+            search: search,
+            visibility: 'public',
+            onVisibilityChanged: (_) {},
+            agents: const [],
+            humans: const [],
+            hasCandidates: false,
+            isSelected: (_) => false,
+            onToggle: (_) {},
+            onClose: () {},
+            onSubmit: () {},
+          ),
+        ),
+      );
+      await t.pumpAndSettle();
+      expect(t.getSize(_button('Cancel')).height, 44);
+      expect(t.getSize(_button('Create Channel')).height, 44);
+      final cancel = controlDecoration(t, _button('Cancel'));
+      expect(cancel.color, Colors.transparent);
+      expect((cancel.border! as Border).top.color, Colors.transparent);
+    });
     testWidgets('Web bulk actions preserve consequence colours ($dark)', (
       t,
     ) async {
