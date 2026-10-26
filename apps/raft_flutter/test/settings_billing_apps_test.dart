@@ -333,7 +333,10 @@ void main() {
       a.routes['POST /billing/cancel'] = (_) => {'ok': true};
       await t.tap(find.byKey(const ValueKey('billing-cancel')));
       await t.pumpAndSettle();
-      expect(find.text('Cancel Subscription'), findsNWidgets(3));
+      // Dialog title keeps Web's `Cancel Subscription`; the button and the
+      // confirm label are Web's `Cancel subscription`.
+      expect(find.text('Cancel Subscription'), findsOneWidget);
+      expect(find.text('Cancel subscription'), findsNWidgets(2));
       await t.tap(find.byKey(const ValueKey('billing-confirm')));
       await t.pumpAndSettle();
       expect(a.posts('/billing/cancel'), hasLength(1));
@@ -348,7 +351,7 @@ void main() {
     testWidgets('a scheduled cancellation offers reactivation', (t) async {
       await mount(t, _pro(cancelAtPeriodEnd: true));
       expect(find.byKey(const ValueKey('billing-cancel')), findsNothing);
-      expect(find.text('Reactivate Subscription'), findsOneWidget);
+      expect(find.text('Reactivate subscription'), findsOneWidget);
       expect(
         find.text('Billing interval: Yearly · cancellation scheduled'),
         findsOneWidget,
@@ -659,7 +662,7 @@ void main() {
       );
       expect(find.text('App detail'), findsOneWidget);
       expect(find.text('example.com'), findsOneWidget);
-      expect(find.text('Install to This Server'), findsOneWidget);
+      expect(find.text('Install to this server'), findsOneWidget);
       final before = a.calls
           .where((c) => c.path == '/integrations/marketplace')
           .length;
@@ -692,7 +695,7 @@ void main() {
       };
       await t.tap(find.byKey(const ValueKey('connected-app-action-github')));
       await t.pumpAndSettle();
-      expect(find.text('Uninstall GitHub Issues'), findsOneWidget);
+      expect(find.text('Uninstall GitHub Issues?'), findsOneWidget);
       await t.tap(
         find.byKey(const ValueKey('connected-app-uninstall-confirm-button')),
       );
@@ -722,7 +725,7 @@ void main() {
       );
       await t.tap(find.byKey(const ValueKey('connected-app-slack')));
       await t.pumpAndSettle();
-      expect(find.text('Install to This Server'), findsNothing);
+      expect(find.text('Install to this server'), findsNothing);
       expect(
         a.calls.where((c) => c.method != 'GET' && !c.path.startsWith('/auth')),
         isEmpty,

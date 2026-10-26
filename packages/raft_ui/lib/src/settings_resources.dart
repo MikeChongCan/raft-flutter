@@ -271,7 +271,7 @@ class RaftSettingsAbout extends StatelessWidget {
                       ),
                       RaftButton(
                         key: const ValueKey('mobile-download-ios'),
-                        label: 'Get the iOS Beta',
+                        label: 'Get the iOS beta',
                         variant: RaftControlVariant.outline,
                         size: RaftButtonRecipeSize.sm,
                         onPressed: app.onIos,
@@ -291,7 +291,9 @@ class RaftSettingsAbout extends StatelessWidget {
           const SizedBox(height: 16),
           section(
             'workspace',
-            'Server',
+            // settings.about.workspaceSectionLabel: 工作空间, not the agent
+            // file workspace's 工作区.
+            raftTextZh(context, 'Workspace', '工作空间'),
             RaftGlyph.building2,
             card(workspaceName!, workspaceDetail ?? ''),
           ),

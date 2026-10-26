@@ -54,7 +54,11 @@ Future<(WorkspaceController, _Adapter)> _fixture() async {
   await client.login('fixture', 'fixture');
   client.selectServer('s1');
   final w = WorkspaceController(client);
-  w.server = RaftRecord({'id': 's1', 'name': 'Test workspace', 'role': 'owner'});
+  w.server = RaftRecord({
+    'id': 's1',
+    'name': 'Test workspace',
+    'role': 'owner',
+  });
   w.servers = [w.server!];
   return (w, a);
 }
@@ -121,10 +125,11 @@ void main() {
         'identity',
       ]);
       expect(
-        toggleDeclaredScope(
-          const ['openid', 'profile', 'identity'],
-          'agent:notification:write',
-        ),
+        toggleDeclaredScope(const [
+          'openid',
+          'profile',
+          'identity',
+        ], 'agent:notification:write'),
         ['openid', 'profile', 'identity', 'agent:notification:write'],
       );
       expect(
@@ -179,7 +184,10 @@ void main() {
       'danger',
     ]) {
       expect(
-        find.byKey(ValueKey('connected-app-editor-section-$id'), skipOffstage: false),
+        find.byKey(
+          ValueKey('connected-app-editor-section-$id'),
+          skipOffstage: false,
+        ),
         findsOneWidget,
         reason: id,
       );
@@ -250,7 +258,9 @@ void main() {
     expect(find.text('Register App'), findsWidgets);
   });
 
-  testWidgets('editing prefills the app, saves with PATCH and closes', (t) async {
+  testWidgets('editing prefills the app, saves with PATCH and closes', (
+    t,
+  ) async {
     final (w, a) = (await t.runAsync(_fixture))!;
     addTearDown(w.dispose);
     _routes(a, [Map<String, dynamic>.from(_app)]);
@@ -286,7 +296,9 @@ void main() {
     await t.tap(find.text('Danger zone').first);
     await t.pumpAndSettle();
     expect(
-      find.text('Save the app before lifecycle or credential actions become available.'),
+      find.text(
+        'Save the app before lifecycle or credential actions become available.',
+      ),
       findsOneWidget,
     );
   });
@@ -310,9 +322,13 @@ void main() {
     await t.ensureVisible(button);
     await t.tap(button);
     await t.pumpAndSettle();
-    expect(find.text('Regenerate Client Secret'), findsNWidgets(3));
+    expect(find.text('Regenerate Client Secret'), findsOneWidget);
+    expect(find.textContaining('Regenerate client secret for'), findsOneWidget);
+    expect(find.text('Regenerate client secret'), findsOneWidget);
     await t.tap(
-      find.byKey(const ValueKey('connected-app-regenerate-secret-confirm-button')),
+      find.byKey(
+        const ValueKey('connected-app-regenerate-secret-confirm-button'),
+      ),
     );
     await t.pumpAndSettle();
     expect(find.text('rotated-secret'), findsOneWidget);
@@ -334,10 +350,10 @@ void main() {
     final card = find.byKey(const ValueKey('connected-app-delete-card'));
     await t.ensureVisible(card);
     await t.tap(
-      find.descendant(of: card, matching: find.text('Delete App')).last,
+      find.descendant(of: card, matching: find.text('Delete app')).last,
     );
     await t.pumpAndSettle();
-    expect(find.text('Delete App'), findsWidgets);
+    expect(find.text('Delete app'), findsWidgets);
     await t.tap(
       find.byKey(const ValueKey('connected-app-delete-confirm-button')),
     );
@@ -378,23 +394,23 @@ void main() {
     final (w, a) = (await t.runAsync(_fixture))!;
     addTearDown(w.dispose);
     _routes(a, [Map<String, dynamic>.from(_app)]);
-    a.routes['PUT /integrations/clients/app-1/app-notifications/webhook'] = (
-      o,
-    ) {
-      expect(o.data, {'endpointUrl': 'https://hooks.example/raft'});
-      a.routes['GET /integrations/clients/app-1/app-notifications'] = (_) => {
-        'request_revision': 1,
-        'current_groups': ['server'],
-        'current_events': <String>[],
-        'pending_revision': null,
-        'webhook': {
-          'endpoint_url': 'https://hooks.example/raft',
-          'config_revision': 1,
-          'enabled': true,
-        },
-      };
-      return {'signing_secret': 'whsec_once'};
-    };
+    a.routes['PUT /integrations/clients/app-1/app-notifications/webhook'] =
+        (o) {
+          expect(o.data, {'endpointUrl': 'https://hooks.example/raft'});
+          a.routes['GET /integrations/clients/app-1/app-notifications'] = (_) =>
+              {
+                'request_revision': 1,
+                'current_groups': ['server'],
+                'current_events': <String>[],
+                'pending_revision': null,
+                'webhook': {
+                  'endpoint_url': 'https://hooks.example/raft',
+                  'config_revision': 1,
+                  'enabled': true,
+                },
+              };
+          return {'signing_secret': 'whsec_once'};
+        };
     await _mount(t, w);
     await t.tap(find.byKey(const ValueKey('connected-app-action-app-1')));
     await t.pumpAndSettle();
@@ -406,12 +422,14 @@ void main() {
     expect(find.text('Webhook events'), findsOneWidget);
     await t.enterText(
       find.byWidgetPredicate(
-        (w) => w is TextField && w.decoration?.hintText == 'https://example.com/raft/events',
+        (w) =>
+            w is TextField &&
+            w.decoration?.hintText == 'https://example.com/raft/events',
       ),
       'https://hooks.example/raft',
     );
     await t.pump();
-    await t.tap(find.text('Save Endpoint'));
+    await t.tap(find.text('Save endpoint'));
     await t.pumpAndSettle();
     expect(find.text('whsec_once'), findsOneWidget);
   });

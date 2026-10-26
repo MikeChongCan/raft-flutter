@@ -112,7 +112,7 @@ void main() {
     t,
   ) async {
     await _open(t, _profile('me'));
-    expect(find.byTooltip('Upload Image'), findsOneWidget);
+    expect(find.byTooltip('Upload image'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('member-edit-description')),
       findsOneWidget,
@@ -123,13 +123,13 @@ void main() {
     t,
   ) async {
     await _open(t, _profile('other'));
-    expect(find.byTooltip('Upload Image'), findsNothing);
+    expect(find.byTooltip('Upload image'), findsNothing);
     expect(find.byKey(const ValueKey('member-edit-description')), findsNothing);
   });
 
   testDesktop('you after leaving the server cannot edit either', (t) async {
     await _open(t, _profile('me', status: 'left'));
-    expect(find.byTooltip('Upload Image'), findsNothing);
+    expect(find.byTooltip('Upload image'), findsNothing);
     expect(find.byKey(const ValueKey('member-edit-description')), findsNothing);
   });
 
@@ -175,7 +175,7 @@ void main() {
 
   testDesktop('tapping the picture uploads the chosen image', (t) async {
     final client = await _open(t, _profile('me'));
-    await t.tap(find.byTooltip('Upload Image'));
+    await t.tap(find.byTooltip('Upload image'));
     await t.pumpAndSettle();
     expect(client.posts, ['/auth/me/avatar']);
     expect(client.reloads, 1, reason: 'the account is re-read');
@@ -185,7 +185,7 @@ void main() {
   testDesktop('a failed upload says so under the identity', (t) async {
     final client = await _open(t, _profile('me'));
     client.avatarFailure = const RaftApiException('nope');
-    await t.tap(find.byTooltip('Upload Image'));
+    await t.tap(find.byTooltip('Upload image'));
     await t.pumpAndSettle();
     expect(
       t

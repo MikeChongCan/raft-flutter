@@ -4,7 +4,7 @@
 const Map<String, String> zhCatalogRaftCopyDialogs = <String, String>{
   "Accept Invitation": "接受邀请",
   "Add Connection": "添加连接",
-  "Add Provider Connection": "添加提供方连接",
+  "Add provider connection": "添加 Provider 连接",
   "Approve Agent Login": "批准 Agent 登录",
   "Cancel Conversion": "取消转换",
   "Cancel Migration": "取消迁移",
@@ -12,13 +12,13 @@ const Map<String, String> zhCatalogRaftCopyDialogs = <String, String>{
   "Clear Cache": "清除缓存",
   "Confirm Action": "确认操作",
   "Create Section": "创建分区",
-  "Delete App": "删除应用",
+  "Delete app": "删除应用",
   "Delete Section": "删除分区",
   "Detach Agent": "解除 Agent 关联",
   "Detach Deleted Agent": "解除已删除 Agent 的关联",
   "Discard Changes": "放弃更改",
   "Disconnect Account": "断开账号",
-  "Disconnect Slack Workspace": "解绑 Slack 工作区",
+  "Disconnect Slack workspace": "解绑 Slack 工作区",
   "Got It": "知道了",
   "Grant Access": "授予访问权限",
   "Join Channel": "加入频道",
@@ -78,24 +78,24 @@ const Map<String, String> zhCatalogRaftCopyDialogs = <String, String>{
   "Save and Close": "保存并关闭",
   "Send Email": "发送邮件",
   "Send Invitation": "发送邀请",
-  "Set Password by Email": "通过邮件设置密码",
+  "Set password by email": "通过邮件设置密码",
   "Start Over": "重新开始",
   "Stay Connected": "保持连接",
   "Stay Logged In": "保持登录",
   "Stay in Channel": "留在频道",
-  "Uninstall App": "卸载应用",
+  "Uninstall app": "卸载应用",
   "Uninstall {name}": "卸载 {name}",
-  "Update Seats": "更新席位",
+  "Confirm and update seats": "确认并更新席位",
   "Verify Connection": "验证连接",
   "Archive \"{name}\"? It leaves your active agents and stops working in Raft, and the app has no way to unarchive it. The external runtime, local profile, and harness are not stopped or cleaned up.": "归档“{name}”？它会从你的活跃 Agent 中移除，并在 Raft 中停止工作；应用内无法取消归档。外部运行时、本地 profile 和 harness 不会被停止或清理。",
   "Archive \"{name}\"? It stops working and leaves your active agents. Its messages stay, and the app has no way to unarchive it.":
       "归档“{name}”？它会停止工作，并从你的活跃 Agent 中移除。它的消息会保留；应用内无法取消归档。",
   "Stop \"{name}\"? The agent will stop processing messages.":
       "停止“{name}”？该 Agent 将停止处理消息。",
-  "The invite to {email} will be revoked. They will no longer be able to join using this invite link.":
-      "发给 {email} 的邀请将被撤销，对方将无法再使用此邀请链接加入。",
+  "Are you sure you want to revoke the invite to {email}? They will no longer be able to join using this invite link.":
+      "确定要撤销发送给 {email} 的邀请吗？他们将无法再使用此邀请链接加入。",
   "This invite link will be revoked. Anyone who still has the URL will stop being able to join with it.":
       "此邀请链接将被撤销，仍持有该链接的任何人都将无法再用它加入。",
-  "You will be logged out of this browser. Your account and data are kept; you can log back in any time.":
-      "你将退出当前浏览器的登录状态。你的账户和数据会保留，随时可以重新登录。",
+  "Log out of this browser? Your account and data are kept; you can log back in any time.":
+      "要退出当前浏览器的登录状态吗？你的账户和数据会保留，随时可以重新登录。",
 };

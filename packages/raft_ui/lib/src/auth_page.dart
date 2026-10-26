@@ -1186,7 +1186,7 @@ class RaftAuthSessionFooter extends StatelessWidget {
           // `<TextLink variant="muted" inline>`: the underline stays at rest in
           // a sentence of the same colour.
           RaftAuthTextLink(
-            label: raftText(context, 'Log Out'),
+            label: raftText(context, 'Log out'),
             inline: true,
             onTap: onSignOut,
           ),
@@ -1625,7 +1625,7 @@ class RaftAuthVerifyPage extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(bottom: 16),
               child: RaftAuthBanner(
-                text: tr('Verification email resent. Check your inbox.'),
+                text: tr('Verification email resent! Check your inbox.'),
                 success: true,
               ),
             ),
@@ -1659,8 +1659,8 @@ class RaftAuthVerifyPage extends StatelessWidget {
                   key: const Key('verify-manual-toggle'),
                   onPressed: onToggleManual,
                   semanticLabel: manualOpen
-                      ? tr('Hide Manual Entry')
-                      : tr('Enter Code Manually'),
+                      ? tr('Hide manual entry')
+                      : tr('Enter code manually'),
                   builder: (context, state) {
                     final active = state.hovered || state.pressed;
                     final color = active ? t.strong : t.muted;
@@ -1682,8 +1682,8 @@ class RaftAuthVerifyPage extends StatelessWidget {
                             ),
                             RaftUnderlineSpan(
                               text: manualOpen
-                                  ? tr('Hide Manual Entry')
-                                  : tr('Enter Code Manually'),
+                                  ? tr('Hide manual entry')
+                                  : tr('Enter code manually'),
                             ),
                           ],
                         ),
@@ -1716,7 +1716,7 @@ class RaftAuthVerifyPage extends StatelessWidget {
           const SizedBox(height: 12),
           RaftButton(
             key: const Key('verify-logout'),
-            label: tr('Log Out'),
+            label: tr('Log out'),
             glyph: RaftGlyph.logOut,
             variant: RaftControlVariant.outline,
             size: RaftButtonRecipeSize.lg,

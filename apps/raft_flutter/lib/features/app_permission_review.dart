@@ -64,7 +64,9 @@ class AppPermissionRequestSummary extends StatelessWidget {
         (
           tr(pending ? 'Requested data groups' : 'Data groups'),
           [for (final g in groups) groupLabel(g)],
-          tr('No data access'),
+          // appNotifications.noDataAccess: 无数据访问 (noDataAccessEmpty, the
+          // approved-data row, keeps the catalog's 无数据访问权限).
+          raftTextZh(context, 'No data access', '无数据访问'),
         ),
         (
           tr(pending ? 'Requested notification events' : 'Notification events'),
@@ -87,7 +89,7 @@ class AppPermissionRequestSummary extends StatelessWidget {
           groups: const [],
           action: RaftSettingsRecipeButton(
             key: const ValueKey('app-notifications-review-approve'),
-            label: reviewing ? tr('Approving...') : tr('Approve Update'),
+            label: reviewing ? tr('Approving...') : tr('Approve update'),
             variant: RaftButtonRecipeVariant.accent,
             size: RaftButtonRecipeSize.sm,
             // Without the displayed revision id the approval cannot be bound

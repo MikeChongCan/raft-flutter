@@ -174,7 +174,7 @@ void main() {
       // The listing reloaded: no pending state left.
       expect(find.text('Permission update pending review'), findsNothing);
       expect(find.text('Data groups'), findsOneWidget);
-      expect(find.text('Approve Update'), findsNothing);
+      expect(find.text('Approve update'), findsNothing);
     });
 
     testWidgets('a stale revision (409) surfaces the server message', (
@@ -209,7 +209,7 @@ void main() {
       await t.pumpAndSettle();
       expect(find.text('Permission update pending review'), findsOneWidget);
       expect(find.text('Requested data groups'), findsOneWidget);
-      expect(find.text('Approve Update'), findsNothing);
+      expect(find.text('Approve update'), findsNothing);
     });
 
     testWidgets('without a displayed revision id the action stays disabled', (
@@ -340,7 +340,7 @@ void main() {
       final (a, launched) = await mount(t);
       final button = find.byKey(const ValueKey('slack-bridge-reauthorize'));
       expect(find.text('Update Slack authorization'), findsOneWidget);
-      expect(find.text('Disconnect Slack Workspace'), findsOneWidget);
+      expect(find.text('Disconnect Slack workspace'), findsOneWidget);
       final before = a.of('GET', '/slack-bridge/provisioning').length;
       await t.ensureVisible(button);
       await t.tap(button);

@@ -124,7 +124,12 @@ class RaftLanguageRegionView extends StatelessWidget {
       key: key,
       label: raftText(context, label),
       value: value,
-      items: [for (final (v, text) in options) (v, null, text)],
+      // settings.language.modeOff is 关闭; the plain `Off` catalog entry is
+      // 已关闭 (a state), which other Web keys use.
+      items: [
+        for (final (v, text) in options)
+          (v, null, text == 'Off' ? raftTextZh(context, 'Off', '关闭') : text),
+      ],
       onChanged: disabled ? null : onChanged,
     ),
   );

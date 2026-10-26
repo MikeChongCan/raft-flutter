@@ -381,7 +381,7 @@ class _RaftInviteHumanDialogState extends State<RaftInviteHumanDialog> {
               glyph: link.copied ? RaftGlyph.check : RaftGlyph.copy,
               glyphSize: 14,
               size: RaftButtonRecipeSize.iconMd,
-              tooltip: raftText(context, 'Copy Invite Link'),
+              tooltip: raftText(context, 'Copy invite link'),
               disabled: link.url == null || link.loading,
               onPressed: widget.onCopyLink,
             ),

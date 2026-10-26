@@ -441,7 +441,7 @@ class _NotificationSettingsState extends State<NotificationSettingsView>
             : desktopHint(context, platform),
         error: error ?? (service.canOpenSettings ? service.error : null),
         message: testPosted ? testSentMessage(context, platform) : null,
-        actionLabel: 'Send a Test Notification',
+        actionLabel: 'Send a test notification',
         actionTone: RaftButtonRecipeVariant.success,
         onAction: blocked || unavailable
             ? null

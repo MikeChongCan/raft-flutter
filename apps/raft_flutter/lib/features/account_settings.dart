@@ -513,12 +513,12 @@ class _AccountSettingsState extends ManagementState<AccountSettings> {
           glyph: RaftGlyph.logOut,
         ),
         RaftSettingsActionCard(
-          title: 'Log Out',
+          title: 'Log out',
           description: 'Log out of this browser. Your account and data stay; you can log back in any time.',
           // `variant="warning" size="md"`, text only.
           action: RaftSettingsRecipeButton(
             key: const Key('account-logout'),
-            label: 'Log Out',
+            label: 'Log out',
             variant: RaftButtonRecipeVariant.warning,
             onPressed: widget.onLogout == null
                 ? null
@@ -536,10 +536,10 @@ class _AccountSettingsState extends ManagementState<AccountSettings> {
     final ok = await RaftConfirmDialog.show(
       context,
       const RaftConfirmDialog(
-        title: 'Log Out',
-        message: 'You will be logged out of this browser. Your account and data are kept; you can log back in any time.',
-        confirmLabel: 'Log Out',
-        cancelLabel: 'Stay Logged In',
+        title: 'Log out',
+        message: 'Log out of this browser? Your account and data are kept; you can log back in any time.',
+        confirmLabel: 'Log out',
+        cancelLabel: 'Cancel',
         surfaceKey: ValueKey('account-logout-dialog'),
         // confirmColor="bg-brutal-orange" -> warning tone.
         confirmVariant: RaftButtonRecipeVariant.warning,

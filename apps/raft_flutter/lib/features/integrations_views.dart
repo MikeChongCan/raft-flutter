@@ -116,10 +116,8 @@ bool _canEditSourceOwned(String? status) => const {
 
 /// `sourceOwnedConnectedAppStatusHint`.
 String? _statusHint(String? status) => switch (status) {
-  'publish_requested' || 'in_review' =>
-    'Marketplace review is pending. You can edit this app while it waits, or delete it to withdraw the request.',
-  'unpublish_requested' =>
-    'Marketplace offline review is pending. The app stays listed and installable until App Admin approves removal. Approval preserves the source Server’s installation and access, but removes them on other Servers.',
+  'publish_requested' || 'in_review' => 'Marketplace review is pending. You can edit this app while it waits, or delete it to withdraw the request.',
+  'unpublish_requested' => 'Marketplace offline review is pending. The app stays listed and installable until App Admin approves removal. Approval preserves the source Server’s installation and access, but removes them on other Servers.',
   _ => null,
 };
 
@@ -146,7 +144,8 @@ RaftConnectedAppBadge? _distributionBadge(
 RaftConnectedAppBadge? _installBadge(BuildContext context, Object? raw) {
   final badge = managementMap(raw);
   return switch (badge['kind']) {
-    'new' => RaftConnectedAppBadge.warning(raftText(context, 'New')),
+    // settings.connectedApps.marketplaceNew: 新上架 (the plain `New` entry is 新增).
+    'new' => RaftConnectedAppBadge.warning(raftTextZh(context, 'New', '新上架')),
     'bucket' => RaftConnectedAppBadge.outline(
       raftFormat(context, '{count} installs', {
         'count': const {
@@ -344,7 +343,7 @@ class _IntegrationsState extends ManagementState<IntegrationsView> {
       RaftConfirmDialog(
         surfaceKey: const ValueKey('connected-app-uninstall-dialog'),
         confirmKey: const ValueKey('connected-app-uninstall-confirm-button'),
-        title: raftFormat(context, 'Uninstall {name}', {'name': app['name']}),
+        title: raftFormat(context, 'Uninstall {name}?', {'name': app['name']}),
         content: RaftInlineCodeMessage(
           prefix: raftText(
             context,
@@ -354,8 +353,8 @@ class _IntegrationsState extends ManagementState<IntegrationsView> {
           suffix:
               '${raftText(context, ' again.')}${app['official'] == true ? ' ${raftText(context, 'This also opts this server out of automatic installation. It stays uninstalled until an owner or admin explicitly installs it again.')}' : ''}',
         ),
-        confirmLabel: raftText(context, 'Uninstall App'),
-        cancelLabel: raftText(context, 'Keep App'),
+        confirmLabel: raftText(context, 'Uninstall app'),
+        cancelLabel: raftText(context, 'Cancel'),
       ),
     );
     if (ok != true || !mounted) return false;
@@ -437,8 +436,8 @@ class _IntegrationsState extends ManagementState<IntegrationsView> {
               if (!hasSetup) close();
             } else {
               setModal(
-                () => modalError =
-                    failure ?? 'Failed to install marketplace app',
+                () =>
+                    modalError = failure ?? 'Failed to install marketplace app',
               );
             }
           }
@@ -461,7 +460,7 @@ class _IntegrationsState extends ManagementState<IntegrationsView> {
                 ),
                 'developer': developer,
               }),
-              closeLabel: tr('Close App Detail'),
+              closeLabel: tr('Close app detail'),
               onClose: close,
               error: modalError,
               sections: [
@@ -557,8 +556,8 @@ class _IntegrationsState extends ManagementState<IntegrationsView> {
                       ),
                       action: RaftConnectedAppButton(
                         label: saving
-                            ? tr('Uninstalling…')
-                            : tr('Uninstall from This Server'),
+                            ? tr('Uninstalling...')
+                            : tr('Uninstall from this server'),
                         variant: RaftButtonRecipeVariant.danger,
                         onPressed: saving
                             ? null
@@ -582,7 +581,7 @@ class _IntegrationsState extends ManagementState<IntegrationsView> {
                     key: const ValueKey('connected-app-install'),
                     label: saving
                         ? tr('Installing…')
-                        : tr('Install to This Server'),
+                        : tr('Install to this server'),
                     variant: RaftButtonRecipeVariant.accent,
                     onPressed: saving ? null : install,
                   ),
@@ -626,7 +625,7 @@ class _IntegrationsState extends ManagementState<IntegrationsView> {
             initials: integrationInitials(app.name),
             logoUrl: app.logoUrl,
             byline: app.developer,
-            closeLabel: tr('Close Installed App Details'),
+            closeLabel: tr('Close installed app details'),
             onClose: close,
             sections: [
               if (hasAppSetup(app.source))
@@ -855,7 +854,7 @@ class _IntegrationsState extends ManagementState<IntegrationsView> {
                 : app.editable
                 ? tr('Edit')
                 : savingId == app.id
-                ? tr('Uninstalling…')
+                ? tr('Uninstalling...')
                 : tr('Uninstall'),
             actionGlyph: app.editable ? RaftGlyph.pencil : null,
             onAction: !canManage || savingId == app.id
@@ -1106,7 +1105,7 @@ class _InstalledAppPermissionsState extends State<_InstalledAppPermissions> {
       children: [
         RaftAppPermissionsSummary(
           description: tr(
-            'Permissions granted to this app on this server are independent of sign-in and webhook delivery. Review and approve any additional access here.',
+            'Permissions granted to this app on this Server are independent of user login and webhook delivery. Review and approve any additional access here.',
           ),
           badge: managementStrings(s['effective_groups']).isNotEmpty
               ? RaftConnectedAppBadge.success(tr('Enabled'))
@@ -1153,7 +1152,7 @@ class _InstalledAppPermissionsState extends State<_InstalledAppPermissions> {
             ],
             action: widget.canManage
                 ? RaftSettingsRecipeButton(
-                    label: saving ? tr('Approving...') : tr('Approve Update'),
+                    label: saving ? tr('Approving...') : tr('Approve update'),
                     variant: RaftButtonRecipeVariant.accent,
                     size: RaftButtonRecipeSize.sm,
                     onPressed: saving ? null : approve,

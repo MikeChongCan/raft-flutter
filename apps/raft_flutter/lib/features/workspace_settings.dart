@@ -844,12 +844,12 @@ class _WorkspaceAboutSectionState extends State<WorkspaceAboutSection> {
       workspaceName: server == null
           ? null
           : server.string('name').isEmpty
-          ? raftText(context, 'Current server')
+          ? raftText(context, 'Current workspace')
           : server.string('name'),
       workspaceDetail: slug.isEmpty
           ? raftText(
               context,
-              'Server details and administration are available from Settings.',
+              'Workspace details and administration are available from Settings.',
             )
           : '/$slug',
     );

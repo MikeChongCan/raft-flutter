@@ -8,7 +8,7 @@ const Map<String, String> zhCatalogWeb8 = <String, String>{
   "Unfollow Thread": "取消关注消息列",
   "Unfollowed": "已取消关注",
   "Uninstall": "卸载",
-  "Uninstall from This Server": "从此服务器卸载",
+  "Uninstall from this server": "从此服务器卸载",
   "Uninstalling...": "卸载中…",
   "Uninstalling…": "卸载中…",
   "Unknown": "未知",
@@ -128,16 +128,16 @@ const Map<String, String> zhCatalogWeb8 = <String, String>{
   "Value": "值",
   "Verification": "验证",
   "Verification could not be started.": "无法发起验证。",
-  "Verification email resent. Check your inbox.": "验证邮件已重新发送，请查收收件箱。",
+  "Verification email resent! Check your inbox.": "验证邮件已重新发送，请查收收件箱。",
   "Verification failed. The link may be expired.": "验证失败，链接可能已过期。",
   "Verified": "已验证",
   "Verified on": "已验证",
   "Verify": "验证",
   "Verify again (one provider call)": "再次验证（会产生一次 provider 调用）",
-  "Verify and Finish Setup": "验证并完成设置",
+  "Verify and finish setup": "验证并完成设置",
   "Verify credential persistence": "验证凭据持久化",
   "Verify from this computer's terminal": "从这台计算机的终端验证",
-  "Verify on Computer": "在计算机上验证",
+  "Verify on Computer": "在 Computer 上验证",
   "Verify the bridge before enabling it": "启用前验证桥接",
   "Verifying history": "正在验证历史",
   "Verifying...": "验证中…",
@@ -211,8 +211,8 @@ const Map<String, String> zhCatalogWeb8 = <String, String>{
       "启用后，#all 将从频道列表、搜索、发帖、成员和 Agent 频道界面中消失。现有历史记录会被保留。",
   "When enabled, a newly started agent posts a short self-introduction in #all. Existing agents are not affected.":
       "启用后，新启动的 Agent 会在 #all 中发布一段简短的自我介绍。现有 Agent 不受影响。",
-  "When off, no usage data is recorded for anyone in this server, whatever their own setting.":
-      "关闭后，这个服务器里所有人的使用数据都不会被记录，不论个人设置如何。",
+  "When off, no usage data is recorded for anyone in this workspace, whatever their own setting.":
+      "关闭后，这个工作区里所有人的使用数据都不会被记录，不论个人设置如何。",
   "When this agent joins channels or has agent-to-agent DM activity, those chat surfaces will appear here.":
       "当此 Agent 加入频道或有 Agent 间私信活动时，这些聊天会显示在这里。",
   "When to use": "使用时机",
@@ -227,8 +227,8 @@ const Map<String, String> zhCatalogWeb8 = <String, String>{
   "Working…": "处理中…",
   "Workspace": "工作区",
   "Workspace and agent data": "工作区和 Agent 数据",
-  "Server details and administration are available from Settings.":
-      "服务器详情与管理入口在「设置」中。",
+  "Workspace details and administration are available from Settings.":
+      "工作空间详情与管理入口在「设置」中。",
   "Workspace file view mode": "工作区文件查看模式",
   "Workspace mode": "工作空间模式",
   "Workspace settings": "工作空间设置",
@@ -463,7 +463,7 @@ const Map<String, String> zhCatalogWeb8 = <String, String>{
   "Permissions": "权限",
   "External agent": "外部 Agent",
   "Server address": "服务器地址",
-  "Type server name": "输入服务器名称",
+  "Type {name} to confirm:": "输入 {name} 以确认：",
   "Invitation link or code": "邀请链接或代码",
   "Invitation expires at": "邀请到期时间",
   "Maximum uses": "最大使用次数",
@@ -487,8 +487,8 @@ const Map<String, String> zhCatalogWeb8 = <String, String>{
   "Revision: {revision}": "版本：{revision}",
   "Make {role}": "设为{role}",
   "Join {workspace}?": "加入{workspace}？",
-  "Delete {server}, its channels and messages. This cannot be undone.":
-      "删除{server}及其所有频道和消息。此操作无法撤销。",
+  "This will permanently delete {server} and all its data (agents, channels, messages). This cannot be undone.":
+      "这将永久删除 {server} 及其所有数据（Agent、频道、消息）。此操作无法撤销。",
   "Leave {server}. A new invitation is required to return.":
       "退出{server}。重新加入需要新的邀请。",
   "The name must match {name}.": "名称必须与{name}一致。",

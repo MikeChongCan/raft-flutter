@@ -51,7 +51,7 @@ class _State extends State<_Preview> {
               message: sent
                   ? 'Test notification posted to the system. If no banner appeared, allow notifications for Raft in System Settings → Notifications, then try again.'
                   : null,
-              actionLabel: 'Send a Test Notification',
+              actionLabel: 'Send a test notification',
               onAction: () => setState(() => sent = true),
               muted: false,
             ),

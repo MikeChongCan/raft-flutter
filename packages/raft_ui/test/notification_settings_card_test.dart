@@ -112,7 +112,7 @@ void main() {
                     hint: 'System hint',
                     error: 'Could not post a test notification.',
                     message: 'Test notification posted to the system.',
-                    actionLabel: 'Send a Test Notification',
+                    actionLabel: 'Send a test notification',
                     muted: false,
                     onAction: () => sends++,
                   ),
@@ -136,7 +136,7 @@ void main() {
         );
         expect(find.byType(RaftButton), findsOneWidget);
         expect(find.text('Mute this server'), findsNothing);
-        await t.tap(find.text('Send a Test Notification'));
+        await t.tap(find.text('Send a test notification'));
         expect(sends, 1);
         expect(t.takeException(), isNull);
       },
@@ -155,7 +155,7 @@ void main() {
                   description: 'd',
                   status: 'Unavailable',
                   hint: 'This desktop build cannot show system notifications.',
-                  actionLabel: 'Send a Test Notification',
+                  actionLabel: 'Send a test notification',
                   muted: false,
                 ),
               ),

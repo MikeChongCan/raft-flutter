@@ -228,7 +228,7 @@ void main() {
     expect(find.text('Saved'), findsOneWidget);
     expect(find.text('No active invite links.'), findsOneWidget);
     expect(find.text('06/19/2026, 08:24 PM'), findsOneWidget);
-    expect(find.text('Finish Setup'), findsOneWidget);
+    expect(find.text('Finish setup'), findsOneWidget);
     expect(find.text('8/5000'), findsOneWidget);
   });
 

@@ -319,7 +319,7 @@ class RaftProviderConnectionsFrame extends StatelessWidget {
                   ? null
                   : RaftButton(
                       key: const ValueKey('provider-connections-add'),
-                      label: 'Add Provider Connection',
+                      label: 'Add provider connection',
                       glyph: RaftGlyph.plus,
                       tone: RaftButtonRecipeVariant.default_,
                       size: RaftButtonRecipeSize.sm,
@@ -330,7 +330,7 @@ class RaftProviderConnectionsFrame extends StatelessWidget {
             Text(
               raftText(
                 context,
-                'Store a provider credential once, then reuse the connection when creating or editing agents. Credentials are encrypted and never shown again.',
+                'Store a provider credential once, then reuse the connection when creating or editing Agents. Credentials are encrypted and never shown again.',
               ),
               style: text.bodyMuted.copyWith(color: muted),
             ),
@@ -613,7 +613,7 @@ class _RaftMcpServersSectionState extends State<RaftMcpServersSection> {
         );
     Widget addButton({bool primary = false}) => RaftButton(
       key: ValueKey(primary ? 'mcp-empty-add' : 'mcp-add-server'),
-      label: 'Add MCP Server',
+      label: 'Add MCP server',
       glyph: RaftGlyph.plus,
       tone: primary
           ? RaftButtonRecipeVariant.default_

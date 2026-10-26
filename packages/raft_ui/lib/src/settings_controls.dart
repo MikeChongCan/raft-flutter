@@ -1292,7 +1292,7 @@ class RaftServerProfileTile extends StatelessWidget {
     this.imageUrl,
     this.onUpload,
     this.busy = false,
-    this.uploadLabel = 'Upload Image',
+    this.uploadLabel = 'Upload image',
     this.busyLabel = 'Uploading avatar',
   });
   final String initial;
@@ -1463,7 +1463,7 @@ class RaftSettingsPreference extends StatelessWidget {
 }
 
 /// SettingsPanel success note: `border border-line-muted theme-brutal:border-2 theme-brutal:border-black
-/// bg-brutal-lime/30 p-2 text-xs font-bold` (the "Password updated." line).
+/// bg-brutal-lime/30 p-2 text-xs font-bold` (the "Password updated!" line).
 class RaftSettingsSavedNote extends StatelessWidget {
   const RaftSettingsSavedNote(this.text, {super.key});
   final String text;

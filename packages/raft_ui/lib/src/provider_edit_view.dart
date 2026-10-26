@@ -73,8 +73,7 @@ class RaftEditProviderDialogView extends StatelessWidget {
             gap,
             RaftProductFormField(
               label: 'API key',
-              hint:
-                  'Leave blank to keep current key. Write-only; Raft encrypts this value and will not return it.',
+              hint: 'Leave blank to keep current key. Write-only; Raft encrypts this value and will not return it.',
               child: RaftDialogTextInput(
                 fieldKey: const ValueKey('provider-edit-key'),
                 controller: apiKey,
@@ -137,7 +136,7 @@ class RaftEditProviderDialogView extends StatelessWidget {
             ),
             RaftRecipeButton(
               key: const ValueKey('provider-edit-save'),
-              label: 'Save Changes',
+              label: 'Save changes',
               glyph: submitting ? null : RaftGlyph.pencil,
               child: submitting
                   ? const Row(

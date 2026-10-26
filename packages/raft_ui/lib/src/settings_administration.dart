@@ -749,7 +749,7 @@ class RaftAdminInvitesCard extends StatelessWidget {
                         const SizedBox(width: 8),
                         _IconAction(
                           key: ValueKey('admin-invite-revoke-${invite.id}'),
-                          tooltip: 'Revoke Invite',
+                          tooltip: 'Revoke invite',
                           glyph: RaftGlyph.x,
                           size: 12,
                           onPressed: invite.onRevoke,
@@ -1003,7 +1003,7 @@ class _JoinLinkRow extends StatelessWidget {
                       28,
                       _IconAction(
                         key: ValueKey('admin-join-link-copy-${link.id}'),
-                        tooltip: 'Copy Invite Link',
+                        tooltip: 'Copy invite link',
                         glyph: link.copied ? RaftGlyph.check : RaftGlyph.copy,
                         size: 14,
                         onPressed: link.onCopy,
@@ -1014,7 +1014,7 @@ class _JoinLinkRow extends StatelessWidget {
                       28,
                       _IconAction(
                         key: ValueKey('admin-join-link-revoke-${link.id}'),
-                        tooltip: 'Revoke Invite Link',
+                        tooltip: 'Revoke invite link',
                         glyph: RaftGlyph.x,
                         size: 14,
                         onPressed: link.onRevoke,
@@ -1577,7 +1577,7 @@ class RaftAdminOnboardingCard extends StatelessWidget {
                         RaftCssText(
                           raftText(
                             context,
-                            'Continue the guided computer and onboarding agent setup.',
+                            'Continue the guided Computer and onboarding agent setup.',
                           ),
                           style: raftSettingsBody(
                             t,
@@ -1592,7 +1592,7 @@ class RaftAdminOnboardingCard extends StatelessWidget {
                   const SizedBox(width: 8),
                   RaftSettingsRecipeButton(
                     key: const ValueKey('finish-server-setup'),
-                    label: openingSetup ? 'Opening…' : 'Finish Setup',
+                    label: openingSetup ? 'Opening…' : 'Finish setup',
                     trailingGlyph: openingSetup ? null : RaftGlyph.chevronRight,
                     glyphSize: 14,
                     size: RaftButtonRecipeSize.sm,

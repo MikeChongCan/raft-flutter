@@ -17,8 +17,8 @@ const Map<String, String> zhCatalogWeb1 = <String, String>{
       "停止接收来自 {serverName} 的通知，其他服务器不受影响。",
   "Not notified: {handles}. Select a person or agent from the mention picker and try again if needed.":
       "未通知：{handles}。如需通知，请从提及选择器中选择具体的人类成员或 Agent 后重试。",
-  "Notifications from {serverName} are muted.": "已静音来自 {serverName} 的通知。",
-  "Notifications from {serverName} are unmuted.": "已恢复来自 {serverName} 的通知。",
+  "Notifications from {serverName} are muted.": "来自 {serverName} 的通知已静音。",
+  "Notifications from {serverName} are unmuted.": "来自 {serverName} 的通知已取消静音。",
   "Comments · {filename}": "评论 · {filename}",
   "Comments here are pinned to {filename}. For general discussion, reply in the thread.":
       "这里的评论仅关联 {filename}。如需一般性讨论，请在消息列中回复。",
@@ -524,5 +524,5 @@ const Map<String, String> zhCatalogWeb1 = <String, String>{
   "Agents on this computer": "这台计算机上的 Agent",
   "Agents on this computer may fail to save work or start. Raft removes its own old migration data automatically; if space stays low, free up space on this computer.":
       "这台计算机上的 Agent 可能无法保存工作或启动。Raft 会自动清理自己留下的旧迁移数据；如果空间仍然不足，请在这台计算机上腾出空间。",
-  "Agents on your own computers": "在自己的计算机上运行 Agent",
+  "Agents on your own computers": "在自己的电脑上运行 Agent",
 };

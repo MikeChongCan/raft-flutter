@@ -95,18 +95,20 @@ class WorkspaceActions {
         description: delete
             ? raftFormat(
                 context,
-                'Delete {server}, its channels and messages. This cannot be undone.',
+                'This will permanently delete {server} and all its data (agents, channels, messages). This cannot be undone.',
                 {'server': server.name},
               )
             : raftFormat(
                 context,
-                'Leave {server}. A new invitation is required to return.',
-                {'server': server.name},
+                "You'll lose access to {serverName} and all of its channels. You can be re-invited later.",
+                {'serverName': server.name},
               ),
         fields: [
           RaftFormField(
             'confirm',
-            'Type server name',
+            raftFormat(context, 'Type {name} to confirm:', {
+              'name': server.name,
+            }),
             required: true,
             validator: (v) => v == server.name
                 ? null
@@ -116,7 +118,7 @@ class WorkspaceActions {
           ),
         ],
         submitLabel: delete ? 'Delete Server' : 'Leave Server',
-        cancelLabel: delete ? 'Keep Server' : 'Stay in Server',
+        cancelLabel: delete ? 'Cancel' : 'Cancel',
         destructive: delete,
         onSubmit: (_) async {
           await w.client.exitServer(server.id, delete: delete);
@@ -269,7 +271,7 @@ class _ServerSettingsViewState extends State<ServerSettingsView> {
           {'serverName': server.name},
         ),
         confirmLabel: 'Leave Server',
-        cancelLabel: 'Stay in Server',
+        cancelLabel: 'Cancel',
         surfaceKey: const ValueKey('server-danger-dialog'),
         // confirmColor="bg-brutal-orange" -> warning tone.
         confirmVariant: RaftButtonRecipeVariant.warning,
@@ -317,7 +319,7 @@ class _ServerSettingsViewState extends State<ServerSettingsView> {
             ),
             onUpload: canEdit ? uploadAvatar : null,
             busy: avatarSaving,
-            uploadLabel: 'Upload Image',
+            uploadLabel: 'Upload image',
             busyLabel: 'Uploading avatar',
           ),
           title: server.name,

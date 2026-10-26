@@ -84,7 +84,7 @@ void main() {
     Widget button() => const Center(
       child: RaftSettingsRecipeButton(
         key: key,
-        label: 'Save Changes',
+        label: 'Save changes',
         size: RaftButtonRecipeSize.sm,
       ),
     );
@@ -94,7 +94,7 @@ void main() {
     final big = t.getSize(find.byKey(key));
     expect(big.height, greaterThan(28));
     // The label is inside the button box.
-    final label = t.getRect(find.text('Save Changes'));
+    final label = t.getRect(find.text('Save changes'));
     expect(label.height, lessThanOrEqualTo(big.height));
     expect(t.getRect(find.byKey(key)).contains(label.center), isTrue);
 

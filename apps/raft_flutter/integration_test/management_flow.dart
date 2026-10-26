@@ -171,7 +171,7 @@ Future<void> verifyManagementFlow(
     mcpId = (catalog['servers'] as List).cast<Map>().singleWhere(
       (s) => s['name'] == 'Native MCP $marker',
     )['id'];
-    await _tap(tester, find.text('Edit Connection'));
+    await _tap(tester, find.text('Edit connection'));
     await _formText(tester, 'description', 'Native MCP metadata updated');
     await _tap(tester, find.text('Save'));
     await _until(
@@ -191,7 +191,7 @@ Future<void> verifyManagementFlow(
       false,
     );
     await capture('linux-mcp-management');
-    await _tap(tester, find.text('Delete Connection'));
+    await _tap(tester, find.text('Delete connection'));
     await _tap(tester, find.text('Delete'));
     await _until(
       tester,

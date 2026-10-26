@@ -137,7 +137,8 @@ void main() {
     expect(find.byKey(section), findsOneWidget);
     await t.tap(find.byKey(const ValueKey('public-visibility-switch')));
     await t.pumpAndSettle();
-    expect(find.text('Make Public'), findsWidgets);
+    expect(find.text('Make this server public?'), findsOneWidget);
+    expect(find.text('Make public'), findsWidgets);
     expect(find.text('general'), findsWidgets);
     expect(client.sent('PATCH /servers/s1/public-visibility'), isEmpty);
 

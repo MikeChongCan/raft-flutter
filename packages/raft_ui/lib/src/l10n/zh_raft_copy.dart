@@ -39,7 +39,7 @@ const Map<String, String> zhCatalogRaftCopy = <String, String>{
   "Loading computers…": "正在加载计算机…",
   "Loading verification history…": "正在加载验证历史…",
   "Review Invitation": "查看邀请",
-  "Delete MCP Server": "删除 MCP 服务器",
+  "Delete server": "删除服务器",
   "Keep MCP Server": "保留 MCP 服务器",
   "Loading reminders…": "正在加载提醒…",
   "Loading usage…": "正在加载用量…",

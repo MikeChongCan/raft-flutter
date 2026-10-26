@@ -111,13 +111,13 @@ void main() {
       a.statuses['POST /slack-bridge/provisioning/preflight'] = 403;
       await tester.pumpWidget(host(IMBridgesView(controller: w)));
       await tester.pumpAndSettle();
-      expect(find.text('Verify and Finish Setup'), findsOneWidget);
-      await tester.ensureVisible(find.text('Verify and Finish Setup'));
+      expect(find.text('Verify and finish setup'), findsOneWidget);
+      await tester.ensureVisible(find.text('Verify and finish setup'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Verify and Finish Setup'));
+      await tester.tap(find.text('Verify and finish setup'));
       await tester.pumpAndSettle();
-      expect(find.text('Verify and Finish Setup'), findsNothing);
-      expect(find.text('Disconnect Slack Workspace'), findsNothing);
+      expect(find.text('Verify and finish setup'), findsNothing);
+      expect(find.text('Disconnect Slack workspace'), findsNothing);
       // SlackBridgeSetupWizard: a failed load with no view shows the
       // generic Raft for Slack failure (never the stale projection).
       expect(
@@ -208,9 +208,9 @@ void main() {
       };
       await tester.pumpWidget(host(IMBridgesView(controller: w)));
       await tester.pumpAndSettle();
-      await tester.ensureVisible(find.text('Save Mappings and Enable'));
+      await tester.ensureVisible(find.text('Save mappings and enable'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Save Mappings and Enable'));
+      await tester.tap(find.text('Save mappings and enable'));
       await tester.pumpAndSettle();
       expect(a.calls.where((c) => c.path.endsWith('/enable')), hasLength(1));
     },
@@ -267,7 +267,7 @@ void main() {
       };
       await tester.pumpWidget(host(AccountConnectionsView(controller: w)));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Set Password by Email'));
+      await tester.tap(find.text('Set password by email'));
       await tester.pumpAndSettle();
       expect(
         a.calls.where((c) => c.path.endsWith('/forgot-password')),
@@ -353,7 +353,7 @@ void main() {
     };
     await tester.pumpWidget(host(IMBridgesView(controller: w)));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Verify and Finish Setup'));
+    await tester.tap(find.text('Verify and finish setup'));
     await tester.pumpAndSettle();
     expect(find.text('Failed'), findsOneWidget);
     expect(
@@ -393,9 +393,9 @@ void main() {
       };
       await tester.pumpWidget(host(IMBridgesView(controller: w)));
       await tester.pumpAndSettle();
-      await tester.ensureVisible(find.text('Manage Channel Mappings'));
+      await tester.ensureVisible(find.text('Manage channel mappings'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Manage Channel Mappings'));
+      await tester.tap(find.text('Manage channel mappings'));
       await tester.pumpAndSettle();
       await tester.ensureVisible(
         find.byKey(const ValueKey('slack-bridge-remove-pair-0')),
@@ -405,18 +405,18 @@ void main() {
         find.byKey(const ValueKey('slack-bridge-remove-pair-0')),
       );
       await tester.pumpAndSettle();
-      await tester.ensureVisible(find.text('Apply Mapping Changes'));
+      await tester.ensureVisible(find.text('Apply mapping changes'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Apply Mapping Changes'));
+      await tester.tap(find.text('Apply mapping changes'));
       await tester.pumpAndSettle();
       expect(a.calls.where((c) => c.method == 'DELETE'), hasLength(1));
-      await tester.ensureVisible(find.text('Disconnect Slack Workspace'));
+      await tester.ensureVisible(find.text('Disconnect Slack workspace'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Disconnect Slack Workspace'));
+      await tester.tap(find.text('Disconnect Slack workspace'));
       await tester.pumpAndSettle();
-      await tester.ensureVisible(find.text('Disconnect Slack Workspace'));
+      await tester.ensureVisible(find.text('Disconnect Slack workspace'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Disconnect Slack Workspace'));
+      await tester.tap(find.text('Disconnect Slack workspace'));
       await tester.pumpAndSettle();
       expect(
         a.calls.where((c) => c.path.endsWith('/disconnect')),
@@ -429,8 +429,8 @@ void main() {
       });
       w.notifyListeners();
       await tester.pumpAndSettle();
-      expect(find.text('Verify and Finish Setup'), findsNothing);
-      expect(find.text('Disconnect Slack Workspace'), findsNothing);
+      expect(find.text('Verify and finish setup'), findsNothing);
+      expect(find.text('Disconnect Slack workspace'), findsNothing);
     },
   );
 

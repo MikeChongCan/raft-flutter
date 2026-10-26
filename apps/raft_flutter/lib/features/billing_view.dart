@@ -77,6 +77,7 @@ billingPlanPresentation(
 }) {
   const pro = [
     'Everything in Free',
+    'Agent migration',
     'Unlimited message history',
     'Higher file upload limits',
     'Use Joint Channels',
@@ -124,6 +125,7 @@ billingPlanPresentation(
         'Use Joint Channels (each Joint Channel has 2 free-server slots)',
       ],
       notIncluded: const [
+        'Agent migration',
         'Higher file upload limits',
         'Unlimited message history',
         'More professional features coming soon',
@@ -506,9 +508,9 @@ class _BillingState extends ManagementState<BillingView> {
               : tr('Updating...')
         : cancelScheduled
         ? noSeatChange
-              ? tr('Reactivate Subscription')
-              : tr('Reactivate and Update Seats')
-        : tr('Review Seat Update');
+              ? tr('Reactivate subscription')
+              : tr('Reactivate and update seats')
+        : tr('Review seat update');
     final capacityLabel = manageSeatMode
         ? seatDelta > 0
               ? tr('Adds {seats}', {'seats': seatLabel(added)})
@@ -635,7 +637,7 @@ class _BillingState extends ManagementState<BillingView> {
         (context) => RaftConfirmDialog(
           surfaceKey: const ValueKey('billing-confirm-dialog'),
           confirmKey: const ValueKey('billing-confirm'),
-          title: tr('Upgrade to Pro'),
+          title: tr('Confirm Pro Checkout'),
           confirmLabel: tr('Continue to Stripe'),
           confirmVariant: RaftButtonRecipeVariant.accent,
           content: RaftBillingConfirmMessage(
@@ -695,8 +697,8 @@ class _BillingState extends ManagementState<BillingView> {
         (context) => RaftConfirmDialog(
           surfaceKey: const ValueKey('billing-confirm-dialog'),
           confirmKey: const ValueKey('billing-confirm'),
-          title: tr('Update Seats'),
-          confirmLabel: tr('Update Seats'),
+          title: tr('Confirm Seat Update'),
+          confirmLabel: tr('Confirm and update seats'),
           confirmVariant: RaftButtonRecipeVariant.accent,
           content: RaftBillingConfirmMessage(
             lead: tr('You are about to update this Pro subscription.'),
@@ -753,8 +755,8 @@ class _BillingState extends ManagementState<BillingView> {
           message: tr(
             'Cancel the whole Pro subscription at the end of the current billing period. The server keeps Pro capacity until the cancellation date, then returns to Free.',
           ),
-          confirmLabel: tr('Cancel Subscription'),
-          cancelLabel: tr('Keep Subscription'),
+          confirmLabel: tr('Cancel subscription'),
+          cancelLabel: tr('Cancel'),
           confirmVariant: RaftButtonRecipeVariant.warning,
         ),
       );
@@ -940,14 +942,14 @@ class _BillingState extends ManagementState<BillingView> {
                 actionKey: const ValueKey('billing-portal'),
                 label: pending == _BillingAction.portal
                     ? tr('Opening...')
-                    : tr('Billing Portal'),
+                    : tr('Billing portal'),
                 tooltip: disabledReason ?? tr('Open Stripe billing portal.'),
                 onPressed: locked ? null : portal,
               ),
               if (!cancelScheduled)
                 RaftBillingAction(
                   actionKey: const ValueKey('billing-cancel'),
-                  label: tr('Cancel Subscription'),
+                  label: tr('Cancel subscription'),
                   tooltip:
                       disabledReason ??
                       tr('Cancel the whole Pro subscription at period end.'),
@@ -957,7 +959,7 @@ class _BillingState extends ManagementState<BillingView> {
           : null,
       compare: RaftBillingAction(
         actionKey: const ValueKey('billing-compare-plans'),
-        label: tr('See All Features and Compare Plans'),
+        label: tr('See all features and compare plans'),
         onPressed: () => _launch(Uri.parse(RaftBillingPlans.comparePlansUrl)),
       ),
       afterPlan:

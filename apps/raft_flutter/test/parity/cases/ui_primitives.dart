@@ -249,7 +249,7 @@ final ParityCase _card = ParityCase(
                 ),
               ),
               RaftButton(
-                label: 'Save Changes',
+                label: 'Save changes',
                 onPressed: () {},
                 tone: RaftButtonRecipeVariant.primary,
                 size: RaftButtonRecipeSize.sm,

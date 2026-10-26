@@ -81,11 +81,13 @@ void main() {
       await mount(t, AccountConnectionsView(controller: w, inline: true));
       await t.pump();
       expect(find.text('Change Password'), findsNothing);
-      expect(find.text('Set Password by Email'), findsNothing);
+      expect(find.text('Set password by email'), findsNothing);
       client.pendingMethods!.complete(client.methods);
       await t.pumpAndSettle();
       await fill(t);
-      await t.ensureVisible(find.byKey(const ValueKey('account-password-submit')));
+      await t.ensureVisible(
+        find.byKey(const ValueKey('account-password-submit')),
+      );
       await t.tap(find.byKey(const ValueKey('account-password-submit')));
       await t.pumpAndSettle();
       expect(client.mutations.single.path, '/auth/me');
@@ -99,7 +101,7 @@ void main() {
         '',
       );
       expect(t.widget<TextField>(field('New password')).controller!.text, '');
-      expect(find.text('Password updated.'), findsOneWidget);
+      expect(find.text('Password updated!'), findsOneWidget);
     },
   );
   testWidgets(
@@ -117,7 +119,7 @@ void main() {
       expect(find.byType(TextField), findsNothing);
       client.pendingPatch!.complete({});
       await t.pumpAndSettle();
-      expect(find.text('Password updated.'), findsNothing);
+      expect(find.text('Password updated!'), findsNothing);
       await t.tap(find.byKey(const ValueKey('account-change-password')));
       await t.pumpAndSettle();
       expect(
@@ -145,7 +147,7 @@ void main() {
       expect(find.text('Google'), findsOneWidget);
       expect(find.text('GitHub'), findsNothing);
       expect(find.text('Change Password'), findsNothing);
-      expect(find.text('Set Password by Email'), findsOneWidget);
+      expect(find.text('Set password by email'), findsOneWidget);
       await t.tap(find.text('Disconnect'));
       await t.pumpAndSettle();
       expect(find.text('Send Email'), findsOneWidget);
@@ -195,7 +197,7 @@ void main() {
           .widgetList<RaftSettingsRecipeButton>(
             find.byType(RaftSettingsRecipeButton),
           )
-          .singleWhere((button) => button.label == 'Set Password by Email')
+          .singleWhere((button) => button.label == 'Set password by email')
           .onPressed!;
       client.user = RaftRecord({'id': 'next', 'email': 'next@example.invalid'});
       w.notifyListeners();

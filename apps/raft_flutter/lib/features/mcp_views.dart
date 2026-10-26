@@ -281,14 +281,14 @@ class _AgentMcpState extends ManagementState<AgentMcpView> {
                                       );
                                     },
                                     submit: 'Disconnect Account',
-                                    cancel: 'Keep Connection',
+                                    cancel: 'Cancel',
                                     destructive: true,
                                   );
                                 }),
                         ),
                       RaftMcpAction(
                         glyph: RaftGlyph.flaskConical,
-                        tooltip: 'Test and Refresh Tools',
+                        tooltip: 'Test and refresh tools',
                         onPressed: busy || !ready
                             ? null
                             : () => run(() async {
@@ -299,26 +299,30 @@ class _AgentMcpState extends ManagementState<AgentMcpView> {
                       ),
                       RaftMcpAction(
                         glyph: RaftGlyph.pencil,
-                        tooltip: 'Edit Server',
+                        tooltip: 'Edit server',
                         onPressed: busy ? null : () => edit(server),
                       ),
                       RaftMcpAction(
                         glyph: RaftGlyph.trash2,
-                        tooltip: 'Delete MCP Server',
+                        tooltip: 'Delete server',
                         variant: RaftButtonRecipeVariant.danger,
                         onPressed: busy
                             ? null
                             : () => run(() async {
                                 await confirm(
-                                  'Delete $name',
-                                  'Remove this connection and its agent tool assignments.',
+                                  'Delete MCP server',
+                                  raftFormat(
+                                    context,
+                                    'Delete {name}? This removes it from every Agent runtime and usage view.',
+                                    {'name': name},
+                                  ),
                                   () async {
                                     await w.client.delete(
                                       '/mcp/servers/${server['id']}',
                                     );
                                   },
-                                  submit: 'Delete MCP Server',
-                                  cancel: 'Keep MCP Server',
+                                  submit: 'Delete server',
+                                  cancel: 'Cancel',
                                   destructive: true,
                                 );
                               }),

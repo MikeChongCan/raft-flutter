@@ -49,7 +49,7 @@ const Map<String, String> zhCatalogWeb4 = <String, String>{
   "Find a Server admin": "查找服务器管理员",
   "Find a conversation…": "查找会话…",
   "Finish OAuth": "完成 OAuth",
-  "Finish Setup": "完成设置",
+  "Finish setup": "完成设置",
   "Finishing sign-in…": "正在完成登录…",
   "Finishing upload…": "正在完成上传…",
   "Finishing…": "完成中…",
@@ -107,7 +107,7 @@ const Map<String, String> zhCatalogWeb4 = <String, String>{
   "Get the Raft App": "获取 Raft App",
   "Get the Raft mobile app.": "获取 Raft 手机 App。",
   "Get the desktop beta": "获取桌面端 Beta",
-  "Get the iOS Beta": "获取 iOS 测试版",
+  "Get the iOS beta": "获取 iOS 测试版",
   "GitHub": "GitHub",
   "GitHub connection": "GitHub 连接",
   "GitHub is connected to the agent.": "GitHub 已连接到此 Agent。",
@@ -128,7 +128,7 @@ const Map<String, String> zhCatalogWeb4 = <String, String>{
   "Graph": "关系图",
   "Greater reasoning depth for complex problems": "针对复杂问题提供更深入的推理",
   "Greeting": "问候语",
-  "Grid View": "网格视图",
+  "Grid view": "网格视图",
   "Grok CLI is not signed in. Run grok login on this computer, then retry.":
       "Grok CLI 未登录。请在此计算机上运行 grok login，然后重试。",
   "Guest": "访客",
@@ -169,7 +169,7 @@ const Map<String, String> zhCatalogWeb4 = <String, String>{
   "Hide empty sidebar sections": "隐藏空的侧栏分区",
   "Hide human directory and counts from members": "对成员隐藏人类名录和数量",
   "Hide Install and Setup Commands": "隐藏安装和设置命令",
-  "Hide Manual Entry": "隐藏手动输入",
+  "Hide manual entry": "隐藏手动输入",
   "Hide Notification Reminder for This Session": "本会话隐藏通知提醒",
   "Hide sidebar sections while they have nothing in them (empty Pinned, Joint Channels, Direct Messages). On by default in the desktop app.":
       "当侧栏某个分区没有内容时（置顶、联合频道、私信为空），整块隐藏不显示。桌面端默认开启。",
@@ -186,7 +186,7 @@ const Map<String, String> zhCatalogWeb4 = <String, String>{
   "How did you hear about Raft?": "你是怎么了解到 Raft 的？",
   "How often do you want to be billed?": "你希望按什么周期付费？",
   "How to connect a computer": "如何连接一台计算机",
-  "How to Invite the App": "如何邀请应用",
+  "How to invite the app": "如何邀请应用",
   "How to register an App?": "如何注册一个 App？",
   "How your name appears in messages. Change this anytime.":
       "你在消息中显示的名字，随时可以修改。",
@@ -251,9 +251,9 @@ const Map<String, String> zhCatalogWeb4 = <String, String>{
   "Install target": "安装目标",
   "Install the Raft Computer CLI on this macOS or Linux computer, then connect it to this server.":
       "在这台 macOS 或 Linux 计算机上安装 Raft Computer CLI，然后将它连接到此服务器。",
-  "Install to This Server": "安装到此服务器",
+  "Install to this server": "安装到此服务器",
   "Installation ID": "安装 ID",
-  "Installation on this server": "此服务器上的安装",
+  "Installation on this server": "此 Server 上的安装",
   "Installation status could not be loaded. Reload this page to try again.":
       "无法加载安装状态。请刷新页面重试。",
   "Installation suspended": "安装已暂停",
@@ -408,7 +408,7 @@ const Map<String, String> zhCatalogWeb4 = <String, String>{
       "列出频道、成员和 Agent（slock server info）。",
   "List tasks on a channel's board (slock task list).":
       "列出频道任务看板上的任务（slock task list）。",
-  "List View": "列表视图",
+  "List view": "列表视图",
   "Listing details": "应用信息",
   "Live agent activity": "实时 Agent 动态",
   "Load More": "加载更多",
@@ -479,7 +479,7 @@ const Map<String, String> zhCatalogWeb4 = <String, String>{
   "Making public…": "正在设为公开…",
   "Manage Plan": "管理套餐",
   "Manage Seats": "管理席位",
-  "Manage Channel Mappings": "管理频道映射",
+  "Manage channel mappings": "管理频道映射",
   "Manage connections between Raft and external messaging services.":
       "管理 Raft 与外部即时通讯服务之间的连接。",
   "Manage preview": "管理预览",

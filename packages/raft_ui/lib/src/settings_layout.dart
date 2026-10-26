@@ -63,6 +63,13 @@ class RaftSettingsNavEntry {
   final bool attention;
 }
 
+/// `layout.sidebar.settingsGroupServer`: English `Workspace`, Chinese 工作空间
+/// (the plain `Workspace` catalog entry is 工作区, the agent's file workspace).
+String _groupLabel(BuildContext context, String label) =>
+    label == 'Server' || label == 'Workspace'
+    ? raftTextZh(context, 'Workspace', '工作空间')
+    : raftText(context, label);
+
 class RaftSettingsNavGroup {
   const RaftSettingsNavGroup(this.label, this.items);
   final String label;
@@ -118,7 +125,7 @@ class RaftSettingsSidebarList extends StatelessWidget {
           if (i > 0) SizedBox(height: 12 - (2)),
           Padding(
             padding: EdgeInsets.fromLTRB(8 + overhang, 0, 8 + overhang, 4),
-            child: Text(raftText(context, visible[i].label), style: label),
+            child: Text(_groupLabel(context, visible[i].label), style: label),
           ),
           for (final item in visible[i].items)
             RaftSettingsSidebarItem(
@@ -157,10 +164,7 @@ extension on RaftSettingsSidebarList {
             ),
             child: RaftCssText(
               // Web v1.21.23 names the group `Workspace`.
-              raftText(
-                context,
-                group.label == 'Server' ? 'Workspace' : group.label,
-              ),
+              _groupLabel(context, group.label),
               style: label,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,

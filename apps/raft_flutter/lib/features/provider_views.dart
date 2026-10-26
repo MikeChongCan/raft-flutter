@@ -106,7 +106,7 @@ class _ProviderConnectionsState
       );
     }
     await form(
-      'Add Provider Connection',
+      'Add provider connection',
       [
         const RaftFormField('name', 'Connection name', required: true),
         RaftFormField(
@@ -296,7 +296,7 @@ class _ProviderConnectionsState
           );
         }),
         submit: 'Detach Agent',
-        cancel: 'Keep Assignment',
+        cancel: 'Cancel',
       );
     }
   }
@@ -324,7 +324,7 @@ class _ProviderConnectionsState
     if (candidates.isEmpty) {
       // Web `settings.providers.verifyNoComputers`.
       throw const RaftUserError(
-        'No online computer with the Built-in runtime is connected.',
+        'No online Computer with the Built-in runtime is connected.',
       );
     }
     List<String> models = [];
@@ -620,7 +620,7 @@ class _ProviderConnectionsState
                                 'provider-edit-${connection['id']}',
                               ),
                               child: action(
-                                'Edit Connection',
+                                'Edit connection',
                                 () => run(() => edit(connection)),
                               ),
                             ),
@@ -660,7 +660,7 @@ class _ProviderConnectionsState
                                 () => run(() => rotate(connection)),
                               ),
                             action(
-                              'Delete Connection',
+                              'Delete connection',
                               () => run(() async {
                                 await confirm(
                                   'Delete ${connection['name']}?',

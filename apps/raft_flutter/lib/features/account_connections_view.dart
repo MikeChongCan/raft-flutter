@@ -129,7 +129,7 @@ class _AccountConnectionsState extends ManagementState<AccountConnectionsView> {
       );
     }
     await confirm(
-      'Set Password by Email',
+      'Set password by email',
       'Send a password setup link to your account email address?',
       () async {
         await w.client.post('/auth/forgot-password', data: {'email': email});
@@ -163,7 +163,7 @@ class _AccountConnectionsState extends ManagementState<AccountConnectionsView> {
         );
       },
       submit: 'Disconnect Account',
-      cancel: 'Keep Account',
+      cancel: 'Cancel',
       destructive: true,
     );
     if (accepted && mounted && sourceAuthority == authority) await reload();
@@ -346,7 +346,7 @@ class _AccountConnectionsState extends ManagementState<AccountConnectionsView> {
             alignment: Alignment.centerLeft,
             // `variant="accent" size="sm"`
             child: RaftSettingsRecipeButton(
-              label: busy ? 'Sending setup email...' : 'Set Password by Email',
+              label: busy ? 'Sending setup email…' : 'Set password by email',
               variant: RaftButtonRecipeVariant.accent,
               size: RaftButtonRecipeSize.sm,
               onPressed: busy
@@ -408,7 +408,7 @@ class _AccountConnectionsState extends ManagementState<AccountConnectionsView> {
         ),
       ),
       if (passwordStateKnown && !passwordConfigured && !loading)
-        action('Set Password by Email', () {
+        action('Set password by email', () {
           if (mounted && sourceScope == authority) {
             requestPasswordSetup(sourceScope);
           }

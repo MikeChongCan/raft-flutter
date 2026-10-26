@@ -336,38 +336,39 @@ void main() {
     expect(card(t).message, contains('Test notification sent'));
     expect(card(t).error, isNull);
   });
-  testWidgets('Android: battery optimised shows the notice and opens settings', (
-    t,
-  ) async {
-    final (w, a, s) = (await t.runAsync(fixture))!;
-    addTearDown(w.dispose);
-    addTearDown(s.dispose);
-    final battery = _Battery(false);
-    await t.pumpWidget(host(w, s, battery: battery));
-    await t.pumpAndSettle();
-    expect(
-      card(t).description,
-      isNot(contains('checks for new messages periodically')),
-    );
-    expect(
-      card(t).notice,
-      'To receive notifications in the background, turn off battery optimization for Raft.',
-    );
-    expect(
-      find.byKey(const ValueKey('notification-settings-notice')),
-      findsOneWidget,
-    );
-    await t.tap(find.text('Open Battery Settings'));
-    await t.pump();
-    expect(battery.opened, 1);
-    // Returning from the system screen with the app now exempt hides it.
-    battery.value = true;
-    t.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
-    t.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
-    await t.pumpAndSettle();
-    expect(card(t).notice, isNull);
-    expect(find.text('Open Battery Settings'), findsNothing);
-  });
+  testWidgets(
+    'Android: battery optimised shows the notice and opens settings',
+    (t) async {
+      final (w, a, s) = (await t.runAsync(fixture))!;
+      addTearDown(w.dispose);
+      addTearDown(s.dispose);
+      final battery = _Battery(false);
+      await t.pumpWidget(host(w, s, battery: battery));
+      await t.pumpAndSettle();
+      expect(
+        card(t).description,
+        isNot(contains('checks for new messages periodically')),
+      );
+      expect(
+        card(t).notice,
+        'To receive notifications in the background, turn off battery optimization for Raft.',
+      );
+      expect(
+        find.byKey(const ValueKey('notification-settings-notice')),
+        findsOneWidget,
+      );
+      await t.tap(find.text('Open Battery Settings'));
+      await t.pump();
+      expect(battery.opened, 1);
+      // Returning from the system screen with the app now exempt hides it.
+      battery.value = true;
+      t.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+      t.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+      await t.pumpAndSettle();
+      expect(card(t).notice, isNull);
+      expect(find.text('Open Battery Settings'), findsNothing);
+    },
+  );
   testWidgets('Android: exempt or unknown battery status shows no notice', (
     t,
   ) async {
@@ -495,7 +496,7 @@ void main() {
       expect(card(t).title, 'Desktop notifications');
       expect(card(t).description, startsWith('Raft Desktop shows system'));
       expect(card(t).muteDescription, isNull);
-      expect(card(t).actionLabel, 'Send a Test Notification');
+      expect(card(t).actionLabel, 'Send a test notification');
       expect(
         card(t).hint,
         contains(switch (platform) {
@@ -516,7 +517,7 @@ void main() {
         a.calls.where((o) => o.path.contains('notification-settings')),
         isEmpty,
       );
-      await t.tap(find.text('Send a Test Notification'));
+      await t.tap(find.text('Send a test notification'));
       await t.pumpAndSettle();
       expect(s.tests, 1);
       expect(s.enables, 0);
@@ -531,7 +532,7 @@ void main() {
       );
       expect(card(t).error, isNull);
       s.testResult = false;
-      await t.tap(find.text('Send a Test Notification'));
+      await t.tap(find.text('Send a test notification'));
       await t.pumpAndSettle();
       expect(card(t).message, isNull);
       expect(card(t).error, 'Could not post a test notification.');

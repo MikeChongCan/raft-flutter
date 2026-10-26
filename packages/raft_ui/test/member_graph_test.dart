@@ -92,8 +92,8 @@ void main() {
     for (final label in ['Humans', 'Agents', 'Links']) {
       expect(find.text(label), findsOneWidget);
     }
-    expect(find.text('Most Connected Members'), findsOneWidget);
-    expect(find.text('Largest Channels'), findsOneWidget);
+    expect(find.text('Most connected members'), findsOneWidget);
+    expect(find.text('Largest channels'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('member-graph-ranked-human:h1')),
       findsOneWidget,
@@ -118,13 +118,13 @@ void main() {
     'wide windows put the lists beside the graph, narrow ones below',
     (tester) async {
       await _pump(tester, _data());
-      final wide = tester.getTopLeft(find.text('Most Connected Members'));
+      final wide = tester.getTopLeft(find.text('Most connected members'));
       final canvasWide = tester.getTopLeft(
         find.byKey(const ValueKey('member-graph-canvas')),
       );
       expect(wide.dx, greaterThan(canvasWide.dx + 600));
       await _pump(tester, _data(), size: const Size(700, 1600));
-      final narrow = tester.getTopLeft(find.text('Most Connected Members'));
+      final narrow = tester.getTopLeft(find.text('Most connected members'));
       final canvasNarrow = tester.getBottomLeft(
         find.byKey(const ValueKey('member-graph-canvas')),
       );

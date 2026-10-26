@@ -251,7 +251,7 @@ class RaftAppearanceSection extends StatelessWidget {
           toggle(
             'appearance-live-activity',
             'Live agent activity',
-            'Show who is working at the top of the screen and in channel headers.',
+            'Show which agents are working, and what they are doing, at the top of the window and on the Home bar.',
             value.liveActivity,
             (show) => presentation.update(captured, liveActivity: show),
           ),
@@ -259,7 +259,7 @@ class RaftAppearanceSection extends StatelessWidget {
           toggle(
             'appearance-agent-model',
             'Show agent model',
-            'Show each agent’s model next to its name in chat. On by default in the desktop app.',
+            "Show each agent's model next to its name in chat. On by default in the desktop app.",
             value.modelName,
             (show) => presentation.update(captured, modelName: show),
           ),

@@ -283,7 +283,7 @@ class _GlobalServerSelectorState extends State<GlobalServerSelector> {
           if (!create) ...[
             const SizedBox(height: RaftSpace.x3), // mt-3
             RaftAuthTextLink(
-              label: tr('Log Out'),
+              label: tr('Log out'),
               bold: true,
               centeredLine: true,
               onTap: widget.onLogout,

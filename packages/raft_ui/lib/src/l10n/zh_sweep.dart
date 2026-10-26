@@ -16,7 +16,7 @@ const Map<String, String> zhCatalogSweep = <String, String>{
       "请输入至少 {min} 个席位以覆盖服务器当前用量。",
   "Enter the total seats to keep. {capacity}.": "请输入要保留的席位总数。{capacity}。",
   "{capacity}.": "{capacity}。",
-  "Full-featured free trial remains active through {date} in every time zone. Paid plans begin after this global cutoff. All features currently unlocked — enjoy unlimited computers, agents, channels, and message history while the trial lasts.": "全功能免费试用将在所有时区持续到 {date}。付费套餐将在这一全球截止时间后开始。试用期间所有功能均已解锁，包括无限数量的计算机、Agent、频道和消息历史。",
+  "Full-featured free trial remains active through {date} in every time zone. Paid plans begin after this global cutoff. All features currently unlocked — enjoy unlimited computers, agents, channels, and message history while the trial lasts.": "全功能免费试用将在所有时区持续到 {date}。付费套餐将在这一全球截止时间后开始。试用期间所有功能均已解锁，包括无限电脑、Agent、频道和消息历史。",
   "Save {percent}%": "节省 {percent}%",
   "{interval} · cancellation scheduled": "{interval} · 已安排取消",
   "Start {interval} Pro checkout for {seats} billable seats.":

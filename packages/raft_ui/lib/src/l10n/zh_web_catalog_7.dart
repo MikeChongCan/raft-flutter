@@ -56,8 +56,8 @@ const Map<String, String> zhCatalogWeb7 = <String, String>{
   "Stopped — won't receive messages until restarted": "已停止——重启前不会接收消息",
   "Stopping the agent on the new computer": "正在停止新计算机上的 Agent",
   "Stopping…": "停止中…",
-  "Store a provider credential once, then reuse the connection when creating or editing agents. Credentials are encrypted and never shown again.":
-      "只需保存一次提供方凭据，创建或编辑 Agent 时即可复用连接。凭据会被加密，保存后不再回显。",
+  "Store a provider credential once, then reuse the connection when creating or editing Agents. Credentials are encrypted and never shown again.":
+      "只需保存一次 Provider 凭据，创建或编辑 Agent 时即可复用连接。凭据会被加密，保存后不再回显。",
   "Stripe may bill this seat increase immediately after you confirm.":
       "确认后，Stripe 可能会立即对新增席位计费。",
   "Stripe will reactivate this subscription without changing seat count.":
@@ -92,7 +92,7 @@ const Map<String, String> zhCatalogWeb7 = <String, String>{
   "Task view": "任务视图",
   "Tasks": "任务",
   "Technical Details": "技术详情",
-  "Test and Refresh Tools": "测试并刷新工具",
+  "Test and refresh tools": "测试并刷新工具",
   "Test Connection": "测试连接",
   "Test failed": "测试失败",
   "Test message": "测试消息",
@@ -216,8 +216,8 @@ const Map<String, String> zhCatalogWeb7 = <String, String>{
   "The next page is Stripe Checkout, where the payment amount is shown before you pay.":
       "下一页是 Stripe 结账页，付款前会显示支付金额。",
   "The options could not be loaded.": "无法加载可选项。",
-  "The provider connection could not be created.": "无法创建提供方连接。",
-  "The provider connection could not be updated.": "无法更新提供方连接。",
+  "The provider connection could not be created.": "无法创建 Provider 连接。",
+  "The provider connection could not be updated.": "无法更新 Provider 连接。",
   "The published Windows installer currently supports x64 only.":
       "当前发布的 Windows 安装器仅支持 x64。",
   "The reply body is not retained after this page closes; the receipt above is the durable record.":
@@ -246,7 +246,7 @@ const Map<String, String> zhCatalogWeb7 = <String, String>{
   "The target computer is offline. Start Raft Computer on it and try again.":
       "目标计算机已离线。请在它上面启动 Raft Computer 后重试。",
   "The test request failed. Check the model, credential, and provider access.":
-      "测试请求失败，请检查模型、凭据和提供方访问权限。",
+      "测试请求失败，请检查模型、凭据和 Provider 访问权限。",
   "The thread couldn't be opened. If this channel recently became public, try again.":
       "无法打开此消息列。如果此频道刚变为公开，重试通常即可恢复。",
   "The upload could not be completed.": "上传未能完成。",
@@ -258,7 +258,7 @@ const Map<String, String> zhCatalogWeb7 = <String, String>{
       "无法获取上传大小限制，请稍后再试。",
   "The upload stopped making progress. Check your connection and try again.":
       "上传已停止传输。请检查网络连接后重试。",
-  "The person chooses the target agent when authorizing.": "发送目标由本人授权时选择。",
+  "The user chooses the target agent when authorizing.": "发送目标由用户授权时选择。",
   "The workspace has too many files and folders to move. Ask the agent to delete folders it no longer needs, or to list them in .raftmigrateignore, then try again.":
       "工作区里的文件和文件夹太多，无法迁移。请让 Agent 删除不再需要的目录，或把它们写进 .raftmigrateignore，然后重试。",
   "The workspace transfer did not finish before the deadline. Make sure both computers stay online and the target has enough free disk space, then try again.":
@@ -490,7 +490,7 @@ const Map<String, String> zhCatalogWeb7 = <String, String>{
   "Try another channel or clear the channel filter.": "请选择其他频道或清除频道筛选。",
   "Try different keywords or a shorter phrase.": "试试其他关键词或更短的短语。",
   "Try Migration Again": "重试迁移",
-  "Turn on Server Labs access first.": "需先开启服务器 Labs 访问权限",
+  "Turn on Server Labs access first.": "需先开启 Server Labs 访问权限",
   "Turn on message translation for this server. When this is off, members' language and display preferences will not translate messages here.":
       "为此服务器开启消息翻译。关闭时，成员的语言和显示偏好不会在此翻译消息。",
   "Turn on notifications so you don't miss when they finish or need you.":
