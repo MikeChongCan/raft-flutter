@@ -19,6 +19,7 @@ import 'localization.dart';
 import 'overlays/dialog.dart' show showRaftDialog;
 import 'panel_layout.dart' show RaftCssText;
 import 'recipe_surface.dart';
+import 'raft/ui_tokens.dart' show RaftTokensUi;
 import 'recipes/recipe_router.dart' show usesLegacyRecipes;
 import 'recipes/recipe_runtime.dart';
 import 'recipes/recipes.g.dart';
@@ -306,7 +307,12 @@ class RaftSettingsField extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(raftText(context, label), style: style),
-        SizedBox(height: (f.root.rowGap ?? 4) + 4),
+        // `gap-1.5` between label and control; the frozen looks add 4px.
+        SizedBox(
+          height:
+              (f.root.rowGap ?? 4) +
+              (usesLegacyRecipes(RaftRecipeTokens(t)) ? 4 : 0),
+        ),
         child,
       ],
     );
@@ -422,7 +428,9 @@ class _RaftRecipeInputState extends State<RaftRecipeInput> {
       tokens: tokens,
     ).root;
     // Callsite `text-sm`.
-    var text = widget.recipeText
+    // raft-ui 0.7.0 `Input` text (`text-field`): Web callsites set no `text-sm`
+    // any more, so the Raft look keeps the recipe size and leading.
+    var text = widget.recipeText || !usesLegacyRecipes(tokens)
         ? _slotText(t, s)
         : _slotText(t, s).copyWith(fontSize: 14, height: 20 / 14);
     if (widget.mono) {
@@ -651,11 +659,18 @@ class _RaftSettingsPrefixedInputState extends State<RaftSettingsPrefixedInput> {
     );
     final root = g.root.decoration(tokens);
     final border = root.border as Border?;
+    // The read-only field is `border-line-hairline` in raft-ui 0.7.0 (the frozen
+    // looks pass `line-muted`).
+    final rootBorderColor = widget.rootBorderColor == null
+        ? null
+        : usesLegacyRecipes(tokens)
+        ? widget.rootBorderColor
+        : t.ui.lineHairline;
     final decoration = root.copyWith(
       color: widget.rootColor ?? root.color,
-      border: widget.rootBorderColor == null || border == null
+      border: rootBorderColor == null || border == null
           ? border
-          : Border.all(color: widget.rootBorderColor!, width: border.top.width),
+          : Border.all(color: rootBorderColor, width: border.top.width),
       boxShadow: widget.flat ? const [] : root.boxShadow,
     );
     final addonDecoration = g.text.decoration(tokens);
@@ -681,11 +696,11 @@ class _RaftSettingsPrefixedInputState extends State<RaftSettingsPrefixedInput> {
               padding: g.text.padding,
               alignment: Alignment.center,
               decoration: addonDecoration.copyWith(
-                border: widget.rootBorderColor == null || addonBorder == null
+                border: rootBorderColor == null || addonBorder == null
                     ? addonBorder
                     : Border(
                         right: addonBorder.right.copyWith(
-                          color: widget.rootBorderColor,
+                          color: rootBorderColor,
                         ),
                       ),
               ),
@@ -694,22 +709,25 @@ class _RaftSettingsPrefixedInputState extends State<RaftSettingsPrefixedInput> {
             Expanded(
               child: Padding(
                 padding: g.control.padding,
-                child: TextField(
-                  contextMenuBuilder: RaftTextSelectionToolbar.editableText,
-                  autofillHints: null,
-                  controller: controller,
-                  focusNode: focus,
-                  autofocus: widget.autofocus,
-                  readOnly: widget.readOnly,
-                  enableInteractiveSelection: !widget.readOnly,
-                  showCursor: !widget.readOnly,
-                  onChanged: widget.onChanged,
-                  style: text,
-                  cursorColor: t.strong,
-                  decoration: _bare(
-                    hint: widget.placeholder,
-                    hintStyle: text.copyWith(
-                      color: _placeholder(text.color ?? t.strong),
+                child: Center(
+                  // `h-full py-0`: the line is centred in the group's `h-11`.
+                  child: TextField(
+                    contextMenuBuilder: RaftTextSelectionToolbar.editableText,
+                    autofillHints: null,
+                    controller: controller,
+                    focusNode: focus,
+                    autofocus: widget.autofocus,
+                    readOnly: widget.readOnly,
+                    enableInteractiveSelection: !widget.readOnly,
+                    showCursor: !widget.readOnly,
+                    onChanged: widget.onChanged,
+                    style: text,
+                    cursorColor: t.strong,
+                    decoration: _bare(
+                      hint: widget.placeholder,
+                      hintStyle: text.copyWith(
+                        color: _placeholder(text.color ?? t.strong),
+                      ),
                     ),
                   ),
                 ),
@@ -1223,7 +1241,14 @@ class RaftSettingsRecipeBadge extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           if (glyph != null) ...[
-            RaftIcon(glyph!, size: 10, color: text.color),
+            // Raft: `[&_svg]:size-3.5` overrides the callsite `<Shield size={10}>`.
+            RaftIcon(
+              glyph!,
+              size: usesLegacyRecipes(tokens)
+                  ? 10
+                  : (s.target('& svg')?.width ?? 10),
+              color: text.color,
+            ),
             SizedBox(width: s.columnGap ?? 4),
           ],
           Text(value, maxLines: 1, softWrap: false, style: text),

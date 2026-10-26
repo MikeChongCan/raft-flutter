@@ -396,7 +396,9 @@ class _AccountSettingsState extends ManagementState<AccountSettings> {
                     maxLines: 1,
                     style: RaftTypography.mono(
                       t,
-                      size: 14,
+                      // `text-mono-code`: 13/20 in the Raft look (the frozen
+                      // looks keep their `text-sm`).
+                      size: t.isRaftLook ? 13 : 14,
                       line: 20,
                       color: RaftSettingsText(t).strong,
                     ),

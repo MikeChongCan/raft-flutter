@@ -176,6 +176,9 @@ class RaftTokens extends ThemeExtension<RaftTokens> {
   /// packs (see `RaftThemePackRecipes`). Components never read it directly;
   /// `recipeTokens` hands it to the recipe router.
   final RaftRecipeSet recipeSet;
+
+  /// The Raft look (the raft-ui 0.7.0 recipe set), not a frozen Elegant or Brutal.
+  bool get isRaftLook => recipeSet == RaftRecipeSet.raft;
   final bool systemFonts;
   final RaftFontFamilies systemFontFamilies;
 

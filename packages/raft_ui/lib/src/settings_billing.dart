@@ -23,6 +23,8 @@ import 'recipes/status.g.dart';
 import 'settings_controls.dart';
 import 'settings_layout.dart';
 import 'theme.dart';
+import 'raft/ui_tokens.dart' show RaftTokensUi;
+import 'tokens/tokens.dart' show RaftTypeScale;
 import 'tooltip.dart';
 import 'viewport_breakpoints.dart';
 
@@ -497,13 +499,21 @@ List<BoxShadow> _shadowSm(RaftTokens t) => t.themeShadows.sm.outer;
 class _BillingLines {
   _BillingLines(this.t);
   final RaftTokens t;
-  Color get header => t.colors['line-muted']!;
-  Color get strip => t.colors['line-muted']!;
+
+  /// raft-ui 0.7.0: the plan card's header and sections are separated by 1px
+  /// `border-line-hairline` rules on the plain card fill; the frozen looks keep
+  /// their 2px `line-muted` rules and the cream header.
+  bool get raft => t.isRaftLook;
+  Color get header => t.colors[raft ? 'line-hairline' : 'line-muted']!;
+  Color get strip => t.colors[raft ? 'line-hairline' : 'line-muted']!;
+  double get ruleWidth => raft ? 1 : 2;
 
   /// `bg-layer-canvas-muted theme-brutal:bg-brutal-cream`.
-  Color get headerFill => t.colors['layer-canvas-muted']!;
+  Color? get headerFill => raft ? null : t.colors['layer-canvas-muted']!;
   BoxDecoration get top => BoxDecoration(
-    border: Border(top: BorderSide(color: strip, width: 2)),
+    border: Border(
+      top: BorderSide(color: strip, width: ruleWidth),
+    ),
   );
 }
 
@@ -718,7 +728,14 @@ class _PlanCard extends StatelessWidget {
           children: [
             Text(
               raftText(context, title),
-              style: text.title.copyWith(color: yes ? null : text.muted),
+              style: lines.raft
+                  // `SectionEyebrow`: `text-footnote font-bold text-foreground-hint`.
+                  ? t.scale(
+                      RaftTypeScale.footnote,
+                      weight: FontWeight.w700,
+                      color: t.colors['foreground-hint'],
+                    )
+                  : text.title.copyWith(color: yes ? null : text.muted),
             ),
             const SizedBox(height: 12),
             for (final (i, item) in items.indexed) ...[
@@ -731,7 +748,12 @@ class _PlanCard extends StatelessWidget {
                     child: RaftIcon(
                       yes ? RaftGlyph.check : RaftGlyph.x,
                       size: 16,
-                      color: yes
+                      color: lines.raft
+                          // `text-foreground` / `text-foreground-hint`.
+                          ? (yes
+                                ? t.colors['foreground']
+                                : t.colors['foreground-hint'])
+                          : yes
                           ? RaftWebPalette.green700
                           : t.product.brutalRed,
                     ),
@@ -744,7 +766,7 @@ class _PlanCard extends StatelessWidget {
                         t,
                         size: 14,
                         line: 20,
-                        color: text.strong,
+                        color: lines.raft && !yes ? text.muted : text.strong,
                       ),
                     ),
                   ),
@@ -791,22 +813,45 @@ class _PlanCard extends StatelessWidget {
               decoration: BoxDecoration(
                 color: lines.headerFill,
                 border: Border(
-                  bottom: BorderSide(color: lines.header, width: 2),
+                  bottom: BorderSide(
+                    color: lines.header,
+                    width: lines.ruleWidth,
+                  ),
                 ),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    s.planName,
-                    style: RaftTypography.inherited(
-                      t,
-                      size: 18,
-                      line: 28,
-                      weight: FontWeight.w700,
-                      color: text.strong,
+                  if (lines.raft)
+                    // `text-headline` plus the 22px sticker check of the current plan.
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            s.planName,
+                            style: t.scale(
+                              RaftTypeScale.headline,
+                              color: text.strong,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        _CurrentPlanCheck(t),
+                      ],
+                    )
+                  else
+                    Text(
+                      s.planName,
+                      style: RaftTypography.inherited(
+                        t,
+                        size: 18,
+                        line: 28,
+                        weight: FontWeight.w700,
+                        color: text.strong,
+                      ),
                     ),
-                  ),
+                  if (lines.raft) const SizedBox(height: 2),
                   Text(s.planDescription, style: text.bodyMuted),
                 ],
               ),
@@ -869,6 +914,31 @@ class _PlanCard extends StatelessWidget {
   }
 }
 
+/// The 22px sticker check beside the current plan's name (`rounded-chip
+/// border-[1.5px] border-sticker-ink bg-brand`).
+class _CurrentPlanCheck extends StatelessWidget {
+  const _CurrentPlanCheck(this.t);
+  final RaftTokens t;
+  double get chipRadius => t.size('radius.chip', fallback: 0);
+  @override
+  Widget build(BuildContext context) => Container(
+    width: 22,
+    height: 22,
+    alignment: Alignment.center,
+    decoration: BoxDecoration(
+      color: t.colors['brand-400'] ?? t.colors['brand'],
+      borderRadius: BorderRadius.all(Radius.circular(chipRadius)),
+      border: Border.all(color: t.colors['sticker-ink'] ?? t.ink, width: 1.5),
+    ),
+    child: RaftIcon(
+      RaftGlyph.check,
+      size: 14,
+      strokeWidth: 2.5,
+      color: t.colors['sticker-ink'] ?? t.ink,
+    ),
+  );
+}
+
 class _StatRow extends StatelessWidget {
   const _StatRow(this.stat);
   final RaftBillingStat stat;
@@ -881,11 +951,12 @@ class _StatRow extends StatelessWidget {
         Expanded(
           child: Text(
             stat.label,
+            // Raft: `text-footnote font-semibold`; the frozen looks `text-xs font-bold`.
             style: RaftTypography.inherited(
               t,
-              size: 12,
-              line: 16,
-              weight: FontWeight.w700,
+              size: t.isRaftLook ? 13 : 12,
+              line: t.isRaftLook ? 18 : 16,
+              weight: t.isRaftLook ? FontWeight.w600 : FontWeight.w700,
               color: text.strong,
             ),
           ),

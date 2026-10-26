@@ -4,7 +4,11 @@ export 'space.dart';
 import 'panel_layout.dart'
     show RaftCssText, RaftPanelAction, RaftPanelHeaderBar, raftRecipeTheme;
 import 'recipe_surface.dart'
-    show RaftLayeredDecoration, RaftOuterShadowPainter, RaftRecipeBinding;
+    show
+        RaftLayeredDecoration,
+        RaftOuterShadowPainter,
+        RaftRecipeBinding,
+        RaftRecipeBox;
 export 'panel_layout.dart' show raftRecipeTheme;
 
 import 'package:flutter/material.dart';
@@ -15,6 +19,9 @@ import 'control_typography.dart';
 import 'icons.dart';
 import 'indicators.dart';
 import 'localization.dart';
+
+import 'package:raft_theme/recipes/sidebar_recipe.g.dart' as raft_sidebar;
+
 import 'recipes/recipe_router.dart' show usesLegacyRecipes;
 import 'recipes/recipe_runtime.dart';
 import 'recipes/recipes.g.dart';
@@ -79,14 +86,18 @@ class RaftSettingsSidebarList extends StatelessWidget {
 
   /// The Sidebar scroll surface (`px-2 py-3`) minus the row overhang, so the
   /// rows can span it while the group labels keep their `px-2`.
-  static EdgeInsets inset(RaftTokens t) =>
-      EdgeInsets.symmetric(horizontal: 8 - rowOverhang(t), vertical: 12);
+  static EdgeInsets inset(RaftTokens t) => usesLegacyRecipes(t.recipeTokens)
+      ? EdgeInsets.symmetric(horizontal: 8 - rowOverhang(t), vertical: 12)
+      // raft-ui 0.7.0 Sidebar content: `px-2`, rows inside it (no overhang).
+      : const EdgeInsets.fromLTRB(8, 4, 8, 8);
 
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
     final overhang = rowOverhang(t);
     final visible = groups.where((g) => g.items.isNotEmpty).toList();
+    if (!usesLegacyRecipes(t.recipeTokens))
+      return _buildRaft(context, t, visible);
     // `mb-1 px-2 text-[10px] font-bold
     // text-foreground-muted theme-brutal:text-black/40`; line-height is the
     // inherited preflight 1.5 under Sidebar's `font-display`.
@@ -121,6 +132,55 @@ class RaftSettingsSidebarList extends StatelessWidget {
   }
 }
 
+extension on RaftSettingsSidebarList {
+  /// raft-ui 0.7.0 `SidebarGroupLabel` + `SidebarItem` rows (the sidebar and
+  /// sidebarItem recipes: `px-2 pt-4 pb-1.5` 13/18 bold hint labels, `h-9` rows
+  /// with `my-px` margins that collapse to 1px between rows).
+  Widget _buildRaft(
+    BuildContext context,
+    RaftTokens t,
+    List<RaftSettingsNavGroup> visible,
+  ) {
+    final rt = t.recipeTokens;
+    final labelSlot = raft_sidebar.RaftSidebarRecipe.resolve(tokens: rt)
+        .sidebarGroupLabel;
+    final label = labelSlot.textStyle(rt);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (final group in visible) ...[
+          Padding(
+            // Web paints the 13/18 label glyphs one pixel below Flutter's line box.
+            padding: labelSlot.padding.copyWith(
+              top: labelSlot.padding.top + 1,
+              bottom: labelSlot.padding.bottom - 1,
+            ),
+            child: RaftCssText(
+              // Web v1.21.23 names the group `Workspace`.
+              raftText(
+                context,
+                group.label == 'Server' ? 'Workspace' : group.label,
+              ),
+              style: label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          for (final item in group.items)
+            RaftSettingsSidebarItem(
+              rowKey: ValueKey('workspace-settings-nav-${item.id}'),
+              entry: item,
+              active: item.id == activeId,
+            ),
+          // The last row's `my-px` margin collapses out of its group.
+          // ds-allow: Web SidebarItem `my-px`
+          const SizedBox(height: 1),
+        ],
+      ],
+    );
+  }
+}
+
 /// raft-ui `SidebarItem variant="accent"` with a bare 14px leading icon.
 class RaftSettingsSidebarItem extends StatefulWidget {
   const RaftSettingsSidebarItem({
@@ -142,9 +202,110 @@ class RaftSettingsSidebarItem extends StatefulWidget {
 
 class _RaftSettingsSidebarItemState extends State<RaftSettingsSidebarItem> {
   bool hovered = false;
+  Widget _buildRaft(BuildContext context, RaftTokens t) {
+    final tokens = RaftRecipeTokens(t);
+    final size = MediaQuery.sizeOf(context);
+    final recipe = RaftSidebarItemRecipe.resolve(
+      theme: raftRecipeTheme(t),
+      states: RaftRecipeStates(
+        {
+          if (hovered) RaftRecipeStates.hover,
+          if (widget.active) ...[
+            'data-active',
+            'group/sidebar-item:data-active',
+          ],
+          if (t.dark) RaftRecipeStates.dark,
+        },
+        size.width,
+        size.height,
+      ),
+      tokens: tokens,
+    );
+    final s = recipe.sidebarItem;
+    final icon = recipe.sidebarItemIcon;
+    final text = s.textStyle(tokens);
+    final line = (text.fontSize ?? 15) * (text.height ?? 1.3);
+    final iconBox = icon.width ?? 19;
+    // Web v1.21.23: `AI Providers`.
+    final title = raftText(
+      context,
+      widget.entry.label == 'Providers' ? 'AI Providers' : widget.entry.label,
+    );
+    // `my-px`: the margins of neighbouring rows collapse to one pixel.
+    return Padding(
+      // ds-allow: Web SidebarItem `my-px`
+      padding: const EdgeInsets.only(top: 1),
+      child: Semantics(
+        button: true,
+        selected: widget.active,
+        label: widget.entry.label,
+        child: RaftHoverRegion(
+          cursor: SystemMouseCursors.click,
+          onEnter: (_) => setState(() => hovered = true),
+          onExit: (_) => setState(() => hovered = false),
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: widget.entry.onTap,
+            child: RaftRecipeBox(
+              key: widget.rowKey,
+              style: s,
+              tokens: tokens,
+              applyText: false,
+              alignment: AlignmentDirectional.centerStart,
+              growWithText: true,
+              child: Row(
+                children: [
+                  SizedBox.square(
+                    dimension: iconBox,
+                    child: RaftIcon(
+                      widget.entry.glyph,
+                      size: 16,
+                      color: icon.color?.resolve(tokens),
+                    ),
+                  ),
+                  SizedBox(width: s.columnGap ?? 8),
+                  Expanded(
+                    // Above the default text size the label wraps and the line
+                    // box is a minimum, so nothing is clipped.
+                    child: RaftScaled.grows(context)
+                        ? ConstrainedBox(
+                            constraints: BoxConstraints(minHeight: line),
+                            child: Align(
+                              alignment: AlignmentDirectional.centerStart,
+                              child: Text(
+                                title,
+                                style: RaftControlTypography.of(context, text),
+                              ),
+                            ),
+                          )
+                        : SizedBox(
+                            height: line,
+                            child: Align(
+                              alignment: AlignmentDirectional.centerStart,
+                              child: Text(
+                                title,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: RaftControlTypography.of(context, text),
+                              ),
+                            ),
+                          ),
+                  ),
+                  if (widget.entry.attention)
+                    RaftAttentionDot(danger: widget.entry.attentionDanger),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context), tokens = RaftRecipeTokens(t);
+    if (!usesLegacyRecipes(tokens)) return _buildRaft(context, t);
     final size = MediaQuery.sizeOf(context);
     final s = RaftSidebarItemRecipe.resolve(
       theme: raftRecipeTheme(t),

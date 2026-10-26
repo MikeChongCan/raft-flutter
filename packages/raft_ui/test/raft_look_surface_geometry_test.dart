@@ -10,7 +10,11 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raft_ui/raft_ui.dart';
 import 'package:raft_ui/recipes.dart'
-    show RaftCardRecipe, RaftRecipeDecoration, RaftSegmentedControlRecipe;
+    show
+        RaftCardRecipe,
+        RaftRecipeDecoration,
+        RaftSegmentedControlRecipe,
+        RaftSidebarItemRecipe;
 import 'package:raft_ui/test_themes.dart';
 
 const _paint = ValueKey('paint');
@@ -269,6 +273,92 @@ void main() {
         },
       );
     });
+
+    testWidgets(
+      '[$mode] settings navigation follows the raft-ui SidebarItem rows',
+      (tester) async {
+        final rt = t.recipeTokens;
+        RaftSettingsNavEntry entry(String id, RaftGlyph glyph) =>
+            RaftSettingsNavEntry(id: id, label: id, glyph: glyph, onTap: () {});
+        await tester.pumpWidget(
+          _host(
+            theme,
+            SizedBox(
+              width: 224,
+              child: RaftSettingsSidebarList(
+                activeId: 'account',
+                groups: [
+                  RaftSettingsNavGroup('Personal', [
+                    entry('account', RaftGlyph.user),
+                    entry('appearance', RaftGlyph.type),
+                  ]),
+                  RaftSettingsNavGroup('Server', [
+                    entry('profile', RaftGlyph.user),
+                  ]),
+                ],
+              ),
+            ),
+          ),
+        );
+        Rect rect(String id) =>
+            tester.getRect(find.byKey(ValueKey('workspace-settings-nav-$id')));
+        // `h-9` rows, `my-px` margins that collapse to a 37px pitch.
+        expect(rect('account').height, 36);
+        expect(rect('account').width, 224);
+        expect(rect('appearance').top - rect('account').top, 37);
+        // `SidebarGroupLabel`: `px-2 pt-4 pb-1.5`, 13/18 bold hint.
+        final label = tester.widget<RaftCssText>(
+          find.widgetWithText(RaftCssText, 'Personal'),
+        );
+        expect(label.style!.fontSize, 13);
+        expect(label.style!.fontWeight, FontWeight.w700);
+        final labelRect = tester.getRect(
+          find.widgetWithText(RaftCssText, 'Workspace'),
+        );
+        expect(labelRect.left - 24, 8, reason: 'px-2');
+        // The yellow sticker: ink border 1.5px, brand fill, 8px radius; rest rows have none.
+        final active = tester.widget<Container>(
+          find
+              .descendant(
+                of: find.byKey(
+                  const ValueKey('workspace-settings-nav-account'),
+                ),
+                matching: find.byType(Container),
+              )
+              .first,
+        );
+        final decoration = active.decoration! as BoxDecoration;
+        final item = RaftSidebarItemRecipe.resolve(
+          theme: t.recipeTheme,
+          states: t.recipeStates(extra: ['data-active']),
+          tokens: rt,
+        ).sidebarItem;
+        expect(decoration.color, item.backgroundColor!.resolve(rt));
+        expect(decoration.borderRadius, BorderRadius.circular(8));
+        expect((decoration.border! as Border).top.width, 1.5);
+        expect(
+          find.descendant(
+            of: find.byKey(const ValueKey('workspace-settings-nav-account')),
+            matching: find.byWidgetPredicate(
+              (w) => w is RaftIcon && w.size == 16,
+            ),
+          ),
+          findsOneWidget,
+        );
+        // Row text is `text-subhead`: 15/20, bold when active, medium otherwise.
+        TextStyle titleStyle(String id) => tester
+            .widget<Text>(
+              find.descendant(
+                of: find.byKey(ValueKey('workspace-settings-nav-$id')),
+                matching: find.byType(Text),
+              ),
+            )
+            .style!;
+        expect(titleStyle('account').fontSize, 15);
+        expect(titleStyle('account').fontWeight, FontWeight.w700);
+        expect(titleStyle('appearance').fontWeight, FontWeight.w500);
+      },
+    );
 
     testWidgets('[$mode] segmented control items sit in the muted track', (
       tester,
