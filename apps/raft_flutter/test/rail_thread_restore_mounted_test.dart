@@ -111,10 +111,11 @@ void main() {
         final response = Completer<dynamic>();
         f.holds['GET /messages/channel/ca'] = response;
         addTearDown(() async {
-          if (!response.isCompleted)
+          if (!response.isCompleted) {
             response.complete({
               'messages': [row('ca')],
             });
+          }
           await f.close(t);
         });
         await f.mount(t, 'light', width, uri: Uri.parse('/s/alpha/channel/ca'));
