@@ -8,6 +8,7 @@
 // shown here arrives as data.
 import 'text_selection_toolbar.dart';
 import 'hover_region.dart';
+import 'indicators.dart' show RaftSkeleton;
 import 'dismiss_scope.dart';
 
 import 'dart:math' as math;
@@ -1084,7 +1085,11 @@ class RaftFeedbackConversation extends StatelessWidget {
         if (loading)
           const Padding(
             padding: EdgeInsets.all(16),
-            child: RaftUiSkeleton(height: 160),
+            child: RaftSkeleton(
+              themed: true,
+              width: double.infinity,
+              height: 160,
+            ),
           ),
         for (final message in messages)
           RaftFeedbackMessage(

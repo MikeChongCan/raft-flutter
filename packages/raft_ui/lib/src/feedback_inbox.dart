@@ -25,7 +25,6 @@ import 'recipe_surface.dart';
 import 'recipes/button_variants.g.dart'
     show RaftButtonRecipeSize, RaftButtonRecipeVariant;
 import 'recipes/message_reference.g.dart';
-import 'recipes/skeleton.g.dart';
 import 'raft/tabs.dart';
 import 'recipes/task_card.g.dart';
 import 'theme.dart';
@@ -214,7 +213,11 @@ class RaftFeedbackInbox extends StatelessWidget {
                   if (loading)
                     for (var i = 0; i < 3; i++) ...[
                       if (i > 0) const SizedBox(height: 8),
-                      const RaftUiSkeleton(height: 64),
+                      RaftSkeleton(
+                        themed: true,
+                        width: double.infinity,
+                        height: 64,
+                      ),
                     ],
                   if (error != null) ...[
                     if (loading) const SizedBox(height: 12),
@@ -654,35 +657,6 @@ class RaftFeedbackUnreadCount extends StatelessWidget {
       center: true,
     ),
   );
-}
-
-/// raft-ui `Skeleton` (block, as opposed to the Web app's own
-/// ui/Skeleton [RaftSkeleton]): the recipe's `data-[variant=block]` fill and
-/// radius, held at its first `animate-pulse` frame like Playwright's
-/// disabled animations (reduced motion).
-class RaftUiSkeleton extends StatelessWidget {
-  const RaftUiSkeleton({super.key, required this.height});
-  final double height;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = RaftTokens.of(context);
-    final s = RaftSkeletonRecipe.resolve(
-      theme: t.recipeTheme,
-      variant: RaftSkeletonRecipeVariant.block,
-      states: t.recipeStates(extra: ['data-variant=block']),
-      tokens: t.recipeTokens,
-    ).root;
-    return ExcludeSemantics(
-      child: RaftRecipeBox(
-        style: s,
-        tokens: t.recipeTokens,
-        width: double.infinity,
-        height: height,
-        applyOpacity: false,
-      ),
-    );
-  }
 }
 
 /// The inbox EmptyState with the hands-feedback overrides: a 2px dashed

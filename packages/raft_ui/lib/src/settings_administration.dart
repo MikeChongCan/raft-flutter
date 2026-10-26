@@ -2040,7 +2040,11 @@ class RaftPublicVisibilityCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 if (loading)
-                  const RaftUiSkeleton(height: 64)
+                  RaftSkeleton(
+                    fromRecipe: true,
+                    width: double.infinity,
+                    height: 64,
+                  )
                 else
                   RaftPublicChannelList(channels: channels),
               ],

@@ -12,6 +12,7 @@ import 'recipes/checkbox.g.dart';
 import 'recipes/progress.g.dart';
 import 'recipes/recipe_runtime.dart';
 import 'recipes/recipe_router.dart' show resolveRecipeClasses;
+import 'recipes/skeleton.g.dart';
 import 'theme.dart';
 import 'tokens/tokens.dart' show RaftTypeScale;
 
@@ -441,9 +442,15 @@ class RaftSkeleton extends StatefulWidget {
     this.width,
     this.height,
     this.themed = false,
+    this.fromRecipe = false,
   });
 
   final RaftSkeletonVariant variant;
+
+  /// The raft-ui `Skeleton` itself rather than the Web app's own ui/Skeleton:
+  /// the recipe's `data-variant` fill and radius, held at the first frame of
+  /// `animate-pulse` like Playwright's disabled animations (no pulse).
+  final bool fromRecipe;
 
   /// The raft-ui `Skeleton` defaults (Elegant: `rounded-full` /
   /// `rounded-md` `bg-foreground-strong/8`); the sidebar rows pass `bg-ink-10`
@@ -467,7 +474,7 @@ class _RaftSkeletonState extends State<RaftSkeleton>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (MediaQuery.disableAnimationsOf(context)) {
+    if (widget.fromRecipe || MediaQuery.disableAnimationsOf(context)) {
       pulse.stop();
       pulse.value = 0;
     } else if (!pulse.isAnimating) {
@@ -487,6 +494,28 @@ class _RaftSkeletonState extends State<RaftSkeleton>
   @override
   Widget build(BuildContext context) {
     final t = RaftTokens.of(context);
+    if (widget.fromRecipe) {
+      final rt = t.recipeTokens;
+      final variant = switch (widget.variant) {
+        RaftSkeletonVariant.line => RaftSkeletonRecipeVariant.line,
+        RaftSkeletonVariant.block => RaftSkeletonRecipeVariant.block,
+        RaftSkeletonVariant.circle => RaftSkeletonRecipeVariant.circle,
+      };
+      return ExcludeSemantics(
+        child: RaftRecipeBox(
+          style: RaftSkeletonRecipe.resolve(
+            theme: t.recipeTheme,
+            variant: variant,
+            states: t.recipeStates(extra: ['data-variant=${variant.css}']),
+            tokens: rt,
+          ).root,
+          tokens: rt,
+          width: widget.width,
+          height: widget.height,
+          applyOpacity: false,
+        ),
+      );
+    }
     final avatar = widget.variant == RaftSkeletonVariant.circle;
     final themed = widget.themed && !avatar;
     final circular =

@@ -10,7 +10,7 @@ import 'system_inset.dart';
 import 'banner.dart';
 import 'components.dart' show RaftButton;
 import 'design_primitives.dart' show RaftSpinner, RaftTypography;
-import 'feedback_inbox.dart' show RaftDashedBorderPainter, RaftUiSkeleton;
+import 'feedback_inbox.dart' show RaftDashedBorderPainter;
 import 'error_presentation.dart';
 import 'icons.dart';
 import 'list_items.dart' show RaftSectionEyebrow, RaftSurfaceListItem;
@@ -21,6 +21,7 @@ import 'recipes/button_variants.g.dart'
     show RaftButtonRecipeSize, RaftButtonRecipeVariant;
 import 'settings_layout.dart';
 import 'switch.dart';
+import 'indicators.dart' show RaftSkeleton;
 import 'theme.dart';
 import 'tooltip.dart' show RaftTooltip;
 
@@ -93,11 +94,11 @@ class RaftServerLabsSection extends StatelessWidget {
       RaftServerLabsStatus.loading => const Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          RaftUiSkeleton(height: 40),
+          RaftSkeleton(fromRecipe: true, width: double.infinity, height: 40),
           SizedBox(height: 12),
-          RaftUiSkeleton(height: 64),
+          RaftSkeleton(fromRecipe: true, width: double.infinity, height: 64),
           SizedBox(height: 12),
-          RaftUiSkeleton(height: 64),
+          RaftSkeleton(fromRecipe: true, width: double.infinity, height: 64),
         ],
       ),
       RaftServerLabsStatus.unavailable => Row(

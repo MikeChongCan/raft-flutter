@@ -188,7 +188,7 @@ void main() {
     await tester.pump();
     // First frame: the ticket message from the inbox row, no skeleton.
     expect(find.text('Fixture ${fx.first}'), findsOneWidget);
-    expect(find.byType(RaftUiSkeleton), findsNothing);
+    expect(find.byType(RaftSkeleton), findsNothing);
     h.detailGate!.complete();
     h.detailGate = null;
     await tester.pumpAndSettle();
