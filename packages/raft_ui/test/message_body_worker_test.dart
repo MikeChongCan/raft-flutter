@@ -160,4 +160,51 @@ void main() {
     expect(identical(worker.completion, completed), isTrue);
     expect(raftMarkdownAstCache.misses, misses);
   });
+  testWidgets(
+    'request resolution yields to publication and stops on retirement',
+    (tester) async {
+      final tokens = RaftTokens.theme(), worker = RaftMessageBodyWorker();
+      addTearDown(worker.dispose);
+      raftMarkdownAstCache.clear();
+      var resolved = 0;
+      await tester.runAsync(() async {
+        worker.prepare([
+          for (var i = 0; i < 100; i++)
+            () {
+              resolved++;
+              worker.cancel();
+              return RaftMessageBodyRequest(
+                content: '**retired $i**',
+                tokens: tokens,
+              );
+            },
+        ], current: () => true);
+        expect(
+          resolved,
+          0,
+          reason: 'Publishing a page resolves no body references',
+        );
+        await worker.completion;
+        expect(
+          resolved,
+          1,
+          reason: 'Retired work stops before resolving more rows',
+        );
+        expect(raftMarkdownAstCache.length, 0);
+        worker.prepare([
+          for (var i = 0; i < 9; i++)
+            () {
+              resolved++;
+              return RaftMessageBodyRequest(
+                content: '**current $i**',
+                tokens: tokens,
+              );
+            },
+        ], current: () => true);
+        await worker.completion;
+      });
+      expect(resolved, 10);
+      expect(raftMarkdownAstCache.length, 9);
+    },
+  );
 }

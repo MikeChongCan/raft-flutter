@@ -139,50 +139,81 @@ List<_PreparedMessageBody> _prepareMessageBodies(
 /// Parsing never delays message publication. Unprepared rows render normally.
 /// Cancellation drops stale results without starting concurrent isolates.
 class RaftMessageBodyWorker {
-  List<RaftMessageBodyRequest> _pending = [];
+  List<RaftMessageBodyRequest? Function()> _pending = [];
   bool Function() _current = () => false;
   bool _running = false, _disposed = false;
   int _revision = 0;
   Future<void> _completion = Future.value();
+  final _yieldTimer = RaftIdleTimer(yieldToAnimation: false);
+  Completer<void>? _yielding;
   Future<void> get completion => _completion;
 
   void replace(
     Iterable<RaftMessageBodyRequest> requests, {
     required bool Function() current,
+  }) => prepare(
+    requests
+        .take(64)
+        .where((r) => !r._cached)
+        .map(
+          (r) =>
+              () => r,
+        ),
+    current: current,
+  );
+
+  /// Resolves references in small steps after publication, including while
+  /// scrolling. Only pure requests cross the isolate boundary.
+  void prepare(
+    Iterable<RaftMessageBodyRequest? Function()> requests, {
+    required bool Function() current,
   }) {
     if (_disposed || kIsWeb) return;
     ++_revision;
-    var bytes = 0;
-    _pending = requests.take(64).where((r) {
-      final size = r.content.length * 2;
-      if (r.content.length > 64 * 1024 ||
-          bytes + size > 512 * 1024 ||
-          r._cached)
-        return false;
-      bytes += size;
-      return true;
-    }).toList();
+    _pending = requests.take(64).toList();
     _current = current;
     if (!_running && _pending.isNotEmpty) _completion = _drain();
+  }
+
+  Future<void> _yield() {
+    final done = _yielding = Completer<void>();
+    _yieldTimer.start(const Duration(milliseconds: 8), () {
+      _yielding = null;
+      done.complete();
+    });
+    return done.future;
   }
 
   Future<void> _drain() async {
     _running = true;
     try {
       while (!_disposed && _pending.isNotEmpty) {
-        final batch = _pending, revision = _revision, current = _current;
+        final jobs = _pending, revision = _revision, current = _current;
         _pending = [];
-        if (!current()) continue;
+        bool valid() => !_disposed && revision == _revision && current();
+        final batch = <RaftMessageBodyRequest>[];
+        var bytes = 0;
         try {
+          for (var i = 0; i < jobs.length; i++) {
+            if (i % 4 == 0) await _yield();
+            if (!valid()) break;
+            final request = jobs[i]();
+            if (request == null || request.content.length > 64 * 1024) continue;
+            final size = request.content.length * 2;
+            if (bytes + size > 512 * 1024 || request._cached) continue;
+            bytes += size;
+            batch.add(request);
+          }
+          if (!valid() || batch.isEmpty) continue;
           final result = await compute(
             _prepareMessageBodies,
             batch,
             debugLabel: 'Raft history bodies',
           );
-          if (!_disposed && revision == _revision && current()) {
-            for (final body in result) {
-              body.adopt();
-            }
+          for (var i = 0; i < result.length; i++) {
+            if (i % 4 == 0) await _yield();
+            if (!valid()) break;
+            result[i].adopt();
           }
         } catch (_) {
           // Optional cache warming: the mounted row remains the synchronous
@@ -197,6 +228,9 @@ class RaftMessageBodyWorker {
   void cancel() {
     ++_revision;
     _pending = [];
+    _yieldTimer.cancel();
+    _yielding?.complete();
+    _yielding = null;
   }
 
   void dispose() {

@@ -75,8 +75,11 @@ class ChatBodyPreparation {
   void incoming(Iterable<RaftMessage> rows, Object scope) {
     final options = _options;
     if (options == null || options.scope != scope || !options.current()) return;
-    _worker.replace(
-      rows.map(options.request).whereType<RaftMessageBodyRequest>(),
+    _worker.prepare(
+      rows.map(
+        (m) =>
+            () => options.request(m),
+      ),
       current: options.current,
     );
   }

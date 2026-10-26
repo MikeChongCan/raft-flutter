@@ -1,4 +1,5 @@
 import 'interaction.dart';
+import 'idle_work.dart';
 import 'hover_region.dart';
 import 'mermaid_toolbar_recipe.dart';
 import 'message_markdown.dart';
