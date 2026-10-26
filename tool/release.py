@@ -727,6 +727,11 @@ def asset_matches(tag, asset, path):
 def publish(platform):
     """Verify and append only this platform, without waiting for sibling jobs."""
     identity, commit = tag_release()
+    append_platform(platform, identity, commit)
+
+
+def append_platform(platform, identity, commit):
+    """Append a verified platform to an existing release; never overwrite assets."""
     remote = read_release(identity['tag'])
     metadata = checked_release(remote, identity, commit)
     config = json.loads((ROOT / 'tool/release-platforms.json').read_text())

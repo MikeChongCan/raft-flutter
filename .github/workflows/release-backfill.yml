@@ -1,0 +1,104 @@
+name: Backfill an existing platform release
+
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: Platform to append independently
+        type: choice
+        required: true
+        default: macos
+        options: [macos, appimage]
+      release_tag:
+        description: Existing release tag (never moved)
+        type: string
+        required: true
+        default: 'v1.21.23+10'
+      source_commit:
+        description: Full original source commit from the existing release
+        type: string
+        required: true
+        default: '5e7f6f56863e5af2cf6fae174b795880dffa3ca9'
+      build_number:
+        description: Original build number from the existing release
+        type: string
+        required: true
+        default: '87'
+      publish:
+        description: Append verified platform assets to that release after building
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-backfill-${{ inputs.platform }}-${{ inputs.release_tag }}
+  cancel-in-progress: false
+
+env:
+  BACKFILL_PLATFORM: ${{ inputs.platform }}
+  BACKFILL_TAG: ${{ inputs.release_tag }}
+  BACKFILL_COMMIT: ${{ inputs.source_commit }}
+  BACKFILL_BUILD_NUMBER: ${{ inputs.build_number }}
+  PYTHONUTF8: '1'
+
+jobs:
+  build:
+    runs-on: ${{ inputs.platform == 'macos' && 'raft-macos-arm64-data' || 'raft-linux-x64-data' }}
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: workflow
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.release_tag }}
+          path: source
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Build the exact original source and build number
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SPARKLE_ED_PUBLIC_KEY: ${{ vars.SPARKLE_ED_PUBLIC_KEY }}
+          RAFT_FEEDBACK_EXPORT_URL: ${{ vars.RAFT_FEEDBACK_EXPORT_URL }}
+        run: python workflow/tool/release_backfill.py build --source source
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-backfill-${{ inputs.platform }}-${{ inputs.release_tag }}
+          path: source/build/release/*
+          if-no-files-found: error
+          retention-days: 14
+
+  publish:
+    if: inputs.publish
+    needs: build
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: workflow
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.release_tag }}
+          path: source
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-backfill-${{ inputs.platform }}-${{ inputs.release_tag }}
+          path: source/build/release
+      - name: Append only the selected platform after rechecking the existing release provenance
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SPARKLE_ED_PRIVATE_KEY: ${{ secrets.SPARKLE_ED_PRIVATE_KEY }}
+        run: python workflow/tool/release_backfill.py publish --source source
