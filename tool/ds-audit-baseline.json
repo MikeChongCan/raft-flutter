@@ -13,22 +13,21 @@
   "bypass.button": 38,
   "bypass.chip": 3,
   "bypass.dialog": 44,
-  "bypass.divider": 8,
+  "bypass.divider": 1,
   "bypass.icon_button": 15,
-  "bypass.list_tile": 17,
+  "bypass.list_tile": 4,
   "bypass.menu": 19,
   "bypass.overlay": 24,
   "bypass.picker": 3,
-  "bypass.progress": 13,
   "bypass.select": 27,
-  "bypass.text_field": 27,
+  "bypass.text_field": 7,
   "bypass.toggle": 7,
   "bypass.tooltip": 1,
   "contract.color_literal": 270,
-  "contract.font_size_literal": 179,
-  "contract.legacy_recipe_theme": 34,
-  "contract.radius_literal": 200,
-  "contract.stroke_width_literal": 273,
+  "contract.font_size_literal": 172,
+  "contract.legacy_recipe_theme": 33,
+  "contract.radius_literal": 199,
+  "contract.stroke_width_literal": 270,
   "contract.theme_name_branch": 1,
   "duplicate.banner": 7,
   "duplicate.button": 271,
@@ -36,50 +35,40 @@
   "duplicate.list_row": 5,
   "duplicate.segmented": 10,
   "style.border_radius": 10,
-  "style.dimension": 36,
+  "style.dimension": 33,
   "style.duration": 2,
-  "style.edge_insets": 49,
-  "style.font_size": 1,
-  "style.font_weight": 5,
-  "style.material_colors": 27,
-  "style.material_icons": 15,
+  "style.edge_insets": 46,
+  "style.font_weight": 3,
+  "style.material_colors": 20,
+  "style.material_icons": 7,
   "style.material_theme": 18,
-  "style.sized_box": 46,
-  "style.text_metrics": 1,
+  "style.sized_box": 41,
   "style.text_style": 2,
-  "widget.button": 24,
+  "widget.button": 22,
   "widget.chip": 3,
-  "widget.dialog": 36,
+  "widget.dialog": 29,
   "widget.icon_button": 9,
   "widget.ink": 1,
-  "widget.list_tile": 16,
+  "widget.list_tile": 2,
   "widget.menu": 15,
   "widget.other": 10,
-  "widget.progress": 11,
   "widget.scaffold": 4,
   "widget.select": 3,
   "widget.surface": 4,
-  "widget.text_field": 10
+  "widget.text_field": 3
  },
  "files": {
   "apps/raft_flutter/lib/features/account_auth_previews.dart": {
    "style.edge_insets": 1
   },
   "apps/raft_flutter/lib/features/account_connections_view.dart": {
-   "bypass.list_tile": 1,
-   "duplicate.button": 3,
-   "widget.list_tile": 1
-  },
-  "apps/raft_flutter/lib/features/account_onboarding.dart": {
-   "bypass.text_field": 2,
-   "widget.text_field": 3
+   "duplicate.button": 3
   },
   "apps/raft_flutter/lib/features/account_settings.dart": {
    "bypass.button": 1,
    "bypass.dialog": 1,
    "duplicate.dialog": 3,
    "style.dimension": 1,
-   "style.edge_insets": 1,
    "widget.button": 1,
    "widget.dialog": 1,
    "widget.ink": 1,
@@ -97,9 +86,6 @@
    "duplicate.list_row": 1
   },
   "apps/raft_flutter/lib/features/agent_apps_view.dart": {
-   "style.sized_box": 1,
-   "widget.button": 1,
-   "widget.dialog": 1,
    "widget.other": 1
   },
   "apps/raft_flutter/lib/features/agent_connections_section.dart": {
@@ -128,7 +114,6 @@
   },
   "apps/raft_flutter/lib/features/agent_scopes_view.dart": {
    "bypass.button": 1,
-   "bypass.progress": 1,
    "bypass.toggle": 1,
    "style.dimension": 1,
    "style.edge_insets": 1,
@@ -136,12 +121,11 @@
    "style.sized_box": 1,
    "widget.button": 1,
    "widget.list_tile": 1,
-   "widget.progress": 1,
    "widget.scaffold": 1
   },
   "apps/raft_flutter/lib/features/appearance_section.dart": {
    "style.edge_insets": 1,
-   "style.sized_box": 8
+   "style.sized_box": 7
   },
   "apps/raft_flutter/lib/features/artifact_viewer.dart": {
    "duplicate.button": 1
@@ -158,10 +142,8 @@
   "apps/raft_flutter/lib/features/attachment_view.dart": {
    "bypass.button": 1,
    "bypass.dialog": 1,
-   "bypass.progress": 1,
    "widget.button": 1,
-   "widget.dialog": 1,
-   "widget.progress": 1
+   "widget.dialog": 1
   },
   "apps/raft_flutter/lib/features/auth_view.dart": {
    "duplicate.dialog": 1
@@ -177,17 +159,11 @@
    "widget.chip": 1
   },
   "apps/raft_flutter/lib/features/channel_conversion_progress.dart": {
-   "bypass.progress": 1,
-   "style.edge_insets": 1,
-   "widget.progress": 1
+   "style.edge_insets": 1
   },
   "apps/raft_flutter/lib/features/channel_conversion_section.dart": {
-   "bypass.list_tile": 1,
-   "bypass.progress": 1,
    "style.dimension": 1,
-   "style.material_theme": 1,
-   "widget.list_tile": 1,
-   "widget.progress": 1
+   "style.material_theme": 1
   },
   "apps/raft_flutter/lib/features/channel_members.dart": {
    "duplicate.dialog": 1
@@ -229,19 +205,15 @@
    "bypass.button": 3,
    "bypass.dialog": 3,
    "bypass.icon_button": 2,
-   "bypass.list_tile": 3,
-   "bypass.progress": 2,
    "duplicate.dialog": 3,
    "style.edge_insets": 4,
-   "style.material_icons": 3,
+   "style.material_icons": 1,
    "style.material_theme": 1,
    "style.sized_box": 3,
    "widget.button": 3,
    "widget.dialog": 3,
    "widget.icon_button": 2,
-   "widget.list_tile": 3,
    "widget.other": 1,
-   "widget.progress": 2,
    "widget.scaffold": 1
   },
   "apps/raft_flutter/lib/features/forward_composer_page.dart": {
@@ -264,7 +236,6 @@
    "bypass.button": 2,
    "bypass.dialog": 1,
    "bypass.icon_button": 1,
-   "bypass.progress": 1,
    "duplicate.dialog": 2,
    "style.dimension": 2,
    "style.edge_insets": 4,
@@ -273,19 +244,14 @@
    "style.sized_box": 1,
    "widget.button": 2,
    "widget.dialog": 1,
-   "widget.icon_button": 1,
-   "widget.progress": 1
+   "widget.icon_button": 1
   },
   "apps/raft_flutter/lib/features/mcp_server_editor.dart": {
    "duplicate.button": 1,
    "duplicate.dialog": 1
   },
   "apps/raft_flutter/lib/features/mcp_views.dart": {
-   "style.edge_insets": 1,
-   "style.sized_box": 1,
-   "widget.button": 1,
-   "widget.dialog": 1,
-   "widget.list_tile": 1
+   "style.edge_insets": 1
   },
   "apps/raft_flutter/lib/features/media_browser.dart": {
    "duplicate.button": 1
@@ -304,7 +270,6 @@
    "bypass.toggle": 1,
    "duplicate.button": 1,
    "duplicate.dialog": 2,
-   "widget.dialog": 1,
    "widget.list_tile": 1
   },
   "apps/raft_flutter/lib/features/message_history_gaps.dart": {
@@ -342,16 +307,13 @@
    "bypass.button": 3,
    "bypass.dialog": 3,
    "bypass.icon_button": 1,
-   "bypass.list_tile": 2,
    "duplicate.dialog": 2,
    "style.edge_insets": 1,
-   "style.material_icons": 2,
    "style.material_theme": 1,
    "style.sized_box": 2,
    "widget.button": 3,
    "widget.dialog": 3,
    "widget.icon_button": 1,
-   "widget.list_tile": 2,
    "widget.other": 2
   },
   "apps/raft_flutter/lib/features/public_attachments.dart": {
@@ -364,7 +326,7 @@
    "style.border_radius": 1,
    "style.dimension": 2,
    "style.edge_insets": 2,
-   "style.font_weight": 3,
+   "style.font_weight": 2,
    "style.sized_box": 3,
    "style.text_style": 1
   },
@@ -374,27 +336,20 @@
    "bypass.dialog": 4,
    "bypass.icon_button": 2,
    "bypass.menu": 9,
-   "bypass.progress": 1,
    "bypass.select": 1,
-   "bypass.text_field": 2,
    "duplicate.dialog": 2,
-   "style.dimension": 9,
-   "style.edge_insets": 12,
-   "style.font_size": 1,
-   "style.font_weight": 1,
+   "style.dimension": 6,
+   "style.edge_insets": 11,
    "style.material_colors": 2,
    "style.material_theme": 2,
-   "style.sized_box": 9,
-   "style.text_metrics": 1,
+   "style.sized_box": 8,
    "widget.button": 4,
    "widget.chip": 2,
-   "widget.dialog": 5,
+   "widget.dialog": 4,
    "widget.icon_button": 2,
    "widget.menu": 9,
-   "widget.progress": 1,
    "widget.select": 1,
-   "widget.surface": 2,
-   "widget.text_field": 4
+   "widget.surface": 2
   },
   "apps/raft_flutter/lib/features/search_continue_footer.dart": {
    "duplicate.button": 2
@@ -404,8 +359,8 @@
   },
   "apps/raft_flutter/lib/features/search_home.dart": {
    "duplicate.button": 1,
-   "style.edge_insets": 2,
-   "style.sized_box": 2
+   "style.edge_insets": 1,
+   "style.sized_box": 1
   },
   "apps/raft_flutter/lib/features/server_setup_gate.dart": {
    "style.dimension": 1,
@@ -415,35 +370,27 @@
    "bypass.button": 1,
    "bypass.dialog": 3,
    "bypass.icon_button": 1,
-   "bypass.list_tile": 1,
    "bypass.menu": 3,
-   "bypass.progress": 1,
    "duplicate.button": 1,
    "duplicate.dialog": 4,
    "style.edge_insets": 1,
    "style.material_icons": 1,
    "style.material_theme": 1,
    "widget.button": 1,
-   "widget.dialog": 6,
+   "widget.dialog": 3,
    "widget.icon_button": 1,
-   "widget.list_tile": 1,
    "widget.menu": 3,
-   "widget.other": 1,
-   "widget.progress": 1
+   "widget.other": 1
   },
   "apps/raft_flutter/lib/features/sidebar_preferences_view.dart": {
    "bypass.icon_button": 2,
-   "bypass.list_tile": 5,
-   "bypass.progress": 1,
    "bypass.select": 2,
    "style.edge_insets": 2,
-   "style.material_icons": 6,
+   "style.material_icons": 2,
    "style.material_theme": 4,
    "style.sized_box": 8,
    "widget.icon_button": 2,
-   "widget.list_tile": 5,
    "widget.other": 3,
-   "widget.progress": 1,
    "widget.select": 2,
    "widget.text_field": 1
   },
@@ -465,7 +412,7 @@
    "style.dimension": 8,
    "style.duration": 1,
    "style.edge_insets": 4,
-   "style.material_colors": 19,
+   "style.material_colors": 12,
    "style.sized_box": 1,
    "widget.button": 1,
    "widget.menu": 2
@@ -503,20 +450,22 @@
   },
   "apps/raft_flutter/lib/features/workspace_view.dart": {
    "bypass.dialog": 5,
-   "bypass.progress": 1,
    "duplicate.button": 7,
    "style.dimension": 3,
    "style.edge_insets": 1,
    "style.material_icons": 1,
    "style.sized_box": 1,
    "widget.dialog": 5,
-   "widget.progress": 1,
    "widget.scaffold": 1,
    "widget.surface": 1
   },
   "apps/raft_flutter/lib/platform/system_bars.dart": {
    "style.material_colors": 3,
    "style.material_theme": 2
+  },
+  "packages/raft_theme/lib/recipes/recipe_runtime.dart": {
+   "contract.color_literal": 1,
+   "contract.radius_literal": 1
   },
   "packages/raft_ui/lib/activity_scope_previews.dart": {
    "duplicate.button": 1
@@ -531,7 +480,6 @@
   "packages/raft_ui/lib/basic_component_previews.dart": {
    "bypass.dialog": 1,
    "bypass.select": 3,
-   "bypass.text_field": 4,
    "duplicate.button": 7,
    "duplicate.dialog": 1
   },
@@ -595,8 +543,7 @@
    "duplicate.button": 1
   },
   "packages/raft_ui/lib/section_pager_previews.dart": {
-   "bypass.list_tile": 1,
-   "bypass.text_field": 1
+   "bypass.list_tile": 1
   },
   "packages/raft_ui/lib/src/action_card.dart": {
    "contract.color_literal": 1,
@@ -643,8 +590,7 @@
   "packages/raft_ui/lib/src/agent_create_form.dart": {
    "bypass.dialog": 1,
    "bypass.select": 1,
-   "bypass.text_field": 1,
-   "contract.font_size_literal": 9,
+   "contract.font_size_literal": 8,
    "contract.legacy_recipe_theme": 1,
    "contract.stroke_width_literal": 1,
    "duplicate.button": 2
@@ -682,9 +628,8 @@
   },
   "packages/raft_ui/lib/src/attachment_card.dart": {
    "bypass.button": 2,
-   "bypass.progress": 2,
    "contract.font_size_literal": 1,
-   "contract.stroke_width_literal": 2,
+   "contract.stroke_width_literal": 1,
    "duplicate.button": 2
   },
   "packages/raft_ui/lib/src/attachment_comment_ref.dart": {
@@ -724,8 +669,8 @@
   },
   "packages/raft_ui/lib/src/auth_page.dart": {
    "bypass.toggle": 1,
-   "contract.font_size_literal": 4,
-   "contract.legacy_recipe_theme": 2,
+   "contract.font_size_literal": 3,
+   "contract.legacy_recipe_theme": 1,
    "contract.radius_literal": 2,
    "duplicate.button": 1
   },
@@ -743,9 +688,6 @@
    "contract.radius_literal": 1,
    "contract.stroke_width_literal": 2,
    "duplicate.button": 1
-  },
-  "packages/raft_ui/lib/src/channel_joint_section_view.dart": {
-   "bypass.divider": 2
   },
   "packages/raft_ui/lib/src/channel_members_view.dart": {
    "contract.font_size_literal": 1,
@@ -770,7 +712,6 @@
    "bypass.select": 1
   },
   "packages/raft_ui/lib/src/chat_composition.dart": {
-   "bypass.divider": 1,
    "contract.color_literal": 3,
    "contract.radius_literal": 1,
    "contract.stroke_width_literal": 1,
@@ -788,7 +729,6 @@
    "duplicate.button": 1
   },
   "packages/raft_ui/lib/src/combobox_panel.dart": {
-   "bypass.text_field": 1,
    "contract.font_size_literal": 1
   },
   "packages/raft_ui/lib/src/community_agreement_dialog.dart": {
@@ -865,7 +805,6 @@
    "duplicate.button": 1
   },
   "packages/raft_ui/lib/src/conversation_finder.dart": {
-   "bypass.text_field": 1,
    "contract.color_literal": 1,
    "contract.radius_literal": 3,
    "contract.stroke_width_literal": 1
@@ -879,7 +818,6 @@
    "duplicate.button": 1
   },
   "packages/raft_ui/lib/src/create_channel_view.dart": {
-   "bypass.divider": 1,
    "duplicate.button": 4,
    "duplicate.dialog": 1,
    "duplicate.segmented": 1
@@ -898,7 +836,6 @@
   },
   "packages/raft_ui/lib/src/dialog_card.dart": {
    "contract.color_literal": 5,
-   "contract.font_size_literal": 1,
    "contract.legacy_recipe_theme": 1,
    "contract.stroke_width_literal": 3
   },
@@ -915,7 +852,6 @@
    "contract.color_literal": 1
   },
   "packages/raft_ui/lib/src/emoji_picker.dart": {
-   "bypass.text_field": 1,
    "contract.color_literal": 26,
    "contract.font_size_literal": 1,
    "contract.radius_literal": 6
@@ -947,8 +883,10 @@
    "duplicate.button": 5
   },
   "packages/raft_ui/lib/src/form_controls.dart": {
-   "contract.font_size_literal": 1,
    "contract.stroke_width_literal": 1
+  },
+  "packages/raft_ui/lib/src/form_controls_frozen.dart": {
+   "duplicate.button": 1
   },
   "packages/raft_ui/lib/src/form_dialog.dart": {
    "bypass.dialog": 1,
@@ -962,7 +900,7 @@
    "duplicate.dialog": 1
   },
   "packages/raft_ui/lib/src/forward_composer.dart": {
-   "bypass.text_field": 2,
+   "bypass.text_field": 1,
    "contract.font_size_literal": 7,
    "contract.radius_literal": 1,
    "duplicate.button": 5
@@ -1033,10 +971,9 @@
    "contract.font_size_literal": 2
   },
   "packages/raft_ui/lib/src/list_items.dart": {
-   "bypass.text_field": 1,
    "contract.font_size_literal": 7,
-   "contract.radius_literal": 3,
-   "contract.stroke_width_literal": 5,
+   "contract.radius_literal": 2,
+   "contract.stroke_width_literal": 4,
    "duplicate.button": 1
   },
   "packages/raft_ui/lib/src/list_page_parts.dart": {
@@ -1078,7 +1015,6 @@
    "duplicate.button": 1
   },
   "packages/raft_ui/lib/src/message_export.dart": {
-   "bypass.divider": 2,
    "bypass.icon_button": 1
   },
   "packages/raft_ui/lib/src/message_list_marker.dart": {
@@ -1166,7 +1102,6 @@
    "contract.stroke_width_literal": 12
   },
   "packages/raft_ui/lib/src/page_recipes.dart": {
-   "bypass.divider": 1,
    "contract.radius_literal": 1,
    "contract.stroke_width_literal": 2
   },
@@ -1307,10 +1242,6 @@
    "contract.legacy_recipe_theme": 1,
    "contract.radius_literal": 1
   },
-  "packages/raft_theme/lib/recipes/recipe_runtime.dart": {
-   "contract.color_literal": 1,
-   "contract.radius_literal": 1
-  },
   "packages/raft_ui/lib/src/report_issue_dialog.dart": {
    "contract.font_size_literal": 1,
    "contract.stroke_width_literal": 2,
@@ -1337,16 +1268,10 @@
   "packages/raft_ui/lib/src/root_error_fallback.dart": {
    "contract.radius_literal": 4
   },
-  "packages/raft_ui/lib/src/runtime_error_banner.dart": {
-   "contract.stroke_width_literal": 1
-  },
   "packages/raft_ui/lib/src/runtime_usage_card.dart": {
    "bypass.dialog": 1,
    "contract.color_literal": 1,
    "contract.stroke_width_literal": 5,
-   "duplicate.button": 1
-  },
-  "packages/raft_ui/lib/src/search_input.dart": {
    "duplicate.button": 1
   },
   "packages/raft_ui/lib/src/search_result_surface.dart": {
@@ -1406,9 +1331,7 @@
    "contract.stroke_width_literal": 7
   },
   "packages/raft_ui/lib/src/settings_controls.dart": {
-   "bypass.text_field": 3,
    "contract.color_literal": 2,
-   "contract.font_size_literal": 3,
    "contract.radius_literal": 1,
    "contract.stroke_width_literal": 2
   },
@@ -1577,15 +1500,9 @@
   },
   "packages/raft_ui/lib/timeline_composition_previews.dart": {
    "bypass.button": 1
-  },
-  "packages/raft_ui/lib/typography_locale_previews.dart": {
-   "bypass.text_field": 1
-  },
-  "packages/raft_ui/lib/workspace_previews.dart": {
-   "bypass.text_field": 1
   }
  },
- "generatedTotal": 1968,
+ "generatedTotal": 3501,
  "generated": {
   "packages/raft_theme/lib/recipes/activity_inbox_shell.g.dart": 5,
   "packages/raft_theme/lib/recipes/activity_inbox_sidebar.g.dart": 5,
@@ -1614,7 +1531,8 @@
   "packages/raft_theme/lib/recipes/copyable_code.g.dart": 5,
   "packages/raft_theme/lib/recipes/description_list.g.dart": 5,
   "packages/raft_theme/lib/recipes/dialog.g.dart": 5,
-  "packages/raft_theme/lib/recipes/dot.g.dart": 5,
+  "packages/raft_theme/lib/recipes/dialog_nav.g.dart": 5,
+  "packages/raft_theme/lib/recipes/dialog_surface.g.dart": 5,
   "packages/raft_theme/lib/recipes/drawer.g.dart": 5,
   "packages/raft_theme/lib/recipes/drawer_motion.g.dart": 5,
   "packages/raft_theme/lib/recipes/dropdown_menu.g.dart": 5,
@@ -1622,21 +1540,146 @@
   "packages/raft_theme/lib/recipes/field.g.dart": 5,
   "packages/raft_theme/lib/recipes/file_preview.g.dart": 5,
   "packages/raft_theme/lib/recipes/files.g.dart": 5,
+  "packages/raft_theme/lib/recipes/form_section.g.dart": 5,
   "packages/raft_theme/lib/recipes/heading.g.dart": 5,
+  "packages/raft_theme/lib/recipes/icon_tile.g.dart": 5,
   "packages/raft_theme/lib/recipes/inbox_item.g.dart": 5,
   "packages/raft_theme/lib/recipes/inline_code.g.dart": 5,
-  "packages/raft_theme/lib/recipes/input.g.dart": 5,
+  "packages/raft_theme/lib/recipes/input.g.dart": 6,
   "packages/raft_theme/lib/recipes/input_group.g.dart": 5,
   "packages/raft_theme/lib/recipes/kbd.g.dart": 5,
   "packages/raft_theme/lib/recipes/label.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/activity_inbox_shell.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/activity_inbox_sidebar.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/activity_inbox_toolbar.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/alert_dialog.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/app_rail.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/app_shell.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/avatar.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/badge.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/banner.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/button_variants.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/card.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/checkbox.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/checkbox_indicator.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/code_block.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/combobox.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/composer.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/composer_attachment.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/composer_drop_overlay.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/composer_root.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/composer_suggestion_list.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/composer_toolbar_label.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/context_menu.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/conversation_panel.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/conversation_panel_empty_state.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/copyable_code.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/description_list.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/dialog.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/dot.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/drawer.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/drawer_motion.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/dropdown_menu.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/empty_state.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/field.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/file_preview.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/files.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/heading.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/inbox_item.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/inline_code.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/input.g.dart": 6,
+  "packages/raft_theme/lib/recipes/legacy/input_group.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/kbd.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/label.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/legacy_task_panel.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/lightbox.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/live_agent_activity_bar.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/markdown.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/message_action_card.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/message_action_card_content.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/message_attachment.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/message_block.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/message_embed.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/message_footer.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/message_forwarded_bundle.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/message_forwarded_bundle_gallery.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/message_forwarded_bundle_item.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/message_image_gallery.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/message_item.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/message_list.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/message_multi_select.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/message_quoted_preview.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/message_reaction.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/message_reference.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/message_replies.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/message_system.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/message_text_selection_toolbar.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/message_translation.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/message_video_preview.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/mobile_nav.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/mono.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/notification_center.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/panel.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/panel_action.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/panel_action_base.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/panel_header.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/panel_toggle_action.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/picker_trigger_button.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/popover.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/preview_card.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/profile_panel.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/progress.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/radio_group.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/recipe_utilities.g.dart": 1362,
+  "packages/raft_theme/lib/recipes/legacy/recipes.g.dart": 1,
+  "packages/raft_theme/lib/recipes/legacy/resizable.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/sans.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/scroll_area.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/search.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/search_entity.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/search_message.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/search_thread.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/segmented_control.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/select.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/separator.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/sidebar_item_recipe.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/sidebar_menu_recipe.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/sidebar_recipe.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/sidebar_section_recipe.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/skeleton.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/spinner.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/status.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/switch_recipe.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/table.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/tabs.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/task_board_column.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/task_card.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/task_card_status.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/task_chip.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/task_dnd.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/task_list_section.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/task_loading.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/task_status.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/task_status_border.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/task_status_soft.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/task_status_strong.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/tasks_panel.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/textarea.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/textarea_counter.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/textarea_group.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/thread_panel.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/toast_action.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/toast_styles.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/toggle_group.g.dart": 5,
+  "packages/raft_theme/lib/recipes/legacy/tooltip.g.dart": 5,
   "packages/raft_theme/lib/recipes/legacy_task_panel.g.dart": 5,
   "packages/raft_theme/lib/recipes/lightbox.g.dart": 5,
+  "packages/raft_theme/lib/recipes/list_row.g.dart": 5,
   "packages/raft_theme/lib/recipes/live_agent_activity_bar.g.dart": 5,
   "packages/raft_theme/lib/recipes/markdown.g.dart": 5,
   "packages/raft_theme/lib/recipes/message_action_card.g.dart": 5,
   "packages/raft_theme/lib/recipes/message_action_card_content.g.dart": 5,
   "packages/raft_theme/lib/recipes/message_attachment.g.dart": 5,
-  "packages/raft_theme/lib/recipes/message_block.g.dart": 5,
   "packages/raft_theme/lib/recipes/message_embed.g.dart": 5,
   "packages/raft_theme/lib/recipes/message_footer.g.dart": 5,
   "packages/raft_theme/lib/recipes/message_forwarded_bundle.g.dart": 5,
@@ -1661,6 +1704,7 @@
   "packages/raft_theme/lib/recipes/panel_action.g.dart": 5,
   "packages/raft_theme/lib/recipes/panel_action_base.g.dart": 5,
   "packages/raft_theme/lib/recipes/panel_header.g.dart": 5,
+  "packages/raft_theme/lib/recipes/panel_notice.g.dart": 5,
   "packages/raft_theme/lib/recipes/panel_toggle_action.g.dart": 5,
   "packages/raft_theme/lib/recipes/picker_trigger_button.g.dart": 5,
   "packages/raft_theme/lib/recipes/popover.g.dart": 5,
@@ -1668,7 +1712,7 @@
   "packages/raft_theme/lib/recipes/profile_panel.g.dart": 5,
   "packages/raft_theme/lib/recipes/progress.g.dart": 5,
   "packages/raft_theme/lib/recipes/radio_group.g.dart": 5,
-  "packages/raft_theme/lib/recipes/recipe_utilities.g.dart": 1362,
+  "packages/raft_theme/lib/recipes/recipe_utilities.g.dart": 559,
   "packages/raft_theme/lib/recipes/recipes.g.dart": 1,
   "packages/raft_theme/lib/recipes/resizable.g.dart": 5,
   "packages/raft_theme/lib/recipes/sans.g.dart": 5,
@@ -1677,6 +1721,7 @@
   "packages/raft_theme/lib/recipes/search_entity.g.dart": 5,
   "packages/raft_theme/lib/recipes/search_message.g.dart": 5,
   "packages/raft_theme/lib/recipes/search_thread.g.dart": 5,
+  "packages/raft_theme/lib/recipes/search_trigger.g.dart": 5,
   "packages/raft_theme/lib/recipes/segmented_control.g.dart": 5,
   "packages/raft_theme/lib/recipes/select.g.dart": 5,
   "packages/raft_theme/lib/recipes/separator.g.dart": 5,
@@ -1697,8 +1742,6 @@
   "packages/raft_theme/lib/recipes/task_dnd.g.dart": 5,
   "packages/raft_theme/lib/recipes/task_list_section.g.dart": 5,
   "packages/raft_theme/lib/recipes/task_loading.g.dart": 5,
-  "packages/raft_theme/lib/recipes/task_status.g.dart": 5,
-  "packages/raft_theme/lib/recipes/task_status_border.g.dart": 5,
   "packages/raft_theme/lib/recipes/task_status_soft.g.dart": 5,
   "packages/raft_theme/lib/recipes/task_status_strong.g.dart": 5,
   "packages/raft_theme/lib/recipes/tasks_panel.g.dart": 5,
@@ -1709,6 +1752,135 @@
   "packages/raft_theme/lib/recipes/toast_action.g.dart": 5,
   "packages/raft_theme/lib/recipes/toast_styles.g.dart": 5,
   "packages/raft_theme/lib/recipes/toggle_group.g.dart": 5,
-  "packages/raft_theme/lib/recipes/tooltip.g.dart": 5
+  "packages/raft_theme/lib/recipes/tooltip.g.dart": 5,
+  "packages/raft_ui/lib/src/recipes/activity_inbox_shell.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/activity_inbox_sidebar.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/activity_inbox_toolbar.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/alert_dialog.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/app_rail.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/app_shell.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/avatar.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/badge.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/banner.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/button_variants.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/card.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/checkbox.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/checkbox_indicator.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/code_block.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/combobox.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/composer.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/composer_attachment.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/composer_drop_overlay.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/composer_root.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/composer_suggestion_list.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/composer_toolbar_label.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/context_menu.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/conversation_panel.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/conversation_panel_empty_state.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/copyable_code.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/description_list.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/dialog.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/dialog_nav.g.dart": 0,
+  "packages/raft_ui/lib/src/recipes/dialog_surface.g.dart": 0,
+  "packages/raft_ui/lib/src/recipes/dot.g.dart": 0,
+  "packages/raft_ui/lib/src/recipes/drawer.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/drawer_motion.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/dropdown_menu.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/empty_state.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/field.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/file_preview.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/files.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/form_section.g.dart": 0,
+  "packages/raft_ui/lib/src/recipes/heading.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/icon_tile.g.dart": 0,
+  "packages/raft_ui/lib/src/recipes/inbox_item.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/inline_code.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/input.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/input_group.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/kbd.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/label.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/legacy_task_panel.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/lightbox.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/list_row.g.dart": 0,
+  "packages/raft_ui/lib/src/recipes/live_agent_activity_bar.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/markdown.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/message_action_card.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/message_action_card_content.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/message_attachment.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/message_block.g.dart": 0,
+  "packages/raft_ui/lib/src/recipes/message_embed.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/message_footer.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/message_forwarded_bundle.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/message_forwarded_bundle_gallery.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/message_forwarded_bundle_item.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/message_image_gallery.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/message_item.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/message_list.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/message_multi_select.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/message_quoted_preview.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/message_reaction.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/message_reference.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/message_replies.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/message_system.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/message_text_selection_toolbar.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/message_translation.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/message_video_preview.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/mobile_nav.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/mono.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/notification_center.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/panel.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/panel_action.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/panel_action_base.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/panel_header.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/panel_notice.g.dart": 0,
+  "packages/raft_ui/lib/src/recipes/panel_toggle_action.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/picker_trigger_button.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/popover.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/preview_card.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/profile_panel.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/progress.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/radio_group.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/recipes.g.dart": 0,
+  "packages/raft_ui/lib/src/recipes/resizable.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/sans.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/scroll_area.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/search.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/search_entity.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/search_message.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/search_thread.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/search_trigger.g.dart": 0,
+  "packages/raft_ui/lib/src/recipes/segmented_control.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/select.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/separator.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/sidebar_item_recipe.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/sidebar_menu_recipe.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/sidebar_recipe.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/sidebar_section_recipe.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/skeleton.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/spinner.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/status.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/switch_recipe.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/table.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/tabs.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/task_board_column.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/task_card.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/task_card_status.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/task_chip.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/task_dnd.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/task_list_section.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/task_loading.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/task_status.g.dart": 0,
+  "packages/raft_ui/lib/src/recipes/task_status_border.g.dart": 0,
+  "packages/raft_ui/lib/src/recipes/task_status_soft.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/task_status_strong.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/tasks_panel.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/textarea.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/textarea_counter.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/textarea_group.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/thread_panel.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/toast_action.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/toast_styles.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/toggle_group.g.dart": 3,
+  "packages/raft_ui/lib/src/recipes/tooltip.g.dart": 3
  }
 }
