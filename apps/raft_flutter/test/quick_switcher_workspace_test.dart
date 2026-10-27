@@ -105,6 +105,41 @@ class _Client extends RaftClient {
     if (path.endsWith('/members')) return people;
     if (path == '/agents') return agents;
     if (path.endsWith('/machines')) return {'machines': []};
+    // Mounted GET /messages/context/:messageId returns a context object,
+    // including for a thread reply whose channel is supplied by the result.
+    if (path.startsWith('/messages/context/')) {
+      final id = path.split('/').last;
+      final (channelId, content) = switch (id) {
+        'hit' => ('c-ops', 'quarterly plan'),
+        'parent' => ('c-design', 'parent text'),
+        'reply' => ('th-design', 'quarterly review reply loaded'),
+        _ => throw const RaftApiException('Message not found', status: 404),
+      };
+      if (query?['channelId'] != channelId) {
+        throw const RaftApiException('Message not found', status: 404);
+      }
+      return {
+        'channelId': channelId,
+        'targetMessageId': id,
+        'hasOlder': false,
+        'hasNewer': false,
+        'messages': [
+          {
+            'id': id,
+            'channelId': channelId,
+            'seq': '1',
+            'senderId': 'bob',
+            'senderName': 'Bob',
+            'senderType': 'user',
+            'content': content,
+            'createdAt': '2026-10-08T00:00:00Z',
+          },
+        ],
+        'threadSummariesByParentMessageId': {},
+        'historyLimited': false,
+        'channelArchived': false,
+      };
+    }
     if (path == '/messages/search') {
       searchQueries.add(Map<String, dynamic>.from(query ?? const {}));
       if (failSearch) {
@@ -378,54 +413,82 @@ void main() {
 
   testWidgets('[N26] a message preview hit jumps to the message', (t) async {
     final (client, w) = await mount(t);
-    await chord(t, LogicalKeyboardKey.controlLeft, LogicalKeyboardKey.keyK);
-    await t.pump();
-    await t.enterText(find.byType(TextField).last, 'quarterly');
-    await t.pump(const Duration(milliseconds: 300));
-    await t.pump();
-    expect(
-      find.textContaining('quarterly plan', findRichText: true),
-      findsOneWidget,
-    );
-    await key(t, LogicalKeyboardKey.arrowDown);
-    await key(t, LogicalKeyboardKey.enter);
-    await t.pumpAndSettle();
-    expect(w.channel!.id, 'c-ops');
-    expect(find.byType(QuickSwitcher), findsNothing);
+    try {
+      await chord(t, LogicalKeyboardKey.controlLeft, LogicalKeyboardKey.keyK);
+      await t.pump();
+      await t.enterText(find.byType(TextField).last, 'quarterly');
+      await t.pump(const Duration(milliseconds: 300));
+      await t.pump();
+      expect(
+        find.textContaining('quarterly plan', findRichText: true),
+        findsOneWidget,
+      );
+      await key(t, LogicalKeyboardKey.arrowDown);
+      await key(t, LogicalKeyboardKey.enter);
+      await t.pumpAndSettle();
+      expect(w.channel!.id, 'c-ops');
+      expect(find.byType(QuickSwitcher), findsNothing);
 
-    // Web openResultInChat: a thread hit opens in its parent conversation,
-    // not over the one that is showing.
-    client.results = [
-      {
-        'id': 'reply',
-        'channelId': 'th-design',
-        'channelName': 'design',
-        'channelType': 'thread',
-        'threadId': 'th-design',
-        'parentMessageId': 'parent',
-        'parentChannelId': 'c-design',
-        'parentChannelName': 'design',
-        'parentMessageContent': 'parent text',
-        'senderId': 'bob',
-        'senderName': 'Bob',
-        'senderType': 'user',
-        'snippet': 'quarterly review',
-        'createdAt': '2026-10-08T00:00:00Z',
-      },
-    ];
-    await chord(t, LogicalKeyboardKey.controlLeft, LogicalKeyboardKey.keyK);
-    await t.pump();
-    await t.enterText(find.byType(TextField).last, 'quarterly review');
-    await t.pump(const Duration(milliseconds: 300));
-    await t.pump();
-    await t.tap(find.byKey(const ValueKey('quick-switcher-message:reply')));
-    await t.pumpAndSettle();
-    expect(find.byType(QuickSwitcher), findsNothing);
-    expect(w.channel!.id, 'c-design');
-    final thread = w.messageDomain.state.threadIdentity;
-    expect(thread?.parentChannelId, 'c-design');
-    expect(thread?.parentMessageId, 'parent');
-    expect(thread?.focusedMessageId, 'reply');
+      // Web openResultInChat: a thread hit opens in its parent conversation,
+      // not over the one that is showing.
+      client.results = [
+        {
+          'id': 'reply',
+          'channelId': 'th-design',
+          'channelName': 'design',
+          'channelType': 'thread',
+          'threadId': 'th-design',
+          'parentMessageId': 'parent',
+          'parentChannelId': 'c-design',
+          'parentChannelName': 'design',
+          'parentMessageContent': 'parent text',
+          'senderId': 'bob',
+          'senderName': 'Bob',
+          'senderType': 'user',
+          'snippet': 'quarterly review',
+          'createdAt': '2026-10-08T00:00:00Z',
+        },
+      ];
+      await chord(t, LogicalKeyboardKey.controlLeft, LogicalKeyboardKey.keyK);
+      await t.pump();
+      await t.enterText(find.byType(TextField).last, 'quarterly review');
+      await t.pump(const Duration(milliseconds: 300));
+      await t.pump();
+      await t.tap(find.byKey(const ValueKey('quick-switcher-message:reply')));
+      await t.pumpAndSettle();
+      expect(find.byType(QuickSwitcher), findsNothing);
+      expect(w.channel!.id, 'c-design');
+      final thread = w.messageDomain.state.threadIdentity;
+      expect(thread?.parentChannelId, 'c-design');
+      expect(thread?.parentMessageId, 'parent');
+      expect(thread?.focusedMessageId, 'reply');
+      expect(
+        client.calls,
+        containsAll([
+          'GET:/messages/context/parent',
+          'GET:/messages/context/reply',
+        ]),
+      );
+      expect(
+        client.calls,
+        isNot(contains('GET:/channels/c-design/threads/parent')),
+      );
+      // Navigation identity alone can pass even when opening the thread failed.
+      expect(w.messageDomain.threadResolutionError, isNull);
+      expect(w.messageDomain.state.threadLoading, isFalse);
+      expect(w.messageDomain.threadParentLoading, isFalse);
+      expect(w.presentedThreadParent?.id, 'parent');
+      expect(w.messageDomain.replies.map((m) => m.id), contains('reply'));
+      expect(find.byKey(const ValueKey('message-reply')), findsOneWidget);
+      expect(find.text('parent text', findRichText: true), findsOneWidget);
+      expect(
+        find.text('quarterly review reply loaded', findRichText: true),
+        findsOneWidget,
+      );
+    } finally {
+      await t.pumpWidget(const SizedBox());
+      await t.pump(const Duration(seconds: 1));
+    }
   }, variant: TargetPlatformVariant.only(TargetPlatform.linux));
 
   testWidgets('[N26] clicking outside the card closes the switcher', (t) async {
